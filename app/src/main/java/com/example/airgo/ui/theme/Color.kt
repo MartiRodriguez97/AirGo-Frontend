@@ -2,10 +2,17 @@ package com.example.airgo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+const val DEFAULT_PURPLE_80VAL = 0xFFD0BCFF
+const val DEFAULT_PURPLE_GREY_80VAL = 0xFFCCC2DC
+const val DEFAULT_PINK_80VAL = 0xFFEFB8C8
+const val DEFAULT_PURPLE_40VAL = 0xFF6650a4
+const val DEFAULT_PURPLE_GREY_40VAL = 0xFF625b71
+const val DEFAULT_PINK_40VAL = 0xFF7D5260
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Purple80 = Color(DEFAULT_PURPLE_80VAL)
+val PurpleGrey80 = Color(DEFAULT_PURPLE_GREY_80VAL)
+val Pink80 = Color(DEFAULT_PINK_80VAL)
+
+val Purple40 = Color(DEFAULT_PURPLE_40VAL)
+val PurpleGrey40 = Color(DEFAULT_PURPLE_GREY_40VAL)
+val Pink40 = Color(DEFAULT_PINK_40VAL)
