@@ -44,7 +44,7 @@ jobs:
         run: ./gradlew :app:detekt --no-daemon --parallel --configuration-cache --build-cache --stacktrace
 
       - name: Run ktlint analysis
-        run: ./gradlew :app:ktlint
+        run: ./gradlew :app:ktlintCheck
 
       # Run Tests
       - name: Run gradle tests
