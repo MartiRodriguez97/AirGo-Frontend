@@ -39,10 +39,14 @@ jobs:
       - name: Atorgar permís execució per a Gradle
         run: chmod +x gradlew
 
-      - name: Run Detekt analysis (fast mode)
+      # Linting (Detekt i ktlint)
+      - name: Run Detekt analysis
         run: ./gradlew :app:detekt --no-daemon --parallel --configuration-cache --build-cache --stacktrace
 
-      # Run Tests Build
+      - name: Run ktlint analysis
+        run: ./gradlew :app:ktlint
+
+      # Run Tests
       - name: Run gradle tests
         run: ./gradlew test
       
