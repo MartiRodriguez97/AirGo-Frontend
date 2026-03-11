@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.airgo"
+        applicationId = "com.airgo.airgoApp"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
