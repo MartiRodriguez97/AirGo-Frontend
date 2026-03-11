@@ -1,4 +1,4 @@
-package com.example.airgo.ui.theme
+package com.airgo.airgoApp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

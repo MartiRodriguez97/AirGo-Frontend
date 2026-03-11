@@ -1,4 +1,4 @@
-package com.example.airgo
+package com.airgo.airgoApp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.airgo.ui.theme.airGoTheme
+import com.airgo.airgoApp.ui.theme.airGoTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

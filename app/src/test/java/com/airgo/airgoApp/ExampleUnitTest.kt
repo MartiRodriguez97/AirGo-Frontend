@@ -1,4 +1,4 @@
-package com.example.airgo
+package com.airgo.airgoApp
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

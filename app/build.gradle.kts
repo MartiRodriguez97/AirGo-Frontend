@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.airgo"
+    namespace = "com.airgo.airgoApp"
     compileSdk {
         version =
             release(36) {
