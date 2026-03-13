@@ -16,11 +16,28 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 @Composable
-fun OSMView(modifier: Modifier = Modifier) {
+fun osmView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     //Conectar-se a OMS a través d'un user agent
     Configuration.getInstance().userAgentValue = context.packageName
+
+    /*
+    //Demanar permissos
+    val locationPermissionRequest = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        //Gestionar si no s'accepten els permissos
+    }
+    LaunchedEffect(Unit) {
+        locationPermissionRequest.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,       //Demanar ubi precisa
+                Manifest.permission.ACCESS_COARSE_LOCATION      //Demanar ubi aproximada
+            )
+        )
+    }
+     */
 
     //Pont entre OSM i Jetpack Compose
     AndroidView(
@@ -32,6 +49,13 @@ fun OSMView(modifier: Modifier = Modifier) {
                 controller.setZoom(15.0)                        //Zoom incial
                 val barcelona = GeoPoint(41.3851, 2.1734)
                 controller.setCenter(barcelona)                 //Centrar el mapa a Barcelona inicialment
+
+                /*
+                val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(ctx), this)
+                locationOverlay.enableMyLocation()              //Mostra el punt de la teva ubi
+                locationOverlay.enableFollowLocation()          //La càmera et segueix si et mous
+                this.overlays.add(locationOverlay)              //Afegir la capa a sobre el mapa
+                 */
             }
         },
         update = { map ->

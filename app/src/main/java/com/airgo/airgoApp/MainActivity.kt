@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             airGoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    OSMView(
+                    osmView(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
