@@ -15,6 +15,10 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
+private const val BCN_LATITUDE = 41.3851
+private const val BCN_LONGITUDE = 2.1734
+private const val INITIAL_ZOOM_LEVEL = 15.0
+
 @Composable
 fun osmView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -46,8 +50,8 @@ fun osmView(modifier: Modifier = Modifier) {
             MapView(ctx).apply {
                 setTileSource(TileSourceFactory.MAPNIK)         //Estil del mapa per defecte
                 setMultiTouchControls(true)                     //Zoom amb dos dits
-                controller.setZoom(15.0)                        //Zoom incial
-                val barcelona = GeoPoint(41.3851, 2.1734)
+                controller.setZoom(INITIAL_ZOOM_LEVEL)                        //Zoom incial
+                val barcelona = GeoPoint(BCN_LATITUDE, BCN_LONGITUDE)
                 controller.setCenter(barcelona)                 //Centrar el mapa a Barcelona inicialment
 
                 /*
