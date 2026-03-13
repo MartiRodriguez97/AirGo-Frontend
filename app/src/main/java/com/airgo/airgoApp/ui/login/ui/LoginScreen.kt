@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,24 +28,29 @@ import com.airgo.airgoApp.ui.login.domain.LoginUiState
 import com.airgo.airgoApp.ui.login.domain.LoginViewModel
 
 @Composable
-fun loginScreen(onLoginSuccess: (email: String?, name: String?) -> Unit = { _, _ -> }) {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+fun loginScreen(onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit = { _, _ -> }) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
     ) {
-        login(
-            modifier = Modifier.align(Alignment.Center),
-            onLoginSuccess = onLoginSuccess,
-        )
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+        ) {
+            login(
+                modifier = Modifier.align(Alignment.Center),
+                onLoginSuccess = onLoginSuccess,
+            )
+        }
     }
 }
 
 @Composable
 fun login(
     modifier: Modifier,
-    onLoginSuccess: (email: String?, name: String?) -> Unit,
+    onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         headerImage()
@@ -56,7 +62,7 @@ fun login(
 @Composable
 fun googleLoginButton(
     viewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: (email: String?, name: String?) -> Unit,
+    onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -64,7 +70,7 @@ fun googleLoginButton(
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Success) {
             val state = uiState as LoginUiState.Success
-            onLoginSuccess(state.email, state.displayName)
+            onLoginSuccess(state.email, state.picture)
         }
     }
 

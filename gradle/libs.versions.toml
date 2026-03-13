@@ -37,3 +37,4 @@ retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", ver
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
