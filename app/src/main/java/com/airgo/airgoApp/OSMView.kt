@@ -1,19 +1,13 @@
 package com.airgo.airgoApp
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 private const val BCN_LATITUDE = 41.3851
 private const val BCN_LONGITUDE = 2.1734
@@ -23,7 +17,7 @@ private const val INITIAL_ZOOM_LEVEL = 15.0
 fun osmView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    //Conectar-se a OMS a través d'un user agent
+    // Conectar-se a OMS a través d'un user agent
     Configuration.getInstance().userAgentValue = context.packageName
 
     /*
@@ -43,16 +37,16 @@ fun osmView(modifier: Modifier = Modifier) {
     }
      */
 
-    //Pont entre OSM i Jetpack Compose
+    // Pont entre OSM i Jetpack Compose
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
             MapView(ctx).apply {
-                setTileSource(TileSourceFactory.MAPNIK)         //Estil del mapa per defecte
-                setMultiTouchControls(true)                     //Zoom amb dos dits
-                controller.setZoom(INITIAL_ZOOM_LEVEL)                        //Zoom incial
+                setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
+                setMultiTouchControls(true) // Zoom amb dos dits
+                controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
                 val barcelona = GeoPoint(BCN_LATITUDE, BCN_LONGITUDE)
-                controller.setCenter(barcelona)                 //Centrar el mapa a Barcelona inicialment
+                controller.setCenter(barcelona) // Centrar el mapa a Barcelona inicialment
 
                 /*
                 val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(ctx), this)
@@ -64,6 +58,6 @@ fun osmView(modifier: Modifier = Modifier) {
         },
         update = { map ->
             // El mapa s'actualitzarà automàticament gràcies a l'overlay
-        }
+        },
     )
 }
