@@ -4,7 +4,7 @@
     <style name="Theme.AirGo" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name= "Theme.AirGo.Starting" parent= "Theme.SplashScreen">
-        <item name= "windowSplashScreenBackground">@color/white</item>
+        <item name= "windowSplashScreenBackground">@color/splash_background</item>
         <item name= "windowSplashScreenAnimatedIcon">@drawable/splash_icon_wrapper</item>
         <item name = "windowSplashScreenAnimationDuration">300</item>
         <item name = "postSplashScreenTheme">@style/Theme.AirGo</item>
