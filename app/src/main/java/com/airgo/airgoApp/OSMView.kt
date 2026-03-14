@@ -32,6 +32,8 @@ private const val BLUE_DOT_SIZE = 40 // Mida del punt
 private const val BLUE_DOT_COLOR = 0xFF4285F4.toInt() // Color del punt
 private const val WHITE_BORDER_COLOR = 0xFFFFFFFF.toInt() // Vora del punt
 
+private const val INNER_CIRCLE_RATIO = 2.5f
+
 @Composable
 fun osmView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -39,15 +41,17 @@ fun osmView(modifier: Modifier = Modifier) {
     // Conectar-se a OMS a través d'un user agent
     Configuration.getInstance().userAgentValue = context.packageName
 
-    // Variables de mapa i ubicació
+    // MapView
     val mapView = remember { MapView(context) }
 
+    // Capa d'ubicació
     val locationOverlay =
         remember {
             val provider = GpsMyLocationProvider(context)
             MyLocationNewOverlay(provider, mapView)
         }
 
+    // Gestió de permissos
     var hasLocationPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -57,23 +61,22 @@ fun osmView(modifier: Modifier = Modifier) {
         )
     }
 
-    // Demanar permissos
-    val locationPermissionRequest =
+    // Mirar si ja tenia permissos
+    val launcher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestMultiplePermissions(),
         ) { permissions ->
-            // Si s'accepta, canviem a true
             hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         }
 
+    // Si no tenia permissos, demanar-los
     LaunchedEffect(Unit) {
-        locationPermissionRequest.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION, // Demanar ubi precisa
-                Manifest.permission.ACCESS_COARSE_LOCATION, // Demanar ubi aproximada
-            ),
-        )
+        if (!hasLocationPermission) {
+            launcher.launch(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+            )
+        }
     }
 
     // Parar el gps i osm quan surts de la pantalla
@@ -87,32 +90,9 @@ fun osmView(modifier: Modifier = Modifier) {
     // Pont entre OSM i Jetpack Compose
     AndroidView(
         modifier = modifier,
-        factory = { ctx ->
-            MapView(ctx).apply {
-                setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
-                setMultiTouchControls(true) // Zoom amb dos dits
-                controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
-                controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE)) // Centrar el mapa a Barcelona inicialment
-
-                // Configuració de l'estil del punt de la ubicació
-                val dot = createDotBitmap()
-                locationOverlay.setPersonIcon(dot) // Icona quan estàs aturat
-                locationOverlay.setDirectionIcon(dot) // Icona quan t'estàs movent
-                locationOverlay.setPersonHotspot(BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2f)
-
-                // Despaçar el mapa a la teva ubicació
-                locationOverlay.runOnFirstFix {
-                    val myLocation = locationOverlay.myLocation
-                    if (myLocation != null) {
-                        post {
-                            controller.animateTo(myLocation)
-                            controller.setZoom(INITIAL_ZOOM_LEVEL)
-                        }
-                    }
-                }
-
-                overlays.add(locationOverlay) // Afegir la capa a sobre el mapa
-            }
+        factory = {
+            setupMapView(mapView, locationOverlay)
+            mapView
         },
         update = { map ->
             map.onResume()
@@ -127,7 +107,45 @@ fun osmView(modifier: Modifier = Modifier) {
 }
 
 /**
- * Funció per dibuixar el punt d'ubicació
+ * Funció auxiliar per pintar i configurar el mapa. Centra el mapa en la ubicació obtinguda
+ * (o en un punt definit si no s'han donat els permissos), zoom
+ */
+private fun setupMapView(
+    mapView: MapView,
+    locationOverlay: MyLocationNewOverlay,
+) {
+    mapView.apply {
+        setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
+        setMultiTouchControls(true) // Zoom amb dos dits
+        controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
+
+        // Centrar inicialment a un punt definit
+        controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE))
+
+        // Configuració de l'estil del punt de la ubicació
+        val dot = createDotBitmap()
+        locationOverlay.setPersonIcon(dot) // Icona quan estàs aturat
+        locationOverlay.setDirectionIcon(dot) // Icona quan t'estàs movent
+        locationOverlay.setPersonHotspot(BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2f)
+
+        // Desplaçar el mapa a la teva ubicació (si s'han donat permnissos)
+        locationOverlay.runOnFirstFix {
+            val myLocation = locationOverlay.myLocation
+            if (myLocation != null) {
+                post {
+                    controller.animateTo(myLocation)
+                    controller.setZoom(INITIAL_ZOOM_LEVEL)
+                }
+            }
+        }
+
+        // Pintar la capa d'ubicació a sobre el mapa
+        overlays.add(locationOverlay)
+    }
+}
+
+/**
+ * Funció auxiliar per dibuixar el punt d'ubicació
  */
 private fun createDotBitmap(): Bitmap {
     val bitmap = Bitmap.createBitmap(BLUE_DOT_SIZE, BLUE_DOT_SIZE, Bitmap.Config.ARGB_8888)
@@ -140,7 +158,7 @@ private fun createDotBitmap(): Bitmap {
 
     // Dibuixar el punt
     paint.color = BLUE_DOT_COLOR
-    canvas.drawCircle(BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2.5f, paint)
+    canvas.drawCircle(BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / INNER_CIRCLE_RATIO, paint)
 
     return bitmap
 }
