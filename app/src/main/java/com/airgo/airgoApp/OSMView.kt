@@ -2,9 +2,6 @@ package com.airgo.airgoApp
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -22,17 +19,10 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
 private const val BCN_LONGITUDE = 2.1734 // Longitud inicial
 private const val INITIAL_ZOOM_LEVEL = 15.0 // Zoom inicial
-private const val BLUE_DOT_SIZE = 40 // Mida del punt
-private const val BLUE_DOT_COLOR = 0xFF4285F4.toInt() // Color del punt
-private const val WHITE_BORDER_COLOR = 0xFFFFFFFF.toInt() // Vora del punt
-
-private const val INNER_CIRCLE_RATIO = 2.5f
 
 @Composable
 fun osmView(modifier: Modifier = Modifier) {
@@ -44,12 +34,11 @@ fun osmView(modifier: Modifier = Modifier) {
     // MapView
     val mapView = remember { MapView(context) }
 
-    // Capa d'ubicació
-    val locationOverlay =
-        remember {
-            val provider = GpsMyLocationProvider(context)
-            MyLocationNewOverlay(provider, mapView)
-        }
+    // Capa d'ubicació. Crida a LocationHelper que retorna la capa (overlay) amb la localització
+    val locationOverlay = remember { LocationHelper.createLocationOverlay(context, mapView) }
+
+    // Capa de contaminació
+    // ############################ polutionHelper ####################################
 
     // Gestió de permissos
     var hasLocationPermission by remember {
@@ -79,10 +68,11 @@ fun osmView(modifier: Modifier = Modifier) {
         }
     }
 
-    // Parar el gps i osm quan surts de la pantalla
+    // Descativar capa de localització i mapa quan se surt de la pantalla
     DisposableEffect(Unit) {
         onDispose {
             locationOverlay.disableMyLocation()
+            // ################# Desactivar capa de presentació quan n'hi hagi ###############################
             mapView.onPause()
         }
     }
@@ -91,74 +81,26 @@ fun osmView(modifier: Modifier = Modifier) {
     AndroidView(
         modifier = modifier,
         factory = {
-            setupMapView(mapView, locationOverlay)
-            mapView
+            mapView.apply {
+                setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
+                setMultiTouchControls(true) // Zoom amb dos dits
+                controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
+
+                // Centrar inicialment a un punt definit
+                controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE))
+
+                // Pintar les capes (La última es mostra a sobre)
+                // ############### Pintar la capa de contaminació quan estigui feta #####################
+                overlays.add(locationOverlay)
+            }
         },
         update = { map ->
             map.onResume()
-            if (hasLocationPermission) {
-                if (!locationOverlay.isMyLocationEnabled) {
-                    locationOverlay.enableMyLocation()
-                    locationOverlay.enableFollowLocation()
-                }
+            // Refrescar la ubicació
+            if (hasLocationPermission && !locationOverlay.isMyLocationEnabled) {
+                locationOverlay.enableMyLocation()
+                locationOverlay.enableFollowLocation()
             }
         },
     )
-}
-
-/**
- * Funció auxiliar per pintar i configurar el mapa. Centra el mapa en la ubicació obtinguda
- * (o en un punt definit si no s'han donat els permissos), zoom
- */
-private fun setupMapView(
-    mapView: MapView,
-    locationOverlay: MyLocationNewOverlay,
-) {
-    mapView.apply {
-        setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
-        setMultiTouchControls(true) // Zoom amb dos dits
-        controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
-
-        // Centrar inicialment a un punt definit
-        controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE))
-
-        // Configuració de l'estil del punt de la ubicació
-        val dot = createDotBitmap()
-        locationOverlay.setPersonIcon(dot) // Icona quan estàs aturat
-        locationOverlay.setDirectionIcon(dot) // Icona quan t'estàs movent
-        locationOverlay.setPersonHotspot(BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2f)
-
-        // Desplaçar el mapa a la teva ubicació (si s'han donat permnissos)
-        locationOverlay.runOnFirstFix {
-            val myLocation = locationOverlay.myLocation
-            if (myLocation != null) {
-                post {
-                    controller.animateTo(myLocation)
-                    controller.setZoom(INITIAL_ZOOM_LEVEL)
-                }
-            }
-        }
-
-        // Pintar la capa d'ubicació a sobre el mapa
-        overlays.add(locationOverlay)
-    }
-}
-
-/**
- * Funció auxiliar per dibuixar el punt d'ubicació
- */
-private fun createDotBitmap(): Bitmap {
-    val bitmap = Bitmap.createBitmap(BLUE_DOT_SIZE, BLUE_DOT_SIZE, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    val paint = Paint().apply { isAntiAlias = true }
-
-    // Dibuixar vora
-    paint.color = WHITE_BORDER_COLOR
-    canvas.drawCircle(BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2f, paint)
-
-    // Dibuixar el punt
-    paint.color = BLUE_DOT_COLOR
-    canvas.drawCircle(BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / 2f, BLUE_DOT_SIZE / INNER_CIRCLE_RATIO, paint)
-
-    return bitmap
 }
