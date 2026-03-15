@@ -4,6 +4,21 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsBike
+import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -11,8 +26,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import org.osmdroid.config.Configuration
@@ -37,8 +55,17 @@ fun osmView(modifier: Modifier = Modifier) {
     // Capa d'ubicació. Crida a LocationHelper que retorna la capa (overlay) amb la localització
     val locationOverlay = remember { LocationHelper.createLocationOverlay(context, mapView) }
 
+    // // Variable per saber si s'activa/desactiva la capa de Bicing
+    var showBicing by remember { mutableStateOf(true) }
+
+    //Menú desplegable obert/tancat
+    var expanded by remember { mutableStateOf(false) }
+
     // Capa de contaminació
     // ############################ polutionHelper ####################################
+
+    // Capa de Bicing
+    val bicingOverlay = remember { BicingHelper.createBicingOverlay(context, mapView) }
 
     // Gestió de permissos
     var hasLocationPermission by remember {
@@ -77,30 +104,69 @@ fun osmView(modifier: Modifier = Modifier) {
         }
     }
 
-    // Pont entre OSM i Jetpack Compose
-    AndroidView(
-        modifier = modifier,
-        factory = {
-            mapView.apply {
-                setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
-                setMultiTouchControls(true) // Zoom amb dos dits
-                controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
+    Box(modifier = modifier.fillMaxSize()) {
+        // Pont entre OSM i Jetpack Compose
+        AndroidView(
+            modifier = modifier,
+            factory = {
+                mapView.apply {
+                    setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
+                    setMultiTouchControls(true) // Zoom amb dos dits
+                    controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
 
-                // Centrar inicialment a un punt definit
-                controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE))
+                    // Centrar inicialment a un punt definit
+                    controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE))
 
-                // Pintar les capes (La última es mostra a sobre)
-                // ############### Pintar la capa de contaminació quan estigui feta #####################
-                overlays.add(locationOverlay)
+                    // Pintar les capes (La última es mostra a sobre)
+                    // ############### Pintar la capa de contaminació quan estigui feta #####################
+                    overlays.add(locationOverlay)
+                    overlays.add(bicingOverlay)
+                }
+            },
+            update = { map ->
+                map.onResume()
+                // Refrescar la ubicació
+                if (hasLocationPermission && !locationOverlay.isMyLocationEnabled) {
+                    locationOverlay.enableMyLocation()
+                    locationOverlay.enableFollowLocation()
+                }
+                bicingOverlay.isEnabled = showBicing
+            },
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 100.dp, end = 16.dp)
+        ) {
+            FloatingActionButton(
+                onClick = { expanded = true },
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(56.dp)
+            ) {
+                Icon(Icons.Default.Layers, contentDescription = "Canviar capes")
             }
-        },
-        update = { map ->
-            map.onResume()
-            // Refrescar la ubicació
-            if (hasLocationPermission && !locationOverlay.isMyLocationEnabled) {
-                locationOverlay.enableMyLocation()
-                locationOverlay.enableFollowLocation()
+
+            // Menú desplegable de capes
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Bicing") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.DirectionsBike, // O Icons.Default.Warning
+                            contentDescription = null,
+                            tint = if (showBicing) MaterialTheme.colorScheme.primary else Color.Gray
+                        )
+                    },
+                    onClick = {
+                        showBicing = !showBicing
+                        expanded = false
+                    }
+                )
             }
-        },
-    )
+        }
+    }
 }
