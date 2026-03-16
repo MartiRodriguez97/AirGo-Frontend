@@ -9,9 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.airgo.airgoApp.ui.login.ui.loginScreen
-import com.airgo.airgoApp.ui.main.ui.mainShellScreen
-import com.airgo.airgoApp.ui.theme.airGoTheme
+import com.airgo.airgoApp.core.theme.airGoTheme
+import com.airgo.airgoApp.features.login.ui.loginScreen
+import com.airgo.airgoApp.features.shell.mainShellScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.ui.login.data.auth
+package com.airgo.airgoApp.features.login.data.auth
 
 import android.content.Context
 import android.util.Log

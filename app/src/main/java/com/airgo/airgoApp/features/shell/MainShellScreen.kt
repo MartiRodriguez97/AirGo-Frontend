@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.ui.main.ui
+package com.airgo.airgoApp.features.shell
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -46,7 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.airgo.airgoApp.ui.theme.airGoTheme
+import com.airgo.airgoApp.core.theme.airGoTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL

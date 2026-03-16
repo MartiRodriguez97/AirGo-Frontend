@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.ui.login.ui
+package com.airgo.airgoApp.features.login.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.ui.login.domain.LoginUiState
-import com.airgo.airgoApp.ui.login.domain.LoginViewModel
+import com.airgo.airgoApp.features.login.domain.LoginUiState
+import com.airgo.airgoApp.features.login.domain.LoginViewModel
 
 @Composable
 fun loginScreen(onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit = { _, _ -> }) {

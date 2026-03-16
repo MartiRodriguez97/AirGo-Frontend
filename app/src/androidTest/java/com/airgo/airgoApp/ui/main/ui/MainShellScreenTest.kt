@@ -6,7 +6,8 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.airgo.airgoApp.ui.theme.airGoTheme
+import com.airgo.airgoApp.core.theme.airGoTheme
+import com.airgo.airgoApp.features.shell.mainShellScreen
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test

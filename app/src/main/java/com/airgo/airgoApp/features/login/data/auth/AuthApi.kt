@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.ui.login.data.auth
+package com.airgo.airgoApp.features.login.data.auth
 
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import retrofit2.Response

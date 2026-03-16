@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.ui.theme
+package com.airgo.airgoApp.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
