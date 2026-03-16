@@ -19,7 +19,7 @@ class MainShellScreenTest {
     fun showsFiveBottomTabs() {
         composeTestRule.setContent {
             airGoTheme {
-                MainShellScreen(
+                mainShellScreen(
                     email = "airgo@example.com",
                     pictureUrl = null,
                 )
@@ -37,7 +37,7 @@ class MainShellScreenTest {
     fun switchesContentWhenSelectingAnotherTab() {
         composeTestRule.setContent {
             airGoTheme {
-                MainShellScreen(
+                mainShellScreen(
                     email = "airgo@example.com",
                     pictureUrl = "https://example.com/avatar.png",
                 )
@@ -56,7 +56,7 @@ class MainShellScreenTest {
     fun showsProfileImageNodeWhenPictureUrlExists() {
         composeTestRule.setContent {
             airGoTheme {
-                MainShellScreen(
+                mainShellScreen(
                     email = "airgo@example.com",
                     pictureUrl = "https://example.com/avatar.png",
                 )
@@ -72,7 +72,7 @@ class MainShellScreenTest {
     fun showsFallbackAvatarWhenPictureUrlIsNull() {
         composeTestRule.setContent {
             airGoTheme {
-                MainShellScreen(
+                mainShellScreen(
                     email = "airgo@example.com",
                     pictureUrl = null,
                 )

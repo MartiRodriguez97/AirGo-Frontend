@@ -10,7 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.airgo.airgoApp.ui.login.ui.loginScreen
-import com.airgo.airgoApp.ui.main.ui.MainShellScreen
+import com.airgo.airgoApp.ui.main.ui.mainShellScreen
 import com.airgo.airgoApp.ui.theme.airGoTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
 
                 if (isLoggedIn) {
-                    MainShellScreen(
+                    mainShellScreen(
                         email = userEmail,
                         pictureUrl = userPictureUrl,
                     )

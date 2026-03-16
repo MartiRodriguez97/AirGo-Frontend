@@ -51,7 +51,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 
-enum class MainTab(
+enum class MainShellScreen(
     val label: String,
     val icon: ImageVector,
 ) {
@@ -63,16 +63,16 @@ enum class MainTab(
 }
 
 @Composable
-fun MainShellScreen(
+fun mainShellScreen(
     email: String?,
     pictureUrl: String?,
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(MainTab.HOME) }
+    var selectedTab by rememberSaveable { mutableStateOf(MainShellScreen.HOME) }
 
     Scaffold(
         bottomBar = {
             NavigationBar {
-                MainTab.entries.forEach { tab ->
+                MainShellScreen.entries.forEach { tab ->
                     NavigationBarItem(
                         selected = selectedTab == tab,
                         onClick = { selectedTab = tab },
@@ -96,18 +96,42 @@ fun MainShellScreen(
                     .padding(horizontal = 20.dp, vertical = 16.dp),
         ) {
             when (selectedTab) {
-                MainTab.HOME -> MainSection(title = "Home", subtitle = "Tu punto de partida en AirGo", icon = MainTab.HOME.icon)
-                MainTab.FORUM -> MainSection(title = "Forum", subtitle = "Espacio para conectar con otros usuarios", icon = MainTab.FORUM.icon)
-                MainTab.ACTIVITY -> MainSection(title = "Actividad", subtitle = "Sigue tu movimiento y tus próximas rutas", icon = MainTab.ACTIVITY.icon)
-                MainTab.MESSAGES -> MainSection(title = "Mensajes", subtitle = "Consulta tus conversaciones y avisos", icon = MainTab.MESSAGES.icon)
-                MainTab.PROFILE -> ProfileSection(email = email, pictureUrl = pictureUrl)
+                MainShellScreen.HOME ->
+                    mainSection(
+                        title = "Home",
+                        subtitle = "Tu punto de partida en AirGo",
+                        icon = MainShellScreen.HOME.icon,
+                    )
+                MainShellScreen.FORUM ->
+                    mainSection(
+                        title = "Forum",
+                        subtitle = "Espacio para conectar con otros usuarios",
+                        icon = MainShellScreen.FORUM.icon,
+                    )
+                MainShellScreen.ACTIVITY ->
+                    mainSection(
+                        title = "Actividad",
+                        subtitle = "Sigue tu movimiento y tus próximas rutas",
+                        icon = MainShellScreen.ACTIVITY.icon,
+                    )
+                MainShellScreen.MESSAGES ->
+                    mainSection(
+                        title = "Mensajes",
+                        subtitle = "Consulta tus conversaciones y avisos",
+                        icon = MainShellScreen.MESSAGES.icon,
+                    )
+                MainShellScreen.PROFILE ->
+                    profileSection(
+                        email = email,
+                        pictureUrl = pictureUrl,
+                    )
             }
         }
     }
 }
 
 @Composable
-private fun MainSection(
+private fun mainSection(
     title: String,
     subtitle: String,
     icon: ImageVector,
@@ -151,7 +175,7 @@ private fun MainSection(
 }
 
 @Composable
-private fun ProfileSection(
+private fun profileSection(
     email: String?,
     pictureUrl: String?,
 ) {
@@ -171,7 +195,7 @@ private fun ProfileSection(
                 modifier = Modifier.padding(horizontal = 28.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                ProfileAvatar(
+                profileAvatar(
                     pictureUrl = pictureUrl,
                     initial = initial,
                 )
@@ -212,7 +236,7 @@ private fun ProfileSection(
 }
 
 @Composable
-private fun ProfileAvatar(
+private fun profileAvatar(
     pictureUrl: String?,
     initial: String,
 ) {
@@ -268,9 +292,9 @@ private fun ProfileAvatar(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun MainShellScreenPreview() {
+fun mainShellScreenPreview() {
     airGoTheme {
-        MainShellScreen(
+        mainShellScreen(
             email = "airgo@example.com",
             pictureUrl = "https://example.com/avatar.png",
         )
