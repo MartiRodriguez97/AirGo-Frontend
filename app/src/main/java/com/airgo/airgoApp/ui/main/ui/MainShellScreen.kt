@@ -88,44 +88,57 @@ fun mainShellScreen(
             }
         },
     ) { innerPadding ->
-        Box(
+        menu(
+            selectedTab = selectedTab,
+            email = email,
+            pictureUrl = pictureUrl,
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(horizontal = 20.dp, vertical = 16.dp),
-        ) {
-            when (selectedTab) {
-                MainShellScreen.HOME ->
-                    mainSection(
-                        title = "Home",
-                        subtitle = "Tu punto de partida en AirGo",
-                        icon = MainShellScreen.HOME.icon,
-                    )
-                MainShellScreen.FORUM ->
-                    mainSection(
-                        title = "Forum",
-                        subtitle = "Espacio para conectar con otros usuarios",
-                        icon = MainShellScreen.FORUM.icon,
-                    )
-                MainShellScreen.ACTIVITY ->
-                    mainSection(
-                        title = "Actividad",
-                        subtitle = "Sigue tu movimiento y tus próximas rutas",
-                        icon = MainShellScreen.ACTIVITY.icon,
-                    )
-                MainShellScreen.MESSAGES ->
-                    mainSection(
-                        title = "Mensajes",
-                        subtitle = "Consulta tus conversaciones y avisos",
-                        icon = MainShellScreen.MESSAGES.icon,
-                    )
-                MainShellScreen.PROFILE ->
-                    profileSection(
-                        email = email,
-                        pictureUrl = pictureUrl,
-                    )
-            }
+        )
+    }
+}
+
+@Composable
+private fun menu(
+    selectedTab: MainShellScreen,
+    email: String?,
+    pictureUrl: String?,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        when (selectedTab) {
+            MainShellScreen.HOME ->
+                mainSection(
+                    title = "Home",
+                    subtitle = "Tu punto de partida en AirGo",
+                    icon = MainShellScreen.HOME.icon,
+                )
+            MainShellScreen.FORUM ->
+                mainSection(
+                    title = "Forum",
+                    subtitle = "Espacio para conectar con otros usuarios",
+                    icon = MainShellScreen.FORUM.icon,
+                )
+            MainShellScreen.ACTIVITY ->
+                mainSection(
+                    title = "Actividad",
+                    subtitle = "Sigue tu movimiento y tus proximas rutas",
+                    icon = MainShellScreen.ACTIVITY.icon,
+                )
+            MainShellScreen.MESSAGES ->
+                mainSection(
+                    title = "Mensajes",
+                    subtitle = "Consulta tus conversaciones y avisos",
+                    icon = MainShellScreen.MESSAGES.icon,
+                )
+            MainShellScreen.PROFILE ->
+                profileSection(
+                    email = email,
+                    pictureUrl = pictureUrl,
+                )
         }
     }
 }
