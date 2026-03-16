@@ -4,8 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.airgo.airgoApp.ui.login.ui.loginScreen
+import com.airgo.airgoApp.ui.main.ui.MainShellScreen
 import com.airgo.airgoApp.ui.theme.airGoTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +20,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             airGoTheme {
-                loginScreen()
+                var isLoggedIn by rememberSaveable { mutableStateOf(false) }
+                var userEmail by rememberSaveable { mutableStateOf<String?>(null) }
+                var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
+
+                if (isLoggedIn) {
+                    MainShellScreen(
+                        email = userEmail,
+                        pictureUrl = userPictureUrl,
+                    )
+                } else {
+                    loginScreen { email, pictureUrl ->
+                        userEmail = email
+                        userPictureUrl = pictureUrl
+                        isLoggedIn = true
+                    }
+                }
             }
         }
     }
