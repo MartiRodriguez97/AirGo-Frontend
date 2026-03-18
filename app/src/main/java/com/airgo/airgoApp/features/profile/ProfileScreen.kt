@@ -160,7 +160,9 @@ fun profileScreen(
                         showDeleteDialog = false
                         // AQUI ANIRIA LA LOGICA PER ELIMINAR EL CONPTE
                     },
-                    colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.error),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,)
                 ) {
                     Text("Eliminar")
                 }
