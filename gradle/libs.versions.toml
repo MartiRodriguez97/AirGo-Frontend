@@ -13,7 +13,7 @@ retrofit = "2.9.0"
 play-services-auth = "21.5.1"
 lifecycle-viewmodel-compose = "2.10.0"
 core-splashscreen = "1.0.0"
-
+navigationCompose = "2.9.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +37,7 @@ play-services-auth = { group = "com.google.android.gms", name = "play-services-a
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

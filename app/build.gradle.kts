@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.googleid)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
