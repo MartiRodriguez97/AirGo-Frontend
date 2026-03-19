@@ -67,10 +67,13 @@ fun googleLoginButton(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState) {
-        if (uiState is LoginUiState.Success) {
-            val state = uiState as LoginUiState.Success
-            onLoginSuccess(state.email, state.picture)
+    if (uiState is LoginUiState.Success) {
+        LaunchedEffect(uiState) {
+            onLoginSuccess(
+                (uiState as LoginUiState.Success).email,
+                (uiState as LoginUiState.Success).picture,
+            )
+            viewModel.resetState()
         }
     }
 

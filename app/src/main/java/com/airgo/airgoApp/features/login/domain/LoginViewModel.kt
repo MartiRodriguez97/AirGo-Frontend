@@ -33,7 +33,7 @@ sealed class LoginUiState {
 
 // ViewModel para manejar la lógica de inicio de sesión con Google
 class LoginViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
+    private var _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState
 
     // Función para iniciar sesión con Google y actualizar el estado de la UI
@@ -59,6 +59,7 @@ class LoginViewModel : ViewModel() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
+                    com.airgo.airgoApp.core.network.SessionManager.accessToken = body.access
                     _uiState.value =
                         LoginUiState.Success(
                             email = body.user,
@@ -101,5 +102,9 @@ class LoginViewModel : ViewModel() {
             Log.w("LoginViewModel", "No se pudo parsear el error del backend: $errorText", e)
             errorText
         }
+    }
+
+    fun resetState() {
+        _uiState.value = LoginUiState.Idle
     }
 }

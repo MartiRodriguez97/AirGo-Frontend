@@ -44,6 +44,7 @@ enum class MainShellScreen(
 fun mainShellScreen(
     email: String?,
     pictureUrl: String?,
+    onLogout: () -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -89,6 +90,7 @@ fun mainShellScreen(
                 profileScreen(
                     email = email,
                     pictureUrl = pictureUrl,
+                    onAccountDeleted = onLogout,
                 )
             }
         }

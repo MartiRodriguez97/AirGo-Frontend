@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -26,6 +27,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -40,6 +43,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.features.profile.domain.ProfileUiState
+import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -49,13 +55,22 @@ import java.net.URL
 fun profileScreen(
     email: String?,
     pictureUrl: String?,
+    viewModel: ProfileViewModel = viewModel(),
+    onAccountDeleted: () -> Unit,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
     val displayName =
         email
             ?.substringBefore('@')
             ?.replaceFirstChar { it.uppercase() } ?: "Usuario"
     val initial = displayName.firstOrNull()?.toString() ?: "U"
+
+    if (uiState is ProfileUiState.DeleteSuccess) {
+        LaunchedEffect(Unit) {
+            onAccountDeleted()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -78,7 +93,19 @@ fun profileScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        deleteAccountButton(onDeleteClicked = { showDeleteDialog = true })
+        if (uiState is ProfileUiState.Error) {
+            val errorMessage = (uiState as ProfileUiState.Error).message
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
+        if (uiState is ProfileUiState.Loading) {
+            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+        } else {
+            deleteAccountButton(onDeleteClicked = { showDeleteDialog = true })
+        }
 
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 16.dp),
@@ -91,7 +118,7 @@ fun profileScreen(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
                 showDeleteDialog = false
-                // / LOGICA PER ELIMINAR COMPTE AQUI
+                viewModel.deleteAccount()
             },
         )
     }

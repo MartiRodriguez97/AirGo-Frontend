@@ -3,6 +3,7 @@ package com.airgo.airgoApp.features.login.data.auth
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.POST
 
 data class AuthResponse(
@@ -21,4 +22,7 @@ interface AuthApi {
     suspend fun loginWithGoogle(
         @Body body: GoogleTokenRequest,
     ): Response<AuthResponse>
+
+    @DELETE(ApiEndpoints.DELETE_ACCOUNT)
+    suspend fun deleteAccount(): Response<Unit>
 }
