@@ -90,22 +90,12 @@ fun profileScreen(
             color = DividerDefaults.color,
         )
         badgesAndActivitiesZone()
-
         Spacer(modifier = Modifier.weight(1f))
 
-        if (uiState is ProfileUiState.Error) {
-            val errorMessage = (uiState as ProfileUiState.Error).message
-            Text(
-                text = errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
-        }
-        if (uiState is ProfileUiState.Loading) {
-            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-        } else {
-            deleteAccountButton(onDeleteClicked = { showDeleteDialog = true })
-        }
+        deleteAccountSection(
+            uiState = uiState,
+            onDeleteClicked = { showDeleteDialog = true },
+        )
 
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 16.dp),
@@ -182,6 +172,31 @@ fun badgesAndActivitiesZone() {
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+@Composable
+fun deleteAccountSection(
+    uiState: ProfileUiState,
+    onDeleteClicked: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        if (uiState is ProfileUiState.Error) {
+            Text(
+                text = uiState.message,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
+
+        if (uiState is ProfileUiState.Loading) {
+            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+        } else {
+            deleteAccountButton(onDeleteClicked = onDeleteClicked)
+        }
     }
 }
 

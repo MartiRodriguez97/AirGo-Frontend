@@ -45,9 +45,6 @@ class ProfileViewModel : ViewModel() {
             } catch (e: IOException) {
                 // Error de red (ej. sin internet)
                 _uiState.value = ProfileUiState.Error(NetworkErrorMapper.fromIOException(e))
-            } catch (e: Exception) {
-                // Cualquier otro error raro
-                _uiState.value = ProfileUiState.Error("Ocurrió un error inesperado")
             }
         }
     }
