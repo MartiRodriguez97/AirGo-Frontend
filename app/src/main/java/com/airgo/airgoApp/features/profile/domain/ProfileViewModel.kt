@@ -1,20 +1,20 @@
 package com.airgo.airgoApp.features.profile.domain
 
 import android.content.Context
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.NetworkErrorMapper
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.utils.FileUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.IOException
-import androidx.core.net.toUri
-import com.airgo.airgoApp.core.network.SessionManager
-import com.airgo.airgoApp.core.utils.FileUtils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.IOException
 
 sealed class ProfileUiState {
     object Idle : ProfileUiState() // Estado normal, esperando
@@ -60,7 +60,10 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun updateProfilePicture(context: Context, imageUriString: String) {
+    fun updateProfilePicture(
+        context: Context,
+        imageUriString: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = ProfileUiState.PictureUpdateLoading
             try {
@@ -75,10 +78,12 @@ class ProfileViewModel : ViewModel() {
 
                 val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
                 val requestFile = imageFile.asRequestBody(mimeType.toMediaTypeOrNull())
-                val imagePart = MultipartBody.Part.createFormData(
-                    "profile_pic",
-                    imageFile.name,
-                    requestFile)
+                val imagePart =
+                    MultipartBody.Part.createFormData(
+                        "profile_pic",
+                        imageFile.name,
+                        requestFile,
+                    )
 
                 val response = RetrofitProvider.profileApi.updateProfilePicture(imagePart)
 
@@ -96,7 +101,6 @@ class ProfileViewModel : ViewModel() {
                         // 3. Actualizamos la interfaz
                         _uiState.value = ProfileUiState.PictureUpdateSuccess
                         println("¡Foto subida con éxito! Nueva URL guardada: $newImageUrl")
-
                     } else {
                         // Si la petición dio 200 OK pero el backend se olvidó de enviarnos la URL
                         _uiState.value = ProfileUiState.Error("Foto subida, pero el servidor no devolvió la URL.")
@@ -109,7 +113,6 @@ class ProfileViewModel : ViewModel() {
                 } else {
                     _uiState.value = ProfileUiState.Error("Error del servidor: HTTP ${response.code()}")
                 }
-
             } catch (e: IOException) {
                 e.printStackTrace()
                 _uiState.value = ProfileUiState.Error("Error de conexión al subir la imagen.")

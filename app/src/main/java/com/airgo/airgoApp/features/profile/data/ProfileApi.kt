@@ -15,8 +15,8 @@ data class UpdateProfilePictureRequest(
 )
 
 data class ProfilePictureResponse(
-    @SerializedName("profile_pic") // O el nombre exacto que te pase el back
-    val newPictureUrl: String
+    @SerializedName("profile_pic")
+    val newPictureUrl: String,
 )
 
 interface ProfileApi {
@@ -27,6 +27,6 @@ interface ProfileApi {
     @Multipart
     @PATCH(ApiEndpoints.CHANGE_PROFILE_PICTURE)
     suspend fun updateProfilePicture(
-        @Part image: MultipartBody.Part
+        @Part image: MultipartBody.Part,
     ): Response<ProfilePictureResponse> // O la clase de respuesta que te devuelvan (ej. ProfileResponse)
 }

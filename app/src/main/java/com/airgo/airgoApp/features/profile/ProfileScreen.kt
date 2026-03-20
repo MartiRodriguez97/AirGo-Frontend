@@ -54,7 +54,7 @@ fun profileScreen(
             contract = ActivityResultContracts.PickVisualMedia(),
             onResult = { uri ->
                 if (uri != null) {
-                    viewModel.updateProfilePicture(context,uri.toString())
+                    viewModel.updateProfilePicture(context, uri.toString())
                 }
             },
         )
