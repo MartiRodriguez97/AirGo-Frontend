@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
 import com.airgo.airgoApp.features.profile.components.deleteAccountSection
@@ -35,12 +36,12 @@ import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
 @Composable
 fun profileScreen(
     email: String?,
-    pictureUrl: String?,
     viewModel: ProfileViewModel = viewModel(),
     onAccountDeleted: () -> Unit,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
+    var currentPictureUrl by remember { mutableStateOf(SessionManager.profilePictureUrl) }
     val context = LocalContext.current
     val displayName =
         email
@@ -53,7 +54,7 @@ fun profileScreen(
             contract = ActivityResultContracts.PickVisualMedia(),
             onResult = { uri ->
                 if (uri != null) {
-                    viewModel.updateProfilePicture(uri.toString())
+                    viewModel.updateProfilePicture(context,uri.toString())
                 }
             },
         )
@@ -61,6 +62,7 @@ fun profileScreen(
         when (uiState) {
             is ProfileUiState.DeleteSuccess -> onAccountDeleted()
             is ProfileUiState.PictureUpdateSuccess -> {
+                currentPictureUrl = SessionManager.profilePictureUrl
                 Toast.makeText(context, "Foto actualitzada correctament", Toast.LENGTH_SHORT).show()
             }
             is ProfileUiState.Error -> {
@@ -80,7 +82,7 @@ fun profileScreen(
         profileUserInfoCard(
             displayName = displayName,
             email = email,
-            pictureUrl = pictureUrl,
+            pictureUrl = currentPictureUrl,
             initial = initial,
             isUpdatingPicture = uiState is ProfileUiState.PictureUpdateLoading,
             onEditProfilePictureClick = {

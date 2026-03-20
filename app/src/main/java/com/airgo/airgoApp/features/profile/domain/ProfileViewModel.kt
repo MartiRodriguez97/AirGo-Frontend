@@ -1,16 +1,20 @@
 package com.airgo.airgoApp.features.profile.domain
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.NetworkErrorMapper
-import com.airgo.airgoApp.features.login.data.auth.RetrofitProvider
-import kotlinx.coroutines.delay
+import com.airgo.airgoApp.core.network.RetrofitProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
-
-private const val MOCK_DELAY_TIME = 2000L
+import androidx.core.net.toUri
+import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.utils.FileUtils
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 sealed class ProfileUiState {
     object Idle : ProfileUiState() // Estado normal, esperando
@@ -38,7 +42,7 @@ class ProfileViewModel : ViewModel() {
 
             try {
                 // Fem la petició al backend
-                val response = RetrofitProvider.authApi.deleteAccount()
+                val response = RetrofitProvider.profileApi.deleteAccount()
 
                 // Revisem la resposta del servidor
                 if (response.isSuccessful) {
@@ -56,20 +60,59 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun updateProfilePicture(imageUri: String) {
+    fun updateProfilePicture(context: Context, imageUriString: String) {
         viewModelScope.launch {
             _uiState.value = ProfileUiState.PictureUpdateLoading
-
             try {
-                // MOCK UP
-                // TODO : crida api per actualitzar la foto de perfil al backend
-                delay(MOCK_DELAY_TIME)
-                _uiState.value = ProfileUiState.PictureUpdateSuccess
-                println("MOCK: Foto de perfil actualitzada amb èxit! URI: $imageUri")
-                delay(MOCK_DELAY_TIME)
-                _uiState.value = ProfileUiState.Idle
+                val uri = imageUriString.toUri()
+
+                val imageFile = FileUtils.getFileFromUri(context, uri)
+
+                if (imageFile == null) {
+                    _uiState.value = ProfileUiState.Error("No se pudo procesar la imagen seleccionada")
+                    return@launch
+                }
+
+                val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+                val requestFile = imageFile.asRequestBody(mimeType.toMediaTypeOrNull())
+                val imagePart = MultipartBody.Part.createFormData(
+                    "profile_pic",
+                    imageFile.name,
+                    requestFile)
+
+                val response = RetrofitProvider.profileApi.updateProfilePicture(imagePart)
+
+                // Comprobamos la respuesta
+                if (response.isSuccessful) {
+                    _uiState.value = ProfileUiState.PictureUpdateSuccess
+
+                    val newImageUrl = response.body()?.newPictureUrl
+
+                    if (newImageUrl != null) {
+                        // 2. ACTUALIZAMOS EL SESSION MANAGER
+                        // (Usa la función que tengas en tu SessionManager para guardar la foto o actualizar el usuario)
+                        SessionManager.profilePictureUrl = newImageUrl
+
+                        // 3. Actualizamos la interfaz
+                        _uiState.value = ProfileUiState.PictureUpdateSuccess
+                        println("¡Foto subida con éxito! Nueva URL guardada: $newImageUrl")
+
+                    } else {
+                        // Si la petición dio 200 OK pero el backend se olvidó de enviarnos la URL
+                        _uiState.value = ProfileUiState.Error("Foto subida, pero el servidor no devolvió la URL.")
+                    }
+
+                    println("¡Foto subida con éxito al servidor!")
+
+                    // Opcional: Borramos el archivo temporal para no ocupar espacio en el móvil
+                    imageFile.delete()
+                } else {
+                    _uiState.value = ProfileUiState.Error("Error del servidor: HTTP ${response.code()}")
+                }
+
             } catch (e: IOException) {
-                _uiState.value = ProfileUiState.Error("Error: ${e.message}")
+                e.printStackTrace()
+                _uiState.value = ProfileUiState.Error("Error de conexión al subir la imagen.")
             }
         }
     }
