@@ -36,12 +36,13 @@ import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
 @Composable
 fun profileScreen(
     email: String?,
+    pictureUrl: String?,
     viewModel: ProfileViewModel = viewModel(),
     onAccountDeleted: () -> Unit,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
-    var currentPictureUrl by remember { mutableStateOf(SessionManager.profilePictureUrl) }
+    var currentPictureUrl by remember { mutableStateOf(pictureUrl ?: SessionManager.profilePictureUrl) }
     val context = LocalContext.current
     val displayName =
         email
