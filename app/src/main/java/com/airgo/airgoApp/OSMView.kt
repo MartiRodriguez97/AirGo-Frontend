@@ -31,8 +31,33 @@ fun osmView(modifier: Modifier = Modifier) {
     // Conectar-se a OMS a través d'un user agent
     Configuration.getInstance().userAgentValue = context.packageName
 
-    // MapView
-    val mapView = remember { MapView(context) }
+    // Optimització: Donar permís per utilitzar més threads i més memòria
+    remember {
+        Configuration.getInstance().apply {
+            userAgentValue = context.packageName
+            tileDownloadThreads = 8
+            cacheMapTileCount = 1000.toShort()
+            tileFileSystemCacheMaxBytes = 100L * 1024 * 1024
+        }
+    }
+
+    // Vista del mapa
+    val mapView = remember {
+        MapView(context).apply {
+            // Utilitzar més cache per evitar veure el mapa pixelat
+            val cache = this.tileProvider.tileCache
+            cache?.ensureCapacity(120)
+
+            // Optimització hardware
+            this.isTilesScaledToDpi = true
+            this.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
+
+            // Limitar el mapa a Barcelona
+            this.minZoomLevel = 12.0
+            this.setScrollableAreaLimitLatitude(41.47, 41.31, 0)
+            this.setScrollableAreaLimitLongitude(2.0, 2.3, 0)
+        }
+    }
 
     // Capa d'ubicació. Crida a LocationHelper que retorna la capa (overlay) amb la localització
     val locationOverlay = remember { LocationHelper.createLocationOverlay(context, mapView) }
