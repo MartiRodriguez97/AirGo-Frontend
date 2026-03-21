@@ -19,10 +19,28 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
 private const val BCN_LONGITUDE = 2.1734 // Longitud inicial
 private const val INITIAL_ZOOM_LEVEL = 15.0 // Zoom inicial
+
+private const val TILE_THREADS: Short = 8
+private const val CACHE_TILE_COUNT: Short = 1000
+private const val MEGABYTES_TO_BYTES = 1024L * 1024L
+private const val MAX_CACHE_MB = 100L
+private const val MAX_CACHE_BYTES = MAX_CACHE_MB * MEGABYTES_TO_BYTES
+
+// Límits del mapa
+private const val LAT_NORTH = 41.47
+private const val LAT_SOUTH = 41.31
+private const val LNG_WEST = 2.0
+private const val LNG_EAST = 2.3
+
+private const val MIN_ZOOM = 12.0
+private const val MAX_ZOOM = 19.0
+
+private const val CACHE_CAPACITY = 120
 
 @Composable
 fun osmView(modifier: Modifier = Modifier) {
@@ -35,29 +53,14 @@ fun osmView(modifier: Modifier = Modifier) {
     remember {
         Configuration.getInstance().apply {
             userAgentValue = context.packageName
-            tileDownloadThreads = 8
-            cacheMapTileCount = 1000.toShort()
-            tileFileSystemCacheMaxBytes = 100L * 1024 * 1024
+            tileDownloadThreads = TILE_THREADS
+            cacheMapTileCount = CACHE_TILE_COUNT
+            tileFileSystemCacheMaxBytes = MAX_CACHE_BYTES
         }
     }
 
     // Vista del mapa
-    val mapView = remember {
-        MapView(context).apply {
-            // Utilitzar més cache per evitar veure el mapa pixelat
-            val cache = this.tileProvider.tileCache
-            cache?.ensureCapacity(120)
-
-            // Optimització hardware
-            this.isTilesScaledToDpi = true
-            this.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
-
-            // Limitar el mapa a Barcelona
-            this.minZoomLevel = 12.0
-            this.setScrollableAreaLimitLatitude(41.47, 41.31, 0)
-            this.setScrollableAreaLimitLongitude(2.0, 2.3, 0)
-        }
-    }
+    val mapView = remember { MapView(context).apply { configureMapView(this) } }
 
     // Capa d'ubicació. Crida a LocationHelper que retorna la capa (overlay) amb la localització
     val locationOverlay = remember { LocationHelper.createLocationOverlay(context, mapView) }
@@ -66,34 +69,15 @@ fun osmView(modifier: Modifier = Modifier) {
     // ############################ polutionHelper ####################################
 
     // Gestió de permissos
-    var hasLocationPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED,
-        )
-    }
-
-    // Mirar si ja tenia permissos
-    val launcher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions(),
-        ) { permissions ->
-            hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        }
+    var hasLocationPermission by remember { mutableStateOf(checkInitialLocationPermission(context)) }
+    val requestLocationPermission = rememberLocationPermissions { granted -> hasLocationPermission = granted }
 
     // Si no tenia permissos, demanar-los
     LaunchedEffect(Unit) {
-        if (!hasLocationPermission) {
-            launcher.launch(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-            )
-        }
+        if (!hasLocationPermission) requestLocationPermission()
     }
 
-    // Descativar capa de localització i mapa quan se surt de la pantalla
+    // Desactivar les capes quan se surt de la pantalla
     DisposableEffect(Unit) {
         onDispose {
             locationOverlay.disableMyLocation()
@@ -102,6 +86,82 @@ fun osmView(modifier: Modifier = Modifier) {
         }
     }
 
+    // Pintar el mapa
+    osmMapContainer(
+        mapView = mapView,
+        locationOverlay = locationOverlay,
+        hasLocationPermission = hasLocationPermission,
+        modifier = modifier,
+    )
+}
+
+/**
+ * Configuració de la vista del mapa
+ */
+private fun configureMapView(mapView: MapView) {
+    // Utilitzar més cache per evitar veure el mapa pixelat
+    val cache = mapView.tileProvider.tileCache
+    cache?.ensureCapacity(CACHE_CAPACITY)
+
+    // Optimització hardware
+    mapView.isTilesScaledToDpi = true
+    mapView.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
+
+    // Limitar el mapa a Barcelona
+    mapView.minZoomLevel = MIN_ZOOM
+    mapView.maxZoomLevel = MAX_ZOOM
+    mapView.setScrollableAreaLimitLatitude(LAT_NORTH, LAT_SOUTH, 0)
+    mapView.setScrollableAreaLimitLongitude(LNG_WEST, LNG_EAST, 0)
+}
+
+/**
+ * Lògica de permissos
+ */
+@Composable
+fun rememberLocationPermissions(onPermissionGranted: (Boolean) -> Unit): () -> Unit {
+    val context = LocalContext.current
+
+    // Mirar si ja tenia permissos
+    val launcher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+        ) { permissions ->
+            val granted =
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+            onPermissionGranted(granted)
+        }
+
+    // Missatge per demanar permissos
+    return {
+        launcher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ),
+        )
+    }
+}
+
+/**
+ * Comprovar si l'aplicació té permissos de localització
+ */
+private fun checkInitialLocationPermission(context: android.content.Context): Boolean =
+    ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+    ) == PackageManager.PERMISSION_GRANTED
+
+/**
+ * Funció per pintar el mapa
+ */
+@Composable
+fun osmMapContainer(
+    mapView: MapView,
+    locationOverlay: MyLocationNewOverlay,
+    hasLocationPermission: Boolean,
+    modifier: Modifier = Modifier,
+) {
     // Pont entre OSM i Jetpack Compose
     AndroidView(
         modifier = modifier,

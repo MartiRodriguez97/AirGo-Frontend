@@ -38,7 +38,8 @@ object LocationHelper {
         locationOverlay.runOnFirstFix {
             locationOverlay.myLocation?.let { loc ->
                 // Comprovem si està dins dels límits de Barcelona
-                val isInsideBcn = loc.latitude in LAT_SOUTH..LAT_NORTH &&
+                val isInsideBcn =
+                    loc.latitude in LAT_SOUTH..LAT_NORTH &&
                         loc.longitude in LNG_WEST..LNG_EAST
 
                 if (isInsideBcn) {
@@ -49,11 +50,12 @@ object LocationHelper {
                 } else {
                     // Si està fora mostrem el missatge d'avís
                     map.post {
-                        Toast.makeText(
-                            context,
-                            "La teva ubicació està fora de la zona de servei d'AirGo",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Toast
+                            .makeText(
+                                context,
+                                "La teva ubicació està fora de la zona de servei d'AirGo",
+                                Toast.LENGTH_LONG,
+                            ).show()
                     }
                 }
             }
