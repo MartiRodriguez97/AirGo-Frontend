@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -86,6 +87,9 @@ fun osmView(modifier: Modifier = Modifier) {
     // Capa de Bicing
     val bicingOverlay = remember { BicingHelper.createBicingOverlay(context, mapView) }
 
+    // Capa de contaminació
+    val pollutionOverlay = remember { PollutionHelper.createPollutionOverlay(mapView) }
+
     // Gestió de permissos
     var hasLocationPermission by remember { mutableStateOf(checkInitialLocationPermission(context)) }
     val requestLocationPermission = rememberLocationPermissions { granted -> hasLocationPermission = granted }
@@ -108,6 +112,7 @@ fun osmView(modifier: Modifier = Modifier) {
         mapView = mapView,
         locationOverlay = locationOverlay,
         bicingOverlay = bicingOverlay,
+        pollutionOverlay = pollutionOverlay,
         hasLocationPermission = hasLocationPermission,
         modifier = modifier,
     )
@@ -178,11 +183,14 @@ fun osmMapContainer(
     mapView: MapView,
     locationOverlay: MyLocationNewOverlay,
     bicingOverlay: FolderOverlay,
+    pollutionOverlay: FolderOverlay,
     hasLocationPermission: Boolean,
     modifier: Modifier = Modifier,
 ) {
     // Variable per saber si s'activa/desactiva la capa de Bicing
     var showBicing by remember { mutableStateOf(true) }
+    // Variable per saber si s'activa/desactiva la capa de qualitat de l'aire
+    var showPollution by remember { mutableStateOf(true) }
 
     Box(modifier = modifier.fillMaxSize()) {
         // Pont entre OSM i Jetpack Compose
@@ -215,6 +223,7 @@ fun osmMapContainer(
                         org.osmdroid.views.overlay
                             .MapEventsOverlay(mapEventsReceiver)
                     overlays.add(mapEventsOverlay)
+                    overlays.add(pollutionOverlay)
                     overlays.add(locationOverlay)
                     overlays.add(bicingOverlay)
                 }
@@ -226,13 +235,21 @@ fun osmMapContainer(
                     locationOverlay.enableMyLocation()
                     locationOverlay.enableFollowLocation()
                 }
+
                 bicingOverlay.isEnabled = showBicing
+                pollutionOverlay.isEnabled = showPollution
             },
         )
+
         // Crida a la funció de la interfície d'usuari
         bicingLayerControls(
             showBicing = showBicing,
             onToggleBicing = { showBicing = it },
+        )
+
+        pollutionLayerControls(
+            showPollution = showPollution,
+            onTogglePollution = { showPollution = it }
         )
     }
 }
@@ -274,6 +291,50 @@ private fun bicingLayerControls(
                     onToggleBicing(!showBicing)
                     expanded = false
                 },
+            )
+        }
+    }
+}
+
+@Composable
+private fun pollutionLayerControls(
+    showPollution: Boolean,
+    onTogglePollution: (Boolean) -> Unit,
+
+    ) {
+    //Menú desplegable obert/tancat
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 100.dp, end = 16.dp)
+    ) {
+        FloatingActionButton(
+            onClick = { expanded = true },
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(56.dp)
+        ) {
+            Icon(Icons.Default.Layers, contentDescription = "Canviar capes")
+        }
+
+        // MENÚ DESPLEGABLE
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Qualitat de l'aire") },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Cloud, // O Icons.Default.Warning
+                        contentDescription = null,
+                        tint = if (showPollution) MaterialTheme.colorScheme.primary else Color.Gray
+                    )
+                },
+                onClick = {
+                    onTogglePollution(!showPollution)
+                    expanded = false
+                }
             )
         }
     }
