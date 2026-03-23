@@ -5,10 +5,11 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Cloud
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,12 +40,8 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import org.osmdroid.views.overlay.Marker
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Switch
-import androidx.compose.ui.draw.scale
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
 private const val BCN_LONGITUDE = 2.1734 // Longitud inicial
@@ -65,6 +63,15 @@ private const val MIN_ZOOM = 12.0
 private const val MAX_ZOOM = 19.0
 
 private const val CACHE_CAPACITY = 120
+
+// Classe per encapsular l'estat del mapa i les capes
+data class MapState(
+    val mapView: MapView,
+    val locationOverlay: MyLocationNewOverlay,
+    val bicingOverlay: FolderOverlay,
+    val pollutionOverlay: FolderOverlay,
+    val hasLocationPermission: Boolean,
+)
 
 @Composable
 fun osmView(modifier: Modifier = Modifier) {
@@ -111,13 +118,14 @@ fun osmView(modifier: Modifier = Modifier) {
         }
     }
 
-    // Pintar el mapa
+    // Encapsular tot l'estat del mapa en una sola classe per passar-la a la funció de renderitzat
+    val mapState =
+        remember(hasLocationPermission) {
+            MapState(mapView, locationOverlay, bicingOverlay, pollutionOverlay, hasLocationPermission)
+        }
+    // Funció que pinta el mapa i les capes
     osmMapContainer(
-        mapView = mapView,
-        locationOverlay = locationOverlay,
-        bicingOverlay = bicingOverlay,
-        pollutionOverlay = pollutionOverlay,
-        hasLocationPermission = hasLocationPermission,
+        state = mapState,
         modifier = modifier,
     )
 }
@@ -155,7 +163,7 @@ fun rememberLocationPermissions(onPermissionGranted: (Boolean) -> Unit): () -> U
         ) { permissions ->
             val granted =
                 permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                        permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
             onPermissionGranted(granted)
         }
 
@@ -184,11 +192,7 @@ private fun checkInitialLocationPermission(context: android.content.Context): Bo
  */
 @Composable
 fun osmMapContainer(
-    mapView: MapView,
-    locationOverlay: MyLocationNewOverlay,
-    bicingOverlay: FolderOverlay,
-    pollutionOverlay: FolderOverlay,
-    hasLocationPermission: Boolean,
+    state: MapState,
     modifier: Modifier = Modifier,
 ) {
     // Variable per saber si s'activa/desactiva la capa de Bicing
@@ -201,7 +205,7 @@ fun osmMapContainer(
         AndroidView(
             modifier = modifier,
             factory = {
-                mapView.apply {
+                state.mapView.apply {
                     setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
                     setMultiTouchControls(true) // Zoom amb dos dits
                     controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
@@ -212,10 +216,10 @@ fun osmMapContainer(
                     val mapEventsReceiver =
                         object : org.osmdroid.events.MapEventsReceiver {
                             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
-                                bicingOverlay.items.forEach { item ->
+                                state.bicingOverlay.items.forEach { item ->
                                     if (item is Marker) {
                                         item.closeInfoWindow()
-                                        if (item is BicingHelper.BicingMarker) item.setSelected(false, mapView)
+                                        if (item is BicingHelper.BicingMarker) item.setSelected(false, state.mapView)
                                     }
                                 }
                                 return true
@@ -227,88 +231,100 @@ fun osmMapContainer(
                         org.osmdroid.views.overlay
                             .MapEventsOverlay(mapEventsReceiver)
                     overlays.add(mapEventsOverlay)
-                    overlays.add(pollutionOverlay)
-                    overlays.add(locationOverlay)
-                    overlays.add(bicingOverlay)
+                    overlays.add(state.pollutionOverlay)
+                    overlays.add(state.bicingOverlay)
+                    overlays.add(state.locationOverlay)
                 }
             },
             update = { map ->
                 map.onResume()
                 // Refrescar la ubicació
-                if (hasLocationPermission && !locationOverlay.isMyLocationEnabled) {
-                    locationOverlay.enableMyLocation()
-                    locationOverlay.enableFollowLocation()
+                if (state.hasLocationPermission && !state.locationOverlay.isMyLocationEnabled) {
+                    state.locationOverlay.enableMyLocation()
+                    state.locationOverlay.enableFollowLocation()
                 }
                 // Mostrar o ocultar les capes segons les variables d'estat
-                bicingOverlay.isEnabled = showBicing
-                pollutionOverlay.isEnabled = showPollution
+                state.bicingOverlay.isEnabled = showBicing
+                state.pollutionOverlay.isEnabled = showPollution
             },
         )
 
         // Botó per seleccionar les capes
-        LayerSelector(
+        layerSelector(
             showBicing = showBicing,
             onToggleBicing = { showBicing = it },
             showPollution = showPollution,
-            onTogglePollution = { showPollution = it }
+            onTogglePollution = { showPollution = it },
         )
     }
 }
 
 @Composable
-private fun BoxScope.LayerSelector(
+private fun BoxScope.layerSelector(
     showBicing: Boolean,
     onToggleBicing: (Boolean) -> Unit,
     showPollution: Boolean,
-    onTogglePollution: (Boolean) -> Unit
+    onTogglePollution: (Boolean) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
+    // Colors per indicar si la capa està activa o no
+    val activeBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+    val inactiveBg = Color.Transparent
+
     Box(
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .padding(bottom = 100.dp, end = 16.dp)
+        modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 100.dp, end = 16.dp),
     ) {
         FloatingActionButton(
             onClick = { expanded = true },
             containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.primary
+            contentColor = MaterialTheme.colorScheme.primary,
         ) {
             Icon(Icons.Default.Layers, contentDescription = "Capas")
         }
 
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             // Capa Bicing
             DropdownMenuItem(
-                text = { Text("Estacions Bicing") },
-                trailingIcon = {
-                    Switch(
-                        checked = showBicing,
-                        onCheckedChange = { onToggleBicing(it) },
-                        modifier = Modifier.scale(0.8f)
+                modifier = Modifier.background(if (showBicing) activeBg else inactiveBg),
+                text = {
+                    Text(
+                        text = "Estacions Bicing",
+                        color = if (showBicing) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.AutoMirrored.Filled.DirectionsBike,
+                        contentDescription = null,
+                        tint = if (showBicing) MaterialTheme.colorScheme.primary else Color.Gray,
                     )
                 },
                 onClick = { onToggleBicing(!showBicing) },
-                leadingIcon = { Icon(Icons.AutoMirrored.Filled.DirectionsBike, null) }
             )
 
-            HorizontalDivider() // Línea divisoria entre opciones
+            HorizontalDivider()
 
-            // Capaq qualitat de l'aire
+            // Capa qualitat de l'aire
             DropdownMenuItem(
-                text = { Text("Qualitat de l'aire") },
-                trailingIcon = {
-                    Switch(
-                        checked = showPollution,
-                        onCheckedChange = { onTogglePollution(it) },
-                        modifier = Modifier.scale(0.8f)
+                modifier = Modifier.background(if (showPollution) activeBg else inactiveBg),
+                text = {
+                    Text(
+                        text = "Qualitat de l'aire",
+                        color = if (showPollution) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Cloud,
+                        contentDescription = null,
+                        tint = if (showPollution) MaterialTheme.colorScheme.primary else Color.Gray,
                     )
                 },
                 onClick = { onTogglePollution(!showPollution) },
-                leadingIcon = { Icon(Icons.Default.Cloud, null) }
             )
         }
     }
