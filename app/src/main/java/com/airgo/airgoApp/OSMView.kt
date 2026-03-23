@@ -40,6 +40,10 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import org.osmdroid.views.overlay.Marker
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Switch
+import androidx.compose.ui.draw.scale
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
 private const val BCN_LONGITUDE = 2.1734 // Longitud inicial
@@ -235,19 +239,16 @@ fun osmMapContainer(
                     locationOverlay.enableMyLocation()
                     locationOverlay.enableFollowLocation()
                 }
-
+                // Mostrar o ocultar les capes segons les variables d'estat
                 bicingOverlay.isEnabled = showBicing
                 pollutionOverlay.isEnabled = showPollution
             },
         )
 
-        // Crida a la funció de la interfície d'usuari
-        bicingLayerControls(
+        // Botó per seleccionar les capes
+        LayerSelector(
             showBicing = showBicing,
             onToggleBicing = { showBicing = it },
-        )
-
-        pollutionLayerControls(
             showPollution = showPollution,
             onTogglePollution = { showPollution = it }
         )
@@ -255,86 +256,59 @@ fun osmMapContainer(
 }
 
 @Composable
-private fun bicingLayerControls(
+private fun BoxScope.LayerSelector(
     showBicing: Boolean,
     onToggleBicing: (Boolean) -> Unit,
-) {
-    // Menú desplegable obert/tancat
-    var expanded by remember { mutableStateOf(false) }
-    Box(
-        modifier = Modifier.fillMaxSize().padding(bottom = 100.dp, end = 16.dp),
-        contentAlignment = Alignment.BottomEnd,
-    ) {
-        FloatingActionButton(
-            onClick = { expanded = true },
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(56.dp),
-        ) {
-            Icon(Icons.Default.Layers, contentDescription = "Canviar capes")
-        }
-        // Menú desplegable de capes
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            DropdownMenuItem(
-                text = { Text("Bicing") },
-                leadingIcon = {
-                    Icon(
-                        Icons.AutoMirrored.Filled.DirectionsBike, // O Icons.Default.Warning
-                        contentDescription = null,
-                        tint = if (showBicing) MaterialTheme.colorScheme.primary else Color.Gray,
-                    )
-                },
-                onClick = {
-                    onToggleBicing(!showBicing)
-                    expanded = false
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun pollutionLayerControls(
     showPollution: Boolean,
-    onTogglePollution: (Boolean) -> Unit,
-
-    ) {
-    //Menú desplegable obert/tancat
+    onTogglePollution: (Boolean) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 100.dp, end = 16.dp)
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(bottom = 100.dp, end = 16.dp)
     ) {
         FloatingActionButton(
             onClick = { expanded = true },
             containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(56.dp)
+            contentColor = MaterialTheme.colorScheme.primary
         ) {
-            Icon(Icons.Default.Layers, contentDescription = "Canviar capes")
+            Icon(Icons.Default.Layers, contentDescription = "Capas")
         }
 
-        // MENÚ DESPLEGABLE
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
+            // Capa Bicing
             DropdownMenuItem(
-                text = { Text("Qualitat de l'aire") },
-                leadingIcon = {
-                    Icon(
-                        Icons.Default.Cloud, // O Icons.Default.Warning
-                        contentDescription = null,
-                        tint = if (showPollution) MaterialTheme.colorScheme.primary else Color.Gray
+                text = { Text("Estacions Bicing") },
+                trailingIcon = {
+                    Switch(
+                        checked = showBicing,
+                        onCheckedChange = { onToggleBicing(it) },
+                        modifier = Modifier.scale(0.8f)
                     )
                 },
-                onClick = {
-                    onTogglePollution(!showPollution)
-                    expanded = false
-                }
+                onClick = { onToggleBicing(!showBicing) },
+                leadingIcon = { Icon(Icons.AutoMirrored.Filled.DirectionsBike, null) }
+            )
+
+            HorizontalDivider() // Línea divisoria entre opciones
+
+            // Capaq qualitat de l'aire
+            DropdownMenuItem(
+                text = { Text("Qualitat de l'aire") },
+                trailingIcon = {
+                    Switch(
+                        checked = showPollution,
+                        onCheckedChange = { onTogglePollution(it) },
+                        modifier = Modifier.scale(0.8f)
+                    )
+                },
+                onClick = { onTogglePollution(!showPollution) },
+                leadingIcon = { Icon(Icons.Default.Cloud, null) }
             )
         }
     }
