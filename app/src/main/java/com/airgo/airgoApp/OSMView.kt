@@ -74,7 +74,7 @@ data class MapState(
 )
 
 @Composable
-fun osmView(modifier: Modifier = Modifier) {
+fun osmView(modifier: Modifier = Modifier, viewModel: PollutionViewModel = androidx.lifecycle.viewmodel.compose.viewModel() ) {
     val context = LocalContext.current
 
     // Conectar-se a OMS a través d'un user agent
@@ -99,7 +99,9 @@ fun osmView(modifier: Modifier = Modifier) {
     val bicingOverlay = remember { BicingHelper.createBicingOverlay(context, mapView) }
 
     // Capa de contaminació
-    val pollutionOverlay = remember { PollutionHelper.createPollutionOverlay(mapView) }
+    val pollutionOverlay = remember(viewModel.stations) {
+        PollutionHelper.createPollutionOverlay(mapView, viewModel.stations)
+    }
 
     // Gestió de permissos
     var hasLocationPermission by remember { mutableStateOf(checkInitialLocationPermission(context)) }
@@ -108,6 +110,7 @@ fun osmView(modifier: Modifier = Modifier) {
     // Si no tenia permissos, demanar-los
     LaunchedEffect(Unit) {
         if (!hasLocationPermission) requestLocationPermission()
+        viewModel.fetchBarcelonaData()
     }
 
     // Desactivar les capes quan se surt de la pantalla

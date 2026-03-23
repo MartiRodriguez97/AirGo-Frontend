@@ -1,9 +1,12 @@
 package com.airgo.airgoApp
 
-import org.osmdroid.util.GeoPoint
-
 data class PollutionPoint(
     val zone: String,
-    val geoPoint: GeoPoint,
-    val aqi: Int,
+    val geoPoint: GeoPointResponse,
+    val aqi: Int
+)
+
+data class GeoPointResponse(
+    val lat: Double,
+    val lon: Double
 )
