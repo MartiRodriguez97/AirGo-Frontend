@@ -2,6 +2,13 @@ package com.airgo.airgoApp.features.settings
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,13 +43,13 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.airgo.airgoApp.features.settings.account.AccountSettingsScreen
+import com.airgo.airgoApp.features.settings.account.accountSettingsScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 
 @Composable
-fun SettingsScreen(
+fun settingsScreen(
     email: String?,
     displayName: String,
     pictureUrl: String?,
@@ -50,153 +57,226 @@ fun SettingsScreen(
     onBackClick: () -> Unit,
 ) {
     var showAccountSettings by remember { mutableStateOf(false) }
+    var displayName by remember { mutableStateOf(displayName) }
+
+    BackHandler {
+        onBackClick()
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (!showAccountSettings) {
-            // Main Settings Screen
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-            ) {
-                // Header with back button
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = "Back",
-                        )
-                    }
+        AnimatedContent(
+            targetState = showAccountSettings,
+            transitionSpec = {
+                if (targetState) {
+                    (slideInHorizontally { fullWidth -> fullWidth } + fadeIn()).togetherWith(
+                        slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut(),
+                    )
+                } else {
+                    (slideInHorizontally { fullWidth -> -fullWidth } + fadeIn()).togetherWith(
+                        slideOutHorizontally { fullWidth -> fullWidth } + fadeOut(),
+                    )
                 }
-
-                // User profile section (centered, smaller)
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    // Profile picture
-                    if (!pictureUrl.isNullOrBlank()) {
-                        val avatarBitmap by produceState<Bitmap?>(
-                            initialValue = null,
-                            key1 = pictureUrl,
-                        ) {
-                            value =
-                                withContext(Dispatchers.IO) {
-                                    runCatching {
-                                        URL(pictureUrl).openStream().use { stream ->
-                                            BitmapFactory.decodeStream(stream)
-                                        }
-                                    }.getOrNull()
-                                }
-                        }
-
-                        if (avatarBitmap != null) {
-                            Image(
-                                bitmap = avatarBitmap!!.asImageBitmap(),
-                                contentDescription = "Profile Picture",
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop,
-                            )
+            },
+            label = "account-settings-transition",
+        ) { isAccountSettingsVisible ->
+            if (!isAccountSettingsVisible) {
+                settingsMainContent(
+                    email = email,
+                    displayName = displayName,
+                    pictureUrl = pictureUrl,
+                    initial = initial,
+                    onBackClick = {
+                        if (showAccountSettings) {
+                            showAccountSettings = false
                         } else {
-                            Box(
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(CircleShape)
-                                    .align(Alignment.CenterHorizontally),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    text = initial,
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
+                            onBackClick()
                         }
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .size(80.dp)
-                                .clip(CircleShape)
-                                .align(Alignment.CenterHorizontally),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = initial,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Display name
-                    Text(
-                        text = displayName,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    // Email
-                    Text(
-                        text = email ?: "Sense correu",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    thickness = DividerDefaults.Thickness,
-                    color = DividerDefaults.color,
+                    },
+                    onAccountSettingsClick = { showAccountSettings = true },
                 )
-
-                // Settings options
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                ) {
-                    // "Tu cuenta" option
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showAccountSettings = true }
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Text(
-                            text = "Tu cuenta",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium,
-                        )
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = "Go to account settings",
-                            modifier = Modifier.size(24.dp),
-                        )
-                    }
-                }
+            } else {
+                accountSettingsScreen(
+                    displayName = displayName,
+                    onBackClick = { showAccountSettings = false },
+                )
             }
-        } else {
-            // Account Settings Screen
-            AccountSettingsScreen(
-                displayName = displayName,
-                onBackClick = { showAccountSettings = false },
+        }
+    }
+}
+
+@Composable
+private fun settingsMainContent(
+    email: String?,
+    displayName: String,
+    pictureUrl: String?,
+    initial: String,
+    onBackClick: () -> Unit,
+    onAccountSettingsClick: () -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+    ) {
+        settingsHeader(onBackClick = onBackClick)
+
+        settingsUserProfile(
+            displayName = displayName,
+            email = email,
+            pictureUrl = pictureUrl,
+            initial = initial,
+        )
+
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 16.dp),
+            thickness = DividerDefaults.Thickness,
+            color = DividerDefaults.color,
+        )
+
+        settingsOptions(onAccountSettingsClick = onAccountSettingsClick)
+    }
+}
+
+@Composable
+private fun settingsHeader(onBackClick: () -> Unit) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(onClick = onBackClick) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                contentDescription = "Back",
             )
         }
     }
 }
 
+@Composable
+private fun settingsUserProfile(
+    displayName: String,
+    email: String?,
+    pictureUrl: String?,
+    initial: String,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        settingsProfilePicture(pictureUrl = pictureUrl, initial = initial)
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = displayName,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold,
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = email ?: "Sense correu",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun settingsProfilePicture(
+    pictureUrl: String?,
+    initial: String,
+) {
+    if (!pictureUrl.isNullOrBlank()) {
+        val avatarBitmap by produceState<Bitmap?>(
+            initialValue = null,
+            key1 = pictureUrl,
+        ) {
+            value =
+                withContext(Dispatchers.IO) {
+                    runCatching {
+                        URL(pictureUrl).openStream().use { stream ->
+                            BitmapFactory.decodeStream(stream)
+                        }
+                    }.getOrNull()
+                }
+        }
+
+        if (avatarBitmap != null) {
+            Image(
+                bitmap = avatarBitmap!!.asImageBitmap(),
+                contentDescription = "Profile Picture",
+                modifier =
+                    Modifier
+                        .size(80.dp)
+                        .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            settingsProfileInitialAvatar(initial = initial)
+        }
+    } else {
+        settingsProfileInitialAvatar(initial = initial)
+    }
+}
+
+@Composable
+private fun settingsProfileInitialAvatar(initial: String) {
+    Box(
+        modifier =
+            Modifier
+                .size(80.dp)
+                .clip(CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = initial,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+private fun settingsOptions(onAccountSettingsClick: () -> Unit) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+    ) {
+        settingsAccountOption(onAccountSettingsClick = onAccountSettingsClick)
+    }
+}
+
+@Composable
+private fun settingsAccountOption(onAccountSettingsClick: () -> Unit) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onAccountSettingsClick() }
+                .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = "Tu cuenta",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+        )
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+            contentDescription = "Go to account settings",
+            modifier = Modifier.size(24.dp),
+        )
+    }
+}
