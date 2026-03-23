@@ -1,16 +1,22 @@
 package com.airgo.airgoApp
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 
-private const val BCN_Lat = 41.3851
-private const val BCN_Lon = 2.1734
+private const val BCN_LAT = 41.3851
+private const val BCN_LON = 2.1734
+
+private const val LOG_TAG = "PollutionViewModel"
+
 /**
  * ViewModel per gestionar les dades de contaminació.
  * S'encarrega de fer la crida a l'API i mantenir l'estat de les estacions.
@@ -21,22 +27,35 @@ class PollutionViewModel : ViewModel() {
     var stations by mutableStateOf<List<PollutionPoint>>(emptyList())
         private set
 
-    // Configuració de Retrofit per accedir a l'API de qualitat de l'aire
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("http://localhost:8080/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    // Missatge d'error en cas que la crida a l'API falli
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
 
-    // Creació de l'instància del servei de l'API
+    // Configuració de Retrofit per accedir a l'API de qualitat de l'aire
+    private val retrofit =
+        Retrofit
+            .Builder()
+            .baseUrl("http://localhost:8080/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    // Creació de la instància del servei de l'API
     private val apiService = retrofit.create(AirQualityApiService::class.java)
 
     // Funció per obtenir les dades de contaminació de Barcelona
     fun fetchBarcelonaData() {
         viewModelScope.launch {
             try {
-                stations = apiService.getPollutionData(BCN_Lat, BCN_Lon)
-            } catch (e: Exception) {
-                // Gestionar error de connexió
+                errorMessage = null // Netegem errors previs
+                stations = apiService.getPollutionData(BCN_LAT, BCN_LON)
+            } catch (e: IOException) {
+                // Error de xarxa (ex: no hi ha internet o servidor apagat)
+                errorMessage = "Error de connexió al servidor"
+                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
+            } catch (e: HttpException) {
+                // El servidor ha respost però amb un error (ex: 404 o 500)
+                errorMessage = "El servidor ha donat un error: ${e.code()}"
+                Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }
         }
     }

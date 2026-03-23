@@ -11,6 +11,6 @@ interface AirQualityApiService {
     @GET("air-quality/")
     suspend fun getPollutionData(
         @Query("lat") lat: Double,
-        @Query("lon") lon: Double
+        @Query("lon") lon: Double,
     ): List<PollutionPoint>
 }

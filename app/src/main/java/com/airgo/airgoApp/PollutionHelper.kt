@@ -6,8 +6,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.Polygon
 
-
-
 // Constants per a la visualització de la contaminació
 private const val POLLUTION_RADIUS = 300.0
 private const val CIRCLE_ALPHA = 70
@@ -19,7 +17,10 @@ private const val AQI_SENSITIVE = 150
 private const val COLOR_ORANGE = 0xFFFFA500.toInt()
 
 object PollutionHelper {
-        fun createPollutionOverlay(map: MapView, stations: List<PollutionPoint>): FolderOverlay {
+    fun createPollutionOverlay(
+        map: MapView,
+        stations: List<PollutionPoint>,
+    ): FolderOverlay {
         val folder = FolderOverlay()
 
         stations.forEach { station ->

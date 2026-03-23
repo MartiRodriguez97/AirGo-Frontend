@@ -3,10 +3,10 @@ package com.airgo.airgoApp
 data class PollutionPoint(
     val zone: String,
     val geoPoint: GeoPointResponse,
-    val aqi: Int
+    val aqi: Int,
 )
 
 data class GeoPointResponse(
     val lat: Double,
-    val lon: Double
+    val lon: Double,
 )

@@ -74,7 +74,12 @@ data class MapState(
 )
 
 @Composable
-fun osmView(modifier: Modifier = Modifier, viewModel: PollutionViewModel = androidx.lifecycle.viewmodel.compose.viewModel() ) {
+fun osmView(
+    modifier: Modifier = Modifier,
+    viewModel: PollutionViewModel =
+        androidx.lifecycle.viewmodel.compose
+            .viewModel(),
+) {
     val context = LocalContext.current
 
     // Conectar-se a OMS a través d'un user agent
@@ -99,9 +104,10 @@ fun osmView(modifier: Modifier = Modifier, viewModel: PollutionViewModel = andro
     val bicingOverlay = remember { BicingHelper.createBicingOverlay(context, mapView) }
 
     // Capa de contaminació
-    val pollutionOverlay = remember(viewModel.stations) {
-        PollutionHelper.createPollutionOverlay(mapView, viewModel.stations)
-    }
+    val pollutionOverlay =
+        remember(viewModel.stations) {
+            PollutionHelper.createPollutionOverlay(mapView, viewModel.stations)
+        }
 
     // Gestió de permissos
     var hasLocationPermission by remember { mutableStateOf(checkInitialLocationPermission(context)) }
