@@ -22,7 +22,7 @@ data class ProfilePictureResponse(
 interface ProfileApi {
     // Define API endpoints related to user profile here
     @DELETE(ApiEndpoints.DELETE_ACCOUNT)
-    suspend fun deleteAccount(): Response<Unit>
+    suspend fun deleteAccount(): Response<Void>
 
     @Multipart
     @PATCH(ApiEndpoints.CHANGE_PROFILE_PICTURE)

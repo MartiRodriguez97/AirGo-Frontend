@@ -49,6 +49,8 @@ class ProfileViewModel : ViewModel() {
                 // Fem la petició al backend
                 val response = RetrofitProvider.profileApi.deleteAccount()
 
+                println("Esperando respuesta del servidor para eliminar cuenta...")
+
                 // Revisem la resposta del servidor
                 if (response.isSuccessful) {
                     _uiState.value = ProfileUiState.DeleteSuccess
@@ -61,6 +63,7 @@ class ProfileViewModel : ViewModel() {
             } catch (e: IOException) {
                 // Error de red (ej. sin internet)
                 _uiState.value = ProfileUiState.Error(NetworkErrorMapper.fromIOException(e))
+                println("Error: " + e.printStackTrace())
             }
         }
     }
