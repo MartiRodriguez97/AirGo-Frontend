@@ -26,7 +26,7 @@ import com.airgo.airgoApp.features.activity.activityScreen
 import com.airgo.airgoApp.features.forum.forumScreen
 import com.airgo.airgoApp.features.home.homeScreen
 import com.airgo.airgoApp.features.messages.messagesScreen
-import com.airgo.airgoApp.features.profile.profileScreen
+import com.airgo.airgoApp.features.profile.ProfileScreen
 
 enum class MainShellScreen(
     val label: String,
@@ -87,7 +87,7 @@ fun mainShellScreen(
             composable(MainShellScreen.ACTIVITY.route) { activityScreen() }
             composable(MainShellScreen.MESSAGES.route) { messagesScreen() }
             composable(MainShellScreen.PROFILE.route) {
-                profileScreen(
+                ProfileScreen(
                     email = email,
                     pictureUrl = pictureUrl,
                     onAccountDeleted = onLogout,
