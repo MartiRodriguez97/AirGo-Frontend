@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.ui.login.ui
+package com.airgo.airgoApp.features.login.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.ui.login.domain.LoginUiState
-import com.airgo.airgoApp.ui.login.domain.LoginViewModel
+import com.airgo.airgoApp.features.login.domain.LoginUiState
+import com.airgo.airgoApp.features.login.domain.LoginViewModel
 
 @Composable
 fun loginScreen(onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit = { _, _ -> }) {
@@ -67,10 +67,13 @@ fun googleLoginButton(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState) {
-        if (uiState is LoginUiState.Success) {
-            val state = uiState as LoginUiState.Success
-            onLoginSuccess(state.email, state.picture)
+    if (uiState is LoginUiState.Success) {
+        LaunchedEffect(uiState) {
+            onLoginSuccess(
+                (uiState as LoginUiState.Success).email,
+                (uiState as LoginUiState.Success).picture,
+            )
+            viewModel.resetState()
         }
     }
 
