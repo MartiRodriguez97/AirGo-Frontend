@@ -25,9 +25,10 @@ object PollutionHelper {
         map: MapView,
         stations: List<PollutionPoint>,
     ): FolderOverlay {
-        val folder = FolderOverlay().apply {
-            name = "PollutionFolder"
-        }
+        val folder =
+            FolderOverlay().apply {
+                name = "PollutionFolder"
+            }
 
         stations.forEach { station ->
             // Crear cercle de la zona per al mapa

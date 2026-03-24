@@ -13,6 +13,6 @@ interface AirQualityApiService {
     suspend fun getPollutionData(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("radio") radio: Double
+        @Query("radio") radio: Double,
     ): List<PollutionPoint>
 }

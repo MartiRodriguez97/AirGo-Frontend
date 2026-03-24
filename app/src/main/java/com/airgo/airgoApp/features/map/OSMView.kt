@@ -75,7 +75,7 @@ data class MapState(
     val bicingOverlay: FolderOverlay,
     val pollutionOverlay: FolderOverlay,
     val hasLocationPermission: Boolean,
-    val stations: List<PollutionPoint>
+    val stations: List<PollutionPoint>,
 )
 
 @Composable
@@ -108,9 +108,10 @@ fun osmView(
     val bicingOverlay = remember { BicingHelper.createBicingOverlay(context, mapView) }
 
     // Capa de contaminació. Es torna a crear cada cop que canvien les estacions, per refrescar les dades al mapa
-    val pollutionOverlay = remember(viewModel.stations) {
-        PollutionHelper.createPollutionOverlay(mapView, viewModel.stations)
-    }
+    val pollutionOverlay =
+        remember(viewModel.stations) {
+            PollutionHelper.createPollutionOverlay(mapView, viewModel.stations)
+        }
 
     // Gestió de permissos
     var hasLocationPermission by remember { mutableStateOf(checkInitialLocationPermission(context)) }
@@ -131,16 +132,17 @@ fun osmView(
     }
 
     // Encapsular tot l'estat del mapa en una sola classe per passar-la a la funció de renderitzat
-    val mapState = remember(hasLocationPermission, viewModel.stations, pollutionOverlay) {
-        MapState(
-            mapView = mapView,
-            locationOverlay = locationOverlay,
-            bicingOverlay = bicingOverlay,
-            pollutionOverlay = pollutionOverlay,
-            hasLocationPermission = hasLocationPermission,
-            stations = viewModel.stations
-        )
-    }
+    val mapState =
+        remember(hasLocationPermission, viewModel.stations, pollutionOverlay) {
+            MapState(
+                mapView = mapView,
+                locationOverlay = locationOverlay,
+                bicingOverlay = bicingOverlay,
+                pollutionOverlay = pollutionOverlay,
+                hasLocationPermission = hasLocationPermission,
+                stations = viewModel.stations,
+            )
+        }
     // Funció que pinta el mapa i les capes
     osmMapContainer(
         state = mapState,
@@ -275,7 +277,7 @@ fun osmMapContainer(
                 state.pollutionOverlay.isEnabled = showPollution
 
                 map.invalidate()
-            }
+            },
         )
 
         // Botó per seleccionar les capes
