@@ -10,20 +10,43 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.airgo.airgoApp.map.osmView
 import com.airgo.airgoApp.ui.theme.airGoTheme // Tu tema personalizado
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.airgo.airgoApp.core.theme.airGoTheme
+import com.airgo.airgoApp.features.login.ui.loginScreen
+import com.airgo.airgoApp.features.shell.mainShellScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             airGoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    osmView(
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .padding(innerPadding),
+                var isLoggedIn by rememberSaveable { mutableStateOf(false) }
+                var userEmail by rememberSaveable { mutableStateOf<String?>(null) }
+                var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
+
+                if (isLoggedIn) {
+                    mainShellScreen(
+                        email = userEmail,
+                        pictureUrl = userPictureUrl,
+                        onLogout = {
+                            isLoggedIn = false
+                            userEmail = null
+                            userPictureUrl = null
+                            com.airgo.airgoApp.core.network.SessionManager.accessToken = null
+                        },
                     )
+                } else {
+                    loginScreen { email, pictureUrl ->
+                        userEmail = email
+                        userPictureUrl = pictureUrl
+                        isLoggedIn = true
+                    }
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.ui.theme
+package com.airgo.airgoApp.core.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
