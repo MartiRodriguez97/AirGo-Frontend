@@ -1,8 +1,9 @@
-package com.airgo.airgoApp
+package com.airgo.airgoApp.map
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -35,11 +36,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
+import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
@@ -77,8 +81,7 @@ data class MapState(
 fun osmView(
     modifier: Modifier = Modifier,
     viewModel: PollutionViewModel =
-        androidx.lifecycle.viewmodel.compose
-            .viewModel(),
+        viewModel(),
 ) {
     val context = LocalContext.current
 
@@ -149,7 +152,7 @@ private fun configureMapView(mapView: MapView) {
 
     // Optimització hardware
     mapView.isTilesScaledToDpi = true
-    mapView.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
+    mapView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
     // Limitar el mapa a Barcelona
     mapView.minZoomLevel = MIN_ZOOM
@@ -190,7 +193,7 @@ fun rememberLocationPermissions(onPermissionGranted: (Boolean) -> Unit): () -> U
 /**
  * Comprovar si l'aplicació té permissos de localització
  */
-private fun checkInitialLocationPermission(context: android.content.Context): Boolean =
+private fun checkInitialLocationPermission(context: Context): Boolean =
     ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -223,7 +226,7 @@ fun osmMapContainer(
 
                     // Deseleccionar marcador que s'ha pres, al presinar al mapa
                     val mapEventsReceiver =
-                        object : org.osmdroid.events.MapEventsReceiver {
+                        object : MapEventsReceiver {
                             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
                                 state.bicingOverlay.items.forEach { item ->
                                     if (item is Marker) {
@@ -237,8 +240,7 @@ fun osmMapContainer(
                             override fun longPressHelper(p: GeoPoint?): Boolean = false
                         }
                     val mapEventsOverlay =
-                        org.osmdroid.views.overlay
-                            .MapEventsOverlay(mapEventsReceiver)
+                        MapEventsOverlay(mapEventsReceiver)
                     overlays.add(mapEventsOverlay)
                     overlays.add(state.pollutionOverlay)
                     overlays.add(state.bicingOverlay)

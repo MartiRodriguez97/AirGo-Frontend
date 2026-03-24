@@ -1,4 +1,4 @@
-package com.airgo.airgoApp
+package com.airgo.airgoApp.map
 
 data class PollutionPoint(
     val zone: String,

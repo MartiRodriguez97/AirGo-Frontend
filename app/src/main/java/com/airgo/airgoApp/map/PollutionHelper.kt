@@ -1,4 +1,4 @@
-package com.airgo.airgoApp
+package com.airgo.airgoApp.map
 
 import android.graphics.Color
 import org.osmdroid.util.GeoPoint

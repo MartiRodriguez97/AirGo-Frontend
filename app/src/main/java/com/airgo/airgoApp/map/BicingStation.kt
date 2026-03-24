@@ -1,4 +1,4 @@
-package com.airgo.airgoApp
+package com.airgo.airgoApp.map
 
 import org.osmdroid.util.GeoPoint
 

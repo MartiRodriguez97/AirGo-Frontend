@@ -1,4 +1,4 @@
-package com.airgo.airgoApp
+package com.airgo.airgoApp.map
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -35,9 +35,10 @@ class PollutionViewModel : ViewModel() {
     private val retrofit =
         Retrofit
             .Builder()
-            .baseUrl("http://localhost:8080/")
+            .baseUrl("http://nattech.fib.upc.edu:40330/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
 
     // Creació de la instància del servei de l'API
     private val apiService = retrofit.create(AirQualityApiService::class.java)
