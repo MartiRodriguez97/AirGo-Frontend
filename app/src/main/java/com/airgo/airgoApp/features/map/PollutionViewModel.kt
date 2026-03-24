@@ -14,6 +14,8 @@ import java.io.IOException
 private const val BCN_LAT = 41.3851
 private const val BCN_LON = 2.1734
 
+private const val RADI_BARCELONA = 15.0
+
 private const val LOG_TAG = "PollutionViewModel"
 
 /**
@@ -35,7 +37,7 @@ class PollutionViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 errorMessage = null // Netegem errors previs
-                stations = RetrofitProvider.airQualityApi.getPollutionData(BCN_LAT, BCN_LON)
+                stations = RetrofitProvider.airQualityApi.getPollutionData(BCN_LAT, BCN_LON, RADI_BARCELONA)
                 Log.d("Conexió exitosa", "Nombre d'estacions de qualitat d'aire: ${stations.size} estacions")
             } catch (e: IOException) {
                 errorMessage = "Error de connexió"

@@ -10,12 +10,8 @@ import com.airgo.airgoApp.features.map.osmView
 
 @Composable
 fun activityScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.fillMaxSize()) {
         osmView(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(),
-        )
+            modifier = Modifier.fillMaxSize())
     }
 }

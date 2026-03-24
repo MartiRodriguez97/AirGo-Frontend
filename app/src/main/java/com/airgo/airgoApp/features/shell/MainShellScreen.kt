@@ -76,23 +76,44 @@ fun mainShellScreen(
         NavHost(
             navController = navController,
             startDestination = MainShellScreen.HOME.route,
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            modifier = Modifier.fillMaxSize()
         ) {
-            composable(MainShellScreen.HOME.route) { homeScreen() }
-            composable(MainShellScreen.FORUM.route) { forumScreen() }
-            composable(MainShellScreen.ACTIVITY.route) { activityScreen() }
-            composable(MainShellScreen.MESSAGES.route) { messagesScreen() }
+            composable(MainShellScreen.HOME.route) {
+                ScreenWrapper(innerPadding) { homeScreen() }
+            }
+            composable(MainShellScreen.FORUM.route) {
+                ScreenWrapper(innerPadding) { forumScreen() }
+            }
+            composable(MainShellScreen.ACTIVITY.route) {
+                activityScreen()
+            }
+            composable(MainShellScreen.MESSAGES.route) {
+                ScreenWrapper(innerPadding) { messagesScreen() }
+            }
             composable(MainShellScreen.PROFILE.route) {
-                profileScreen(
-                    email = email,
-                    pictureUrl = pictureUrl,
-                    onAccountDeleted = onLogout,
-                )
+                ScreenWrapper(innerPadding) {
+                    profileScreen(
+                        email = email,
+                        pictureUrl = pictureUrl,
+                        onAccountDeleted = onLogout,
+                    )
+                }
             }
         }
+    }
+}
+
+/**
+ * Funció auxiliar per aplicar el padding a les pantalles que el necessiten (per exemple, avtivityScreen no el necessita)
+ */
+@Composable
+fun ScreenWrapper(innerPadding: androidx.compose.foundation.layout.PaddingValues, content: @Composable () -> Unit) {
+    androidx.compose.foundation.layout.Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        content()
     }
 }
