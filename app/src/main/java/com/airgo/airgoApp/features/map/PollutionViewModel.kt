@@ -6,13 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.core.network.RetrofitProvider
-import com.airgo.airgoApp.core.network.SessionManager
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 private const val BCN_LAT = 41.3851
