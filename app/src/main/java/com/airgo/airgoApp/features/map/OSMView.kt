@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.map
+package com.airgo.airgoApp.features.map
 
 import android.Manifest
 import android.content.Context

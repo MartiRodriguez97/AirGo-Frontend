@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.map
+package com.airgo.airgoApp.features.map
 
 import retrofit2.http.GET
 import retrofit2.http.Query

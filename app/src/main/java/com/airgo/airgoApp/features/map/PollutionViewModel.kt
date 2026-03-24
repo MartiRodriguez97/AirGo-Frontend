@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.map
+package com.airgo.airgoApp.features.map
 
 import android.util.Log
 import androidx.compose.runtime.getValue
