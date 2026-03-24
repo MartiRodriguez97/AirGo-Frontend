@@ -39,7 +39,6 @@ class PollutionViewModel : ViewModel() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-
     // Creació de la instància del servei de l'API
     private val apiService = retrofit.create(AirQualityApiService::class.java)
 
