@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 1. EL PIN (ID: pin_layer) -->
+    <item android:id="@+id/pin_layer">
+        <vector
+            android:width="48dp"
+            android:height="48dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:fillColor="#0081C9"
+                android:pathData="M12,2c-3.87,0 -7,3.13 -7,7 0,5.25 7,13 7,13s7,-7.75 7,-13c0,-3.87 -3.13,-7 -7,-7z" />
+        </vector>
+    </item>
+
+    <!-- 2. EL CERCLE BLANC -->
+    <item
+        android:width="20dp"
+        android:height="20dp"
+        android:gravity="top|center_horizontal"
+        android:top="8dp">
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- 3. LA BICICLETA (ID: bike_layer) -->
+    <item
+        android:id="@+id/bike_layer"
+        android:width="12dp"
+        android:height="12dp"
+        android:drawable="@drawable/ic_bike_blue"
+        android:gravity="top|center_horizontal"
+        android:top="12dp" />
+
+</layer-list>
