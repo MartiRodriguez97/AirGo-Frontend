@@ -2,6 +2,7 @@ package com.airgo.airgoApp.core.network
 
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.features.login.data.auth.AuthApi
+import com.airgo.airgoApp.features.map.AirQualityApiService
 import com.airgo.airgoApp.features.profile.data.ProfileApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -36,4 +37,5 @@ object RetrofitProvider {
 
     val authApi: AuthApi = retrofit.create(AuthApi::class.java)
     val profileApi: ProfileApi = retrofit.create(ProfileApi::class.java)
+    val airQualityApi: AirQualityApiService = retrofit.create(AirQualityApiService::class.java)
 }
