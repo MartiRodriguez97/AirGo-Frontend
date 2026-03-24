@@ -36,6 +36,7 @@ class PollutionViewModel : ViewModel() {
             try {
                 errorMessage = null // Netegem errors previs
                 stations = RetrofitProvider.airQualityApi.getPollutionData(BCN_LAT, BCN_LON)
+                Log.d("Conexió exitosa", "Nombre d'estacions de qualitat d'aire: ${stations.size} estacions")
             } catch (e: IOException) {
                 errorMessage = "Error de connexió"
                 Log.e(LOG_TAG, "Network failure", e)
