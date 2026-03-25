@@ -1,17 +1,16 @@
 package com.airgo.airgoApp.features.profile
 
 import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
@@ -44,7 +47,16 @@ import com.airgo.airgoApp.features.profile.components.deleteAccountSection
 import com.airgo.airgoApp.features.profile.components.profileUserInfoCard
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
+import com.airgo.airgoApp.features.settings.account.accountSettingsScreen
 import com.airgo.airgoApp.features.settings.settingsScreen
+
+enum class ProfileNestedRoute(
+    val route: String,
+) {
+    HOME("profile_home"),
+    SETTINGS("settings"),
+    ACCOUNT_SETTINGS("account_settings"),
+}
 
 data class ProfileScreen(
     val displayName: String,
@@ -61,8 +73,9 @@ fun profileScreen(
     viewModel: ProfileViewModel = viewModel(),
     onAccountDeleted: () -> Unit,
 ) {
+    val profileNavController = rememberNavController()
+
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var showSettings by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
     var currentPictureUrl by remember { mutableStateOf(SessionManager.profilePictureUrl ?: pictureUrl) }
     val context = LocalContext.current
@@ -99,14 +112,12 @@ fun profileScreen(
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        profileScreenAnimatedContent(
-            isSettingsVisible = showSettings,
+        profileNavGraph(
+            navController = profileNavController,
             profileInfo = profileInfo,
             uiState = uiState,
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
-            onDeleteClicked = { showDeleteDialog = true },
-            onSettingsClick = { showSettings = true },
-            onSettingsBack = { showSettings = false },
+            onShowDeleteDialog = { showDeleteDialog = true },
         )
     }
 
@@ -141,51 +152,6 @@ private fun profileScreenLaunchedEffect(
                 onResetUiState()
             }
             else -> {}
-        }
-    }
-}
-
-@Composable
-private fun profileScreenAnimatedContent(
-    isSettingsVisible: Boolean,
-    profileInfo: ProfileScreen,
-    uiState: ProfileUiState,
-    singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
-    onDeleteClicked: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onSettingsBack: () -> Unit,
-) {
-    AnimatedContent(
-        targetState = isSettingsVisible,
-        transitionSpec = {
-            if (targetState) {
-                (slideInHorizontally { fullWidth -> fullWidth } + fadeIn()).togetherWith(
-                    slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut(),
-                )
-            } else {
-                (slideInHorizontally { fullWidth -> -fullWidth } + fadeIn()).togetherWith(
-                    slideOutHorizontally { fullWidth -> fullWidth } + fadeOut(),
-                )
-            }
-        },
-        label = "profile-settings",
-    ) { showSettings ->
-        if (!showSettings) {
-            showProfileInfo(
-                profileInfo = profileInfo,
-                uiState = uiState,
-                singlePhotoPickerLauncher = singlePhotoPickerLauncher,
-                onDeleteClicked = onDeleteClicked,
-                onSettingsClick = onSettingsClick,
-            )
-        } else {
-            settingsScreen(
-                email = profileInfo.email,
-                displayName = profileInfo.displayName,
-                pictureUrl = profileInfo.currentPictureUrl,
-                initial = profileInfo.initial,
-                onBackClick = onSettingsBack,
-            )
         }
     }
 }
@@ -289,6 +255,68 @@ private fun showProfileInfoSettingsButton(onSettingsClick: () -> Unit) {
             Icon(
                 imageVector = Icons.Outlined.Settings,
                 contentDescription = "Settings",
+            )
+        }
+    }
+}
+
+@Composable
+fun profileNavGraph(
+    navController: NavHostController,
+    profileInfo: ProfileScreen,
+    uiState: ProfileUiState,
+    singlePhotoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, android.net.Uri?>,
+    onShowDeleteDialog: () -> Unit,
+) {
+    NavHost(
+        navController = navController,
+        startDestination = ProfileNestedRoute.HOME.route,
+    ) {
+        // main profile view
+        composable(
+            route = ProfileNestedRoute.HOME.route,
+            enterTransition = { slideInHorizontally { -it } + fadeIn() },
+            exitTransition = { slideOutHorizontally { -it } + fadeOut() },
+        ) {
+            showProfileInfo(
+                profileInfo = profileInfo,
+                uiState = uiState,
+                singlePhotoPickerLauncher = singlePhotoPickerLauncher,
+                onDeleteClicked = onShowDeleteDialog,
+                onSettingsClick = {
+                    navController.navigate(ProfileNestedRoute.SETTINGS.route)
+                },
+            )
+        }
+        // Settings main menu
+        composable(
+            route = ProfileNestedRoute.SETTINGS.route,
+            enterTransition = { slideInHorizontally { it } + fadeIn() },
+            exitTransition = { slideOutHorizontally { -it } + fadeOut() },
+            popEnterTransition = { slideInHorizontally { -it } + fadeIn() },
+            popExitTransition = { slideOutHorizontally { it } + fadeOut() },
+        ) {
+            settingsScreen(
+                email = profileInfo.email,
+                displayName = profileInfo.displayName,
+                pictureUrl = profileInfo.currentPictureUrl,
+                initial = profileInfo.initial,
+                onBackClick = { navController.popBackStack() },
+                onAccountSettingsClick = {
+                    // Navigate to Account Settings
+                    navController.navigate(ProfileNestedRoute.ACCOUNT_SETTINGS.route)
+                },
+            )
+        }
+        // account settings
+        composable(
+            route = ProfileNestedRoute.ACCOUNT_SETTINGS.route,
+            enterTransition = { slideInHorizontally { it } + fadeIn() },
+            popExitTransition = { slideOutHorizontally { it } + fadeOut() },
+        ) {
+            accountSettingsScreen(
+                displayName = profileInfo.displayName,
+                onBackClick = { navController.popBackStack() }, // Go back
             )
         }
     }

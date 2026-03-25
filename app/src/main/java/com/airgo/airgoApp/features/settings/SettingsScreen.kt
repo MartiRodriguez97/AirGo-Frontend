@@ -3,12 +3,6 @@ package com.airgo.airgoApp.features.settings
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,9 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +36,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.airgo.airgoApp.features.settings.account.accountSettingsScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -55,53 +47,20 @@ fun settingsScreen(
     pictureUrl: String?,
     initial: String,
     onBackClick: () -> Unit,
+    onAccountSettingsClick: () -> Unit,
 ) {
-    var showAccountSettings by remember { mutableStateOf(false) }
-    var displayName by remember { mutableStateOf(displayName) }
-
     BackHandler {
         onBackClick()
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AnimatedContent(
-            targetState = showAccountSettings,
-            transitionSpec = {
-                if (targetState) {
-                    (slideInHorizontally { fullWidth -> fullWidth } + fadeIn()).togetherWith(
-                        slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut(),
-                    )
-                } else {
-                    (slideInHorizontally { fullWidth -> -fullWidth } + fadeIn()).togetherWith(
-                        slideOutHorizontally { fullWidth -> fullWidth } + fadeOut(),
-                    )
-                }
-            },
-            label = "account-settings-transition",
-        ) { isAccountSettingsVisible ->
-            if (!isAccountSettingsVisible) {
-                settingsMainContent(
-                    email = email,
-                    displayName = displayName,
-                    pictureUrl = pictureUrl,
-                    initial = initial,
-                    onBackClick = {
-                        if (showAccountSettings) {
-                            showAccountSettings = false
-                        } else {
-                            onBackClick()
-                        }
-                    },
-                    onAccountSettingsClick = { showAccountSettings = true },
-                )
-            } else {
-                accountSettingsScreen(
-                    displayName = displayName,
-                    onBackClick = { showAccountSettings = false },
-                )
-            }
-        }
-    }
+    settingsMainContent(
+        email = email,
+        displayName = displayName,
+        pictureUrl = pictureUrl,
+        initial = initial,
+        onBackClick = onBackClick,
+        onAccountSettingsClick = onAccountSettingsClick,
+    )
 }
 
 @Composable
@@ -269,12 +228,12 @@ private fun settingsAccountOption(onAccountSettingsClick: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            text = "Tu cuenta",
+            text = "El teu compte",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
         )
         Icon(
-            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+            imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
             contentDescription = "Go to account settings",
             modifier = Modifier.size(24.dp),
         )

@@ -61,7 +61,7 @@ fun editUsernameScreen(
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "Nombre de usuario",
+                text = "Nom d'usuari",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
             )
