@@ -79,19 +79,19 @@ fun mainShellScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             composable(MainShellScreen.HOME.route) {
-                ScreenWrapper(innerPadding) { homeScreen() }
+                screenWrapper(innerPadding) { homeScreen() }
             }
             composable(MainShellScreen.FORUM.route) {
-                ScreenWrapper(innerPadding) { forumScreen() }
+                screenWrapper(innerPadding) { forumScreen() }
             }
             composable(MainShellScreen.ACTIVITY.route) {
                 activityScreen()
             }
             composable(MainShellScreen.MESSAGES.route) {
-                ScreenWrapper(innerPadding) { messagesScreen() }
+                screenWrapper(innerPadding) { messagesScreen() }
             }
             composable(MainShellScreen.PROFILE.route) {
-                ScreenWrapper(innerPadding) {
+                screenWrapper(innerPadding) {
                     profileScreen(
                         email = email,
                         pictureUrl = pictureUrl,
