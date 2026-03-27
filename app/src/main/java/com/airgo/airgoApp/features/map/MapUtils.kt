@@ -3,8 +3,11 @@ package com.airgo.airgoApp.features.map
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.drawable.LayerDrawable
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import com.airgo.airgoApp.R
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -97,14 +100,21 @@ private fun createRouteMarker(
     map: MapView,
     point: GeoPoint,
     color: Int,
-): Marker =
-    Marker(map).apply {
+): Marker {
+    val marker = Marker(map).apply {
         position = point
         title = "RouteMarker"
-        icon = ContextCompat.getDrawable(map.context, org.osmdroid.library.R.drawable.marker_default)
-        icon?.setTint(color)
+        icon = ContextCompat.getDrawable(map.context, R.drawable.ic_route_marker)?.mutate()
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
     }
+    (marker.icon as? LayerDrawable)?.let { layer ->
+        val pin = layer.findDrawableByLayerId(R.id.pin_layer)
+        pin?.let { DrawableCompat.setTint(it, color) }
+    }
+
+    return marker
+}
+
 
 /**
  * Funció per dibuixar els pins d'inici i destí i la ruta al mapa.
