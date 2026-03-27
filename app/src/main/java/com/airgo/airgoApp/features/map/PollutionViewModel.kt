@@ -17,6 +17,8 @@ private const val BCN_LON = 2.1734
 
 private const val LOG_TAG = "PollutionViewModel"
 
+enum class MapSelectionMode { NONE, START, END }
+
 /**
  * ViewModel per gestionar les dades de contaminació.
  * S'encarrega de fer la crida a l'API i mantenir l'estat de les estacions.

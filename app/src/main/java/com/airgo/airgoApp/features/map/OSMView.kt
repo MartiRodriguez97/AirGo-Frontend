@@ -2,8 +2,6 @@ package com.airgo.airgoApp.features.map
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -28,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,16 +34,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.osmdroid.config.Configuration
-import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
-import org.osmdroid.views.overlay.MapEventsOverlay
-import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
@@ -57,31 +52,35 @@ private const val MEGABYTES_TO_BYTES = 1024L * 1024L
 private const val MAX_CACHE_MB = 100L
 private const val MAX_CACHE_BYTES = MAX_CACHE_MB * MEGABYTES_TO_BYTES
 
-// Límits del mapa
-private const val LAT_NORTH = 41.47
-private const val LAT_SOUTH = 41.31
-private const val LNG_WEST = 2.0
-private const val LNG_EAST = 2.3
-
-private const val MIN_ZOOM = 12.0
-private const val MAX_ZOOM = 19.0
-
-private const val CACHE_CAPACITY = 120
-
-// Classe per encapsular l'estat del mapa i les capes
+/**
+ * Classe que encapsula tot l'estat necessari per renderitzar el mapa i les seves capes.
+ */
 data class MapState(
     val mapView: MapView,
     val locationOverlay: MyLocationNewOverlay,
     val bicingOverlay: FolderOverlay,
     val pollutionOverlay: FolderOverlay,
     val hasLocationPermission: Boolean,
+    val stations: List<PollutionPoint>,
+    val selectionMode: MapSelectionMode,
+    val startPoint: org.osmdroid.util.GeoPoint?,
+    val endPoint: org.osmdroid.util.GeoPoint?,
+    val currentRoute: RouteResponse?,
+    val onPointSelected: (org.osmdroid.util.GeoPoint) -> Unit,
+    val onCalculateRoute: () -> Unit,
+    val onClearRoute: () -> Unit,
+    val onSetSelectionMode: (MapSelectionMode) -> Unit,
 )
 
+/**
+ * Composable principal que mostra el mapa i les capes.
+ * Gestiona els permissos, la configuració del mapa i la interacció amb el ViewModel.
+ */
 @Composable
 fun osmView(
     modifier: Modifier = Modifier,
-    viewModel: PollutionViewModel =
-        viewModel(),
+    pollutionViewModel: PollutionViewModel = viewModel(),
+    routeViewModel: RouteViewModel = viewModel(),
 ) {
     val context = LocalContext.current
 
@@ -108,8 +107,8 @@ fun osmView(
 
     // Capa de contaminació
     val pollutionOverlay =
-        remember(viewModel.stations) {
-            PollutionHelper.createPollutionOverlay(mapView, viewModel.stations)
+        remember(pollutionViewModel.stations) {
+            PollutionHelper.createPollutionOverlay(mapView, pollutionViewModel.stations)
         }
 
     // Gestió de permissos
@@ -119,7 +118,7 @@ fun osmView(
     // Si no tenia permissos, demanar-los
     LaunchedEffect(Unit) {
         if (!hasLocationPermission) requestLocationPermission()
-        viewModel.fetchBarcelonaData()
+        pollutionViewModel.fetchBarcelonaData()
     }
 
     // Desactivar les capes quan se surt de la pantalla
@@ -132,33 +131,36 @@ fun osmView(
 
     // Encapsular tot l'estat del mapa en una sola classe per passar-la a la funció de renderitzat
     val mapState =
-        remember(hasLocationPermission) {
-            MapState(mapView, locationOverlay, bicingOverlay, pollutionOverlay, hasLocationPermission)
+        remember(
+            hasLocationPermission,
+            pollutionViewModel.stations,
+            routeViewModel.selectionMode,
+            routeViewModel.startPoint,
+            routeViewModel.endPoint,
+            routeViewModel.currentRoute,
+        ) {
+            MapState(
+                mapView = mapView,
+                locationOverlay = locationOverlay,
+                bicingOverlay = bicingOverlay,
+                pollutionOverlay = pollutionOverlay,
+                hasLocationPermission = hasLocationPermission,
+                stations = pollutionViewModel.stations,
+                selectionMode = routeViewModel.selectionMode,
+                startPoint = routeViewModel.startPoint,
+                endPoint = routeViewModel.endPoint,
+                currentRoute = routeViewModel.currentRoute,
+                onPointSelected = { routeViewModel.onPointSelected(it) },
+                onCalculateRoute = { routeViewModel.calculateRoute() },
+                onClearRoute = { routeViewModel.clearRoute() },
+                onSetSelectionMode = { routeViewModel.selectionMode = it },
+            )
         }
     // Funció que pinta el mapa i les capes
     osmMapContainer(
         state = mapState,
         modifier = modifier,
     )
-}
-
-/**
- * Configuració de la vista del mapa
- */
-private fun configureMapView(mapView: MapView) {
-    // Utilitzar més cache per evitar veure el mapa pixelat
-    val cache = mapView.tileProvider.tileCache
-    cache?.ensureCapacity(CACHE_CAPACITY)
-
-    // Optimització hardware
-    mapView.isTilesScaledToDpi = true
-    mapView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-
-    // Limitar el mapa a Barcelona
-    mapView.minZoomLevel = MIN_ZOOM
-    mapView.maxZoomLevel = MAX_ZOOM
-    mapView.setScrollableAreaLimitLatitude(LAT_NORTH, LAT_SOUTH, 0)
-    mapView.setScrollableAreaLimitLongitude(LNG_WEST, LNG_EAST, 0)
 }
 
 /**
@@ -191,15 +193,6 @@ fun rememberLocationPermissions(onPermissionGranted: (Boolean) -> Unit): () -> U
 }
 
 /**
- * Comprovar si l'aplicació té permissos de localització
- */
-private fun checkInitialLocationPermission(context: Context): Boolean =
-    ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-    ) == PackageManager.PERMISSION_GRANTED
-
-/**
  * Funció per pintar el mapa
  */
 @Composable
@@ -212,11 +205,33 @@ fun osmMapContainer(
     // Variable per saber si s'activa/desactiva la capa de qualitat de l'aire
     var showPollution by remember { mutableStateOf(true) }
 
+    val selectionModeState = rememberUpdatedState(state.selectionMode)
+    val onPointSelectedState = rememberUpdatedState(state.onPointSelected)
+
+    val context = LocalContext.current
+    var isGpsOff by remember { mutableStateOf(!isGpsEnabled(context)) }
+    DisposableEffect(context) {
+        val reciver =
+            object : android.content.BroadcastReceiver() {
+                override fun onReceive(
+                    context: Context?,
+                    intent: android.content.Intent?,
+                ) {
+                    if (intent?.action == android.location.LocationManager.PROVIDERS_CHANGED_ACTION) {
+                        isGpsOff = !isGpsEnabled(context!!)
+                    }
+                }
+            }
+        val filter = android.content.IntentFilter(android.location.LocationManager.PROVIDERS_CHANGED_ACTION)
+        context.registerReceiver(reciver, filter)
+        onDispose { context.unregisterReceiver(reciver) }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         // Pont entre OSM i Jetpack Compose
         AndroidView(
-            modifier = modifier,
-            factory = {
+            modifier = modifier.fillMaxSize(),
+            factory = { context ->
                 state.mapView.apply {
                     setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
                     setMultiTouchControls(true) // Zoom amb dos dits
@@ -224,31 +239,20 @@ fun osmMapContainer(
                     // Centrar inicialment a un punt definit
                     controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE))
 
-                    // Deseleccionar marcador que s'ha pres, al presinar al mapa
-                    val mapEventsReceiver =
-                        object : MapEventsReceiver {
-                            override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
-                                state.bicingOverlay.items.forEach { item ->
-                                    if (item is Marker) {
-                                        item.closeInfoWindow()
-                                        if (item is BicingHelper.BicingMarker) item.setSelected(false, state.mapView)
-                                    }
-                                }
-                                return true
-                            }
-
-                            override fun longPressHelper(p: GeoPoint?): Boolean = false
-                        }
-                    val mapEventsOverlay =
-                        MapEventsOverlay(mapEventsReceiver)
-                    overlays.add(mapEventsOverlay)
                     overlays.add(state.pollutionOverlay)
+                    val eventsOverlay =
+                        createMapEventsOverlay(
+                            mapView = this,
+                            bicingOverlay = state.bicingOverlay,
+                            selectionModeProvider = { selectionModeState.value },
+                            onPointSelectedProvider = { onPointSelectedState.value },
+                        )
+                    overlays.add(eventsOverlay)
                     overlays.add(state.bicingOverlay)
                     overlays.add(state.locationOverlay)
                 }
             },
             update = { map ->
-                map.onResume()
                 // Refrescar la ubicació
                 if (state.hasLocationPermission && !state.locationOverlay.isMyLocationEnabled) {
                     state.locationOverlay.enableMyLocation()
@@ -257,7 +261,24 @@ fun osmMapContainer(
                 // Mostrar o ocultar les capes segons les variables d'estat
                 state.bicingOverlay.isEnabled = showBicing
                 state.pollutionOverlay.isEnabled = showPollution
+
+                // Actualitzar la ruta i els punts d'inici/destí
+                updateRouteElements(map, state)
+
+                map.invalidate()
             },
+        )
+
+        if (isGpsOff) {
+            gpsDisabledWarning(
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 220.dp), // Sota el panell de rutes
+            )
+        }
+
+        // Panell de selecció de ruta
+        routeSelectionPanel(
+            state = state,
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 30.dp),
         )
 
         // Botó per seleccionar les capes
@@ -270,6 +291,10 @@ fun osmMapContainer(
     }
 }
 
+/**
+ * Composable per al selector de capes, on l'usuari pot activar o desactivar les capes de Bicing i qualitat de l'aire.
+ * Activa i desactiva un menú desplegable amb les opcions de capes.
+ */
 @Composable
 private fun BoxScope.layerSelector(
     showBicing: Boolean,
