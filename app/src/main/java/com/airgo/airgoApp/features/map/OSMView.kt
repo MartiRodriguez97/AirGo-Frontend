@@ -75,6 +75,7 @@ data class MapState(
     val bicingOverlay: FolderOverlay,
     val pollutionOverlay: FolderOverlay,
     val hasLocationPermission: Boolean,
+    val stations: List<PollutionPoint>,
 )
 
 @Composable
@@ -106,7 +107,7 @@ fun osmView(
     // Capa de Bicing
     val bicingOverlay = remember { BicingHelper.createBicingOverlay(context, mapView) }
 
-    // Capa de contaminació
+    // Capa de contaminació. Es torna a crear cada cop que canvien les estacions, per refrescar les dades al mapa
     val pollutionOverlay =
         remember(viewModel.stations) {
             PollutionHelper.createPollutionOverlay(mapView, viewModel.stations)
@@ -116,7 +117,7 @@ fun osmView(
     var hasLocationPermission by remember { mutableStateOf(checkInitialLocationPermission(context)) }
     val requestLocationPermission = rememberLocationPermissions { granted -> hasLocationPermission = granted }
 
-    // Si no tenia permissos, demanar-los
+    // Demanar permisos i carregar les dades de Barcelona al iniciar la pantalla
     LaunchedEffect(Unit) {
         if (!hasLocationPermission) requestLocationPermission()
         viewModel.fetchBarcelonaData()
@@ -132,8 +133,15 @@ fun osmView(
 
     // Encapsular tot l'estat del mapa en una sola classe per passar-la a la funció de renderitzat
     val mapState =
-        remember(hasLocationPermission) {
-            MapState(mapView, locationOverlay, bicingOverlay, pollutionOverlay, hasLocationPermission)
+        remember(hasLocationPermission, viewModel.stations, pollutionOverlay) {
+            MapState(
+                mapView = mapView,
+                locationOverlay = locationOverlay,
+                bicingOverlay = bicingOverlay,
+                pollutionOverlay = pollutionOverlay,
+                hasLocationPermission = hasLocationPermission,
+                stations = viewModel.stations,
+            )
         }
     // Funció que pinta el mapa i les capes
     osmMapContainer(
@@ -239,24 +247,36 @@ fun osmMapContainer(
 
                             override fun longPressHelper(p: GeoPoint?): Boolean = false
                         }
+                    // Capa per detectar els taps al mapa i deseleccionar els marcadors
                     val mapEventsOverlay =
                         MapEventsOverlay(mapEventsReceiver)
                     overlays.add(mapEventsOverlay)
-                    overlays.add(state.pollutionOverlay)
                     overlays.add(state.bicingOverlay)
                     overlays.add(state.locationOverlay)
                 }
             },
             update = { map ->
                 map.onResume()
-                // Refrescar la ubicació
+
+                // Eliminar la capa de contaminació anterior per evitar duplicats quan arriben dades noves
+                map.overlays.removeAll { it is FolderOverlay && it.name == "PollutionFolder" }
+
+                // Quan arriben les dades de contaminació, crear una nova capa i afegir-la al mapa
+                if (state.stations.isNotEmpty()) {
+                    state.pollutionOverlay.name = "PollutionFolder"
+                    if (!map.overlays.contains(state.pollutionOverlay)) {
+                        map.overlays.add(0, state.pollutionOverlay)
+                    }
+                    map.invalidate()
+                }
                 if (state.hasLocationPermission && !state.locationOverlay.isMyLocationEnabled) {
                     state.locationOverlay.enableMyLocation()
-                    state.locationOverlay.enableFollowLocation()
                 }
                 // Mostrar o ocultar les capes segons les variables d'estat
                 state.bicingOverlay.isEnabled = showBicing
                 state.pollutionOverlay.isEnabled = showPollution
+
+                map.invalidate()
             },
         )
 
