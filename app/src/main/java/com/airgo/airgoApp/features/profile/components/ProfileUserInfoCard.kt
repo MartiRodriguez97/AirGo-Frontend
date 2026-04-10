@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun profileUserInfoCard(
     displayName: String,
-    email: String?,
+    titol: String?,
     pictureUrl: String?,
     initial: String,
     isUpdatingPicture: Boolean,
@@ -40,7 +40,7 @@ fun profileUserInfoCard(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = email ?: "Sense correu disponible",
+            text = titol ?: "Sin título",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

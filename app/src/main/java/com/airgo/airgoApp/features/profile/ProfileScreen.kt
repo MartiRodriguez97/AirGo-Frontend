@@ -62,6 +62,7 @@ enum class ProfileNestedRoute(
 data class ProfileScreen(
     val displayName: String,
     val email: String?,
+    val titol: String?,
     val currentPictureUrl: String?,
     val initial: String,
 )
@@ -84,16 +85,17 @@ fun profileScreen(
     // Dynamic values from SessionManager or arguments
     val currentPictureUrl = SessionManager.profilePictureUrl ?: pictureUrl
     val context = LocalContext.current
-    val displayName =
-        SessionManager.displayName
-            ?: email?.substringBefore('@')
-            ?: "Usuario"
+    val displayName = SessionManager.displayName
+        ?: email?.substringBefore('@')?.replaceFirstChar { it.uppercase() }
+        ?: "Usuario"
+    val titol = SessionManager.titol ?: "Velocista nato"
     val initial = displayName.firstOrNull()?.toString() ?: "U"
 
     val profileInfo =
         ProfileScreen(
             displayName = displayName,
             email = email,
+            titol = titol,
             currentPictureUrl = currentPictureUrl,
             initial = initial,
         )
@@ -212,7 +214,7 @@ private fun showProfileInfoContent(
     ) {
         profileUserInfoCard(
             displayName = profileInfo.displayName,
-            email = profileInfo.email,
+            titol = profileInfo.titol,
             pictureUrl = profileInfo.currentPictureUrl,
             initial = profileInfo.initial,
             isUpdatingPicture = uiState is ProfileUiState.PictureUpdateLoading,

@@ -63,36 +63,7 @@ class LoginViewModel : ViewModel() {
                     com.airgo.airgoApp.core.network.SessionManager.email = body.user
 
                     if (body.user != null) {
-                        try {
-                            val userResponse = RetrofitProvider.authApi.searchUsers(body.user)
-                            if (userResponse.isSuccessful && userResponse.body() != null) {
-                                val usersList = userResponse.body()!!
-                                Log.d("LoginViewModel", "Respuesta GET Usuarios: $usersList")
-                                if (usersList.isNotEmpty()) {
-                                    val userDetails = usersList[0]
-                                    Log.d("LoginViewModel", "Usuario extraido: $userDetails")
-                                    val session = com.airgo.airgoApp.core.network.SessionManager
-                                    session.userId = userDetails.id
-                                    session.displayName = userDetails.username
-                                    session.profilePictureUrl = userDetails.profilePic
-                                } else {
-                                    Log.w(
-                                        "LoginViewModel",
-                                        "La lista de usuarios vino vacía para ${body.user}",
-                                    )
-                                }
-                            } else {
-                                val errBody = userResponse.errorBody()?.string()
-                                Log.e(
-                                    "LoginViewModel",
-                                    "Error (HTTP ${userResponse.code()}): $errBody",
-                                )
-                            }
-                        } catch (e: java.io.IOException) {
-                            Log.e("LoginViewModel", "IO Error fetching user details", e)
-                        } catch (e: retrofit2.HttpException) {
-                            Log.e("LoginViewModel", "HTTP Error fetching user details", e)
-                        }
+                        fetchAndSaveUserDetails(body.user)
                     }
 
                     _uiState.value =
@@ -120,6 +91,46 @@ class LoginViewModel : ViewModel() {
             } catch (_: IllegalStateException) {
                 _uiState.value = LoginUiState.Error("Respuesta invalida del servidor")
             }
+        }
+    }
+
+    private suspend fun fetchAndSaveUserDetails(email: String) {
+        try {
+            val userResponse = RetrofitProvider.authApi.searchUsers(email)
+            if (!userResponse.isSuccessful || userResponse.body() == null) {
+                val errBody = userResponse.errorBody()?.string()
+                Log.e("LoginViewModel", "Error (HTTP ${userResponse.code()}): $errBody")
+                return
+            }
+
+            val usersList = userResponse.body()!!
+            Log.d("LoginViewModel", "Respuesta GET Usuarios: $usersList")
+
+            if (usersList.isEmpty()) {
+                Log.w("LoginViewModel", "La lista de usuarios vino vacía para $email")
+                return
+            }
+
+            val userDetails = usersList[0]
+            Log.d("LoginViewModel", "Usuario extraido: $userDetails")
+            saveUserDetailsToSession(userDetails)
+
+        } catch (e: java.io.IOException) {
+            Log.e("LoginViewModel", "IO Error fetching user details", e)
+        } catch (e: retrofit2.HttpException) {
+            Log.e("LoginViewModel", "HTTP Error fetching user details", e)
+        }
+    }
+
+    private fun saveUserDetailsToSession(
+        userDetails: com.airgo.airgoApp.features.login.data.auth.UserDetailResponse
+    ) {
+        val session = com.airgo.airgoApp.core.network.SessionManager
+        session.userId = userDetails.id
+        session.displayName = userDetails.username
+        session.profilePictureUrl = userDetails.profilePic
+        if (userDetails.titol.isNotBlank()) {
+            session.titol = userDetails.titol
         }
     }
 

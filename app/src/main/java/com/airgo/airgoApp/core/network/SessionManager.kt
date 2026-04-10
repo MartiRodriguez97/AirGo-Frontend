@@ -7,4 +7,5 @@ object SessionManager {
     var displayName: String? = null
     var userId: Int? = null
     var email: String? = null
+    var titol: String? = "Velocista nato"
 }

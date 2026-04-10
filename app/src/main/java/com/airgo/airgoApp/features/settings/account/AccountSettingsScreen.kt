@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 
 @Composable
@@ -45,20 +46,25 @@ fun accountSettingsScreen(
     displayName: String,
     onBackClick: () -> Unit,
 ) {
-    var showEditUsername by remember { mutableStateOf(false) }
+    var screenState by remember { mutableStateOf("MAIN") }
     // Update local state, initialize with parameters or SessionManager
     var currentDisplayName by remember { mutableStateOf(SessionManager.displayName ?: displayName) }
+    var currentTitol by remember { mutableStateOf(SessionManager.titol ?: "Velocista nato") }
     var isEnabled by remember { mutableStateOf(false) }
 
     BackHandler {
-        onBackClick()
+        if (screenState != "MAIN") {
+            screenState = "MAIN"
+        } else {
+            onBackClick()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedContent(
-            targetState = showEditUsername,
+            targetState = screenState,
             transitionSpec = {
-                if (showEditUsername) {
+                if (targetState != "MAIN") {
                     // Profile -> Settings
                     (slideInHorizontally { fullWidth -> fullWidth } + fadeIn()).togetherWith(
                         slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut(),
@@ -70,24 +76,38 @@ fun accountSettingsScreen(
                     )
                 }
             },
-            label = "edit-username-transition",
-        ) { isEditUsernameVisible ->
-            if (!isEditUsernameVisible) {
-                accountSettingsContent(
-                    displayName = currentDisplayName,
-                    isEnabled = isEnabled,
-                    onBicycleToggle = { isEnabled = it },
-                    onEditUsername = { showEditUsername = true },
-                    onBackClick = onBackClick,
-                )
-            } else {
-                editUsernameScreen(
-                    displayName = currentDisplayName,
-                    onBackClick = { showEditUsername = false },
-                    onSave = { newName ->
-                        currentDisplayName = newName
-                    },
-                )
+            label = "settings-transition",
+        ) { state ->
+            when (state) {
+                "MAIN" -> {
+                    accountSettingsContent(
+                        displayName = currentDisplayName,
+                        titol = currentTitol,
+                        isEnabled = isEnabled,
+                        onBicycleToggle = { isEnabled = it },
+                        onEditUsername = { screenState = "EDIT_USERNAME" },
+                        onEditTitol = { screenState = "EDIT_TITOL" },
+                        onBackClick = onBackClick,
+                    )
+                }
+                "EDIT_USERNAME" -> {
+                    editUsernameScreen(
+                        displayName = currentDisplayName,
+                        onBackClick = { screenState = "MAIN" },
+                        onSave = { newName ->
+                            currentDisplayName = newName
+                        },
+                    )
+                }
+                "EDIT_TITOL" -> {
+                    editTitolScreen(
+                        currentTitol = currentTitol,
+                        onBackClick = { screenState = "MAIN" },
+                        onSave = { newTitol ->
+                            currentTitol = newTitol
+                        }
+                    )
+                }
             }
         }
     }
@@ -96,9 +116,11 @@ fun accountSettingsScreen(
 @Composable
 private fun accountSettingsContent(
     displayName: String,
+    titol: String,
     isEnabled: Boolean,
     onBicycleToggle: (Boolean) -> Unit,
     onEditUsername: () -> Unit,
+    onEditTitol: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     Column(
@@ -115,6 +137,14 @@ private fun accountSettingsContent(
         usernameRow(
             displayName = displayName,
             onEditUsername = onEditUsername,
+        )
+        HorizontalDivider(
+            thickness = DividerDefaults.Thickness,
+            color = DividerDefaults.color,
+        )
+        titolRow(
+            titol = titol,
+            onEditTitol = onEditTitol,
         )
         HorizontalDivider(
             thickness = DividerDefaults.Thickness,
@@ -176,6 +206,39 @@ private fun usernameRow(
         )
         Text(
             text = displayName,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.ArrowForwardIos,
+            contentDescription = "Editar",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(16.dp),
+        )
+    }
+}
+
+@Composable
+private fun titolRow(
+    titol: String,
+    onEditTitol: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onEditTitol() }
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Títulos",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = titol,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
