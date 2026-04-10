@@ -43,7 +43,7 @@ class UsernameViewModel : ViewModel() {
                     return@launch
                 }
 
-                val url = ApiEndpoints.getChangeUsernameEndpoint(userId)
+                val url = ApiEndpoints.getChangeUserInfoEndpoint(userId)
                 val response =
                     RetrofitProvider.usernameApi.changeUsername(
                         url,

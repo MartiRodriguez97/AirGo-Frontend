@@ -37,19 +37,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 
 @Composable
 fun accountSettingsScreen(
     displayName: String,
     onBackClick: () -> Unit,
+    teBiciViewModel: TeBiciViewModel = viewModel(),
 ) {
+    val session = com.airgo.airgoApp.core.network.SessionManager
     var showEditUsername by remember { mutableStateOf(false) }
     // Update local state, initialize with parameters or SessionManager
     var currentDisplayName by remember { mutableStateOf(SessionManager.username ?: displayName) }
-    var isEnabled by remember { mutableStateOf(false) }
-
+    var isBikeAvailable by remember {
+        mutableStateOf(session.teBici ?: false) // Ajusta según tu lógica
+    }
     BackHandler {
         onBackClick()
     }
@@ -75,8 +80,10 @@ fun accountSettingsScreen(
             if (!isEditUsernameVisible) {
                 accountSettingsContent(
                     displayName = currentDisplayName,
-                    isEnabled = isEnabled,
-                    onBicycleToggle = { isEnabled = it },
+                    isEnabled = isBikeAvailable,
+                    onBicycleToggle = { newValue -> isBikeAvailable = newValue
+                                      teBiciViewModel.updateBikeAvailability(newValue)
+                    },
                     onEditUsername = { showEditUsername = true },
                     onBackClick = onBackClick,
                 )
