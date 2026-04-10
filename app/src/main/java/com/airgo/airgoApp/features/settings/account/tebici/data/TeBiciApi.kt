@@ -4,7 +4,7 @@ import retrofit2.http.Body
 import retrofit2.http.PATCH
 
 data class UpdateBikeRequest(
-    val teBici: Boolean
+    val teBici: Boolean,
 )
 
 interface TeBiciApi {

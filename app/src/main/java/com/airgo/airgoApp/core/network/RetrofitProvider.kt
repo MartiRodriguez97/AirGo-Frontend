@@ -3,9 +3,8 @@ package com.airgo.airgoApp.core.network
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.features.login.data.auth.AuthApi
 import com.airgo.airgoApp.features.profile.data.ProfileApi
-import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
 import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
-
+import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

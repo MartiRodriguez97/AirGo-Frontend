@@ -44,5 +44,4 @@ interface AuthApi {
     suspend fun searchUsers(
         @Query("search") search: String,
     ): Response<List<UserDetailResponse>>
-
 }

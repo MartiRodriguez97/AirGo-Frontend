@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.settings.account
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -29,16 +30,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 
@@ -51,10 +55,30 @@ fun accountSettingsScreen(
     val session = com.airgo.airgoApp.core.network.SessionManager
     var showEditUsername by remember { mutableStateOf(false) }
     // Update local state, initialize with parameters or SessionManager
-    var currentDisplayName by remember { mutableStateOf(SessionManager.username ?: displayName) }
+    var currentDisplayName by remember { mutableStateOf(session.username ?: displayName) }
     var isBikeAvailable by remember {
-        mutableStateOf(session.teBici ?: false) // Ajusta según tu lógica
+        mutableStateOf(session.teBici ?: false) // Ajusta segn tu lgica
     }
+
+    val teBiciUiState by teBiciViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(teBiciUiState) {
+        when (teBiciUiState) {
+            is TeBiciUiState.Success -> {
+                Toast.makeText(context, "Estado de la bicicleta actualizado", Toast.LENGTH_SHORT).show()
+                teBiciViewModel.resetUiState()
+            }
+            is TeBiciUiState.Error -> {
+                val errorMsg = (teBiciUiState as TeBiciUiState.Error).message
+                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+                isBikeAvailable = session.teBici ?: false
+                teBiciViewModel.resetUiState()
+            }
+            else -> {}
+        }
+    }
+
     BackHandler {
         onBackClick()
     }
@@ -81,8 +105,10 @@ fun accountSettingsScreen(
                 accountSettingsContent(
                     displayName = currentDisplayName,
                     isEnabled = isBikeAvailable,
-                    onBicycleToggle = { newValue -> isBikeAvailable = newValue
-                                      teBiciViewModel.updateBikeAvailability(newValue)
+                    isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
+                    onBicycleToggle = { newValue ->
+                        isBikeAvailable = newValue
+                        teBiciViewModel.updateBikeAvailability(newValue)
                     },
                     onEditUsername = { showEditUsername = true },
                     onBackClick = onBackClick,
@@ -104,6 +130,7 @@ fun accountSettingsScreen(
 private fun accountSettingsContent(
     displayName: String,
     isEnabled: Boolean,
+    isLoadingBike: Boolean,
     onBicycleToggle: (Boolean) -> Unit,
     onEditUsername: () -> Unit,
     onBackClick: () -> Unit,
@@ -130,6 +157,7 @@ private fun accountSettingsContent(
         bicycleAvailableRow(
             isEnabled = isEnabled,
             onBicycleToggle = onBicycleToggle,
+            isLoading = isLoadingBike,
         )
         HorizontalDivider(
             thickness = DividerDefaults.Thickness,
@@ -200,6 +228,7 @@ private fun usernameRow(
 private fun bicycleAvailableRow(
     isEnabled: Boolean,
     onBicycleToggle: (Boolean) -> Unit,
+    isLoading: Boolean,
 ) {
     Row(
         modifier =
@@ -217,6 +246,7 @@ private fun bicycleAvailableRow(
         Switch(
             checked = isEnabled,
             onCheckedChange = onBicycleToggle,
+            enabled = !isLoading, // Deshabilitar el switch si está cargando
         )
     }
 }

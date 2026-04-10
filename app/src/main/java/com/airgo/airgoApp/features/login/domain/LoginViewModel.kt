@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.NetworkErrorMapper
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.login.data.auth.GoogleTokenRequest
 import com.airgo.airgoApp.features.login.data.auth.signInWithGoogle
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,47 +65,7 @@ class LoginViewModel : ViewModel() {
                     session.email = body.user
 
                     if (body.user != null) {
-                        try {
-                            val userResponse = RetrofitProvider.authApi.searchUsers(body.user)
-                            if (userResponse.isSuccessful && userResponse.body() != null) {
-                                val usersList = userResponse.body()!!
-                                Log.d("LoginViewModel", "Respuesta GET Usuarios: $usersList")
-                                if (usersList.isNotEmpty()) {
-                                    val userDetails = usersList[0]
-                                    Log.d("LoginViewModel", "Usuario extraido: $userDetails")
-
-                                    session.userId = userDetails.id
-                                    session.username = userDetails.username
-                                    session.profilePictureUrl = userDetails.profilePic
-                                    session.email = body.user
-                                    session.punts = userDetails.punts
-                                    session.teBici = userDetails.teBici
-                                    session.pes = userDetails.pes
-                                    session.altura = userDetails.altura
-                                    session.ratxa = userDetails.ratxa
-                                    session.idioma = userDetails.idioma
-                                    session.limitRutes = userDetails.limitRutes
-                                    session.titol = userDetails.titol
-                                    session.insignies = userDetails.insignies
-
-                                } else {
-                                    Log.w(
-                                        "LoginViewModel",
-                                        "La lista de usuarios vino vacía para ${body.user}",
-                                    )
-                                }
-                            } else {
-                                val errBody = userResponse.errorBody()?.string()
-                                Log.e(
-                                    "LoginViewModel",
-                                    "Error (HTTP ${userResponse.code()}): $errBody",
-                                )
-                            }
-                        } catch (e: java.io.IOException) {
-                            Log.e("LoginViewModel", "IO Error fetching user details", e)
-                        } catch (e: retrofit2.HttpException) {
-                            Log.e("LoginViewModel", "HTTP Error fetching user details", e)
-                        }
+                        fetchAndSaveUserDetails(body.user, session)
                     }
 
                     _uiState.value =
@@ -132,6 +93,51 @@ class LoginViewModel : ViewModel() {
             } catch (_: IllegalStateException) {
                 _uiState.value = LoginUiState.Error("Respuesta invalida del servidor")
             }
+        }
+    }
+
+    private suspend fun fetchAndSaveUserDetails(
+        email: String,
+        session: SessionManager,
+    ) {
+        try {
+            val userResponse = RetrofitProvider.authApi.searchUsers(email)
+            if (userResponse.isSuccessful && userResponse.body() != null) {
+                val usersList = userResponse.body()!!
+                Log.d("LoginViewModel", "Respuesta GET Usuarios: $usersList")
+                if (usersList.isNotEmpty()) {
+                    val userDetails = usersList[0]
+                    Log.d("LoginViewModel", "Usuario extraido: $userDetails")
+
+                    session.userId = userDetails.id
+                    session.username = userDetails.username
+                    session.profilePictureUrl = userDetails.profilePic
+                    session.punts = userDetails.punts
+                    session.teBici = userDetails.teBici
+                    session.pes = userDetails.pes
+                    session.altura = userDetails.altura
+                    session.ratxa = userDetails.ratxa
+                    session.idioma = userDetails.idioma
+                    session.limitRutes = userDetails.limitRutes
+                    session.titol = userDetails.titol
+                    session.insignies = userDetails.insignies
+                } else {
+                    Log.w(
+                        "LoginViewModel",
+                        "La lista de usuarios vino vacía para $email",
+                    )
+                }
+            } else {
+                val errBody = userResponse.errorBody()?.string()
+                Log.e(
+                    "LoginViewModel",
+                    "Error (HTTP ${userResponse.code()}): $errBody",
+                )
+            }
+        } catch (e: java.io.IOException) {
+            Log.e("LoginViewModel", "IO Error fetching user details", e)
+        } catch (e: retrofit2.HttpException) {
+            Log.e("LoginViewModel", "HTTP Error fetching user details", e)
         }
     }
 
