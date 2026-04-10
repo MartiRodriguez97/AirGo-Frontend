@@ -151,7 +151,10 @@ private fun editUsernameForm(
         Button(
             onClick = onSave,
             modifier = Modifier.fillMaxWidth(),
-            enabled = uiState !is UsernameUiState.Loading && username.isNotBlank() && username != displayName,
+            enabled =
+                uiState !is UsernameUiState.Loading &&
+                    username.isNotBlank() &&
+                    username != displayName,
         ) {
             if (uiState is UsernameUiState.Loading) {
                 CircularProgressIndicator(

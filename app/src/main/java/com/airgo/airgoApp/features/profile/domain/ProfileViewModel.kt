@@ -126,7 +126,8 @@ class ProfileViewModel : ViewModel() {
                     // Opcional: Borramos el archivo temporal para no ocupar espacio en el móvil
                     imageFile.delete()
                 } else {
-                    Log.w(TAG, "updateProfilePicture HTTP error code=${response.code()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.w(TAG, "updateProfilePicture HTTP error code=${response.code()}, errorBody=$errorBody")
                     _uiState.value = ProfileUiState.Error("Error del servidor: HTTP ${response.code()}")
                 }
             } catch (e: IOException) {

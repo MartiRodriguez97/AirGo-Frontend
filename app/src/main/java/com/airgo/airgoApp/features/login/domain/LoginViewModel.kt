@@ -60,6 +60,41 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     com.airgo.airgoApp.core.network.SessionManager.accessToken = body.access
+                    com.airgo.airgoApp.core.network.SessionManager.email = body.user
+
+                    if (body.user != null) {
+                        try {
+                            val userResponse = RetrofitProvider.authApi.searchUsers(body.user)
+                            if (userResponse.isSuccessful && userResponse.body() != null) {
+                                val usersList = userResponse.body()!!
+                                Log.d("LoginViewModel", "Respuesta GET Usuarios: $usersList")
+                                if (usersList.isNotEmpty()) {
+                                    val userDetails = usersList[0]
+                                    Log.d("LoginViewModel", "Usuario extraido: $userDetails")
+                                    val session = com.airgo.airgoApp.core.network.SessionManager
+                                    session.userId = userDetails.id
+                                    session.displayName = userDetails.username
+                                    session.profilePictureUrl = userDetails.profilePic
+                                } else {
+                                    Log.w(
+                                        "LoginViewModel",
+                                        "La lista de usuarios vino vacía para ${body.user}",
+                                    )
+                                }
+                            } else {
+                                val errBody = userResponse.errorBody()?.string()
+                                Log.e(
+                                    "LoginViewModel",
+                                    "Error (HTTP ${userResponse.code()}): $errBody",
+                                )
+                            }
+                        } catch (e: java.io.IOException) {
+                            Log.e("LoginViewModel", "IO Error fetching user details", e)
+                        } catch (e: retrofit2.HttpException) {
+                            Log.e("LoginViewModel", "HTTP Error fetching user details", e)
+                        }
+                    }
+
                     _uiState.value =
                         LoginUiState.Success(
                             email = body.user,

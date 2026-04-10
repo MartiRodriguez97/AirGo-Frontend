@@ -1,6 +1,5 @@
 package com.airgo.airgoApp.features.settings.account.username.data
 
-import com.airgo.airgoApp.core.network.ApiEndpoints
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.PATCH
@@ -10,8 +9,9 @@ data class ChangeUsernameRequest(
 )
 
 interface UsernameApi {
-    @PATCH(ApiEndpoints.CHANGE_USERNAME)
+    @PATCH
     suspend fun changeUsername(
+        @retrofit2.http.Url url: String,
         @Body request: ChangeUsernameRequest,
     ): Response<Void>
 }

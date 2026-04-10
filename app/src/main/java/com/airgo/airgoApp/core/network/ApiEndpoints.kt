@@ -6,5 +6,7 @@ object ApiEndpoints {
 
     const val CHANGE_PROFILE_PICTURE = "api/usuaris/me/profile-pic/"
 
-    const val CHANGE_USERNAME = "api/usuaris/username/"
+    fun getChangeUsernameEndpoint(id: Int): String = "api/usuaris/$id/"
+
+    const val USERS_LIST = "api/usuaris/"
 }

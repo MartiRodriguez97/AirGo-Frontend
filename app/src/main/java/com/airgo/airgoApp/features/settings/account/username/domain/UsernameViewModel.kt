@@ -2,6 +2,7 @@ package com.airgo.airgoApp.features.settings.account.username.domain
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.settings.account.username.data.ChangeUsernameRequest
@@ -36,20 +37,31 @@ class UsernameViewModel : ViewModel() {
             _uiState.value = UsernameUiState.Loading
 
             try {
-                val response = RetrofitProvider.usernameApi.changeUsername(ChangeUsernameRequest(newUsername))
+                val userId = SessionManager.userId
+                if (userId == null) {
+                    _uiState.value = UsernameUiState.Error("Error: Usuario no identificado.")
+                    return@launch
+                }
+
+                val url = ApiEndpoints.getChangeUsernameEndpoint(userId)
+                val response =
+                    RetrofitProvider.usernameApi.changeUsername(
+                        url,
+                        ChangeUsernameRequest(newUsername),
+                    )
 
                 if (response.isSuccessful) {
                     SessionManager.displayName = newUsername
                     _uiState.value = UsernameUiState.Success
                 } else {
-                    _uiState.value =
-                        UsernameUiState.Error(
-                            "Error al cambiar el nombre de usuario (HTTP ${response.code()})",
-                        )
+                    val errorBodyString = response.errorBody()?.string()
+                    android.util.Log.e("UsernameViewModel", "HTTP ${response.code()}: $errorBodyString")
+                    _uiState.value = UsernameUiState.Error("Error HTTP ${response.code()}: $errorBodyString")
                 }
             } catch (e: IOException) {
-                e.printStackTrace()
-                _uiState.value = UsernameUiState.Error("Error de conexión.")
+                _uiState.value = UsernameUiState.Error("Error de conexión: ${e.message}")
+            } catch (e: retrofit2.HttpException) {
+                _uiState.value = UsernameUiState.Error("Error HTTP: ${e.message}")
             }
         }
     }
