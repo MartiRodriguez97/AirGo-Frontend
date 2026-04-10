@@ -85,9 +85,10 @@ fun profileScreen(
     // Dynamic values from SessionManager or arguments
     val currentPictureUrl = SessionManager.profilePictureUrl ?: pictureUrl
     val context = LocalContext.current
-    val displayName = SessionManager.displayName
-        ?: email?.substringBefore('@')?.replaceFirstChar { it.uppercase() }
-        ?: "Usuario"
+    val displayName =
+        SessionManager.displayName
+            ?: email?.substringBefore('@')?.replaceFirstChar { it.uppercase() }
+            ?: "Usuario"
     val titol = SessionManager.titol ?: "Velocista nato"
     val initial = displayName.firstOrNull()?.toString() ?: "U"
 

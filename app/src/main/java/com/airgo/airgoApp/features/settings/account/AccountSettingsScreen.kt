@@ -105,7 +105,7 @@ fun accountSettingsScreen(
                         onBackClick = { screenState = "MAIN" },
                         onSave = { newTitol ->
                             currentTitol = newTitol
-                        }
+                        },
                     )
                 }
             }

@@ -114,7 +114,6 @@ class LoginViewModel : ViewModel() {
             val userDetails = usersList[0]
             Log.d("LoginViewModel", "Usuario extraido: $userDetails")
             saveUserDetailsToSession(userDetails)
-
         } catch (e: java.io.IOException) {
             Log.e("LoginViewModel", "IO Error fetching user details", e)
         } catch (e: retrofit2.HttpException) {
@@ -122,9 +121,7 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    private fun saveUserDetailsToSession(
-        userDetails: com.airgo.airgoApp.features.login.data.auth.UserDetailResponse
-    ) {
+    private fun saveUserDetailsToSession(userDetails: com.airgo.airgoApp.features.login.data.auth.UserDetailResponse) {
         val session = com.airgo.airgoApp.core.network.SessionManager
         session.userId = userDetails.id
         session.displayName = userDetails.username
