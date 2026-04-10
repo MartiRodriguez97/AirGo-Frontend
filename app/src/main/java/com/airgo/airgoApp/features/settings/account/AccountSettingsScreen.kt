@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 
 @Composable
@@ -44,9 +45,9 @@ fun accountSettingsScreen(
     displayName: String,
     onBackClick: () -> Unit,
 ) {
-    var username by remember { mutableStateOf(displayName) }
     var showEditUsername by remember { mutableStateOf(false) }
-    var displayName by remember { mutableStateOf(displayName) }
+    // Update local state, initialize with parameters or SessionManager
+    var currentDisplayName by remember { mutableStateOf(SessionManager.displayName ?: displayName) }
     var isEnabled by remember { mutableStateOf(false) }
 
     BackHandler {
@@ -73,7 +74,7 @@ fun accountSettingsScreen(
         ) { isEditUsernameVisible ->
             if (!isEditUsernameVisible) {
                 accountSettingsContent(
-                    displayName = displayName,
+                    displayName = currentDisplayName,
                     isEnabled = isEnabled,
                     onBicycleToggle = { isEnabled = it },
                     onEditUsername = { showEditUsername = true },
@@ -81,10 +82,10 @@ fun accountSettingsScreen(
                 )
             } else {
                 editUsernameScreen(
-                    displayName = username,
+                    displayName = currentDisplayName,
                     onBackClick = { showEditUsername = false },
                     onSave = { newName ->
-                        displayName = newName
+                        currentDisplayName = newName
                     },
                 )
             }

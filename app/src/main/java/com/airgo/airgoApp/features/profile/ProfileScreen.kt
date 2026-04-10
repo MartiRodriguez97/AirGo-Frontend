@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
@@ -74,15 +75,19 @@ fun profileScreen(
     onAccountDeleted: () -> Unit,
 ) {
     val profileNavController = rememberNavController()
+    // Observe back stack to trigger recompositions on return
+    profileNavController.currentBackStackEntryAsState().value
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
-    var currentPictureUrl by remember { mutableStateOf(SessionManager.profilePictureUrl ?: pictureUrl) }
+
+    // Dynamic values from SessionManager or arguments
+    val currentPictureUrl = SessionManager.profilePictureUrl ?: pictureUrl
     val context = LocalContext.current
     val displayName =
-        email
-            ?.substringBefore('@')
-            ?.replaceFirstChar { it.uppercase() } ?: "Usuario"
+        SessionManager.displayName
+            ?: email?.substringBefore('@')
+            ?: "Usuario"
     val initial = displayName.firstOrNull()?.toString() ?: "U"
 
     val profileInfo =
@@ -108,7 +113,7 @@ fun profileScreen(
         context = context,
         onAccountDeleted = onAccountDeleted,
         onResetUiState = { viewModel.resetUiState() },
-        onPictureUpdateSuccess = { currentPictureUrl = SessionManager.profilePictureUrl },
+        onPictureUpdateSuccess = { /* Automatically updated via recomposition */ },
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
