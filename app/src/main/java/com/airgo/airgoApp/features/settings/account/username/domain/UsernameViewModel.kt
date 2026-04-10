@@ -51,7 +51,7 @@ class UsernameViewModel : ViewModel() {
                     )
 
                 if (response.isSuccessful) {
-                    SessionManager.displayName = newUsername
+                    SessionManager.username = newUsername
                     _uiState.value = UsernameUiState.Success
                 } else {
                     val errorBodyString = response.errorBody()?.string()

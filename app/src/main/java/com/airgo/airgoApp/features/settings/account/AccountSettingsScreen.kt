@@ -47,7 +47,7 @@ fun accountSettingsScreen(
 ) {
     var showEditUsername by remember { mutableStateOf(false) }
     // Update local state, initialize with parameters or SessionManager
-    var currentDisplayName by remember { mutableStateOf(SessionManager.displayName ?: displayName) }
+    var currentDisplayName by remember { mutableStateOf(SessionManager.username ?: displayName) }
     var isEnabled by remember { mutableStateOf(false) }
 
     BackHandler {

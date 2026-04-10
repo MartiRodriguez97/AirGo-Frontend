@@ -59,8 +59,9 @@ class LoginViewModel : ViewModel() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    com.airgo.airgoApp.core.network.SessionManager.accessToken = body.access
-                    com.airgo.airgoApp.core.network.SessionManager.email = body.user
+                    val session = com.airgo.airgoApp.core.network.SessionManager
+                    session.accessToken = body.access
+                    session.email = body.user
 
                     if (body.user != null) {
                         try {
@@ -71,10 +72,21 @@ class LoginViewModel : ViewModel() {
                                 if (usersList.isNotEmpty()) {
                                     val userDetails = usersList[0]
                                     Log.d("LoginViewModel", "Usuario extraido: $userDetails")
-                                    val session = com.airgo.airgoApp.core.network.SessionManager
+
                                     session.userId = userDetails.id
-                                    session.displayName = userDetails.username
+                                    session.username = userDetails.username
                                     session.profilePictureUrl = userDetails.profilePic
+                                    session.email = body.user
+                                    session.punts = userDetails.punts
+                                    session.teBici = userDetails.teBici
+                                    session.pes = userDetails.pes
+                                    session.altura = userDetails.altura
+                                    session.ratxa = userDetails.ratxa
+                                    session.idioma = userDetails.idioma
+                                    session.limitRutes = userDetails.limitRutes
+                                    session.titol = userDetails.titol
+                                    session.insignies = userDetails.insignies
+
                                 } else {
                                     Log.w(
                                         "LoginViewModel",
