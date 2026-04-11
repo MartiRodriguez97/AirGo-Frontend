@@ -67,9 +67,6 @@ class TitolViewModel : ViewModel() {
             } catch (e: retrofit2.HttpException) {
                 Log.e("TitolViewModel", "HTTP Exception fetching titols", e)
                 _loadError.value = "Error HTTP: ${e.message}"
-            } catch (e: Exception) {
-                Log.e("TitolViewModel", "Unexpected error fetching titols", e)
-                _loadError.value = "Error inesperat: ${e.message}"
             }
         }
     }
@@ -111,9 +108,6 @@ class TitolViewModel : ViewModel() {
             } catch (e: retrofit2.HttpException) {
                 Log.e("TitolViewModel", "HTTP Exception changing titol", e)
                 _uiState.value = TitolUiState.Error("Error HTTP: ${e.message}")
-            } catch (e: Exception) {
-                Log.e("TitolViewModel", "Unexpected error changing titol", e)
-                _uiState.value = TitolUiState.Error("Error inesperat: ${e.message}")
             }
         }
     }
