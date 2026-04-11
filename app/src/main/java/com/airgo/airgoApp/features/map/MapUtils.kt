@@ -101,20 +101,19 @@ private fun createRouteMarker(
     point: GeoPoint,
     color: Int,
 ): Marker {
-    val marker = Marker(map).apply {
-        position = point
-        title = "RouteMarker"
-        icon = ContextCompat.getDrawable(map.context, R.drawable.ic_route_marker)?.mutate()
-        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-    }
+    val marker =
+        Marker(map).apply {
+            position = point
+            title = "RouteMarker"
+            icon = ContextCompat.getDrawable(map.context, R.drawable.ic_route_marker)?.mutate()
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        }
     (marker.icon as? LayerDrawable)?.let { layer ->
-        val pin = layer.findDrawableByLayerId(R.id.pin_layer)
-        pin?.let { DrawableCompat.setTint(it, color) }
+        val flag = layer.findDrawableByLayerId(R.id.flag_layer)
+        flag?.let { DrawableCompat.setTint(DrawableCompat.wrap(it).mutate(), color) }
     }
-
     return marker
 }
-
 
 /**
  * Funció per dibuixar els pins d'inici i destí i la ruta al mapa.
@@ -141,7 +140,7 @@ internal fun updateRouteElements(
 
     // Pintar els marcadors d'inici i destí
     state.startPoint?.let {
-        map.overlays.add(createRouteMarker(map, it, android.graphics.Color.GREEN))
+        map.overlays.add(createRouteMarker(map, it, android.graphics.Color.parseColor("#4A7C59")))
     }
     state.endPoint?.let {
         map.overlays.add(createRouteMarker(map, it, android.graphics.Color.RED))
