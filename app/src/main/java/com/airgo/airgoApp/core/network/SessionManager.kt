@@ -7,7 +7,8 @@ object SessionManager {
     var displayName: String? = null
     var userId: Int? = null
     var email: String? = null
-    var titol: String? = "Velocista nato"
+    var titol: String? = null
+    var availableTitols: List<com.airgo.airgoApp.features.settings.account.titols.data.UserTitol>? = null
 
     fun clear() {
         accessToken = null
@@ -16,5 +17,6 @@ object SessionManager {
         userId = null
         email = null
         titol = null
+        availableTitols = null
     }
 }

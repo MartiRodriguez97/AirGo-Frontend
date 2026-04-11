@@ -49,7 +49,7 @@ fun accountSettingsScreen(
     var screenState by remember { mutableStateOf("MAIN") }
     // Update local state, initialize with parameters or SessionManager
     var currentDisplayName by remember { mutableStateOf(SessionManager.displayName ?: displayName) }
-    var currentTitol by remember { mutableStateOf(SessionManager.titol ?: "Velocista nato") }
+    var currentTitol by remember { mutableStateOf(SessionManager.titol ?: "") }
     var isEnabled by remember { mutableStateOf(false) }
 
     BackHandler {

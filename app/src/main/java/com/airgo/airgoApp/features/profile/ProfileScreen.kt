@@ -89,7 +89,7 @@ fun profileScreen(
         SessionManager.displayName
             ?: email?.substringBefore('@')?.replaceFirstChar { it.uppercase() }
             ?: "Usuario"
-    val titol = SessionManager.titol ?: "Velocista nato"
+    val titol = SessionManager.titol ?: ""
     val initial = displayName.firstOrNull()?.toString() ?: "U"
 
     val profileInfo =

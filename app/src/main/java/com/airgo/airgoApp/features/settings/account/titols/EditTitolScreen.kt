@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import com.airgo.airgoApp.features.settings.account.titols.domain.TitolUiState
 import com.airgo.airgoApp.features.settings.account.titols.domain.TitolViewModel
 
@@ -46,6 +47,8 @@ fun editTitolScreen(
 ) {
     var titol by remember { mutableStateOf(currentTitol) }
     val uiState by viewModel.uiState.collectAsState()
+    val availableTitols by viewModel.availableTitols.collectAsState()
+    val loadError by viewModel.loadError.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(uiState) {
@@ -84,6 +87,8 @@ fun editTitolScreen(
 
         editTitolForm(
             titol = titol,
+            availableTitols = availableTitols,
+            loadError = loadError,
             onTitolChange = { titol = it },
             currentTitol = currentTitol,
             isLoading = uiState is TitolUiState.Loading,
@@ -122,13 +127,13 @@ private fun editTitolHeader(onBackClick: () -> Unit) {
 @Composable
 private fun editTitolForm(
     titol: String,
+    availableTitols: List<UserTitol>,
+    loadError: String?,
     onTitolChange: (String) -> Unit,
     currentTitol: String,
     isLoading: Boolean,
     onSave: () -> Unit,
 ) {
-    val mockTitols = listOf("Velocista nato", "Ciclista urbano", "Resistencia al limite", "Cuenta veterana")
-
     Column(
         modifier =
             Modifier
@@ -143,38 +148,49 @@ private fun editTitolForm(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        mockTitols.forEach { mockTitol ->
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable { onTitolChange(mockTitol) }
-                        .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RadioButton(
-                    selected = titol == mockTitol,
-                    onClick = { onTitolChange(mockTitol) },
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = mockTitol,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+        if (loadError != null) {
+            Text(
+                text = loadError,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error,
+            )
+        } else if (availableTitols.isEmpty()) {
+            Text(
+                text = "No hi ha títols disponibles",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            availableTitols.forEach { availableTitol ->
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onTitolChange(availableTitol.nom) }
+                            .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        selected = titol == availableTitol.nom,
+                        onClick = { onTitolChange(availableTitol.nom) },
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = availableTitol.nom,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Text(
+                            text = availableTitol.descripcio,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text =
-                "Aquest títol és temporal i visual (mockup). " +
-                    "Properament s'implementarà amb els valors del servidor.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Button(
             onClick = onSave,
