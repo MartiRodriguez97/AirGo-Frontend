@@ -8,4 +8,13 @@ object SessionManager {
     var userId: Int? = null
     var email: String? = null
     var titol: String? = "Velocista nato"
+
+    fun clear() {
+        accessToken = null
+        profilePictureUrl = null
+        displayName = null
+        userId = null
+        email = null
+        titol = null
+    }
 }

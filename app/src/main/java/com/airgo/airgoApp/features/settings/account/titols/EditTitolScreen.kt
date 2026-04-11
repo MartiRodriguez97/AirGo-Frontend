@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.settings.account.titols
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,22 +22,47 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.features.settings.account.titols.domain.TitolUiState
+import com.airgo.airgoApp.features.settings.account.titols.domain.TitolViewModel
 
 @Composable
 fun editTitolScreen(
     currentTitol: String,
     onBackClick: () -> Unit,
     onSave: (String) -> Unit,
+    viewModel: TitolViewModel = viewModel(),
 ) {
     var titol by remember { mutableStateOf(currentTitol) }
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState) {
+        when (val state = uiState) {
+            is TitolUiState.Success -> {
+                Toast.makeText(context, "Título actualizado correctamente", Toast.LENGTH_SHORT).show()
+                onSave(titol)
+                viewModel.resetUiState()
+                onBackClick()
+            }
+            is TitolUiState.Error -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                viewModel.resetUiState()
+            }
+            else -> {}
+        }
+    }
 
     BackHandler {
         onBackClick()
@@ -60,9 +86,9 @@ fun editTitolScreen(
             titol = titol,
             onTitolChange = { titol = it },
             currentTitol = currentTitol,
+            isLoading = uiState is TitolUiState.Loading,
             onSave = {
-                onSave(titol)
-                onBackClick()
+                viewModel.changeTitol(titol)
             },
         )
     }
@@ -98,6 +124,7 @@ private fun editTitolForm(
     titol: String,
     onTitolChange: (String) -> Unit,
     currentTitol: String,
+    isLoading: Boolean,
     onSave: () -> Unit,
 ) {
     val mockTitols = listOf("Velocista nato", "Ciclista urbano", "Resistencia al limite", "Cuenta veterana")
@@ -152,9 +179,9 @@ private fun editTitolForm(
         Button(
             onClick = onSave,
             modifier = Modifier.fillMaxWidth(),
-            enabled = titol.isNotBlank() && titol != currentTitol,
+            enabled = titol.isNotBlank() && titol != currentTitol && !isLoading,
         ) {
-            Text(text = "Guardar")
+            Text(text = if (isLoading) "Guardando..." else "Guardar")
         }
     }
 }
