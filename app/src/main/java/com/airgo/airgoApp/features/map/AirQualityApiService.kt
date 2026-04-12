@@ -11,7 +11,7 @@ import retrofit2.http.Query
  * Aquesta interfíce defineix una funció per obtenir les dades de contaminació basades en la latitud i longitud.
  */
 interface AirQualityApiService {
-    @GET("air-quality/")
+    @GET(ApiEndpoints.AIR_QUALITY)
     suspend fun getPollutionData(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
