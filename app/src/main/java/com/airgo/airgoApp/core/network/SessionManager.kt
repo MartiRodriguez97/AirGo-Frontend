@@ -13,7 +13,7 @@ object SessionManager {
     fun clear() {
         accessToken = null
         profilePictureUrl = null
-        displayName = null
+        username = null
         userId = null
         email = null
         titol = null
@@ -27,6 +27,5 @@ object SessionManager {
     var ratxa: Int? = null
     var idioma: String? = null
     var limitRutes: Int? = null
-    var titol: String? = null
     var insignies: String? = null
 }

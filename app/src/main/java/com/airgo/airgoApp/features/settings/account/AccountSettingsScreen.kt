@@ -41,19 +41,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.airgo.airgoApp.core.network.SessionManager
-import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
+import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
-
-data class AccountSettingsState(
-    val displayName: String,
-    val titol: String,
-    val isEnabled: Boolean,
-    val isLoadingBike: Boolean
-)
 
 @Composable
 fun accountSettingsScreen(
@@ -63,23 +56,20 @@ fun accountSettingsScreen(
 ) {
     var screenState by remember { mutableStateOf("MAIN") }
     // Update local state, initialize with parameters or SessionManager
-    var currentTitol by remember { mutableStateOf(SessionManager.titol ?: "") }
     var isEnabled by remember { mutableStateOf(false) }
     val session = SessionManager
     val teBiciUiState by teBiciViewModel.uiState.collectAsState()
-    
+    var currentTitol by remember { mutableStateOf(session.titol ?: "") }
     // Update local state, initialize with parameters or SessionManager
     var currentDisplayName by remember { mutableStateOf(session.username ?: displayName) }
     var isBikeAvailable by remember {
         mutableStateOf(session.teBici ?: false) // Ajusta segn tu lgica
     }
 
-    val teBiciUiState by teBiciViewModel.uiState.collectAsState()
-    
-    HandleTeBiciSideEffects(
+    handleTeBiciSideEffects(
         uiState = teBiciUiState,
         viewModel = teBiciViewModel,
-        onResetBikeAvailability = { isBikeAvailable = session.teBici ?: false }
+        onResetBikeAvailability = { isBikeAvailable = session.teBici ?: false },
     )
     BackHandler {
         if (screenState != "MAIN") {
@@ -110,15 +100,16 @@ fun accountSettingsScreen(
             when (state) {
                 "MAIN" -> {
                     accountSettingsContent(
-                        state = AccountSettingsState(
-                            displayName = currentDisplayName,
-                            titol = currentTitol,
-                            isEnabled = isBikeAvailable,
-                            isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
-                        ),
+                        state =
+                            AccountSettingsState(
+                                displayName = currentDisplayName,
+                                titol = currentTitol,
+                                isEnabled = isBikeAvailable,
+                                isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
+                            ),
                         onBicycleToggle = { newValue ->
-                          isBikeAvailable = newValue
-                          teBiciViewModel.updateBikeAvailability(newValue)
+                            isBikeAvailable = newValue
+                            teBiciViewModel.updateBikeAvailability(newValue)
                         },
                         onEditUsername = { screenState = "EDIT_USERNAME" },
                         onEditTitol = { screenState = "EDIT_TITOL" },
@@ -148,11 +139,18 @@ fun accountSettingsScreen(
     }
 }
 
+data class AccountSettingsState(
+    val displayName: String,
+    val titol: String,
+    val isEnabled: Boolean,
+    val isLoadingBike: Boolean,
+)
+
 @Composable
-private fun HandleTeBiciSideEffects(
+private fun handleTeBiciSideEffects(
     uiState: TeBiciUiState,
     viewModel: TeBiciViewModel,
-    onResetBikeAvailability: () -> Unit
+    onResetBikeAvailability: () -> Unit,
 ) {
     val context = LocalContext.current
     LaunchedEffect(uiState) {
@@ -185,19 +183,19 @@ private fun accountSettingsContent(
         accountSettingsHeader(onBackClick = onBackClick)
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         usernameRow(
-            displayName = state.displayName, 
-            onEditUsername = onEditUsername
+            displayName = state.displayName,
+            onEditUsername = onEditUsername,
         )
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         titolRow(
-            titol = state.titol, 
-            onEditTitol = onEditTitol
+            titol = state.titol,
+            onEditTitol = onEditTitol,
         )
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         bicycleAvailableRow(
             isEnabled = state.isEnabled,
             isLoading = state.isLoadingBike,
-            onBicycleToggle = onBicycleToggle
+            onBicycleToggle = onBicycleToggle,
         )
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
     }
