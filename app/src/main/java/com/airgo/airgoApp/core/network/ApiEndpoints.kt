@@ -8,5 +8,9 @@ object ApiEndpoints {
 
     fun getChangeUserInfoEndpoint(id: Int): String = "api/usuaris/$id/"
 
+    fun getChangeTitolEndpoint(id: Int): String = "api/usuaris/$id/"
+
+    fun getAvailableTitolsEndpoint(id: Int): String = "api/usuaris/$id/titols/"
+
     const val USERS_LIST = "api/usuaris/"
 }

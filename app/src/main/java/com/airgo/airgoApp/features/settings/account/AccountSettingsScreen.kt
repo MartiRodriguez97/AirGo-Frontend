@@ -41,10 +41,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
+
+data class AccountSettingsState(
+    val displayName: String,
+    val titol: String,
+    val isEnabled: Boolean,
+    val isLoadingBike: Boolean
+)
 
 @Composable
 fun accountSettingsScreen(
@@ -52,8 +61,13 @@ fun accountSettingsScreen(
     onBackClick: () -> Unit,
     teBiciViewModel: TeBiciViewModel = viewModel(),
 ) {
-    val session = com.airgo.airgoApp.core.network.SessionManager
-    var showEditUsername by remember { mutableStateOf(false) }
+    var screenState by remember { mutableStateOf("MAIN") }
+    // Update local state, initialize with parameters or SessionManager
+    var currentTitol by remember { mutableStateOf(SessionManager.titol ?: "") }
+    var isEnabled by remember { mutableStateOf(false) }
+    val session = SessionManager
+    val teBiciUiState by teBiciViewModel.uiState.collectAsState()
+    
     // Update local state, initialize with parameters or SessionManager
     var currentDisplayName by remember { mutableStateOf(session.username ?: displayName) }
     var isBikeAvailable by remember {
@@ -61,33 +75,25 @@ fun accountSettingsScreen(
     }
 
     val teBiciUiState by teBiciViewModel.uiState.collectAsState()
-    val context = LocalContext.current
-
-    LaunchedEffect(teBiciUiState) {
-        when (teBiciUiState) {
-            is TeBiciUiState.Success -> {
-                Toast.makeText(context, "Estado de la bicicleta actualizado", Toast.LENGTH_SHORT).show()
-                teBiciViewModel.resetUiState()
-            }
-            is TeBiciUiState.Error -> {
-                val errorMsg = (teBiciUiState as TeBiciUiState.Error).message
-                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
-                isBikeAvailable = session.teBici ?: false
-                teBiciViewModel.resetUiState()
-            }
-            else -> {}
-        }
-    }
-
+    
+    HandleTeBiciSideEffects(
+        uiState = teBiciUiState,
+        viewModel = teBiciViewModel,
+        onResetBikeAvailability = { isBikeAvailable = session.teBici ?: false }
+    )
     BackHandler {
-        onBackClick()
+        if (screenState != "MAIN") {
+            screenState = "MAIN"
+        } else {
+            onBackClick()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedContent(
-            targetState = showEditUsername,
+            targetState = screenState,
             transitionSpec = {
-                if (showEditUsername) {
+                if (targetState != "MAIN") {
                     // Profile -> Settings
                     (slideInHorizontally { fullWidth -> fullWidth } + fadeIn()).togetherWith(
                         slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut(),
@@ -99,70 +105,101 @@ fun accountSettingsScreen(
                     )
                 }
             },
-            label = "edit-username-transition",
-        ) { isEditUsernameVisible ->
-            if (!isEditUsernameVisible) {
-                accountSettingsContent(
-                    displayName = currentDisplayName,
-                    isEnabled = isBikeAvailable,
-                    isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
-                    onBicycleToggle = { newValue ->
-                        isBikeAvailable = newValue
-                        teBiciViewModel.updateBikeAvailability(newValue)
-                    },
-                    onEditUsername = { showEditUsername = true },
-                    onBackClick = onBackClick,
-                )
-            } else {
-                editUsernameScreen(
-                    displayName = currentDisplayName,
-                    onBackClick = { showEditUsername = false },
-                    onSave = { newName ->
-                        currentDisplayName = newName
-                    },
-                )
+            label = "settings-transition",
+        ) { state ->
+            when (state) {
+                "MAIN" -> {
+                    accountSettingsContent(
+                        state = AccountSettingsState(
+                            displayName = currentDisplayName,
+                            titol = currentTitol,
+                            isEnabled = isBikeAvailable,
+                            isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
+                        ),
+                        onBicycleToggle = { newValue ->
+                          isBikeAvailable = newValue
+                          teBiciViewModel.updateBikeAvailability(newValue)
+                        },
+                        onEditUsername = { screenState = "EDIT_USERNAME" },
+                        onEditTitol = { screenState = "EDIT_TITOL" },
+                        onBackClick = onBackClick,
+                    )
+                }
+                "EDIT_USERNAME" -> {
+                    editUsernameScreen(
+                        displayName = currentDisplayName,
+                        onBackClick = { screenState = "MAIN" },
+                        onSave = { newName ->
+                            currentDisplayName = newName
+                        },
+                    )
+                }
+                "EDIT_TITOL" -> {
+                    editTitolScreen(
+                        currentTitol = currentTitol,
+                        onBackClick = { screenState = "MAIN" },
+                        onSave = { newTitol ->
+                            currentTitol = newTitol
+                        },
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
+private fun HandleTeBiciSideEffects(
+    uiState: TeBiciUiState,
+    viewModel: TeBiciViewModel,
+    onResetBikeAvailability: () -> Unit
+) {
+    val context = LocalContext.current
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is TeBiciUiState.Success -> {
+                Toast.makeText(context, "Estado de la bicicleta actualizado", Toast.LENGTH_SHORT).show()
+                viewModel.resetUiState()
+            }
+            is TeBiciUiState.Error -> {
+                Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                onResetBikeAvailability()
+                viewModel.resetUiState()
+            }
+            else -> {}
+        }
+    }
+}
+
+@Composable
 private fun accountSettingsContent(
-    displayName: String,
-    isEnabled: Boolean,
-    isLoadingBike: Boolean,
+    state: AccountSettingsState, // Agrupamos los 4 parámetros de interfaz aquí
     onBicycleToggle: (Boolean) -> Unit,
     onEditUsername: () -> Unit,
+    onEditTitol: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
     ) {
         accountSettingsHeader(onBackClick = onBackClick)
-        HorizontalDivider(
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
-        )
+        HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         usernameRow(
-            displayName = displayName,
-            onEditUsername = onEditUsername,
+            displayName = state.displayName, 
+            onEditUsername = onEditUsername
         )
-        HorizontalDivider(
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
+        HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
+        titolRow(
+            titol = state.titol, 
+            onEditTitol = onEditTitol
         )
+        HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         bicycleAvailableRow(
-            isEnabled = isEnabled,
-            onBicycleToggle = onBicycleToggle,
-            isLoading = isLoadingBike,
+            isEnabled = state.isEnabled,
+            isLoading = state.isLoadingBike,
+            onBicycleToggle = onBicycleToggle
         )
-        HorizontalDivider(
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
-        )
+        HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
     }
 }
 
@@ -211,6 +248,39 @@ private fun usernameRow(
         )
         Text(
             text = displayName,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.ArrowForwardIos,
+            contentDescription = "Editar",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(16.dp),
+        )
+    }
+}
+
+@Composable
+private fun titolRow(
+    titol: String,
+    onEditTitol: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onEditTitol() }
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Títulos",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = titol,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

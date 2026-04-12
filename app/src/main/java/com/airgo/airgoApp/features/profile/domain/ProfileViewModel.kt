@@ -49,10 +49,11 @@ class ProfileViewModel : ViewModel() {
                 // Fem la petició al backend
                 val response = RetrofitProvider.profileApi.deleteAccount()
 
-                println("Esperando respuesta del servidor para eliminar cuenta...")
+                println("Esperando resposta del servidor para eliminar cuenta...")
 
                 // Revisem la resposta del servidor
                 if (response.isSuccessful) {
+                    SessionManager.clear()
                     _uiState.value = ProfileUiState.DeleteSuccess
                     println("Cuenta eliminada con éxito en el backend")
                 } else {
