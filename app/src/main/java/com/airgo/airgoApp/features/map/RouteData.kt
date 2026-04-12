@@ -4,12 +4,15 @@ package com.airgo.airgoApp.features.map
  * Aquest fitxer defineix les dades relacionades amb les rutes, incloent les sol·licituds i respostes de l'API.
  */
 
-@Suppress("ConstructorParameterNaming")
 data class RouteRequest(
-    val lat_start: Double,
-    val lon_start: Double,
-    val lat_end: Double,
-    val lon_end: Double,
+    @com.google.gson.annotations.SerializedName("lat_start")
+    val latStart: Double,
+    @com.google.gson.annotations.SerializedName("lon_start")
+    val lonStart: Double,
+    @com.google.gson.annotations.SerializedName("lat_end")
+    val latEnd: Double,
+    @com.google.gson.annotations.SerializedName("lon_end")
+    val lonEnd: Double,
 )
 
 /**
@@ -36,8 +39,9 @@ data class RouteGeometry(
  * i la distància total en metres.
  */
 
-@Suppress("ConstructorParameterNaming")
 data class RouteSummary(
-    val duration_minutes: Double,
-    val distance_meters: Int,
+    @com.google.gson.annotations.SerializedName("duration_minutes")
+    val durationMinutes: Double,
+    @com.google.gson.annotations.SerializedName("distance_meters")
+    val distanceMeters: Int,
 )

@@ -66,7 +66,7 @@ internal fun routeSelectionPanel(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
                 ) {
-                    val mins = summary.duration_minutes.toInt()
+                    val mins = summary.durationMinutes.toInt()
 
                     Text(
                         text = "⏱ $mins min",
@@ -74,7 +74,7 @@ internal fun routeSelectionPanel(
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        text = "📏 ${summary.distance_meters} m",
+                        text = "📏 ${summary.distanceMeters} m",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.secondary,
                     )
