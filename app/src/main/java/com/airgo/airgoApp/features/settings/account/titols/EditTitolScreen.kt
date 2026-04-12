@@ -38,6 +38,7 @@ import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import com.airgo.airgoApp.features.settings.account.titols.domain.TitolUiState
 import com.airgo.airgoApp.features.settings.account.titols.domain.TitolViewModel
 
+// Pantalla para editar el título del usuario, mostrando los títulos disponibles y permitiendo seleccionar uno nuevo
 @Composable
 fun editTitolScreen(
     currentTitol: String,
@@ -99,6 +100,8 @@ fun editTitolScreen(
     }
 }
 
+// Composable para el encabezado de la pantalla de edición de título,
+// con un botón de retroceso y el título de la sección
 @Composable
 private fun editTitolHeader(onBackClick: () -> Unit) {
     Row(
@@ -124,6 +127,8 @@ private fun editTitolHeader(onBackClick: () -> Unit) {
     }
 }
 
+// Composable para mostrar el formulario de edición de título,
+// incluyendo la lista de títulos disponibles, mensajes de error y el botón de guardar
 @Composable
 private fun editTitolForm(
     titol: String,

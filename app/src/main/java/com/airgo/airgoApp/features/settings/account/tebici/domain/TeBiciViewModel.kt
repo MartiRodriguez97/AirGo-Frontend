@@ -27,6 +27,7 @@ class TeBiciViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<TeBiciUiState>(TeBiciUiState.Idle)
     val uiState: StateFlow<TeBiciUiState> = _uiState
 
+    // Función para actualizar la disponibilidad de bicicleta del usuario
     fun updateBikeAvailability(hasBike: Boolean) {
         viewModelScope.launch {
             _uiState.value = TeBiciUiState.Loading

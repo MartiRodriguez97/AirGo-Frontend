@@ -19,6 +19,7 @@ data class ChangeTitolRequest(
     val titol: String,
 )
 
+// El endpoint para obtener los títulos disponibles y para cambiar el título se pasará dinámicamente desde el ViewModel
 interface TitolApi {
     @GET
     suspend fun getAvailableTitols(

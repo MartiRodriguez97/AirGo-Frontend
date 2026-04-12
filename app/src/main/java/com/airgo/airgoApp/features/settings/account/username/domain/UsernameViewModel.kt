@@ -23,10 +23,12 @@ sealed class UsernameUiState {
     ) : UsernameUiState()
 }
 
+// ViewModel para manejar la lógica de cambio de nombre de usuario
 class UsernameViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<UsernameUiState>(UsernameUiState.Idle)
     val uiState: StateFlow<UsernameUiState> = _uiState
 
+    // Función para cambiar el nombre de usuario, validando la entrada y manejando la respuesta del servidor
     fun changeUsername(newUsername: String) {
         if (newUsername.isBlank()) {
             _uiState.value = UsernameUiState.Error("El nombre de usuario no puede estar vacío.")

@@ -35,6 +35,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.features.settings.account.username.domain.UsernameUiState
 import com.airgo.airgoApp.features.settings.account.username.domain.UsernameViewModel
 
+// Pantalla para editar el nombre de usuario del usuario,
+// permitiendo modificarlo y guardarlo a través del ViewModel
 @Composable
 fun editUsernameScreen(
     displayName: String,
@@ -82,6 +84,8 @@ fun editUsernameScreen(
     }
 }
 
+// Composable para mostrar el encabezado de la pantalla de
+// edición de nombre de usuario, con un botón para volver atrás y un título centrado
 @Composable
 private fun editUsernameHeader(onBackClick: () -> Unit) {
     Row(
@@ -107,6 +111,9 @@ private fun editUsernameHeader(onBackClick: () -> Unit) {
     }
 }
 
+// Composable para mostrar el formulario de edición de nombre de usuario,
+// con un campo de texto para modificar el nombre, una descripción y un botón para guardar los cambios,
+// mostrando mensajes de error o un indicador de carga según el estado del ViewModel
 @Composable
 private fun editUsernameForm(
     username: String,

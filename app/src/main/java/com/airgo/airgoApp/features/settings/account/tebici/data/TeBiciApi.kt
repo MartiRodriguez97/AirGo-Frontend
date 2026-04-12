@@ -8,9 +8,8 @@ data class UpdateBikeRequest(
 )
 
 interface TeBiciApi {
-    // ... tus otros endpoints (login, register, etc.) ...
-
-    @PATCH // Usa @PATCH si tu backend lo prefiere
+    // El endpoint para actualizar el estado de teBici
+    @PATCH
     suspend fun updateHasBike(
         @retrofit2.http.Url url: String,
         @Body request: UpdateBikeRequest,

@@ -8,6 +8,7 @@ data class ChangeUsernameRequest(
     val username: String,
 )
 
+// El endpoint para cambiar el nombre de usuario se pasará dinámicamente desde el ViewModel
 interface UsernameApi {
     @PATCH
     suspend fun changeUsername(

@@ -25,6 +25,7 @@ sealed class TitolUiState {
     ) : TitolUiState()
 }
 
+// ViewModel para manejar la lógica de cambio de título del usuario
 class TitolViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<TitolUiState>(TitolUiState.Idle)
     val uiState: StateFlow<TitolUiState> = _uiState
@@ -39,6 +40,7 @@ class TitolViewModel : ViewModel() {
         loadAvailableTitols()
     }
 
+    // Carga los títulos disponibles para el usuario, utilizando caché si ya se han cargado previamente
     private fun loadAvailableTitols() {
         if (SessionManager.availableTitols != null) {
             _availableTitols.value = SessionManager.availableTitols!!

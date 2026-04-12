@@ -48,6 +48,9 @@ import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewMode
 import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 
+// Pantalla principal de configuración de cuenta,
+// que muestra el nombre de usuario, títulos y estado de bicicleta disponible,
+// y permite navegar a las pantallas de edición correspondientes
 @Composable
 fun accountSettingsScreen(
     displayName: String,
@@ -55,8 +58,6 @@ fun accountSettingsScreen(
     teBiciViewModel: TeBiciViewModel = viewModel(),
 ) {
     var screenState by remember { mutableStateOf("MAIN") }
-    // Update local state, initialize with parameters or SessionManager
-    var isEnabled by remember { mutableStateOf(false) }
     val session = SessionManager
     val teBiciUiState by teBiciViewModel.uiState.collectAsState()
     var currentTitol by remember { mutableStateOf(session.titol ?: "") }
@@ -146,6 +147,8 @@ data class AccountSettingsState(
     val isLoadingBike: Boolean,
 )
 
+// Maneja los efectos secundarios relacionados con la actualización de la disponibilidad de bicicleta,
+// mostrando mensajes de éxito o error según corresponda
 @Composable
 private fun handleTeBiciSideEffects(
     uiState: TeBiciUiState,
@@ -169,6 +172,9 @@ private fun handleTeBiciSideEffects(
     }
 }
 
+// Composable que muestra el contenido principal de la pantalla de configuración de cuenta,
+// incluyendo el nombre de usuario, títulos y estado de bicicleta disponible,
+// con opciones para editar cada uno y un botón de retroceso en el encabezado
 @Composable
 private fun accountSettingsContent(
     state: AccountSettingsState, // Agrupamos los 4 parámetros de interfaz aquí
@@ -201,6 +207,8 @@ private fun accountSettingsContent(
     }
 }
 
+// Composable para el encabezado de la pantalla de configuración de cuenta,
+// con un botón de retroceso y el título de la sección centrado
 @Composable
 private fun accountSettingsHeader(onBackClick: () -> Unit) {
     Row(
@@ -226,6 +234,9 @@ private fun accountSettingsHeader(onBackClick: () -> Unit) {
     }
 }
 
+// Composable para mostrar una fila con el nombre de usuario,
+// que es clickeable para navegar a la pantalla de edición de nombre de usuario,
+// y que muestra un ícono de flecha para indicar que es una opción navegable
 @Composable
 private fun usernameRow(
     displayName: String,
@@ -259,6 +270,10 @@ private fun usernameRow(
     }
 }
 
+// Composable para mostrar una fila con el título del usuario,
+// que es clickeable para navegar a la pantalla de edición de títulos,
+// y que muestra un ícono de flecha para indicar que es una opción navegable.
+// El título se muestra en un estilo de texto más tenue para diferenciarlo del nombre de usuario
 @Composable
 private fun titolRow(
     titol: String,
@@ -292,6 +307,10 @@ private fun titolRow(
     }
 }
 
+// Composable para mostrar una fila con un switch para activar o desactivar
+// la disponibilidad de bicicleta, que muestra el estado actual y que se deshabilita
+// mientras se está cargando la actualización del estado de la bicicleta, para
+// evitar cambios múltiples mientras se procesa la solicitud
 @Composable
 private fun bicycleAvailableRow(
     isEnabled: Boolean,
