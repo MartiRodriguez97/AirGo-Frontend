@@ -86,8 +86,8 @@ fun profileScreen(
     val currentPictureUrl = SessionManager.profilePictureUrl ?: pictureUrl
     val context = LocalContext.current
     val displayName =
-        SessionManager.displayName
-            ?: email?.substringBefore('@')?.replaceFirstChar { it.uppercase() }
+        SessionManager.username
+            ?: email?.substringBefore('@')
             ?: "Usuario"
     val titol = SessionManager.titol ?: ""
     val initial = displayName.firstOrNull()?.toString() ?: "U"

@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.settings.account
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -29,28 +30,60 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciUiState
+import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 
 @Composable
 fun accountSettingsScreen(
     displayName: String,
     onBackClick: () -> Unit,
+    teBiciViewModel: TeBiciViewModel = viewModel(),
 ) {
     var screenState by remember { mutableStateOf("MAIN") }
     // Update local state, initialize with parameters or SessionManager
-    var currentDisplayName by remember { mutableStateOf(SessionManager.displayName ?: displayName) }
     var currentTitol by remember { mutableStateOf(SessionManager.titol ?: "") }
     var isEnabled by remember { mutableStateOf(false) }
+    val session = SessionManager
+    var showEditUsername by remember { mutableStateOf(false) }
+    // Update local state, initialize with parameters or SessionManager
+    var currentDisplayName by remember { mutableStateOf(session.username ?: displayName) }
+    var isBikeAvailable by remember {
+        mutableStateOf(session.teBici ?: false) // Ajusta segn tu lgica
+    }
+
+    val teBiciUiState by teBiciViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(teBiciUiState) {
+        when (teBiciUiState) {
+            is TeBiciUiState.Success -> {
+                Toast.makeText(context, "Estado de la bicicleta actualizado", Toast.LENGTH_SHORT).show()
+                teBiciViewModel.resetUiState()
+            }
+            is TeBiciUiState.Error -> {
+                val errorMsg = (teBiciUiState as TeBiciUiState.Error).message
+                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+                isBikeAvailable = session.teBici ?: false
+                teBiciViewModel.resetUiState()
+            }
+            else -> {}
+        }
+    }
 
     BackHandler {
         if (screenState != "MAIN") {
@@ -83,8 +116,12 @@ fun accountSettingsScreen(
                     accountSettingsContent(
                         displayName = currentDisplayName,
                         titol = currentTitol,
-                        isEnabled = isEnabled,
-                        onBicycleToggle = { isEnabled = it },
+                        isEnabled = isBikeAvailable,
+                        isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
+                        onBicycleToggle = { newValue ->
+                          isBikeAvailable = newValue
+                          teBiciViewModel.updateBikeAvailability(newValue)
+                        },
                         onEditUsername = { screenState = "EDIT_USERNAME" },
                         onEditTitol = { screenState = "EDIT_TITOL" },
                         onBackClick = onBackClick,
@@ -118,6 +155,7 @@ private fun accountSettingsContent(
     displayName: String,
     titol: String,
     isEnabled: Boolean,
+    isLoadingBike: Boolean,
     onBicycleToggle: (Boolean) -> Unit,
     onEditUsername: () -> Unit,
     onEditTitol: () -> Unit,
@@ -153,6 +191,7 @@ private fun accountSettingsContent(
         bicycleAvailableRow(
             isEnabled = isEnabled,
             onBicycleToggle = onBicycleToggle,
+            isLoading = isLoadingBike,
         )
         HorizontalDivider(
             thickness = DividerDefaults.Thickness,
@@ -256,6 +295,7 @@ private fun titolRow(
 private fun bicycleAvailableRow(
     isEnabled: Boolean,
     onBicycleToggle: (Boolean) -> Unit,
+    isLoading: Boolean,
 ) {
     Row(
         modifier =
@@ -273,6 +313,7 @@ private fun bicycleAvailableRow(
         Switch(
             checked = isEnabled,
             onCheckedChange = onBicycleToggle,
+            enabled = !isLoading, // Deshabilitar el switch si está cargando
         )
     }
 }

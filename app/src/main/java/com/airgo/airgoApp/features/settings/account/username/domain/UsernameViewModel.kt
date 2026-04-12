@@ -43,7 +43,7 @@ class UsernameViewModel : ViewModel() {
                     return@launch
                 }
 
-                val url = ApiEndpoints.getChangeUsernameEndpoint(userId)
+                val url = ApiEndpoints.getChangeUserInfoEndpoint(userId)
                 val response =
                     RetrofitProvider.usernameApi.changeUsername(
                         url,
@@ -51,7 +51,7 @@ class UsernameViewModel : ViewModel() {
                     )
 
                 if (response.isSuccessful) {
-                    SessionManager.displayName = newUsername
+                    SessionManager.username = newUsername
                     _uiState.value = UsernameUiState.Success
                 } else {
                     val errorBodyString = response.errorBody()?.string()
