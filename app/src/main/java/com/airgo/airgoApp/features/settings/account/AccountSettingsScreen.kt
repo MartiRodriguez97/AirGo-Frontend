@@ -48,6 +48,13 @@ import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 
+data class AccountSettingsState(
+    val displayName: String,
+    val titol: String,
+    val isEnabled: Boolean,
+    val isLoadingBike: Boolean
+)
+
 @Composable
 fun accountSettingsScreen(
     displayName: String,
@@ -59,7 +66,8 @@ fun accountSettingsScreen(
     var currentTitol by remember { mutableStateOf(SessionManager.titol ?: "") }
     var isEnabled by remember { mutableStateOf(false) }
     val session = SessionManager
-    var showEditUsername by remember { mutableStateOf(false) }
+    val teBiciUiState by teBiciViewModel.uiState.collectAsState()
+    
     // Update local state, initialize with parameters or SessionManager
     var currentDisplayName by remember { mutableStateOf(session.username ?: displayName) }
     var isBikeAvailable by remember {
@@ -67,24 +75,12 @@ fun accountSettingsScreen(
     }
 
     val teBiciUiState by teBiciViewModel.uiState.collectAsState()
-    val context = LocalContext.current
-
-    LaunchedEffect(teBiciUiState) {
-        when (teBiciUiState) {
-            is TeBiciUiState.Success -> {
-                Toast.makeText(context, "Estado de la bicicleta actualizado", Toast.LENGTH_SHORT).show()
-                teBiciViewModel.resetUiState()
-            }
-            is TeBiciUiState.Error -> {
-                val errorMsg = (teBiciUiState as TeBiciUiState.Error).message
-                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
-                isBikeAvailable = session.teBici ?: false
-                teBiciViewModel.resetUiState()
-            }
-            else -> {}
-        }
-    }
-
+    
+    HandleTeBiciSideEffects(
+        uiState = teBiciUiState,
+        viewModel = teBiciViewModel,
+        onResetBikeAvailability = { isBikeAvailable = session.teBici ?: false }
+    )
     BackHandler {
         if (screenState != "MAIN") {
             screenState = "MAIN"
@@ -114,10 +110,12 @@ fun accountSettingsScreen(
             when (state) {
                 "MAIN" -> {
                     accountSettingsContent(
-                        displayName = currentDisplayName,
-                        titol = currentTitol,
-                        isEnabled = isBikeAvailable,
-                        isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
+                        state = AccountSettingsState(
+                            displayName = currentDisplayName,
+                            titol = currentTitol,
+                            isEnabled = isBikeAvailable,
+                            isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
+                        ),
                         onBicycleToggle = { newValue ->
                           isBikeAvailable = newValue
                           teBiciViewModel.updateBikeAvailability(newValue)
@@ -151,52 +149,57 @@ fun accountSettingsScreen(
 }
 
 @Composable
+private fun HandleTeBiciSideEffects(
+    uiState: TeBiciUiState,
+    viewModel: TeBiciViewModel,
+    onResetBikeAvailability: () -> Unit
+) {
+    val context = LocalContext.current
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is TeBiciUiState.Success -> {
+                Toast.makeText(context, "Estado de la bicicleta actualizado", Toast.LENGTH_SHORT).show()
+                viewModel.resetUiState()
+            }
+            is TeBiciUiState.Error -> {
+                Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                onResetBikeAvailability()
+                viewModel.resetUiState()
+            }
+            else -> {}
+        }
+    }
+}
+
+@Composable
 private fun accountSettingsContent(
-    displayName: String,
-    titol: String,
-    isEnabled: Boolean,
-    isLoadingBike: Boolean,
+    state: AccountSettingsState, // Agrupamos los 4 parámetros de interfaz aquí
     onBicycleToggle: (Boolean) -> Unit,
     onEditUsername: () -> Unit,
     onEditTitol: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
     ) {
         accountSettingsHeader(onBackClick = onBackClick)
-        HorizontalDivider(
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
-        )
+        HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         usernameRow(
-            displayName = displayName,
-            onEditUsername = onEditUsername,
+            displayName = state.displayName, 
+            onEditUsername = onEditUsername
         )
-        HorizontalDivider(
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
-        )
+        HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         titolRow(
-            titol = titol,
-            onEditTitol = onEditTitol,
+            titol = state.titol, 
+            onEditTitol = onEditTitol
         )
-        HorizontalDivider(
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
-        )
+        HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         bicycleAvailableRow(
-            isEnabled = isEnabled,
-            onBicycleToggle = onBicycleToggle,
-            isLoading = isLoadingBike,
+            isEnabled = state.isEnabled,
+            isLoading = state.isLoadingBike,
+            onBicycleToggle = onBicycleToggle
         )
-        HorizontalDivider(
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
-        )
+        HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
     }
 }
 
