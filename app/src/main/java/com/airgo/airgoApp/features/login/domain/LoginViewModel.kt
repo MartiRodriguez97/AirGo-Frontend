@@ -65,7 +65,7 @@ class LoginViewModel : ViewModel() {
                     session.email = body.user
 
                     if (body.user != null) {
-                        fetchAndSaveUserDetails(body.user, session)
+                        fetchAndSaveUserDetails(session)
                     }
 
                     _uiState.value =
@@ -96,37 +96,25 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    private suspend fun fetchAndSaveUserDetails(
-        email: String,
-        session: SessionManager,
-    ) {
+    private suspend fun fetchAndSaveUserDetails(session: SessionManager) {
         try {
-            val userResponse = RetrofitProvider.authApi.searchUsers(email)
+            val userResponse = RetrofitProvider.authApi.searchUsers()
             if (userResponse.isSuccessful && userResponse.body() != null) {
-                val usersList = userResponse.body()!!
-                Log.d("LoginViewModel", "Respuesta GET Usuarios: $usersList")
-                if (usersList.isNotEmpty()) {
-                    val userDetails = usersList[0]
-                    Log.d("LoginViewModel", "Usuario extraido: $userDetails")
+                val userDetails = userResponse.body()!!
+                Log.d("LoginViewModel", "Usuario extraido: $userDetails")
 
-                    session.userId = userDetails.id
-                    session.username = userDetails.username
-                    session.profilePictureUrl = userDetails.profilePic
-                    session.punts = userDetails.punts
-                    session.teBici = userDetails.teBici
-                    session.pes = userDetails.pes
-                    session.altura = userDetails.altura
-                    session.ratxa = userDetails.ratxa
-                    session.idioma = userDetails.idioma
-                    session.limitRutes = userDetails.limitRutes
-                    session.titol = userDetails.titol
-                    session.insignies = userDetails.insignies
-                } else {
-                    Log.w(
-                        "LoginViewModel",
-                        "La lista de usuarios vino vacía para $email",
-                    )
-                }
+                session.userId = userDetails.id
+                session.username = userDetails.username
+                session.profilePictureUrl = userDetails.profilePic
+                session.punts = userDetails.punts
+                session.teBici = userDetails.teBici
+                session.pes = userDetails.pes
+                session.altura = userDetails.altura
+                session.ratxa = userDetails.ratxa
+                session.idioma = userDetails.idioma
+                session.limitRutes = userDetails.limitRutes
+                session.titol = userDetails.titol
+                session.insignies = userDetails.insignies
             } else {
                 val errBody = userResponse.errorBody()?.string()
                 Log.e(

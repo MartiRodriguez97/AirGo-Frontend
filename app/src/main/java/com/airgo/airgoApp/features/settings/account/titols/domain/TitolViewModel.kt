@@ -89,7 +89,7 @@ class TitolViewModel : ViewModel() {
                     return@launch
                 }
 
-                val url = ApiEndpoints.getChangeTitolEndpoint(userId)
+                val url = ApiEndpoints.getChangeInfoEndpoint(userId)
                 val response =
                     RetrofitProvider.titolApi.changeTitol(
                         url,

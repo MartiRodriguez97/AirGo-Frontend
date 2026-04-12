@@ -6,11 +6,9 @@ object ApiEndpoints {
 
     const val CHANGE_PROFILE_PICTURE = "api/usuaris/me/profile-pic/"
 
-    fun getChangeUserInfoEndpoint(id: Int): String = "api/usuaris/$id/"
-
-    fun getChangeTitolEndpoint(id: Int): String = "api/usuaris/$id/"
+    fun getChangeInfoEndpoint(id: Int): String = "api/usuaris/$id/"
 
     fun getAvailableTitolsEndpoint(id: Int): String = "api/usuaris/$id/titols/"
 
-    const val USERS_LIST = "api/usuaris/"
+    const val USER_ACCOUNT_INFO = "api/usuaris/me/profile/"
 }

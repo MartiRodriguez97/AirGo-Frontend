@@ -5,7 +5,6 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 data class AuthResponse(
     val user: String?,
@@ -40,8 +39,6 @@ interface AuthApi {
         @Body body: GoogleTokenRequest,
     ): Response<AuthResponse>
 
-    @GET(ApiEndpoints.USERS_LIST)
-    suspend fun searchUsers(
-        @Query("search") search: String,
-    ): Response<List<UserDetailResponse>>
+    @GET(ApiEndpoints.USER_ACCOUNT_INFO)
+    suspend fun searchUsers(): Response<UserDetailResponse>
 }

@@ -33,7 +33,7 @@ class TeBiciViewModel : ViewModel() {
             _uiState.value = TeBiciUiState.Loading
             val userId = SessionManager.userId
             if (userId != null) {
-                val url = ApiEndpoints.getChangeUserInfoEndpoint(userId)
+                val url = ApiEndpoints.getChangeInfoEndpoint(userId)
 
                 try {
                     val request = UpdateBikeRequest(teBici = hasBike)
