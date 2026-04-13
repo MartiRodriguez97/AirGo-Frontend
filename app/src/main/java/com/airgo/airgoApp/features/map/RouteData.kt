@@ -27,7 +27,7 @@ data class RouteResponse(
     @com.google.gson.annotations.SerializedName("pollution_details")
     val pollutionDetails: List<List<Double>>, // [[inicio, fin, valor], ...]
     @com.google.gson.annotations.SerializedName("stations_info")
-    val stationsInfo: List<StationInfo>
+    val stationsInfo: List<StationInfo>,
 )
 
 /**
@@ -58,10 +58,10 @@ data class RouteSummary(
 data class StationInfo(
     val zone: String,
     val geoPoint: GeoPointData,
-    val aqi: Int
+    val aqi: Int,
 )
 
 data class GeoPointData(
     val lat: Double,
-    val lon: Double
+    val lon: Double,
 )

@@ -63,9 +63,11 @@ class RouteViewModel : ViewModel() {
     fun onPointSelected(point: GeoPoint) {
         if (selectionMode == MapSelectionMode.START) {
             startPoint = point
+            currentRoute = null // Despintar la ruta actual en canviar el punt inici
             selectionMode = MapSelectionMode.NONE // Tornem a mode normal
         } else if (selectionMode == MapSelectionMode.END) {
             endPoint = point
+            currentRoute = null // Despintar la ruta actual en canviar el punt final
             selectionMode = MapSelectionMode.NONE
         }
     }
@@ -85,6 +87,7 @@ class RouteViewModel : ViewModel() {
      * Si ambdós punts estan definits, es fa la crida a l'API per obtenir la ruta.
      */
     fun calculateRoute() {
+        currentRoute = null // Netejar la visualització anterior a l'hora de recalcular
         val start = startPoint
         val end = endPoint
         if (start != null && end != null) {

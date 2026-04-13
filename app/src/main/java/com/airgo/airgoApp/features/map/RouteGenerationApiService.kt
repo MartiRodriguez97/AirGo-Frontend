@@ -10,4 +10,3 @@ interface RouteGenerationApiService {
         @Body request: RouteRequest,
     ): RouteResponse
 }
-

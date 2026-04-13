@@ -127,7 +127,7 @@ internal fun updateRouteElements(
     val toRemove =
         map.overlays.filter { overlay ->
             (overlay is Marker && overlay.title == "RouteMarker") ||
-                (overlay is FolderOverlay && overlay.name == "RouteLayer")
+                (overlay is FolderOverlay && (overlay.name == "RouteLayer" || overlay.name == "RouteElement"))
         }
     map.overlays.removeAll(toRemove)
 
