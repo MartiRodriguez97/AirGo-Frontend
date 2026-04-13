@@ -53,6 +53,9 @@ private const val MEGABYTES_TO_BYTES = 1024L * 1024L
 private const val MAX_CACHE_MB = 100L
 private const val MAX_CACHE_BYTES = MAX_CACHE_MB * MEGABYTES_TO_BYTES
 
+private const val DEFAULT_LATITUDE = 41.385
+private const val DEFAULT_LONGITUDE = 2.153
+
 /**
  * Classe que encapsula tot l'estat necessari per renderitzar el mapa i les seves capes.
  */
@@ -133,12 +136,13 @@ fun osmView(
     // Gestió d'errors
     errorToastHandlers(context, pollutionViewModel, routeViewModel, bicingViewModel)
 
-    // Si no tenia permissos, demanar-los
-    LaunchedEffect(Unit) {
-        if (!hasLocationPermission) requestLocationPermission()
-        pollutionViewModel.fetchBarcelonaData()
-        bicingViewModel.fetchStations(BCN_LATITUDE, BCN_LONGITUDE)
-    }
+    fetchLocationDataEffect(
+        hasLocationPermission = hasLocationPermission,
+        requestLocationPermission = requestLocationPermission,
+        pollutionViewModel = pollutionViewModel,
+        bicingViewModel = bicingViewModel,
+        context = context,
+    )
 
     // Desactivar les capes quan se surt de la pantalla
     DisposableEffect(Unit) {
@@ -207,6 +211,43 @@ private fun errorToastHandlers(
         routeViewModel.errorMessage?.let { errorMsg ->
             Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
             routeViewModel.clearError()
+        }
+    }
+}
+
+@Composable
+private fun fetchLocationDataEffect(
+    hasLocationPermission: Boolean,
+    requestLocationPermission: () -> Unit,
+    pollutionViewModel: PollutionViewModel,
+    bicingViewModel: BicingViewModel,
+    context: Context,
+) {
+    LaunchedEffect(hasLocationPermission) {
+        if (!hasLocationPermission) {
+            requestLocationPermission()
+            pollutionViewModel.fetchBarcelonaData()
+            bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+        } else {
+            pollutionViewModel.fetchBarcelonaData()
+            try {
+                val locationManager =
+                    context.getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
+                val lastLoc =
+                    locationManager.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER)
+                        ?: locationManager.getLastKnownLocation(
+                            android.location.LocationManager.NETWORK_PROVIDER,
+                        )
+
+                if (lastLoc != null) {
+                    bicingViewModel.fetchStations(lastLoc.latitude, lastLoc.longitude)
+                } else {
+                    bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+                }
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+                bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+            }
         }
     }
 }
