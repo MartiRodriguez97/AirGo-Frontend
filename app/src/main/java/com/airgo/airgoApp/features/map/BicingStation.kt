@@ -1,13 +1,15 @@
 package com.airgo.airgoApp.features.map
 
-import org.osmdroid.util.GeoPoint
+import com.google.gson.annotations.SerializedName
 
 data class BicingStation(
     val id: String,
     val name: String,
-    val geoPoint: GeoPoint,
-    val mechanicalBikes: Int,
-    val electricBikes: Int,
+    val lat: Double,
+    val lon: Double,
+    @SerializedName("bikes_available")
+    val numberBikes: Int,
+    @SerializedName("docks_available")
     val freeSlots: Int,
-    val status: String,
+    val capacity: Int,
 )

@@ -18,6 +18,8 @@ private const val RADI_BARCELONA = 15.0
 
 private const val LOG_TAG = "PollutionViewModel"
 
+enum class MapSelectionMode { NONE, START, END }
+
 /**
  * ViewModel per gestionar les dades de contaminació.
  * S'encarrega de fer la crida a l'API i mantenir l'estat de les estacions.
@@ -47,5 +49,10 @@ class PollutionViewModel : ViewModel() {
                 Log.e(LOG_TAG, "HTTP failure", e)
             }
         }
+    }
+
+    // Netejar l'error per no mostrar el missatge múltiples vegades
+    fun clearError() {
+        errorMessage = null
     }
 }

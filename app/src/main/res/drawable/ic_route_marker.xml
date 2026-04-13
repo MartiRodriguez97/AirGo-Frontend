@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 1. EL PIN (color fijo, sin ID) -->
+    <item>
+        <vector
+            android:width="48dp"
+            android:height="48dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:fillColor="#0081C9"
+                android:pathData="M12,2c-3.87,0 -7,3.13 -7,7 0,5.25 7,13 7,13s7,-7.75 7,-13c0,-3.87 -3.13,-7 -7,-7z" />
+        </vector>
+    </item>
+
+    <!-- 2. EL CÍRCULO BLANCO -->
+    <item
+        android:width="20dp"
+        android:height="20dp"
+        android:gravity="top|center_horizontal"
+        android:top="8dp">
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- 3. LA BANDERA (solo esta cambia de color) -->
+    <item
+        android:id="@+id/flag_layer"
+        android:width="14dp"
+        android:height="14dp"
+        android:gravity="top|center_horizontal"
+        android:top="11dp"
+        android:left="3dp">
+        <vector
+            android:width="11dp"
+            android:height="11dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <!-- Palo oscuro fijo -->
+            <path
+                android:fillColor="#333333"
+                android:pathData="M5,3 L5,21 L7,21 L7,3 Z" />
+            <!-- Tela de la bandera -->
+            <path
+                android:fillColor="#FF0000"
+                android:pathData="M7,3 L7,13 L19,8 L7,3 Z" />
+        </vector>
+    </item>
+
+</layer-list>

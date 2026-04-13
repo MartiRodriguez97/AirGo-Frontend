@@ -15,84 +15,47 @@ object BicingHelper {
     private const val BICING_BLUE = "#0081C9"
     private const val EMPTY_RED = "#FF0000"
     private const val MARKER_ALPHA = 100
-    private const val IN_SERVICE = "IN_SERVICE"
-    private const val PL_CATALUNYA_LAT = 41.3871
-    private const val PL_CATALUNYA_LON = 2.1701
-
-    private const val ARC_TRIOMF_LAT = 41.3914
-    private const val ARC_TRIOMF_LON = 2.1806
-
-    private const val SAGRADA_FAMILIA_LAT = 41.4036
-    private const val SAGRADA_FAMILIA_LON = 2.1744
-
-    private val PL_CATALUNYA_LOCATION = GeoPoint(PL_CATALUNYA_LAT, PL_CATALUNYA_LON)
-    private val ARC_TRIOMF_LOCATION = GeoPoint(ARC_TRIOMF_LAT, ARC_TRIOMF_LON)
-    private val SAGRADA_FAMILIA_LOCATION = GeoPoint(SAGRADA_FAMILIA_LAT, SAGRADA_FAMILIA_LON)
-    private val mockBicingStations =
-        listOf(
-            BicingStation(
-                id = "1",
-                name = "Pl. Catalunya",
-                geoPoint = PL_CATALUNYA_LOCATION,
-                mechanicalBikes = 10,
-                electricBikes = 5,
-                freeSlots = 12,
-                status = IN_SERVICE,
-            ),
-            BicingStation(
-                id = "2",
-                name = "Arc de Triomf",
-                geoPoint = ARC_TRIOMF_LOCATION,
-                mechanicalBikes = 2,
-                electricBikes = 1,
-                freeSlots = 25,
-                status = IN_SERVICE,
-            ),
-            BicingStation(
-                id = "3",
-                name = "Sagrada Família",
-                geoPoint = SAGRADA_FAMILIA_LOCATION,
-                mechanicalBikes = 0,
-                electricBikes = 0,
-                freeSlots = 30,
-                status = IN_SERVICE,
-            ),
-        )
 
     fun createBicingOverlay(
         context: Context,
         map: MapView,
+        stations: List<BicingStation>,
     ): FolderOverlay {
         val folder = FolderOverlay()
+        println("Creant marcadors per ${stations.size} estacions de Bicing")
+        stations.forEach { station ->
+            val lat = station.lat
+            val lon = station.lon
 
-        mockBicingStations.forEach { station ->
-            val hasBikes = (station.mechanicalBikes + station.electricBikes) > 0
-            val baseColor = Color.parseColor(if (hasBikes) BICING_BLUE else EMPTY_RED)
+            if (lat != null && lon != null) {
+                val hasBikes = station.numberBikes > 0
+                val baseColor = Color.parseColor(if (hasBikes) BICING_BLUE else EMPTY_RED)
 
-            val marker = BicingMarker(map, context, baseColor)
-            marker.position = station.geoPoint
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                val marker = BicingMarker(map, context, baseColor)
+                marker.position = GeoPoint(lat, lon)
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-            marker.title = station.name
-            marker.snippet =
-                """
-                🚲 Mecàniques: ${station.mechanicalBikes}
-                ⚡ Elèctriques: ${station.electricBikes}
-                🅿️ Llocs lliures: ${station.freeSlots}
-                """.trimIndent()
+                marker.title = station.name
+                marker.snippet =
+                    """
+                    🚲 Bicicletes: ${station.numberBikes}
+                    🅿️ Capacitat: ${station.capacity}
+                    🟢 Llocs lliures: ${station.freeSlots}
+                    """.trimIndent()
 
-            marker.setOnMarkerClickListener { m, _ ->
-                // Deseleccionar els que abans s'han pres
-                folder.items.forEach { item ->
-                    if (item is BicingMarker) item.setSelected(false, map)
+                marker.setOnMarkerClickListener { m, _ ->
+                    // Deseleccionar els que abans s'han pres
+                    folder.items.forEach { item ->
+                        if (item is BicingMarker) item.setSelected(false, map)
+                    }
+                    // Seleccionar l'actual
+                    (m as BicingMarker).setSelected(true, map)
+                    m.showInfoWindow()
+                    map.controller.animateTo(m.position) // Centrar el mapa a l'estació
+                    true
                 }
-                // Seleccionar l'actual
-                (m as BicingMarker).setSelected(true, map)
-                m.showInfoWindow()
-                map.controller.animateTo(m.position) // Centrar el mapa a l'estació
-                true
+                folder.add(marker)
             }
-            folder.add(marker)
         }
         return folder
     }

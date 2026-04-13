@@ -1,0 +1,206 @@
+package com.airgo.airgoApp.features.map
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsBike
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import org.osmdroid.util.GeoPoint
+
+/**
+ * Aquest fitxer conté tots els elements que es mostren al mapa
+ */
+
+private const val N_DECIMALS = 6
+private const val GPS_CARD_WIDTH = 0.4f
+private const val ROUTE_PANEL_WIDTH = 0.9f
+
+/**
+ * Panell de selecció de ruta.
+ * L'usuari pot escollir el punt d'inici i destí i calcular la ruta més neta.
+ */
+@Composable
+internal fun routeSelectionPanel(
+    state: MapState,
+    modifier: Modifier = Modifier,
+) {
+    androidx.compose.material3.Card(
+        modifier = modifier.fillMaxWidth(ROUTE_PANEL_WIDTH),
+        elevation =
+            androidx.compose.material3.CardDefaults
+                .cardElevation(8.dp),
+    ) {
+        androidx.compose.foundation.layout.Column(Modifier.padding(12.dp)) {
+            // Camp Inici
+            routePointField(
+                label = "Punt d'inici",
+                point = state.startPoint,
+                isSelected = state.selectionMode == MapSelectionMode.START,
+                onClick = { state.onSetSelectionMode(MapSelectionMode.START) },
+            )
+            androidx.compose.foundation.layout
+                .Spacer(Modifier.padding(4.dp))
+            // Camp Destí
+            routePointField(
+                label = "Destí final",
+                point = state.endPoint,
+                isSelected = state.selectionMode == MapSelectionMode.END,
+                onClick = { state.onSetSelectionMode(MapSelectionMode.END) },
+            )
+
+            // Mostrar resum si hi ha ruta
+            state.currentRoute?.summary?.let { summary ->
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                androidx.compose.foundation.layout.Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                ) {
+                    val mins = summary.durationMinutes.toInt()
+
+                    Text(
+                        text = "⏱ $mins min",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = "📏 ${summary.distanceMeters} m",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            }
+
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement =
+                    androidx.compose.foundation.layout.Arrangement
+                        .spacedBy(8.dp),
+            ) {
+                androidx.compose.material3.Button(
+                    onClick = { state.onCalculateRoute() },
+                    enabled = state.startPoint != null && state.endPoint != null && !state.isCalculatingRoute,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    if (state.isCalculatingRoute) {
+                        androidx.compose.foundation.layout.Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp).padding(end = 4.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                strokeWidth = 2.dp,
+                            )
+                            Text("Calculant...")
+                        }
+                    } else {
+                        Text("Calcular")
+                    }
+                }
+
+                androidx.compose.material3.OutlinedButton(
+                    onClick = { state.onClearRoute() },
+                    modifier = Modifier.weight(1f),
+                ) { Text("Netejar") }
+            }
+        }
+    }
+}
+
+/**
+ * Camp de punt (inici i destí) al panell de selecció de ruta.
+ * Mostra el punt seleccionat o un text per indicar que no hi ha cap punt seleccionat.
+ */
+@Composable
+private fun routePointField(
+    label: String,
+    point: GeoPoint?,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    val bgColor = (
+        if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        }
+    )
+    val displayText =
+        if (point != null) {
+            val latToPrint = point.latitude.toString().take(N_DECIMALS)
+            val lonToPrint = point.longitude.toString().take(N_DECIMALS)
+            "$latToPrint, $lonToPrint"
+        } else {
+            label
+        }
+    androidx.compose.material3.Surface(
+        onClick = onClick,
+        color = bgColor,
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        androidx.compose.foundation.layout.Row(
+            Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                if (label.contains("Inici")) Icons.Default.Cloud else Icons.AutoMirrored.Filled.DirectionsBike,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+            androidx.compose.foundation.layout
+                .Spacer(Modifier.padding(start = 8.dp))
+            Text(
+                text = displayText,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
+/**
+ * Missatge de GPS desactivat.
+ */
+@Composable
+internal fun gpsDisabledWarning(modifier: Modifier = Modifier) {
+    androidx.compose.material3.Card(
+        modifier = modifier.fillMaxWidth(GPS_CARD_WIDTH),
+        colors =
+            androidx.compose.material3.CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.85f),
+            ),
+        elevation =
+            androidx.compose.material3.CardDefaults
+                .cardElevation(4.dp),
+    ) {
+        androidx.compose.foundation.layout.Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+        ) {
+            Icon(
+                imageVector = androidx.compose.material.icons.Icons.Default.LocationOff,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(16.dp),
+            )
+            androidx.compose.foundation.layout
+                .Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "GPS desactivat",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        }
+    }
+}

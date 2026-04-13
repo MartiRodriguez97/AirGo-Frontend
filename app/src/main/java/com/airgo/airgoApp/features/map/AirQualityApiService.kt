@@ -1,7 +1,9 @@
 package com.airgo.airgoApp.features.map
 
 import com.airgo.airgoApp.core.network.ApiEndpoints
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 /**
@@ -15,4 +17,9 @@ interface AirQualityApiService {
         @Query("lon") lon: Double,
         @Query("radio") radio: Double,
     ): List<PollutionPoint>
+
+    @POST(ApiEndpoints.AIR_QUALITY)
+    suspend fun getCleanRoute(
+        @Body request: RouteRequest,
+    ): RouteResponse
 }
