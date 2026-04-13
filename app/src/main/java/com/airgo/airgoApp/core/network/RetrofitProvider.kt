@@ -2,6 +2,7 @@ package com.airgo.airgoApp.core.network
 
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.features.login.data.auth.AuthApi
+import com.airgo.airgoApp.features.map.AirQualityApiService
 import com.airgo.airgoApp.features.profile.data.ProfileApi
 import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
 import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
@@ -10,6 +11,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object RetrofitProvider {
     private const val BACKEND_URL = BuildConfig.BACKEND_URL
@@ -24,10 +26,14 @@ object RetrofitProvider {
             chain.proceed(requestBuilder.build())
         }
 
+    const val MIN_TIME_WAITING_FOR_RESPONSE = 30L // segundos
     private val httpClient =
         OkHttpClient
             .Builder()
             .addInterceptor(authInterceptor)
+            .connectTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)
+            .readTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)
+            .writeTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)
             .build()
     private val retrofit: Retrofit =
         Retrofit
@@ -42,4 +48,5 @@ object RetrofitProvider {
     val usernameApi: UsernameApi = retrofit.create(UsernameApi::class.java)
     val titolApi: TitolApi = retrofit.create(TitolApi::class.java)
     val teBiciApi: TeBiciApi = retrofit.create(TeBiciApi::class.java)
+    val airQualityApi: AirQualityApiService = retrofit.create(AirQualityApiService::class.java)
 }
