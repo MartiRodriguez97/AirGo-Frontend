@@ -24,7 +24,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             airGoTheme {
                 Surface(
-                    modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+                    modifier =
+                        androidx.compose.ui.Modifier
+                            .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     var isLoggedIn by rememberSaveable { mutableStateOf(false) }
