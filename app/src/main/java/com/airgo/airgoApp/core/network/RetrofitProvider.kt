@@ -4,6 +4,9 @@ import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.features.login.data.auth.AuthApi
 import com.airgo.airgoApp.features.map.AirQualityApiService
 import com.airgo.airgoApp.features.profile.data.ProfileApi
+import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
+import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
+import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -42,5 +45,8 @@ object RetrofitProvider {
 
     val authApi: AuthApi = retrofit.create(AuthApi::class.java)
     val profileApi: ProfileApi = retrofit.create(ProfileApi::class.java)
+    val usernameApi: UsernameApi = retrofit.create(UsernameApi::class.java)
+    val titolApi: TitolApi = retrofit.create(TitolApi::class.java)
+    val teBiciApi: TeBiciApi = retrofit.create(TeBiciApi::class.java)
     val airQualityApi: AirQualityApiService = retrofit.create(AirQualityApiService::class.java)
 }
