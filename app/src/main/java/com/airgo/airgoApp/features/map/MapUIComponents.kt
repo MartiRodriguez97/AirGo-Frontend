@@ -89,9 +89,24 @@ internal fun routeSelectionPanel(
             ) {
                 androidx.compose.material3.Button(
                     onClick = { state.onCalculateRoute() },
-                    enabled = state.startPoint != null && state.endPoint != null,
+                    enabled = state.startPoint != null && state.endPoint != null && !state.isCalculatingRoute,
                     modifier = Modifier.weight(1f),
-                ) { Text("Calcular") }
+                ) {
+                    if (state.isCalculatingRoute) {
+                        androidx.compose.foundation.layout.Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp).padding(end = 4.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                strokeWidth = 2.dp,
+                            )
+                            Text("Calculant...")
+                        }
+                    } else {
+                        Text("Calcular")
+                    }
+                }
 
                 androidx.compose.material3.OutlinedButton(
                     onClick = { state.onClearRoute() },

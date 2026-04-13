@@ -61,4 +61,9 @@ class PollutionViewModel : ViewModel() {
             }
         }
     }
+
+    // Netejar l'error per no mostrar el missatge múltiples vegades
+    fun clearError() {
+        errorMessage = null
+    }
 }

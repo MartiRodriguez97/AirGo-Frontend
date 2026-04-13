@@ -2,6 +2,7 @@ package com.airgo.airgoApp.features.map
 
 import android.Manifest
 import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -66,6 +67,7 @@ data class MapState(
     val startPoint: org.osmdroid.util.GeoPoint?,
     val endPoint: org.osmdroid.util.GeoPoint?,
     val currentRoute: RouteResponse?,
+    val isCalculatingRoute: Boolean,
     val onPointSelected: (org.osmdroid.util.GeoPoint) -> Unit,
     val onCalculateRoute: () -> Unit,
     val onClearRoute: () -> Unit,
@@ -81,6 +83,7 @@ fun osmView(
     modifier: Modifier = Modifier,
     pollutionViewModel: PollutionViewModel = viewModel(),
     routeViewModel: RouteViewModel = viewModel(),
+    bicingViewModel: BicingViewModel = viewModel(),
 ) {
     val context = LocalContext.current
 
@@ -103,7 +106,10 @@ fun osmView(
     // Capa d'ubicació. Crida a LocationHelper que retorna la capa (overlay) amb la localització
     val locationOverlay = remember { LocationHelper.createLocationOverlay(context, mapView) }
     // Capa de Bicing
-    val bicingOverlay = remember { BicingHelper.createBicingOverlay(context, mapView) }
+    val bicingOverlay =
+        remember(bicingViewModel.stations) {
+            BicingHelper.createBicingOverlay(context, mapView, bicingViewModel.stations)
+        }
 
     // Capa de contaminació
     val pollutionOverlay =
@@ -115,10 +121,14 @@ fun osmView(
     var hasLocationPermission by remember { mutableStateOf(checkInitialLocationPermission(context)) }
     val requestLocationPermission = rememberLocationPermissions { granted -> hasLocationPermission = granted }
 
+    // Gestió d'errors
+    errorToastHandlers(context, pollutionViewModel, routeViewModel, bicingViewModel)
+
     // Si no tenia permissos, demanar-los
     LaunchedEffect(Unit) {
         if (!hasLocationPermission) requestLocationPermission()
         pollutionViewModel.fetchBarcelonaData()
+        bicingViewModel.fetchStations(BCN_LATITUDE, BCN_LONGITUDE)
     }
 
     // Desactivar les capes quan se surt de la pantalla
@@ -138,6 +148,7 @@ fun osmView(
             routeViewModel.startPoint,
             routeViewModel.endPoint,
             routeViewModel.currentRoute,
+            routeViewModel.isLoading,
         ) {
             MapState(
                 mapView = mapView,
@@ -150,6 +161,7 @@ fun osmView(
                 startPoint = routeViewModel.startPoint,
                 endPoint = routeViewModel.endPoint,
                 currentRoute = routeViewModel.currentRoute,
+                isCalculatingRoute = routeViewModel.isLoading,
                 onPointSelected = { routeViewModel.onPointSelected(it) },
                 onCalculateRoute = { routeViewModel.calculateRoute() },
                 onClearRoute = { routeViewModel.clearRoute() },
@@ -161,6 +173,33 @@ fun osmView(
         state = mapState,
         modifier = modifier,
     )
+}
+
+@Composable
+private fun errorToastHandlers(
+    context: Context,
+    pollutionViewModel: PollutionViewModel,
+    routeViewModel: RouteViewModel,
+    bicingViewModel: BicingViewModel,
+) {
+    LaunchedEffect(pollutionViewModel.errorMessage) {
+        pollutionViewModel.errorMessage?.let { errorMsg ->
+            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+            pollutionViewModel.clearError()
+        }
+    }
+    LaunchedEffect(bicingViewModel.errorMessage) {
+        bicingViewModel.errorMessage?.let { errorMsg ->
+            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+            bicingViewModel.clearError()
+        }
+    }
+    LaunchedEffect(routeViewModel.errorMessage) {
+        routeViewModel.errorMessage?.let { errorMsg ->
+            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+            routeViewModel.clearError()
+        }
+    }
 }
 
 /**

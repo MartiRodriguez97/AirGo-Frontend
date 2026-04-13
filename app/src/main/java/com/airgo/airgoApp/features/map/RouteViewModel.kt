@@ -26,6 +26,9 @@ class RouteViewModel : ViewModel() {
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+    var isLoading by mutableStateOf(false)
+        private set
+
     /**
      * Funció per fer la crida a l'API i obtenir la ruta entre els punts seleccionats.
      */
@@ -34,6 +37,7 @@ class RouteViewModel : ViewModel() {
         end: GeoPoint,
     ) {
         viewModelScope.launch {
+            isLoading = true
             try {
                 errorMessage = null // Netegem errors previs
                 val request = RouteRequest(start.latitude, start.longitude, end.latitude, end.longitude)
@@ -47,6 +51,8 @@ class RouteViewModel : ViewModel() {
                 // El servidor ha respost però amb un error (ex: 404 o 500)
                 errorMessage = "El servidor ha donat un error: ${e.code()}"
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
+            } finally {
+                isLoading = false
             }
         }
     }
@@ -83,6 +89,15 @@ class RouteViewModel : ViewModel() {
         val end = endPoint
         if (start != null && end != null) {
             fetchRoute(start, end)
+        } else {
+            errorMessage = "Selecciona un punt d'origen i un de destí per calcular la ruta."
         }
+    }
+
+    /**
+     * Netejar l'error per no mostrar el missatge múltiples vegades
+     */
+    fun clearError() {
+        errorMessage = null
     }
 }

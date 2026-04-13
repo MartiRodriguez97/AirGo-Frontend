@@ -6,4 +6,5 @@ object ApiEndpoints {
 
     const val CHANGE_PROFILE_PICTURE = "api/usuaris/me/profile-pic/"
     const val AIR_QUALITY = "air-quality/"
+    const val BICING = "bicing/"
 }
