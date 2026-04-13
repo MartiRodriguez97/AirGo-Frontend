@@ -40,5 +40,5 @@ interface AuthApi {
     ): Response<AuthResponse>
 
     @GET(ApiEndpoints.USER_ACCOUNT_INFO)
-    suspend fun searchUsers(): Response<UserDetailResponse>
+    suspend fun getCurrentUserProfile(): Response<UserDetailResponse>
 }

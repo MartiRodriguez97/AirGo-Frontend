@@ -18,6 +18,14 @@ object SessionManager {
         email = null
         titol = null
         availableTitols = null
+        punts = null
+        teBici = null
+        pes = null
+        altura = null
+        ratxa = null
+        idioma = null
+        limitRutes = null
+        insignies = null
     }
 
     var punts: Int? = null

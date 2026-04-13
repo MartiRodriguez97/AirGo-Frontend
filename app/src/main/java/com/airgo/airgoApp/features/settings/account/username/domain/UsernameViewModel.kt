@@ -58,7 +58,10 @@ class UsernameViewModel : ViewModel() {
                 } else {
                     val errorBodyString = response.errorBody()?.string()
                     android.util.Log.e("UsernameViewModel", "HTTP ${response.code()}: $errorBodyString")
-                    _uiState.value = UsernameUiState.Error("Error HTTP ${response.code()}: $errorBodyString")
+                    _uiState.value =
+                        UsernameUiState.Error(
+                            "Error HTTP ${response.code()}: No se ha podido actualizar el nombre",
+                        )
                 }
             } catch (e: IOException) {
                 _uiState.value = UsernameUiState.Error("Error de conexión: ${e.message}")

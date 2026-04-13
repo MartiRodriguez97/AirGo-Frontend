@@ -64,7 +64,7 @@ fun accountSettingsScreen(
     // Update local state, initialize with parameters or SessionManager
     var currentDisplayName by remember { mutableStateOf(session.username ?: displayName) }
     var isBikeAvailable by remember {
-        mutableStateOf(session.teBici ?: false) // Ajusta segn tu lgica
+        mutableStateOf(session.teBici ?: false)
     }
 
     handleTeBiciSideEffects(

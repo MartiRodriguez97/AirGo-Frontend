@@ -98,7 +98,7 @@ class LoginViewModel : ViewModel() {
 
     private suspend fun fetchAndSaveUserDetails(session: SessionManager) {
         try {
-            val userResponse = RetrofitProvider.authApi.searchUsers()
+            val userResponse = RetrofitProvider.authApi.getCurrentUserProfile()
             if (userResponse.isSuccessful && userResponse.body() != null) {
                 val userDetails = userResponse.body()!!
                 Log.d("LoginViewModel", "Usuario extraido: $userDetails")

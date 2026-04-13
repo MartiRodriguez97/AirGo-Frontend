@@ -139,7 +139,7 @@ private fun editUsernameForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Modifica el teu nom de usuari que es mostra als altres usuaris de l'aplicaci.",
+            text = "Modifica el teu nom d'usuari, que es mostra a la resta d'usuaris de l'aplicació.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
