@@ -38,9 +38,9 @@ object BicingHelper {
                 marker.title = station.name
                 marker.snippet =
                     """
-                    🚲 Mecàniques: ${station.numberBikes}
+                    🚲 Bicicletes: ${station.numberBikes}
                     🅿️ Capacitat: ${station.capacity}
-                    🟢 Llocs lliures: ${'$'}{station.freeSlots}
+                    🟢 Llocs lliures: ${station.freeSlots}
                     """.trimIndent()
 
                 marker.setOnMarkerClickListener { m, _ ->

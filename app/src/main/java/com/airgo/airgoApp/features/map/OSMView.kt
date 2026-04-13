@@ -105,17 +105,26 @@ fun osmView(
 
     // Capa d'ubicació. Crida a LocationHelper que retorna la capa (overlay) amb la localització
     val locationOverlay = remember { LocationHelper.createLocationOverlay(context, mapView) }
+
     // Capa de Bicing
-    val bicingOverlay =
-        remember(bicingViewModel.stations) {
-            BicingHelper.createBicingOverlay(context, mapView, bicingViewModel.stations)
-        }
+    val bicingOverlay = remember { FolderOverlay() }
+    LaunchedEffect(bicingViewModel.stations) {
+        bicingOverlay.items.clear()
+        bicingOverlay.items.addAll(
+            BicingHelper.createBicingOverlay(context, mapView, bicingViewModel.stations).items,
+        )
+        mapView.invalidate()
+    }
 
     // Capa de contaminació
-    val pollutionOverlay =
-        remember(pollutionViewModel.stations) {
-            PollutionHelper.createPollutionOverlay(mapView, pollutionViewModel.stations)
-        }
+    val pollutionOverlay = remember { FolderOverlay() }
+    LaunchedEffect(pollutionViewModel.stations) {
+        pollutionOverlay.items.clear()
+        pollutionOverlay.items.addAll(
+            PollutionHelper.createPollutionOverlay(mapView, pollutionViewModel.stations).items,
+        )
+        mapView.invalidate()
+    }
 
     // Gestió de permissos
     var hasLocationPermission by remember { mutableStateOf(checkInitialLocationPermission(context)) }
