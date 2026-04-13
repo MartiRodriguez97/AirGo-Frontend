@@ -21,9 +21,13 @@ data class RouteRequest(
  */
 
 data class RouteResponse(
-    val geometry: RouteGeometry,
+    val status: String,
     val summary: RouteSummary,
+    val geometry: RouteGeometry,
+    @com.google.gson.annotations.SerializedName("pollution_details")
     val pollutionDetails: List<List<Double>>, // [[inicio, fin, valor], ...]
+    @com.google.gson.annotations.SerializedName("stations_info")
+    val stationsInfo: List<StationInfo>
 )
 
 /**
@@ -31,6 +35,7 @@ data class RouteResponse(
  * (latitud i longitud) que defineixen el camí a seguir.
  */
 data class RouteGeometry(
+    val type: String,
     val coordinates: List<List<Double>>, // [[lat, lon], [lat, lon], ...]
 )
 
@@ -43,5 +48,20 @@ data class RouteSummary(
     @com.google.gson.annotations.SerializedName("duration_minutes")
     val durationMinutes: Double,
     @com.google.gson.annotations.SerializedName("distance_meters")
-    val distanceMeters: Int,
+    val distanceMeters: Double,
+    @com.google.gson.annotations.SerializedName("duration_seconds")
+    val durationSeconds: Int,
+    @com.google.gson.annotations.SerializedName("aqi_stations_detected")
+    val aqiStationsDetected: Int,
+)
+
+data class StationInfo(
+    val zone: String,
+    val geoPoint: GeoPointData,
+    val aqi: Int
+)
+
+data class GeoPointData(
+    val lat: Double,
+    val lon: Double
 )

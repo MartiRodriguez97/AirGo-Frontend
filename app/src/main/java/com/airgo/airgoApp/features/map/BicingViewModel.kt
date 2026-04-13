@@ -37,6 +37,9 @@ class BicingViewModel : ViewModel() {
             } catch (e: HttpException) {
                 errorMessage = "Error del servidor al carregar el Bicing: ${e.code()}"
                 e.printStackTrace()
+            } catch (e: Exception) {
+                errorMessage = "S'ha produït un error inesperat carregant el Bicing."
+                e.printStackTrace()
             }
         }
     }

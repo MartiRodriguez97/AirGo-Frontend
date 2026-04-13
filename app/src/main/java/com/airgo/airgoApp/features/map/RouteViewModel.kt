@@ -41,7 +41,7 @@ class RouteViewModel : ViewModel() {
             try {
                 errorMessage = null // Netegem errors previs
                 val request = RouteRequest(start.latitude, start.longitude, end.latitude, end.longitude)
-                currentRoute = RetrofitProvider.airQualityApi.getCleanRoute(request)
+                currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
                 Log.d("Conexió exitosa", "La distància és de: ${currentRoute?.summary?.distanceMeters} metres")
             } catch (e: IOException) {
                 // Error de xarxa (ex: no hi ha internet o servidor apagat)

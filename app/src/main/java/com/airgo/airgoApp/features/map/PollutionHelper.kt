@@ -4,6 +4,7 @@ import android.graphics.Color
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
 
 // Constants per a la visualització de la contaminació
@@ -46,6 +47,7 @@ object PollutionHelper {
 
             circle.title = "${station.zone}: AQI ${station.aqi}"
             folder.add(circle)
+
         }
 
         return folder

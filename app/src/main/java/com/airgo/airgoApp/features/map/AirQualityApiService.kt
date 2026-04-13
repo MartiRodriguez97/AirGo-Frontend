@@ -18,8 +18,4 @@ interface AirQualityApiService {
         @Query("radio") radio: Double,
     ): List<PollutionPoint>
 
-    @POST(ApiEndpoints.AIR_QUALITY)
-    suspend fun getCleanRoute(
-        @Body request: RouteRequest,
-    ): RouteResponse
 }
