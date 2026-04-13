@@ -238,6 +238,7 @@ fun rememberLocationPermissions(onPermissionGranted: (Boolean) -> Unit): () -> U
 fun osmMapContainer(
     state: MapState,
     modifier: Modifier = Modifier,
+    bicingViewModel: BicingViewModel = viewModel(),
 ) {
     // Variable per saber si s'activa/desactiva la capa de Bicing
     var showBicing by remember { mutableStateOf(true) }

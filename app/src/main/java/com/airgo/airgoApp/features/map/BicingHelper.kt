@@ -22,35 +22,40 @@ object BicingHelper {
         stations: List<BicingStation>,
     ): FolderOverlay {
         val folder = FolderOverlay()
-
+        println("Creant marcadors per ${stations.size} estacions de Bicing")
         stations.forEach { station ->
-            val hasBikes = (station.mechanicalBikes + station.electricBikes) > 0
-            val baseColor = Color.parseColor(if (hasBikes) BICING_BLUE else EMPTY_RED)
+            val lat = station.geoPoint?.lat
+            val lon = station.geoPoint?.lon
 
-            val marker = BicingMarker(map, context, baseColor)
-            marker.position = GeoPoint(station.geoPoint.lat, station.geoPoint.lon)
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            if (lat != null && lon != null) {
+                val hasBikes = (station.mechanicalBikes + station.electricBikes) > 0
+                val baseColor = Color.parseColor(if (hasBikes) BICING_BLUE else EMPTY_RED)
 
-            marker.title = station.name
-            marker.snippet =
-                """
-                🚲 Mecàniques: ${station.mechanicalBikes}
-                ⚡ Elèctriques: ${station.electricBikes}
-                🅿️ Llocs lliures: ${station.freeSlots}
-                """.trimIndent()
+                val marker = BicingMarker(map, context, baseColor)
+                marker.position = GeoPoint(lat, lon)
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-            marker.setOnMarkerClickListener { m, _ ->
-                // Deseleccionar els que abans s'han pres
-                folder.items.forEach { item ->
-                    if (item is BicingMarker) item.setSelected(false, map)
+                marker.title = station.name
+                marker.snippet =
+                    """
+                    🚲 Mecàniques: ${station.mechanicalBikes}
+                    ⚡ Elèctriques: ${station.electricBikes}
+                    🅿️ Llocs lliures: ${station.freeSlots}
+                    """.trimIndent()
+
+                marker.setOnMarkerClickListener { m, _ ->
+                    // Deseleccionar els que abans s'han pres
+                    folder.items.forEach { item ->
+                        if (item is BicingMarker) item.setSelected(false, map)
+                    }
+                    // Seleccionar l'actual
+                    (m as BicingMarker).setSelected(true, map)
+                    m.showInfoWindow()
+                    map.controller.animateTo(m.position) // Centrar el mapa a l'estació
+                    true
                 }
-                // Seleccionar l'actual
-                (m as BicingMarker).setSelected(true, map)
-                m.showInfoWindow()
-                map.controller.animateTo(m.position) // Centrar el mapa a l'estació
-                true
+                folder.add(marker)
             }
-            folder.add(marker)
         }
         return folder
     }

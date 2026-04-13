@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.map
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,6 +27,10 @@ class BicingViewModel : ViewModel() {
             try {
                 errorMessage = null
                 stations = RetrofitProvider.bicingApi.getBicingStations(lat, lon)
+                Log.d("BicingViewModel", "Conexió exitosa, stations rebuts: ${stations.size}")
+                if (stations.isNotEmpty()) {
+                    Log.d("BicingViewModel", "Primera estació rebuda: ${stations.first()}")
+                }
             } catch (e: IOException) {
                 errorMessage = "Error de connexió al carregar el Bicing. Revisa la teva xarxa."
                 e.printStackTrace()
