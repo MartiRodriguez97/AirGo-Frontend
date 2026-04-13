@@ -22,11 +22,12 @@ class BicingViewModel : ViewModel() {
     fun fetchStations(
         lat: Double,
         lon: Double,
+        radio: Int = 5,
     ) {
         viewModelScope.launch {
             try {
                 errorMessage = null
-                stations = RetrofitProvider.bicingApi.getBicingStations(lat, lon)
+                stations = RetrofitProvider.bicingApi.getBicingStations(lat, lon, radio)
                 Log.d("BicingViewModel", "Conexió exitosa, stations rebuts: ${stations.size}")
                 if (stations.isNotEmpty()) {
                     Log.d("BicingViewModel", "Primera estació rebuda: ${stations.first()}")

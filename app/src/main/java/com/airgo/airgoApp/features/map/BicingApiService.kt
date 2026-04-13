@@ -9,5 +9,6 @@ interface BicingApiService {
     suspend fun getBicingStations(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
+        @Query("radio") radio: Int = 5,
     ): List<BicingStation>
 }
