@@ -29,21 +29,16 @@ import com.airgo.airgoApp.features.login.domain.LoginViewModel
 
 @Composable
 fun loginScreen(onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit = { _, _ -> }) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-        ) {
-            login(
-                modifier = Modifier.align(Alignment.Center),
-                onLoginSuccess = onLoginSuccess,
-            )
-        }
+        login(
+            modifier = Modifier.align(Alignment.Center),
+            onLoginSuccess = onLoginSuccess,
+        )
     }
 }
 

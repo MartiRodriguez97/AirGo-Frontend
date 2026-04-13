@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,26 +23,31 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             airGoTheme {
-                var isLoggedIn by rememberSaveable { mutableStateOf(false) }
-                var userEmail by rememberSaveable { mutableStateOf<String?>(null) }
-                var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
+                Surface(
+                    modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
+                    var isLoggedIn by rememberSaveable { mutableStateOf(false) }
+                    var userEmail by rememberSaveable { mutableStateOf<String?>(null) }
+                    var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
 
-                if (isLoggedIn) {
-                    mainShellScreen(
-                        email = userEmail,
-                        pictureUrl = userPictureUrl,
-                        onLogout = {
-                            isLoggedIn = false
-                            userEmail = null
-                            userPictureUrl = null
-                            com.airgo.airgoApp.core.network.SessionManager.accessToken = null
-                        },
-                    )
-                } else {
-                    loginScreen { email, pictureUrl ->
-                        userEmail = email
-                        userPictureUrl = pictureUrl
-                        isLoggedIn = true
+                    if (isLoggedIn) {
+                        mainShellScreen(
+                            email = userEmail,
+                            pictureUrl = userPictureUrl,
+                            onLogout = {
+                                isLoggedIn = false
+                                userEmail = null
+                                userPictureUrl = null
+                                com.airgo.airgoApp.core.network.SessionManager.accessToken = null
+                            },
+                        )
+                    } else {
+                        loginScreen { email, pictureUrl ->
+                            userEmail = email
+                            userPictureUrl = pictureUrl
+                            isLoggedIn = true
+                        }
                     }
                 }
             }
