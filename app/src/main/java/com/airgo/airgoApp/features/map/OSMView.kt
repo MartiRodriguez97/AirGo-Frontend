@@ -304,7 +304,6 @@ fun osmMapContainer(
                 // Refrescar la ubicació
                 if (state.hasLocationPermission && !state.locationOverlay.isMyLocationEnabled) {
                     state.locationOverlay.enableMyLocation()
-                    state.locationOverlay.enableFollowLocation()
                 }
                 // Mostrar o ocultar les capes segons les variables d'estat
                 state.bicingOverlay.isEnabled = showBicing

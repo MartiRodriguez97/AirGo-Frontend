@@ -49,10 +49,11 @@ class ProfileViewModel : ViewModel() {
                 // Fem la petició al backend
                 val response = RetrofitProvider.profileApi.deleteAccount()
 
-                println("Esperando respuesta del servidor para eliminar cuenta...")
+                println("Esperando resposta del servidor para eliminar cuenta...")
 
                 // Revisem la resposta del servidor
                 if (response.isSuccessful) {
+                    SessionManager.clear()
                     _uiState.value = ProfileUiState.DeleteSuccess
                     println("Cuenta eliminada con éxito en el backend")
                 } else {
@@ -126,7 +127,8 @@ class ProfileViewModel : ViewModel() {
                     // Opcional: Borramos el archivo temporal para no ocupar espacio en el móvil
                     imageFile.delete()
                 } else {
-                    Log.w(TAG, "updateProfilePicture HTTP error code=${response.code()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.w(TAG, "updateProfilePicture HTTP error code=${response.code()}, errorBody=$errorBody")
                     _uiState.value = ProfileUiState.Error("Error del servidor: HTTP ${response.code()}")
                 }
             } catch (e: IOException) {

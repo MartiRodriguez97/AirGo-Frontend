@@ -6,14 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.core.network.RetrofitProvider
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 private const val BCN_LAT = 41.3851
 private const val BCN_LON = 2.1734
+
+private const val RADI_BARCELONA = 15.0
 
 private const val LOG_TAG = "PollutionViewModel"
 
@@ -33,31 +34,19 @@ class PollutionViewModel : ViewModel() {
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
-    // Configuració de Retrofit per accedir a l'API de qualitat de l'aire
-    private val retrofit =
-        Retrofit
-            .Builder()
-            .baseUrl("http://nattech.fib.upc.edu:40330/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-    // Creació de la instància del servei de l'API
-    private val apiService = retrofit.create(AirQualityApiService::class.java)
-
     // Funció per obtenir les dades de contaminació de Barcelona
     fun fetchBarcelonaData() {
         viewModelScope.launch {
             try {
                 errorMessage = null // Netegem errors previs
-                stations = apiService.getPollutionData(BCN_LAT, BCN_LON)
+                stations = RetrofitProvider.airQualityApi.getPollutionData(BCN_LAT, BCN_LON, RADI_BARCELONA)
+                Log.d("Conexió exitosa", "Nombre d'estacions de qualitat d'aire: ${stations.size} estacions")
             } catch (e: IOException) {
-                // Error de xarxa (ex: no hi ha internet o servidor apagat)
-                errorMessage = "Error de connexió al servidor"
-                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
+                errorMessage = "Error de connexió"
+                Log.e(LOG_TAG, "Network failure", e)
             } catch (e: HttpException) {
-                // El servidor ha respost però amb un error (ex: 404 o 500)
-                errorMessage = "El servidor ha donat un error: ${e.code()}"
-                Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
+                errorMessage = "Error: ${e.code()}"
+                Log.e(LOG_TAG, "HTTP failure", e)
             }
         }
     }
