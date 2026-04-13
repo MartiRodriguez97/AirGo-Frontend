@@ -24,11 +24,11 @@ object BicingHelper {
         val folder = FolderOverlay()
         println("Creant marcadors per ${stations.size} estacions de Bicing")
         stations.forEach { station ->
-            val lat = station.geoPoint?.lat
-            val lon = station.geoPoint?.lon
+            val lat = station.lat
+            val lon = station.lon
 
             if (lat != null && lon != null) {
-                val hasBikes = (station.mechanicalBikes + station.electricBikes) > 0
+                val hasBikes = station.numberBikes > 0
                 val baseColor = Color.parseColor(if (hasBikes) BICING_BLUE else EMPTY_RED)
 
                 val marker = BicingMarker(map, context, baseColor)
@@ -38,9 +38,9 @@ object BicingHelper {
                 marker.title = station.name
                 marker.snippet =
                     """
-                    🚲 Mecàniques: ${station.mechanicalBikes}
-                    ⚡ Elèctriques: ${station.electricBikes}
-                    🅿️ Llocs lliures: ${station.freeSlots}
+                    🚲 Mecàniques: ${station.numberBikes}
+                    🅿️ Capacitat: ${station.capacity}
+                    🟢 Llocs lliures: ${'$'}{station.freeSlots}
                     """.trimIndent()
 
                 marker.setOnMarkerClickListener { m, _ ->
