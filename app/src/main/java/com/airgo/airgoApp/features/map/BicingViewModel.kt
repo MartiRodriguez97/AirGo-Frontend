@@ -18,7 +18,6 @@ class BicingViewModel : ViewModel() {
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
-    @Suppress("TooGenericExceptionCaught")
     fun fetchStations(
         lat: Double,
         lon: Double,
@@ -37,9 +36,6 @@ class BicingViewModel : ViewModel() {
                 e.printStackTrace()
             } catch (e: HttpException) {
                 errorMessage = "Error del servidor al carregar el Bicing: ${e.code()}"
-                e.printStackTrace()
-            } catch (e: Exception) {
-                errorMessage = "S'ha produït un error inesperat carregant el Bicing."
                 e.printStackTrace()
             }
         }
