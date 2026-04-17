@@ -23,8 +23,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.airgo.airgoApp.features.activity.activityScreen
-import com.airgo.airgoApp.features.home.homeScreen
 import com.airgo.airgoApp.features.calendar.calendarScreen
+import com.airgo.airgoApp.features.home.homeScreen
 import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.socialScreen
 
