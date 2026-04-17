@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.forum
+package com.airgo.airgoApp.features.calendar
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,8 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun forumScreen() {
+fun calendarScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Pantalla de Forum")
+        Text("Pantalla de Calendari")
     }
 }

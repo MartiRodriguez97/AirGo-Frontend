@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
@@ -23,10 +23,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.airgo.airgoApp.features.activity.activityScreen
-import com.airgo.airgoApp.features.forum.forumScreen
 import com.airgo.airgoApp.features.home.homeScreen
-import com.airgo.airgoApp.features.messages.messagesScreen
+import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.profile.profileScreen
+import com.airgo.airgoApp.features.social.socialScreen
 
 enum class MainShellScreen(
     val label: String,
@@ -34,9 +34,9 @@ enum class MainShellScreen(
     val route: String,
 ) {
     HOME(label = "Home", icon = Icons.Outlined.Home, route = "home"),
-    FORUM(label = "Forum", icon = Icons.Outlined.People, route = "forum"),
+    SOCIAL(label = "Social", icon = Icons.Outlined.People, route = "social"),
     ACTIVITY(label = "Actividad", icon = Icons.AutoMirrored.Outlined.DirectionsRun, route = "activity"),
-    MESSAGES(label = "Mensajes", icon = Icons.Outlined.MailOutline, route = "messages"),
+    CALENDAR(label = "Calendari", icon = Icons.Outlined.CalendarMonth, route = "calendar"),
     PROFILE(label = "Perfil", icon = Icons.Outlined.Person, route = "profile"),
 }
 
@@ -81,14 +81,14 @@ fun mainShellScreen(
             composable(MainShellScreen.HOME.route) {
                 screenWrapper(innerPadding) { homeScreen() }
             }
-            composable(MainShellScreen.FORUM.route) {
-                screenWrapper(innerPadding) { forumScreen() }
+            composable(MainShellScreen.SOCIAL.route) {
+                screenWrapper(innerPadding) { socialScreen() }
             }
             composable(MainShellScreen.ACTIVITY.route) {
                 activityScreen()
             }
-            composable(MainShellScreen.MESSAGES.route) {
-                screenWrapper(innerPadding) { messagesScreen() }
+            composable(MainShellScreen.CALENDAR.route) {
+                screenWrapper(innerPadding) { calendarScreen() }
             }
             composable(MainShellScreen.PROFILE.route) {
                 screenWrapper(innerPadding) {
