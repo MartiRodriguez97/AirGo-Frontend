@@ -41,6 +41,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
@@ -152,11 +153,11 @@ private fun profileScreenLaunchedEffect(
             is ProfileUiState.DeleteSuccess -> onAccountDeleted()
             is ProfileUiState.PictureUpdateSuccess -> {
                 onPictureUpdateSuccess()
-                Toast.makeText(context, "Foto actualitzada correctament", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,context.getString(R.string.profile_picture_update_success), Toast.LENGTH_SHORT).show()
                 onResetUiState() // Resetear el estado tras mostrar el mensaje
             }
             is ProfileUiState.Error -> {
-                Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, uiState.message.asString(context), Toast.LENGTH_LONG).show()
                 onResetUiState()
             }
             else -> {}

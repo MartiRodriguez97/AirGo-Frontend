@@ -1,10 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="profile_badges_zone_title">Zona para insignias y actividades</string>
 
+    <!-- features/profile/components/ -->
+    <string name="profile_badges_zone_title">Zona para insignias y actividades</string>
     <string name="profile_delete_account_button">Eliminar cuenta</string>
     <string name="profile_delete_account_dialog_title">¿Eliminar cuenta?</string>
     <string name="profile_delete_account_dialog_text">¿Seguro que quieres eliminar la cuenta? Esta acción no se puede deshacer.</string>
     <string name="profile_delete_account_confirm">Eliminar</string>
     <string name="profile_delete_account_cancel">Cancelar</string>
+
+    <string name="profile_avatar_description">Foto de perfil</string>
+    <string name="profile_edit_avatar_description">Cambiar foto de perfil</string>
+
+    <string name="profile_no_title">Sin título</string>
+    <string name="profile_photo_linked_success">Foto vinculada correctamente</string>
+
+    <!-- features/profile/ProfileScreen/ -->
+    <string name="profile_picture_update_success">Foto actualizada correctamente</string>
+
+    <!-- core/network/NetworkErrorMapper -->
+    <string name="error_delete_account_http">Error al eliminar la cuenta (HTTP %1$d)</string>
+    <string name="error_process_image">No se ha podido procesar la imagen seleccionada</string>
+    <string name="error_upload_no_url">Foto subida, pero el servidor no ha devuelto la URL</string>
+    <string name="error_server_generic">Error del servidor: HTTP %1$d</string>
+    <string name="error_connection_upload">Error de conexión al subir la imagen</string>
+
+    <!-- core/network/NetworkErrorMapper -->
+    <string name="error_network_unknown_host">No se pudo conectar con el servidor. Revisa tu conexión a internet.</string>
+    <string name="error_network_timeout">Se ha agotado el tiempo de conexión con el servidor. Inténtalo de nuevo.</string>
+    <string name="error_network_ssl">No se pudo establecer una conexión segura.</string>
+    <string name="error_network_generic">Error de red. Por favor, comprueba tu conexión e inténtalo de nuevo.</string>
+
+    <!-- features/login/ui/LoginScreen -->
+    <string name="login_button_google">Iniciar sesión con Google</string>
+    <string name="login_header_description">Logotipo de Airgo</string>
+
+    <!-- features/login/domain/LoginViewModel -->
+    <string name="error_google_no_token">No se pudo obtener el ID Token de Google</string>
+    <string name="error_backend_token_rejected">El servidor ha rechazado el token (HTTP %1$d)</string>
+    <string name="error_backend_token_rejected_details">El servidor ha rechazado el token (HTTP %1$d): %2$s</string>
+    <string name="error_security_permissions">Permisos de red no disponibles</string>
+    <string name="error_invalid_server_response">Respuesta del servidor no válida</string>
 </resources>

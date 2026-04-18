@@ -24,19 +24,20 @@ fun deleteAccountSection(
     uiState: ProfileUiState,
     onDeleteClicked: () -> Unit,
 ) {
+    val state = uiState
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        if (uiState is ProfileUiState.Error) {
+        if (state is ProfileUiState.Error) {
             Text(
-                text = uiState.message,
+                text = state.message.asString(),
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
         }
 
-        if (uiState is ProfileUiState.Loading) {
+        if (state is ProfileUiState.Loading) {
             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         } else {
             deleteAccountButton(onDeleteClicked = onDeleteClicked)

@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">AirGo</string>
+    <string name="app_name" translatable="false">AirGo</string>
+
+    <!-- features/profile/components/ -->
     <string name="profile_badges_zone_title">Badges and activities area</string>
     <string name="profile_delete_account_button">Delete account</string>
     <string name="profile_delete_account_dialog_title">Delete account?</string>
@@ -7,4 +9,36 @@
     <string name="profile_delete_account_confirm">Delete</string>
     <string name="profile_delete_account_cancel">Cancel</string>
 
+    <string name="profile_avatar_description">Profile picture</string>
+    <string name="profile_edit_avatar_description">Change profile picture</string>
+
+    <string name="profile_no_title">No title</string>
+    <string name="profile_photo_linked_success">Photo linked successfully</string>
+
+    <!-- features/profile/ProfileScreen/ -->
+    <string name="profile_picture_update_success">Photo updated successfully</string>
+
+    <!-- features/profile/domain/ProfileViewModel -->
+    <string name="error_delete_account_http">Error deleting account (HTTP %1$d)</string>
+    <string name="error_process_image">Could not process the selected image</string>
+    <string name="error_upload_no_url">Photo uploaded, but the server did not return the URL</string>
+    <string name="error_server_generic">Server error: HTTP %1$d</string>
+    <string name="error_connection_upload">Connection error while uploading image</string>
+
+    <!-- core/network/NetworkErrorMapper -->
+    <string name="error_network_unknown_host">Could not connect to the server. Check your internet connection.</string>
+    <string name="error_network_timeout">The connection to the server timed out. Please try again.</string>
+    <string name="error_network_ssl">Could not establish a secure connection.</string>
+    <string name="error_network_generic">Network error. Please check your connection and try again.</string>
+
+    <!-- features/login/ui/LoginScreen -->
+    <string name="login_button_google">Sign in with Google</string>
+    <string name="login_header_description">Airgo logo</string>
+
+    <!-- features/login/domain/LoginViewModel -->
+    <string name="error_google_no_token">Google ID Token could not be obtained</string>
+    <string name="error_backend_token_rejected">Backend rejected the token (HTTP %1$d)</string>
+    <string name="error_backend_token_rejected_details">Backend rejected the token (HTTP %1$d): %2$s</string>
+    <string name="error_security_permissions">Network permissions not available</string>
+    <string name="error_invalid_server_response">Invalid server response</string>
 </resources>

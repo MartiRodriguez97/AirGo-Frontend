@@ -5,10 +5,12 @@ import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.NetworkErrorMapper
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.FileUtils
+import com.airgo.airgoApp.core.utils.UiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -29,7 +31,7 @@ sealed class ProfileUiState {
     object PictureUpdateSuccess : ProfileUiState()
 
     data class Error(
-        val message: String,
+        val message: UiText,
     ) : ProfileUiState() // Ocurrió un problema
 }
 
@@ -59,7 +61,7 @@ class ProfileViewModel : ViewModel() {
                 } else {
                     // Si el servidor rechaza la petición (ej. el token expiró o hay un error interno)
                     _uiState.value =
-                        ProfileUiState.Error("Error al eliminar la cuenta (HTTP ${response.code()})")
+                        ProfileUiState.Error(UiText.StringResource(R.string.error_delete_account_http, response.code()))
                 }
             } catch (e: IOException) {
                 // Error de red (ej. sin internet)
@@ -81,7 +83,7 @@ class ProfileViewModel : ViewModel() {
                 val imageFile = FileUtils.getFileFromUri(context, uri)
 
                 if (imageFile == null) {
-                    _uiState.value = ProfileUiState.Error("No se pudo procesar la imagen seleccionada")
+                    _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_process_image))
                     return@launch
                 }
 
@@ -119,7 +121,7 @@ class ProfileViewModel : ViewModel() {
                     } else {
                         Log.w(TAG, "updateProfilePicture: respuesta OK pero newImageUrl es null")
                         // Si la petición dio 200 OK pero el backend se olvidó de enviarnos la URL
-                        _uiState.value = ProfileUiState.Error("Foto subida, pero el servidor no devolvió la URL.")
+                        _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_upload_no_url))
                     }
 
                     println("¡Foto subida con éxito al servidor!")
@@ -129,12 +131,12 @@ class ProfileViewModel : ViewModel() {
                 } else {
                     val errorBody = response.errorBody()?.string()
                     Log.w(TAG, "updateProfilePicture HTTP error code=${response.code()}, errorBody=$errorBody")
-                    _uiState.value = ProfileUiState.Error("Error del servidor: HTTP ${response.code()}")
+                    _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_server_generic, response.code()))
                 }
             } catch (e: IOException) {
                 Log.e(TAG, "updateProfilePicture: error de conexión", e)
                 e.printStackTrace()
-                _uiState.value = ProfileUiState.Error("Error de conexión al subir la imagen.")
+                _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_connection_upload))
             }
         }
     }

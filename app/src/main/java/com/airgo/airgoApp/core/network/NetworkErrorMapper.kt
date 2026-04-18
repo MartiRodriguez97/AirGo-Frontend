@@ -1,20 +1,22 @@
 package com.airgo.airgoApp.core.network
 
+import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.utils.UiText
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.net.ssl.SSLException
 
 object NetworkErrorMapper {
-    fun fromIOException(error: IOException): String =
+    fun fromIOException(error: IOException): UiText =
         when (error) {
             is UnknownHostException ->
-                "No se pudo conectar al servidor. Verifica tu conexion a internet."
+                UiText.StringResource(R.string.error_network_unknown_host)
             is SocketTimeoutException ->
-                "La conexion al servidor ha tardado demasiado. Intenta nuevamente."
+                UiText.StringResource(R.string.error_network_timeout)
             is SSLException ->
-                "No se pudo establecer una conexion segura."
+                UiText.StringResource(R.string.error_network_ssl)
             else ->
-                "Error de red. Revisa tu conexion e intentalo otra vez."
+                UiText.StringResource(R.string.error_network_generic)
         }
 }

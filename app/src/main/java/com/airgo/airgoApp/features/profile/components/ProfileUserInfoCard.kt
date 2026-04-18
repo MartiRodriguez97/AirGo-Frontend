@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.R
 
 @Composable
 fun profileUserInfoCard(
@@ -40,7 +42,7 @@ fun profileUserInfoCard(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = titol ?: "Sin título",
+            text = titol ?: stringResource(R.string.profile_no_title),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -48,7 +50,7 @@ fun profileUserInfoCard(
         if (!pictureUrl.isNullOrBlank()) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Foto vinculada correctamente",
+                text = stringResource(R.string.profile_photo_linked_success),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
