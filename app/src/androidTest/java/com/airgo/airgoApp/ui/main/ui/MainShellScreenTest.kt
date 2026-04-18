@@ -23,6 +23,7 @@ class MainShellScreenTest {
                 mainShellScreen(
                     email = "airgo@example.com",
                     pictureUrl = null,
+                    onLogout = TODO(),
                 )
             }
         }
@@ -41,6 +42,7 @@ class MainShellScreenTest {
                 mainShellScreen(
                     email = "airgo@example.com",
                     pictureUrl = "https://example.com/avatar.png",
+                    onLogout = TODO(),
                 )
             }
         }
@@ -60,6 +62,7 @@ class MainShellScreenTest {
                 mainShellScreen(
                     email = "airgo@example.com",
                     pictureUrl = "https://example.com/avatar.png",
+                    onLogout = TODO(),
                 )
             }
         }
@@ -76,6 +79,7 @@ class MainShellScreenTest {
                 mainShellScreen(
                     email = "airgo@example.com",
                     pictureUrl = null,
+                    onLogout = TODO(),
                 )
             }
         }

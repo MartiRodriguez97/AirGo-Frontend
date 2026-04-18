@@ -9,6 +9,8 @@ object ApiEndpoints {
     const val ROUTE_GENERATION = "route-generation/"
     const val BICING = "bicing/"
 
+    const val SEARCH_USERS = "api/usuaris/"
+
     fun getChangeInfoEndpoint(id: Int): String = "api/usuaris/$id/"
 
     fun getAvailableTitolsEndpoint(id: Int): String = "api/usuaris/$id/titols/"
