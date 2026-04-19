@@ -153,7 +153,12 @@ private fun profileScreenLaunchedEffect(
             is ProfileUiState.DeleteSuccess -> onAccountDeleted()
             is ProfileUiState.PictureUpdateSuccess -> {
                 onPictureUpdateSuccess()
-                Toast.makeText(context,context.getString(R.string.profile_picture_update_success), Toast.LENGTH_SHORT).show()
+                Toast
+                    .makeText(
+                        context,
+                        context.getString(R.string.profile_picture_update_success),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 onResetUiState() // Resetear el estado tras mostrar el mensaje
             }
             is ProfileUiState.Error -> {

@@ -7,28 +7,28 @@ import androidx.compose.ui.res.stringResource
 
 sealed class UiText {
     // Para textos que vienen directamente del backend o que aún no has traducido
-    data class DynamicString(val value: String) : UiText()
+    data class DynamicString(
+        val value: String,
+    ) : UiText()
 
     // Para textos que vienen de tu strings.xml (puede tener variables)
     class StringResource(
         @StringRes val resId: Int,
-        vararg val args: Any
+        vararg val args: Any,
     ) : UiText()
 
     // Función para Jetpack Compose
     @Composable
-    fun asString(): String {
-        return when (this) {
+    fun asString(): String =
+        when (this) {
             is DynamicString -> value
             is StringResource -> stringResource(resId, *args)
         }
-    }
 
     // Función para zonas sin @Composable (Toast)
-    fun asString(context: Context): String {
-        return when (this) {
+    fun asString(context: Context): String =
+        when (this) {
             is DynamicString -> value
             is StringResource -> context.getString(resId, *args)
         }
-    }
 }

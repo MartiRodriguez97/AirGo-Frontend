@@ -29,9 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.settings.account.username.domain.UsernameUiState
 import com.airgo.airgoApp.features.settings.account.username.domain.UsernameViewModel
 
@@ -98,12 +100,12 @@ private fun editUsernameHeader(onBackClick: () -> Unit) {
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.acc_back_button),
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "Nom d'usuari",
+            text = stringResource(R.string.account_settings_username_label),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
         )
@@ -131,7 +133,7 @@ private fun editUsernameForm(
         OutlinedTextField(
             value = username,
             onValueChange = onUsernameChange,
-            label = { Text(text = "Nombre de usuario") },
+            label = { Text(text = stringResource(R.string.account_settings_username_label)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
@@ -139,7 +141,7 @@ private fun editUsernameForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Modifica el teu nom d'usuari, que es mostra a la resta d'usuaris de l'aplicació.",
+            text = stringResource(R.string.edit_username_description),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -148,7 +150,7 @@ private fun editUsernameForm(
 
         if (uiState is UsernameUiState.Error) {
             Text(
-                text = uiState.message,
+                text = uiState.message.asString(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -170,7 +172,7 @@ private fun editUsernameForm(
                     strokeWidth = 2.dp,
                 )
             } else {
-                Text(text = "Guardar")
+                Text(text = stringResource(R.string.btn_save))
             }
         }
     }

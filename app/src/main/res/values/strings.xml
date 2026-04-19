@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name" translatable="false">AirGo</string>
 
+    <!-- features/shell/MainShellScreen -->
+    <string name="nav_home" translatable="false">Home</string>
+    <string name="nav_social">Social</string>
+    <string name="nav_activity">Activity</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_profile">Profile</string>
+
     <!-- features/profile/components/ -->
     <string name="profile_badges_zone_title">Badges and activities area</string>
     <string name="profile_delete_account_button">Delete account</string>
@@ -41,4 +48,54 @@
     <string name="error_backend_token_rejected_details">Backend rejected the token (HTTP %1$d): %2$s</string>
     <string name="error_security_permissions">Network permissions not available</string>
     <string name="error_invalid_server_response">Invalid server response</string>
+
+    <!-- features/profile/settings/account/tebici/domain/TeBiciViewModel -->
+    <string name="tebici_error_update_http">Error updating option (HTTP %1$d)</string>
+    <string name="error_connection">Connection error: %1$s</string>
+    <string name="error_http_generic">HTTP Error: %1$s</string>
+
+    <!-- features/profile/settings/account/titols/domain/EditTitolScren -->
+
+    <string name="edit_titol_update_success">Title updated successfully</string>
+    <string name="edit_titol_header_back">Back</string>
+    <string name="edit_titol_header_title">Titles</string>
+    <string name="edit_titol_unlocked_section">Unlocked titles</string>
+    <string name="edit_titol_empty_list">No titles available</string>
+    <string name="edit_titol_button_saving">Saving...</string>
+    <string name="edit_titol_button_save">Save</string>
+
+    <!-- features/profile/settings/account/AccountSettingsScreen -->
+    <string name="account_settings_header">Your account</string>
+    <string name="account_settings_username_label">Username</string>
+    <string name="account_settings_titles_label">Titles</string>
+    <string name="account_settings_bike_available">Bike available</string>
+
+    <string name="acc_back_button">Back</string>
+    <string name="acc_edit_icon">Edit</string>
+
+    <string name="msg_bike_status_updated">Bike status updated</string>
+
+    <!-- features/profile/settings/account/titols/domain/TitolViewModel -->
+    <string name="titol_error_load">Error loading titles: %1$d</string>
+    <string name="titol_error_empty">The title cannot be empty</string>
+    <string name="titol_error_change_http">Error changing title (HTTP %1$d)</string>
+    <string name="error_connection_generic">Connection error. Please try again later.</string>
+    <string name="error_user_not_identified">Error: User not identified.</string>
+    <string name="tebici_error_http_code">HTTP Error %1$d: %2$s</string>
+
+    <!-- features/profile/settings/SettingsScreen-->
+    <string name="settings_no_email">No email</string>
+    <string name="acc_go_to_account_settings">Go to account settings</string>
+
+    <!-- features/profile/settings/account/username/domain/UsernameViewModel -->
+    <string name="error_username_empty">Username cannot be empty.</string>
+    <string name="error_update_username">Could not update the username.</string>
+    <string name="error_http_code_username">HTTP Error %1$d: Could not update the username.</string>
+
+    <!-- features/profile/settings/account/username/EditUserNameScreen-->
+    <string name="edit_username_description">Change your username, which is displayed to other users of the application.</string>
+    <string name="btn_save">Save</string>
+
+
+
 </resources>

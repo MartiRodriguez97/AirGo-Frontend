@@ -131,7 +131,13 @@ class ProfileViewModel : ViewModel() {
                 } else {
                     val errorBody = response.errorBody()?.string()
                     Log.w(TAG, "updateProfilePicture HTTP error code=${response.code()}, errorBody=$errorBody")
-                    _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_server_generic, response.code()))
+                    _uiState.value =
+                        ProfileUiState.Error(
+                            UiText.StringResource(
+                                R.string.error_server_generic,
+                                response.code(),
+                            ),
+                        )
                 }
             } catch (e: IOException) {
                 Log.e(TAG, "updateProfilePicture: error de conexión", e)

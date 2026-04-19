@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
+    <!-- features/shell/MainShellScreen -->
+    <string name="nav_social">Social</string>
+    <string name="nav_activity">Activitat</string>
+    <string name="nav_calendar">Calendari</string>
+    <string name="nav_profile">Perfil</string>
+
     <!-- features/profile/components/ -->
     <string name="profile_badges_zone_title">Zona per insignies i activitats</string>
     <string name="profile_delete_account_button">Eliminar compte</string>
@@ -41,5 +48,51 @@
     <string name="error_backend_token_rejected_details">El servidor ha rebutjat el token (HTTP %1$d): %2$s</string>
     <string name="error_security_permissions">Permisos de xarxa no disponibles</string>
     <string name="error_invalid_server_response">Resposta del servidor no vàlida</string>
+
+    <!-- features/profile/settings/account/tebici/domain/TeBiciViewModel -->
+    <string name="tebici_error_update_http">Error en actualitzar l\'opció (HTTP %1$d)</string>
+    <string name="error_connection">Error de connexió: %1$s</string>
+    <string name="error_http_generic">Error HTTP: %1$s</string>
+
+    <!-- features/profile/settings/account/titols/domain/EditTitolScren -->
+    <string name="edit_titol_update_success">Títol actualitzat correctament</string>
+    <string name="edit_titol_header_back">Enrere</string>
+    <string name="edit_titol_header_title">Títols</string>
+    <string name="edit_titol_unlocked_section">Títols desbloquejats</string>
+    <string name="edit_titol_empty_list">No hi ha títols disponibles</string>
+    <string name="edit_titol_button_saving">Desant...</string>
+    <string name="edit_titol_button_save">Desar</string>
+
+    <!-- features/profile/settings/account/AccountSettingsScreen -->
+    <string name="account_settings_header">El teu compte</string>
+    <string name="account_settings_username_label">Nom d\'usuari</string>
+    <string name="account_settings_titles_label">Títols</string>
+    <string name="account_settings_bike_available">Bicicleta disponible</string>
+
+    <string name="acc_back_button">Enrere</string>
+    <string name="acc_edit_icon">Editar</string>
+
+    <string name="msg_bike_status_updated">Estat de la bicicleta actualitzat</string>
+
+    <!-- features/profile/settings/account/titols/domain/TitolViewModel -->
+    <string name="titol_error_load">Error en carregar els títols: %1$d</string>
+    <string name="titol_error_empty">El títol no pot estar buit</string>
+    <string name="titol_error_change_http">Error en canviar el títol (HTTP %1$d)</string>
+    <string name="error_connection_generic">Error de connexió. Si us plau, torna-ho a intentar més tard.</string>
+    <string name="error_user_not_identified">Error: Usuari no identificat.</string>
+    <string name="tebici_error_http_code">Error HTTP %1$d: %2$s</string>
+
+    <!-- features/profile/settings/SettingsScreen-->
+    <string name="settings_no_email">Sense correu electrònic</string>
+    <string name="acc_go_to_account_settings">Anar als paràmetres del compte</string>
+
+    <!-- features/profile/settings/account/username/domain/UsernameViewModel -->
+    <string name="error_username_empty">El nom d\'usuari no pot estar buit.</string>
+    <string name="error_update_username">No s\'ha pogut actualitzar el nom d\'usuari.</string>
+    <string name="error_http_code_username">Error HTTP %1$d: No s\'ha pogut actualitzar el nom d\'usuari.</string>
+
+    <!-- features/profile/settings/account/username/EditUserNameScreen-->
+    <string name="edit_username_description">Canvia el teu nom d\'usuari, que és el que es mostra als altres usuaris de l\'aplicació.</string>
+    <string name="btn_save">Desar</string>
 
 </resources>

@@ -82,7 +82,7 @@ fun googleLoginButton(
                 if (currentState is LoginUiState.Error) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = currentState .message.asString(),
+                        text = currentState.message.asString(),
                         color = MaterialTheme.colorScheme.error,
                     )
                 }

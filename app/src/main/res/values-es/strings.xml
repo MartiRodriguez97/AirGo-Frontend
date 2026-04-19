@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- features/shell/MainShellScreen -->
+    <string name="nav_social">Social</string>
+    <string name="nav_activity">Actividad</string>
+    <string name="nav_calendar">Calendario</string>
+    <string name="nav_profile">Perfil</string>
+
+
     <!-- features/profile/components/ -->
     <string name="profile_badges_zone_title">Zona para insignias y actividades</string>
     <string name="profile_delete_account_button">Eliminar cuenta</string>
@@ -41,4 +48,50 @@
     <string name="error_backend_token_rejected_details">El servidor ha rechazado el token (HTTP %1$d): %2$s</string>
     <string name="error_security_permissions">Permisos de red no disponibles</string>
     <string name="error_invalid_server_response">Respuesta del servidor no válida</string>
+
+    <!-- features/profile/settings/account/tebici/domain/TeBiciViewModel -->
+    <string name="tebici_error_update_http">Error al actualizar la opción (HTTP %1$d)</string>
+    <string name="error_connection">Error de conexión: %1$s</string>
+    <string name="error_http_generic">Error HTTP: %1$s</string>
+
+    <!-- features/profile/settings/account/titols/domain/EditTitolScren -->
+    <string name="edit_titol_update_success">Título actualizado correctamente</string>
+    <string name="edit_titol_header_back">Atrás</string>
+    <string name="edit_titol_header_title">Títulos</string>
+    <string name="edit_titol_unlocked_section">Títulos desbloqueados</string>
+    <string name="edit_titol_empty_list">No hay títulos disponibles</string>
+    <string name="edit_titol_button_saving">Guardando...</string>
+    <string name="edit_titol_button_save">Guardar</string>
+
+    <!-- features/profile/settings/account/AccountSettingsScreen -->
+    <string name="account_settings_header">Tu cuenta</string>
+    <string name="account_settings_username_label">Nombre de usuario</string>
+    <string name="account_settings_titles_label">Títulos</string>
+    <string name="account_settings_bike_available">Bicicleta disponible</string>
+
+    <string name="acc_back_button">Atrás</string>
+    <string name="acc_edit_icon">Editar</string>
+
+    <string name="msg_bike_status_updated">Estado de la bicicleta actualizado</string>
+
+    <!-- features/profile/settings/account/titols/domain/TitolViewModel -->
+    <string name="titol_error_load">Error al cargar los títulos: %1$d</string>
+    <string name="titol_error_empty">El título no puede estar vacío</string>
+    <string name="titol_error_change_http">Error al cambiar el título (HTTP %1$d)</string>
+    <string name="error_connection_generic">Error de conexión. Por favor, inténtalo de nuevo más tarde.</string>
+    <string name="error_user_not_identified">Error: Usuario no identificado.</string>
+    <string name="tebici_error_http_code">Error HTTP %1$d: %2$s</string>
+
+    <!-- features/profile/settings/SettingsScreen-->
+    <string name="settings_no_email">Sin correo electrónico</string>
+    <string name="acc_go_to_account_settings">Ir a ajustes de la cuenta</string>
+
+    <!-- features/profile/settings/account/username/domain/UsernameViewModel -->
+    <string name="error_username_empty">El nombre de usuario no puede estar vacío.</string>
+    <string name="error_update_username">No se pudo actualizar el nombre de usuario.</string>
+    <string name="error_http_code_username">Error HTTP %1$d: No se pudo actualizar el nombre de usuario.</string>
+
+    <!-- features/profile/settings/account/username/EditUserNameScreen-->
+    <string name="edit_username_description">Cambia tu nombre de usuario, que es el que se muestra a otros usuarios de la aplicación.</string>
+    <string name="btn_save">Guardar</string>
 </resources>

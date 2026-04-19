@@ -31,9 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import com.airgo.airgoApp.features.settings.account.titols.domain.TitolUiState
 import com.airgo.airgoApp.features.settings.account.titols.domain.TitolViewModel
@@ -55,13 +58,18 @@ fun editTitolScreen(
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is TitolUiState.Success -> {
-                Toast.makeText(context, "Título actualizado correctamente", Toast.LENGTH_SHORT).show()
+                Toast
+                    .makeText(
+                        context,
+                        context.getString(R.string.edit_titol_update_success),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 onSave(titol)
                 viewModel.resetUiState()
                 onBackClick()
             }
             is TitolUiState.Error -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, state.message.asString(context), Toast.LENGTH_LONG).show()
                 viewModel.resetUiState()
             }
             else -> {}
@@ -114,12 +122,12 @@ private fun editTitolHeader(onBackClick: () -> Unit) {
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.edit_titol_header_back),
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "Títulos",
+            text = stringResource(R.string.edit_titol_header_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
         )
@@ -133,7 +141,7 @@ private fun editTitolHeader(onBackClick: () -> Unit) {
 private fun editTitolForm(
     titol: String,
     availableTitols: List<UserTitol>,
-    loadError: String?,
+    loadError: UiText?,
     onTitolChange: (String) -> Unit,
     currentTitol: String,
     isLoading: Boolean,
@@ -146,7 +154,7 @@ private fun editTitolForm(
                 .padding(16.dp),
     ) {
         Text(
-            text = "Títols desbloquejats",
+            text = stringResource(R.string.edit_titol_unlocked_section),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
@@ -155,13 +163,13 @@ private fun editTitolForm(
 
         if (loadError != null) {
             Text(
-                text = loadError,
+                text = loadError.asString(),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.error,
             )
         } else if (availableTitols.isEmpty()) {
             Text(
-                text = "No hi ha títols disponibles",
+                text = stringResource(R.string.edit_titol_empty_list),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -202,7 +210,14 @@ private fun editTitolForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = titol.isNotBlank() && titol != currentTitol && !isLoading,
         ) {
-            Text(text = if (isLoading) "Guardando..." else "Guardar")
+            Text(
+                text =
+                    if (isLoading) {
+                        stringResource(R.string.edit_titol_button_saving)
+                    } else {
+                        stringResource(R.string.edit_titol_button_save)
+                    },
+            )
         }
     }
 }

@@ -80,13 +80,17 @@ class LoginViewModel : ViewModel() {
                 } else {
                     val rawError = response.errorBody()?.string()
                     val backendMessage = extractBackendMessage(rawError)
-                    val UiText =
+                    val uiText =
                         if (backendMessage.isNullOrBlank()) {
                             UiText.StringResource(R.string.error_backend_token_rejected, response.code())
                         } else {
-                            UiText.StringResource(R.string.error_backend_token_rejected_details, response.code(), backendMessage)
+                            UiText.StringResource(
+                                R.string.error_backend_token_rejected_details,
+                                response.code(),
+                                backendMessage,
+                            )
                         }
-                    _uiState.value = LoginUiState.Error(UiText)
+                    _uiState.value = LoginUiState.Error(uiText)
                 }
             } catch (e: IOException) {
                 _uiState.value = LoginUiState.Error(NetworkErrorMapper.fromIOException(e))
