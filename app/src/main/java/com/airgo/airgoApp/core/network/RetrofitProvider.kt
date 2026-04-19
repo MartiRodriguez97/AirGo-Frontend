@@ -9,7 +9,7 @@ import com.airgo.airgoApp.features.profile.data.ProfileApi
 import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
 import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
 import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
-import com.airgo.airgoApp.features.social.data.SocialApi
+import com.airgo.airgoApp.features.social.SocialApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
