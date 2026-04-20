@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.utils.UiText
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -31,7 +33,7 @@ class PollutionViewModel : ViewModel() {
         private set
 
     // Missatge d'error en cas que la crida a l'API falli
-    var errorMessage by mutableStateOf<String?>(null)
+    var errorMessage by mutableStateOf<UiText?>(null)
         private set
 
     // Funció per obtenir les dades de contaminació de Barcelona
@@ -42,10 +44,10 @@ class PollutionViewModel : ViewModel() {
                 stations = RetrofitProvider.airQualityApi.getPollutionData(BCN_LAT, BCN_LON, RADI_BARCELONA)
                 Log.d("Conexió exitosa", "Nombre d'estacions de qualitat d'aire: ${stations.size} estacions")
             } catch (e: IOException) {
-                errorMessage = "Error de connexió"
+                errorMessage = UiText.StringResource(R.string.error_pollution_connection)
                 Log.e(LOG_TAG, "Network failure", e)
             } catch (e: HttpException) {
-                errorMessage = "Error: ${e.code()}"
+                errorMessage = UiText.StringResource(R.string.error_pollution_http, e.code())
                 Log.e(LOG_TAG, "HTTP failure", e)
             }
         }

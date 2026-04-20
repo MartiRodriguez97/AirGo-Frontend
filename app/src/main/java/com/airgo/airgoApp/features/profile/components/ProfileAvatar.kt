@@ -28,8 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -81,7 +83,7 @@ fun profileAvatar(
 private fun avatarImage(bitmap: Bitmap) {
     Image(
         bitmap = bitmap.asImageBitmap(),
-        contentDescription = "Foto de perfil",
+        contentDescription = stringResource(R.string.profile_avatar_description),
         contentScale = ContentScale.Crop,
         modifier =
             Modifier
@@ -146,7 +148,7 @@ private fun BoxScope.avatarEditButton(onEditClick: () -> Unit) {
     ) {
         Icon(
             imageVector = Icons.Default.Edit,
-            contentDescription = "Canviar foto de perfil",
+            contentDescription = stringResource(R.string.profile_edit_avatar_description),
             modifier = Modifier.size(18.dp),
         )
     }

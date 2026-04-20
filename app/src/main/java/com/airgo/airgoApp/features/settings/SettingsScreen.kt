@@ -34,8 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -109,7 +111,7 @@ private fun settingsHeader(onBackClick: () -> Unit) {
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.acc_back_button),
             )
         }
     }
@@ -142,7 +144,7 @@ private fun settingsUserProfile(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = email ?: "Sense correu",
+            text = email ?: stringResource(R.string.settings_no_email),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -172,7 +174,7 @@ private fun settingsProfilePicture(
         if (avatarBitmap != null) {
             Image(
                 bitmap = avatarBitmap!!.asImageBitmap(),
-                contentDescription = "Profile Picture",
+                contentDescription = stringResource(R.string.profile_avatar_description),
                 modifier =
                     Modifier
                         .size(80.dp)
@@ -228,13 +230,13 @@ private fun settingsAccountOption(onAccountSettingsClick: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            text = "El teu compte",
+            text = stringResource(R.string.account_settings_header),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
         )
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-            contentDescription = "Go to account settings",
+            contentDescription = stringResource(R.string.acc_go_to_account_settings),
             modifier = Modifier.size(24.dp),
         )
     }

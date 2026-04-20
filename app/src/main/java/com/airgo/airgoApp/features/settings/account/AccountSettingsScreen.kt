@@ -39,9 +39,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
@@ -159,11 +161,11 @@ private fun handleTeBiciSideEffects(
     LaunchedEffect(uiState) {
         when (uiState) {
             is TeBiciUiState.Success -> {
-                Toast.makeText(context, "Estado de la bicicleta actualizado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.msg_bike_status_updated), Toast.LENGTH_SHORT).show()
                 viewModel.resetUiState()
             }
             is TeBiciUiState.Error -> {
-                Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, uiState.message.asString(context), Toast.LENGTH_LONG).show()
                 onResetBikeAvailability()
                 viewModel.resetUiState()
             }
@@ -221,12 +223,12 @@ private fun accountSettingsHeader(onBackClick: () -> Unit) {
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.acc_back_button),
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "Tu cuenta",
+            text = stringResource(id = R.string.account_settings_header),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
         )
@@ -251,7 +253,7 @@ private fun usernameRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Nombre de usuario",
+            text = stringResource(R.string.account_settings_username_label),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )
@@ -263,7 +265,7 @@ private fun usernameRow(
         Spacer(modifier = Modifier.width(8.dp))
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.ArrowForwardIos,
-            contentDescription = "Editar",
+            contentDescription = stringResource(R.string.acc_edit_icon),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(16.dp),
         )
@@ -288,7 +290,7 @@ private fun titolRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Títulos",
+            text = stringResource(R.string.account_settings_titles_label),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )
@@ -300,7 +302,7 @@ private fun titolRow(
         Spacer(modifier = Modifier.width(8.dp))
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.ArrowForwardIos,
-            contentDescription = "Editar",
+            contentDescription = stringResource(R.string.acc_edit_icon),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(16.dp),
         )
@@ -326,7 +328,7 @@ private fun bicycleAvailableRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Bicicleta disponible",
+            text = stringResource(R.string.account_settings_bike_available),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )

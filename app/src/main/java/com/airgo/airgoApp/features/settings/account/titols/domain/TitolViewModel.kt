@@ -3,9 +3,11 @@ package com.airgo.airgoApp.features.settings.account.titols.domain
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.settings.account.titols.data.ChangeTitolRequest
 import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +23,7 @@ sealed class TitolUiState {
     object Success : TitolUiState()
 
     data class Error(
-        val message: String,
+        val message: UiText,
     ) : TitolUiState()
 }
 
@@ -33,8 +35,8 @@ class TitolViewModel : ViewModel() {
     private val _availableTitols = MutableStateFlow<List<UserTitol>>(emptyList())
     val availableTitols: StateFlow<List<UserTitol>> = _availableTitols
 
-    private val _loadError = MutableStateFlow<String?>(null)
-    val loadError: StateFlow<String?> = _loadError
+    private val _loadError = MutableStateFlow<UiText?>(null)
+    val loadError: StateFlow<UiText?> = _loadError
 
     init {
         loadAvailableTitols()
@@ -61,21 +63,21 @@ class TitolViewModel : ViewModel() {
                 } else {
                     val errorBody = response.errorBody()?.string()
                     Log.e("TitolViewModel", "Error fetching titols HTTP ${response.code()}: $errorBody")
-                    _loadError.value = "Error al cargar títulos: ${response.code()}"
+                    _loadError.value = UiText.StringResource(R.string.titol_error_load, response.code())
                 }
             } catch (e: IOException) {
                 Log.e("TitolViewModel", "Network error fetching titols", e)
-                _loadError.value = "No s'ha pogut connectar en aquests moments."
+                _loadError.value = UiText.StringResource(R.string.error_connection_generic)
             } catch (e: retrofit2.HttpException) {
                 Log.e("TitolViewModel", "HTTP Exception fetching titols", e)
-                _loadError.value = "Error HTTP: ${e.message}"
+                _loadError.value = UiText.StringResource(R.string.tebici_error_http_code, e.code(), e.message())
             }
         }
     }
 
     fun changeTitol(newTitol: String) {
         if (newTitol.isBlank()) {
-            _uiState.value = TitolUiState.Error("El título no puede estar vacío.")
+            _uiState.value = TitolUiState.Error(UiText.StringResource(R.string.titol_error_empty))
             return
         }
 
@@ -85,7 +87,7 @@ class TitolViewModel : ViewModel() {
             try {
                 val userId = SessionManager.userId
                 if (userId == null) {
-                    _uiState.value = TitolUiState.Error("Error: Usuario no identificado.")
+                    _uiState.value = TitolUiState.Error(UiText.StringResource(R.string.error_user_not_identified))
                     return@launch
                 }
 
@@ -102,14 +104,30 @@ class TitolViewModel : ViewModel() {
                 } else {
                     val errorBodyString = response.errorBody()?.string()
                     Log.e("TitolViewModel", "Error changing titol HTTP ${response.code()}: $errorBodyString")
-                    _uiState.value = TitolUiState.Error("Error HTTP ${response.code()}: $errorBodyString")
+                    _uiState.value =
+                        TitolUiState.Error(
+                            UiText.StringResource(
+                                R.string.titol_error_change_http,
+                                response.code(),
+                            ),
+                        )
                 }
             } catch (e: IOException) {
                 Log.e("TitolViewModel", "Network error changing titol", e)
-                _uiState.value = TitolUiState.Error("Error de conexión: ${e.message}")
+                _uiState.value =
+                    TitolUiState.Error(
+                        UiText.StringResource(R.string.error_connection_generic),
+                    )
             } catch (e: retrofit2.HttpException) {
                 Log.e("TitolViewModel", "HTTP Exception changing titol", e)
-                _uiState.value = TitolUiState.Error("Error HTTP: ${e.message}")
+                _uiState.value =
+                    TitolUiState.Error(
+                        UiText.StringResource(
+                            R.string.tebici_error_http_code,
+                            e.code(),
+                            e.message(),
+                        ),
+                    )
             }
         }
     }

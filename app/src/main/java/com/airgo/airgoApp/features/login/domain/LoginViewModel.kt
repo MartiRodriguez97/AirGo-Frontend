@@ -4,9 +4,11 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.NetworkErrorMapper
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.login.data.auth.GoogleTokenRequest
 import com.airgo.airgoApp.features.login.data.auth.signInWithGoogle
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,7 @@ sealed class LoginUiState {
     ) : LoginUiState()
 
     data class Error(
-        val message: String,
+        val message: UiText,
     ) : LoginUiState()
 }
 
@@ -49,7 +51,7 @@ class LoginViewModel : ViewModel() {
                 println("Google ID Token: $idToken")
 
                 if (idToken.isNullOrBlank()) {
-                    _uiState.value = LoginUiState.Error("No se obtuvo idToken de Google")
+                    _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_google_no_token))
                     return@launch
                 }
 
@@ -78,20 +80,24 @@ class LoginViewModel : ViewModel() {
                 } else {
                     val rawError = response.errorBody()?.string()
                     val backendMessage = extractBackendMessage(rawError)
-                    val message =
+                    val uiText =
                         if (backendMessage.isNullOrBlank()) {
-                            "Backend rechazó el token (HTTP ${response.code()})"
+                            UiText.StringResource(R.string.error_backend_token_rejected, response.code())
                         } else {
-                            "Backend rechazó el token (HTTP ${response.code()}): $backendMessage"
+                            UiText.StringResource(
+                                R.string.error_backend_token_rejected_details,
+                                response.code(),
+                                backendMessage,
+                            )
                         }
-                    _uiState.value = LoginUiState.Error(message)
+                    _uiState.value = LoginUiState.Error(uiText)
                 }
             } catch (e: IOException) {
                 _uiState.value = LoginUiState.Error(NetworkErrorMapper.fromIOException(e))
             } catch (_: SecurityException) {
-                _uiState.value = LoginUiState.Error("Permisos de red no disponibles")
+                _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_security_permissions))
             } catch (_: IllegalStateException) {
-                _uiState.value = LoginUiState.Error("Respuesta invalida del servidor")
+                _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_invalid_server_response))
             }
         }
     }

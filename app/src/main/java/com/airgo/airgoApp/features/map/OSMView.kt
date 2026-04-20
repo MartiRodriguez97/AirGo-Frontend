@@ -33,9 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.R
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -196,8 +198,8 @@ private fun errorToastHandlers(
     bicingViewModel: BicingViewModel,
 ) {
     LaunchedEffect(pollutionViewModel.errorMessage) {
-        pollutionViewModel.errorMessage?.let { errorMsg ->
-            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+        pollutionViewModel.errorMessage?.let { uiText ->
+            Toast.makeText(context, uiText.asString(context), Toast.LENGTH_LONG).show()
             pollutionViewModel.clearError()
         }
     }
@@ -208,8 +210,8 @@ private fun errorToastHandlers(
         }
     }
     LaunchedEffect(routeViewModel.errorMessage) {
-        routeViewModel.errorMessage?.let { errorMsg ->
-            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+        routeViewModel.errorMessage?.let { uiText ->
+            Toast.makeText(context, uiText.asString(context), Toast.LENGTH_LONG).show()
             routeViewModel.clearError()
         }
     }
@@ -404,7 +406,7 @@ private fun BoxScope.layerSelector(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.primary,
         ) {
-            Icon(Icons.Default.Layers, contentDescription = "Capas")
+            Icon(Icons.Default.Layers, contentDescription = stringResource(R.string.map_layers_description))
         }
 
         DropdownMenu(
@@ -416,7 +418,7 @@ private fun BoxScope.layerSelector(
                 modifier = Modifier.background(if (showBicing) activeBg else inactiveBg),
                 text = {
                     Text(
-                        text = "Estacions Bicing",
+                        text = stringResource(R.string.map_layer_bicing),
                         color = if (showBicing) MaterialTheme.colorScheme.primary else Color.Unspecified,
                     )
                 },
@@ -437,7 +439,7 @@ private fun BoxScope.layerSelector(
                 modifier = Modifier.background(if (showPollution) activeBg else inactiveBg),
                 text = {
                     Text(
-                        text = "Qualitat de l'aire",
+                        text = stringResource(R.string.map_layer_pollution),
                         color = if (showPollution) MaterialTheme.colorScheme.primary else Color.Unspecified,
                     )
                 },

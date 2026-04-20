@@ -2,9 +2,11 @@ package com.airgo.airgoApp.features.settings.account.tebici.domain
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.settings.account.tebici.data.UpdateBikeRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +21,7 @@ sealed class TeBiciUiState {
     object Success : TeBiciUiState()
 
     data class Error(
-        val message: String,
+        val message: UiText,
     ) : TeBiciUiState()
 }
 
@@ -45,15 +47,24 @@ class TeBiciViewModel : ViewModel() {
                     } else {
                         val errBody = response.errorBody()?.string()
                         android.util.Log.e("TeBiciViewModel", "HTTP ${response.code()}: $errBody")
-                        _uiState.value = TeBiciUiState.Error("Error al cambiar opción (HTTP ${response.code()})")
+                        _uiState.value =
+                            TeBiciUiState.Error(
+                                UiText.StringResource(
+                                    R.string.tebici_error_update_http,
+                                    response.code(),
+                                ),
+                            )
                     }
                 } catch (e: IOException) {
-                    _uiState.value = TeBiciUiState.Error("Error de conexión: ${e.message}")
+                    _uiState.value =
+                        TeBiciUiState.Error(
+                            UiText.StringResource(R.string.error_connection, e.message ?: ""),
+                        )
                 } catch (e: retrofit2.HttpException) {
-                    _uiState.value = TeBiciUiState.Error("Error HTTP: ${e.message}")
+                    UiText.StringResource(R.string.error_http_generic, e.message ?: "Unknown")
                 }
             } else {
-                _uiState.value = TeBiciUiState.Error("Error: Usuario no identificado.")
+                UiText.StringResource(R.string.error_user_not_identified)
             }
         }
     }

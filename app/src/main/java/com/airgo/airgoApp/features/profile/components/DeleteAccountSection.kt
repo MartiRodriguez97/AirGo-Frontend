@@ -14,7 +14,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 
 @Composable
@@ -22,19 +24,20 @@ fun deleteAccountSection(
     uiState: ProfileUiState,
     onDeleteClicked: () -> Unit,
 ) {
+    val state = uiState
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        if (uiState is ProfileUiState.Error) {
+        if (state is ProfileUiState.Error) {
             Text(
-                text = uiState.message,
+                text = state.message.asString(),
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
         }
 
-        if (uiState is ProfileUiState.Loading) {
+        if (state is ProfileUiState.Loading) {
             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         } else {
             deleteAccountButton(onDeleteClicked = onDeleteClicked)
@@ -58,7 +61,7 @@ fun deleteAccountButton(onDeleteClicked: () -> Unit) {
             ),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Text("Eliminar compte")
+        Text(stringResource(R.string.profile_delete_account_button))
     }
 }
 
@@ -70,10 +73,10 @@ fun deleteAccountDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = "Eliminar compte?")
+            Text(text = stringResource(R.string.profile_delete_account_dialog_title))
         },
         text = {
-            Text(text = "Segur que vols eliminar el compte? Aquesta acció no es pot desfer.")
+            Text(text = stringResource(R.string.profile_delete_account_dialog_text))
         },
         confirmButton = {
             Button(
@@ -84,12 +87,12 @@ fun deleteAccountDialog(
                         contentColor = MaterialTheme.colorScheme.onError,
                     ),
             ) {
-                Text("Eliminar")
+                Text(stringResource(R.string.profile_delete_account_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(stringResource(R.string.profile_delete_account_cancel))
             }
         },
     )

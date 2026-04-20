@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -17,11 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.activity.activityScreen
 import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.home.homeScreen
@@ -29,15 +32,15 @@ import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.socialScreen
 
 enum class MainShellScreen(
-    val label: String,
+    val label: Int,
     val icon: ImageVector,
     val route: String,
 ) {
-    HOME(label = "Home", icon = Icons.Outlined.Home, route = "home"),
-    SOCIAL(label = "Social", icon = Icons.Outlined.People, route = "social"),
-    ACTIVITY(label = "Actividad", icon = Icons.AutoMirrored.Outlined.DirectionsRun, route = "activity"),
-    CALENDAR(label = "Calendari", icon = Icons.Outlined.CalendarMonth, route = "calendar"),
-    PROFILE(label = "Perfil", icon = Icons.Outlined.Person, route = "profile"),
+    HOME(label = R.string.nav_home, icon = Icons.Outlined.Home, route = "home"),
+    SOCIAL(label = R.string.nav_social, icon = Icons.Outlined.People, route = "social"),
+    ACTIVITY(label = R.string.nav_activity, icon = Icons.AutoMirrored.Outlined.DirectionsRun, route = "activity"),
+    CALENDAR(label = R.string.nav_calendar, icon = Icons.Outlined.CalendarMonth, route = "calendar"),
+    PROFILE(label = R.string.nav_profile, icon = Icons.Outlined.Person, route = "profile"),
 }
 
 @Composable
@@ -65,9 +68,16 @@ fun mainShellScreen(
                             }
                         },
                         icon = {
-                            Icon(imageVector = tab.icon, contentDescription = tab.label)
+                            Icon(imageVector = tab.icon, contentDescription = stringResource(tab.label))
                         },
-                        label = { Text(text = tab.label) },
+                        label = {
+                            Text(
+                                text = stringResource(tab.label),
+                                maxLines = 1,
+                                softWrap = false, // Evita que rompa la palabra
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        },
                     )
                 }
             }

@@ -2,9 +2,11 @@ package com.airgo.airgoApp.features.settings.account.username.domain
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.settings.account.username.data.ChangeUsernameRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +21,7 @@ sealed class UsernameUiState {
     object Success : UsernameUiState()
 
     data class Error(
-        val message: String,
+        val message: UiText,
     ) : UsernameUiState()
 }
 
@@ -31,7 +33,7 @@ class UsernameViewModel : ViewModel() {
     // Función para cambiar el nombre de usuario, validando la entrada y manejando la respuesta del servidor
     fun changeUsername(newUsername: String) {
         if (newUsername.isBlank()) {
-            _uiState.value = UsernameUiState.Error("El nombre de usuario no puede estar vacío.")
+            _uiState.value = UsernameUiState.Error(UiText.StringResource(R.string.error_username_empty))
             return
         }
 
@@ -41,7 +43,7 @@ class UsernameViewModel : ViewModel() {
             try {
                 val userId = SessionManager.userId
                 if (userId == null) {
-                    _uiState.value = UsernameUiState.Error("Error: Usuario no identificado.")
+                    _uiState.value = UsernameUiState.Error(UiText.StringResource(R.string.error_user_not_identified))
                     return@launch
                 }
 
@@ -60,13 +62,22 @@ class UsernameViewModel : ViewModel() {
                     android.util.Log.e("UsernameViewModel", "HTTP ${response.code()}: $errorBodyString")
                     _uiState.value =
                         UsernameUiState.Error(
-                            "Error HTTP ${response.code()}: No se ha podido actualizar el nombre",
+                            UiText.StringResource(R.string.error_update_username),
                         )
                 }
             } catch (e: IOException) {
-                _uiState.value = UsernameUiState.Error("Error de conexión: ${e.message}")
+                android.util.Log.e("UsernameViewModel", "Error de conexión", e)
+                _uiState.value = UsernameUiState.Error(UiText.StringResource(R.string.error_connection_generic))
             } catch (e: retrofit2.HttpException) {
-                _uiState.value = UsernameUiState.Error("Error HTTP: ${e.message}")
+                android.util.Log.e("UsernameViewModel", "Error HTTP", e)
+                _uiState.value =
+                    UsernameUiState.Error(
+                        UiText.StringResource(
+                            R.string.error_http_code_username,
+                            e.code(),
+                            e.message(),
+                        ),
+                    )
             }
         }
     }

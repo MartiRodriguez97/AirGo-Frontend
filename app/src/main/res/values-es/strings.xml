@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- features/shell/MainShellScreen -->
+    <string name="app_name">Airgo</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_social">Social</string>
+    <string name="nav_activity">Actividad</string>
+    <string name="nav_calendar">Calendario</string>
+    <string name="nav_profile">Perfil</string>
+
+
+    <!-- features/profile/components/ -->
+    <string name="profile_badges_zone_title">Zona para insignias y actividades</string>
+    <string name="profile_delete_account_button">Eliminar cuenta</string>
+    <string name="profile_delete_account_dialog_title">¿Eliminar cuenta?</string>
+    <string name="profile_delete_account_dialog_text">¿Seguro que quieres eliminar la cuenta? Esta acción no se puede deshacer.</string>
+    <string name="profile_delete_account_confirm">Eliminar</string>
+    <string name="profile_delete_account_cancel">Cancelar</string>
+
+    <string name="profile_avatar_description">Foto de perfil</string>
+    <string name="profile_edit_avatar_description">Cambiar foto de perfil</string>
+
+    <string name="profile_no_title">Sin título</string>
+    <string name="profile_photo_linked_success">Foto vinculada correctamente</string>
+
+    <!-- features/profile/ProfileScreen/ -->
+    <string name="profile_picture_update_success">Foto actualizada correctamente</string>
+
+    <!-- core/network/NetworkErrorMapper -->
+    <string name="error_delete_account_http">Error al eliminar la cuenta (HTTP %1$d)</string>
+    <string name="error_process_image">No se ha podido procesar la imagen seleccionada</string>
+    <string name="error_upload_no_url">Foto subida, pero el servidor no ha devuelto la URL</string>
+    <string name="error_server_generic">Error del servidor: HTTP %1$d</string>
+    <string name="error_connection_upload">Error de conexión al subir la imagen</string>
+
+    <!-- core/network/NetworkErrorMapper -->
+    <string name="error_network_unknown_host">No se pudo conectar con el servidor. Revisa tu conexión a internet.</string>
+    <string name="error_network_timeout">Se ha agotado el tiempo de conexión con el servidor. Inténtalo de nuevo.</string>
+    <string name="error_network_ssl">No se pudo establecer una conexión segura.</string>
+    <string name="error_network_generic">Error de red. Por favor, comprueba tu conexión e inténtalo de nuevo.</string>
+
+    <!-- features/login/ui/LoginScreen -->
+    <string name="login_button_google">Iniciar sesión con Google</string>
+    <string name="login_header_description">Logotipo de Airgo</string>
+
+    <!-- features/login/domain/LoginViewModel -->
+    <string name="error_google_no_token">No se pudo obtener el ID Token de Google</string>
+    <string name="error_backend_token_rejected">El servidor ha rechazado el token (HTTP %1$d)</string>
+    <string name="error_backend_token_rejected_details">El servidor ha rechazado el token (HTTP %1$d): %2$s</string>
+    <string name="error_security_permissions">Permisos de red no disponibles</string>
+    <string name="error_invalid_server_response">Respuesta del servidor no válida</string>
+
+    <!-- features/profile/settings/account/tebici/domain/TeBiciViewModel -->
+    <string name="tebici_error_update_http">Error al actualizar la opción (HTTP %1$d)</string>
+    <string name="error_connection">Error de conexión: %1$s</string>
+    <string name="error_http_generic">Error HTTP: %1$s</string>
+
+    <!-- features/profile/settings/account/titols/domain/EditTitolScren -->
+    <string name="edit_titol_update_success">Título actualizado correctamente</string>
+    <string name="edit_titol_header_back">Atrás</string>
+    <string name="edit_titol_header_title">Títulos</string>
+    <string name="edit_titol_unlocked_section">Títulos desbloqueados</string>
+    <string name="edit_titol_empty_list">No hay títulos disponibles</string>
+    <string name="edit_titol_button_saving">Guardando...</string>
+    <string name="edit_titol_button_save">Guardar</string>
+
+    <!-- features/profile/settings/account/AccountSettingsScreen -->
+    <string name="account_settings_header">Tu cuenta</string>
+    <string name="account_settings_username_label">Nombre de usuario</string>
+    <string name="account_settings_titles_label">Títulos</string>
+    <string name="account_settings_bike_available">Bicicleta disponible</string>
+
+    <string name="acc_back_button">Atrás</string>
+    <string name="acc_edit_icon">Editar</string>
+
+    <string name="msg_bike_status_updated">Estado de la bicicleta actualizado</string>
+
+    <!-- features/profile/settings/account/titols/domain/TitolViewModel -->
+    <string name="titol_error_load">Error al cargar los títulos: %1$d</string>
+    <string name="titol_error_empty">El título no puede estar vacío</string>
+    <string name="titol_error_change_http">Error al cambiar el título (HTTP %1$d)</string>
+    <string name="error_connection_generic">Error de conexión. Por favor, inténtalo de nuevo más tarde.</string>
+    <string name="error_user_not_identified">Error: Usuario no identificado.</string>
+    <string name="tebici_error_http_code">Error HTTP %1$d: %2$s</string>
+
+    <!-- features/profile/settings/SettingsScreen-->
+    <string name="settings_no_email">Sin correo electrónico</string>
+    <string name="acc_go_to_account_settings">Ir a ajustes de la cuenta</string>
+
+    <!-- features/profile/settings/account/username/domain/UsernameViewModel -->
+    <string name="error_username_empty">El nombre de usuario no puede estar vacío.</string>
+    <string name="error_update_username">No se pudo actualizar el nombre de usuario.</string>
+    <string name="error_http_code_username">Error HTTP %1$d: No se pudo actualizar el nombre de usuario.</string>
+
+    <!-- features/profile/settings/account/username/EditUserNameScreen-->
+    <string name="edit_username_description">Cambia tu nombre de usuario, que es el que se muestra a otros usuarios de la aplicación.</string>
+    <string name="btn_save">Guardar</string>
+
+    <!-- features/map/LocationHelper-->
+    <string name="map_location_outside_service">Tu ubicación está fuera del área de servicio de AirGo</string>
+
+    <!-- features/map/UiComponents-->
+    <string name="map_route_start_label">Punto de inicio</string>
+    <string name="map_route_end_label">Destino</string>
+    <string name="map_route_calculating">Calculando…</string>
+    <string name="map_route_calculate_button">Calcular</string>
+    <string name="map_route_clear_button">Limpiar</string>
+    <string name="map_gps_disabled">GPS desactivado</string>
+
+    <!-- features/map/OSMView-->
+    <string name="map_layers_description">Capas</string>
+    <string name="map_layer_bicing">Estaciones de Bicing</string>
+    <string name="map_layer_pollution">Calidad del aire</string>
+
+    <!-- features/map/RouteViewModel-->
+    <string name="error_route_connection">Error de conexión con el servidor</string>
+    <string name="error_route_http">El servidor ha devuelto un error: %1$d</string>
+    <string name="error_route_selection_missing">Selecciona un punto de inicio y un destino para calcular la ruta.</string>
+
+    <!-- features/map/PollutionViewModel-->
+    <string name="error_pollution_connection">Error de conexión al cargar los datos de calidad del aire</string>
+    <string name="error_pollution_http">Error del servicio de calidad del aire: %1$d</string>
+
+    <!-- features/map/BicingHelper-->
+    <string name="bicing_marker_snippet">
+    🚲 Mecánicas: %1$d\n
+    ⚡ Eléctricas: %2$d\n
+    🟢 Espacios libres: %3$d\n
+    ℹ️ Estado: %4$s
+</string>
+</resources>

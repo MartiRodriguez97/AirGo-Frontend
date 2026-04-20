@@ -15,7 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.R
 import org.osmdroid.util.GeoPoint
 
 /**
@@ -44,7 +46,7 @@ internal fun routeSelectionPanel(
         androidx.compose.foundation.layout.Column(Modifier.padding(12.dp)) {
             // Camp Inici
             routePointField(
-                label = "Punt d'inici",
+                label = stringResource(R.string.map_route_start_label),
                 point = state.startPoint,
                 isSelected = state.selectionMode == MapSelectionMode.START,
                 onClick = { state.onSetSelectionMode(MapSelectionMode.START) },
@@ -53,7 +55,7 @@ internal fun routeSelectionPanel(
                 .Spacer(Modifier.padding(4.dp))
             // Camp Destí
             routePointField(
-                label = "Destí final",
+                label = stringResource(R.string.map_route_end_label),
                 point = state.endPoint,
                 isSelected = state.selectionMode == MapSelectionMode.END,
                 onClick = { state.onSetSelectionMode(MapSelectionMode.END) },
@@ -101,17 +103,17 @@ internal fun routeSelectionPanel(
                                 color = MaterialTheme.colorScheme.primary,
                                 strokeWidth = 2.dp,
                             )
-                            Text("Calculant...")
+                            Text(stringResource(R.string.map_route_calculating))
                         }
                     } else {
-                        Text("Calcular")
+                        Text(stringResource(R.string.map_route_calculate_button))
                     }
                 }
 
                 androidx.compose.material3.OutlinedButton(
                     onClick = { state.onClearRoute() },
                     modifier = Modifier.weight(1f),
-                ) { Text("Netejar") }
+                ) { Text(stringResource(R.string.map_route_clear_button)) }
             }
         }
     }
@@ -197,7 +199,7 @@ internal fun gpsDisabledWarning(modifier: Modifier = Modifier) {
             androidx.compose.foundation.layout
                 .Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "GPS desactivat",
+                text = stringResource(R.string.map_gps_disabled),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onErrorContainer,
             )

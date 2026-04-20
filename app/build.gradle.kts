@@ -56,6 +56,10 @@ android {
                 "proguard-rules.pro",
             )
         }
+        debug {
+            // Esto es lo que activa la recolección de datos en el dispositivo
+            enableAndroidTestCoverage = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -84,6 +88,7 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.ui.text)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DividerDefaults
@@ -41,6 +44,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
@@ -152,11 +156,16 @@ private fun profileScreenLaunchedEffect(
             is ProfileUiState.DeleteSuccess -> onAccountDeleted()
             is ProfileUiState.PictureUpdateSuccess -> {
                 onPictureUpdateSuccess()
-                Toast.makeText(context, "Foto actualitzada correctament", Toast.LENGTH_SHORT).show()
+                Toast
+                    .makeText(
+                        context,
+                        context.getString(R.string.profile_picture_update_success),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 onResetUiState() // Resetear el estado tras mostrar el mensaje
             }
             is ProfileUiState.Error -> {
-                Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, uiState.message.asString(context), Toast.LENGTH_LONG).show()
                 onResetUiState()
             }
             else -> {}
@@ -209,7 +218,8 @@ private fun showProfileInfoContent(
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
@@ -231,17 +241,12 @@ private fun showProfileInfoContent(
             color = DividerDefaults.color,
         )
         badgesAndActivitiesZone()
-        Spacer(modifier = Modifier.weight(1f))
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         deleteAccountSection(
             uiState = uiState,
             onDeleteClicked = onDeleteClicked,
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 16.dp),
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
         )
     }
 }
