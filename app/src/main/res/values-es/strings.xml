@@ -2,6 +2,8 @@
 <resources>
 
     <!-- features/shell/MainShellScreen -->
+    <string name="app_name">Airgo</string>
+    <string name="nav_home">Home</string>
     <string name="nav_social">Social</string>
     <string name="nav_activity">Actividad</string>
     <string name="nav_calendar">Calendario</string>

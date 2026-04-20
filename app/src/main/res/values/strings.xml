@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name" translatable="false">AirGo</string>
+    <string name="app_name">AirGo</string>
 
     <!-- features/shell/MainShellScreen -->
-    <string name="nav_home" translatable="false">Home</string>
+    <string name="nav_home">Home</string>
     <string name="nav_social">Social</string>
     <string name="nav_activity">Activity</string>
     <string name="nav_calendar">Calendar</string>

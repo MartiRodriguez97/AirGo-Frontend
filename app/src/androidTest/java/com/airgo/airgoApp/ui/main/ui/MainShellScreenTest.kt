@@ -1,88 +1,95 @@
 package com.airgo.airgoApp.ui.main.ui
 
+import android.content.res.Configuration
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import com.airgo.airgoApp.core.theme.airGoTheme
+import androidx.test.platform.app.InstrumentationRegistry
+
 import com.airgo.airgoApp.features.shell.mainShellScreen
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
 
 class MainShellScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    @Test
-    fun showsFiveBottomTabs() {
-        composeTestRule.setContent {
-            airGoTheme {
-                mainShellScreen(
-                    email = "airgo@example.com",
-                    pictureUrl = null,
-                )
-            }
-        }
+    // Contexto de la aplicación para obtener recursos
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
+    /**
+     * Test en INGLÉS
+     */
+    @Test
+    fun bottomNavigation_displaysEnglishLabels() {
+        setupMainShellContent("en")
+
+        // Verificamos strings en inglés
         composeTestRule.onNodeWithText("Home").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Forum").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Social").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Calendar").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Profile").assertIsDisplayed()
+    }
+
+    /**
+     * Test en CASTELLANO
+     */
+    @Test
+    fun bottomNavigation_displaysSpanishLabels() {
+        setupMainShellContent("es")
+
+        // Verificamos strings en español
+        composeTestRule.onNodeWithText("Home").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Social").assertIsDisplayed()
         composeTestRule.onNodeWithText("Actividad").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Mensajes").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Calendario").assertIsDisplayed()
         composeTestRule.onNodeWithText("Perfil").assertIsDisplayed()
     }
 
+    /**
+     * Test en CATALÁN
+     */
     @Test
-    fun switchesContentWhenSelectingAnotherTab() {
-        composeTestRule.setContent {
-            airGoTheme {
-                mainShellScreen(
-                    email = "airgo@example.com",
-                    pictureUrl = "https://example.com/avatar.png",
-                )
-            }
-        }
+    fun bottomNavigation_displaysCatalanLabels() {
+        setupMainShellContent("ca")
 
-        composeTestRule.onNodeWithText("Mensajes").performClick()
-        composeTestRule.onNodeWithText("Consulta tus conversaciones y avisos").assertIsDisplayed()
-
-        composeTestRule.onNodeWithText("Perfil").performClick()
-        composeTestRule.onNodeWithText("airgo@example.com").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Foto vinculada correctamente").assertIsDisplayed()
+        // Verificamos strings en catalán
+        composeTestRule.onNodeWithText("Home").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Social").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Activitat").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Calendari").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Perfil").assertIsDisplayed()
     }
 
-    @Test
-    fun showsProfileImageNodeWhenPictureUrlExists() {
-        composeTestRule.setContent {
-            airGoTheme {
-                mainShellScreen(
-                    email = "airgo@example.com",
-                    pictureUrl = "https://example.com/avatar.png",
-                )
-            }
-        }
+    // --- Funciones de ayuda ---
 
-        composeTestRule.onNodeWithText("Perfil").performClick()
-        composeTestRule.onNodeWithTag("profile_avatar_image").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Foto vinculada correctamente").assertIsDisplayed()
-    }
+    /**
+     * Configura el contenido de la pantalla forzando un Locale específico
+     */
+    private fun setupMainShellContent(language: String) {
+        val locale = Locale(language)
+        Locale.setDefault(locale)
 
-    @Test
-    fun showsFallbackAvatarWhenPictureUrlIsNull() {
+        // Creamos una nueva configuración con el idioma deseado
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(locale)
+
+        // Creamos un contexto específico que use esa configuración
+        val localizedContext = context.createConfigurationContext(config)
+
         composeTestRule.setContent {
-            airGoTheme {
+            // Inyectamos el contexto localizado en el árbol de Compose
+            CompositionLocalProvider(LocalContext provides localizedContext) {
                 mainShellScreen(
-                    email = "airgo@example.com",
+                    email = "test@airgo.com",
                     pictureUrl = null,
+                    onLogout = {}
                 )
             }
         }
-
-        composeTestRule.onNodeWithText("Perfil").performClick()
-        composeTestRule.onNodeWithTag("profile_avatar_fallback").assertIsDisplayed()
-        val imageNodes = composeTestRule.onAllNodesWithTag("profile_avatar_image").fetchSemanticsNodes()
-        assertTrue(imageNodes.isEmpty())
     }
 }

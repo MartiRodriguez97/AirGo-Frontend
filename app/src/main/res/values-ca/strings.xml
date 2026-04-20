@@ -3,6 +3,8 @@
 
 
     <!-- features/shell/MainShellScreen -->
+    <string name="app_name">AirGo</string>
+    <string name="nav_home">Home</string>
     <string name="nav_social">Social</string>
     <string name="nav_activity">Activitat</string>
     <string name="nav_calendar">Calendari</string>
