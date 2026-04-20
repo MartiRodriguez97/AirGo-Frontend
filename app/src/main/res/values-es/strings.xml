@@ -94,4 +94,37 @@
     <!-- features/profile/settings/account/username/EditUserNameScreen-->
     <string name="edit_username_description">Cambia tu nombre de usuario, que es el que se muestra a otros usuarios de la aplicación.</string>
     <string name="btn_save">Guardar</string>
+
+    <!-- features/map/LocationHelper-->
+    <string name="map_location_outside_service">Tu ubicación está fuera del área de servicio de AirGo</string>
+
+    <!-- features/map/UiComponents-->
+    <string name="map_route_start_label">Punto de inicio</string>
+    <string name="map_route_end_label">Destino</string>
+    <string name="map_route_calculating">Calculando…</string>
+    <string name="map_route_calculate_button">Calcular</string>
+    <string name="map_route_clear_button">Limpiar</string>
+    <string name="map_gps_disabled">GPS desactivado</string>
+
+    <!-- features/map/OSMView-->
+    <string name="map_layers_description">Capas</string>
+    <string name="map_layer_bicing">Estaciones de Bicing</string>
+    <string name="map_layer_pollution">Calidad del aire</string>
+
+    <!-- features/map/RouteViewModel-->
+    <string name="error_route_connection">Error de conexión con el servidor</string>
+    <string name="error_route_http">El servidor ha devuelto un error: %1$d</string>
+    <string name="error_route_selection_missing">Selecciona un punto de inicio y un destino para calcular la ruta.</string>
+
+    <!-- features/map/PollutionViewModel-->
+    <string name="error_pollution_connection">Error de conexión al cargar los datos de calidad del aire</string>
+    <string name="error_pollution_http">Error del servicio de calidad del aire: %1$d</string>
+
+    <!-- features/map/BicingHelper-->
+    <string name="bicing_marker_snippet">
+    🚲 Mecánicas: %1$d\n
+    ⚡ Eléctricas: %2$d\n
+    🟢 Espacios libres: %3$d\n
+    ℹ️ Estado: %4$s
+</string>
 </resources>

@@ -95,4 +95,36 @@
     <string name="edit_username_description">Canvia el teu nom d\'usuari, que és el que es mostra als altres usuaris de l\'aplicació.</string>
     <string name="btn_save">Desar</string>
 
+    <!-- features/map/LocationHelper-->
+    <string name="map_location_outside_service">La teva ubicació és fora de l\'àrea de servei d\'AirGo</string>
+
+    <!-- features/map/UiComponents-->
+    <string name="map_route_start_label">Punt d\'inici</string>
+    <string name="map_route_end_label">Destinació</string>
+    <string name="map_route_calculating">Calculant…</string>
+    <string name="map_route_calculate_button">Calcular</string>
+    <string name="map_route_clear_button">Netejar</string>
+    <string name="map_gps_disabled">GPS desactivat</string>
+
+    <!-- features/map/OSMView-->
+    <string name="map_layers_description">Capes</string>
+    <string name="map_layer_bicing">Estacions de Bicing</string>
+    <string name="map_layer_pollution">Qualitat de l\'aire</string>
+
+    <!-- features/map/RouteViewModel-->
+    <string name="error_route_connection">Error de connexió amb el servidor</string>
+    <string name="error_route_http">El servidor ha retornat un error: %1$d</string>
+    <string name="error_route_selection_missing">Selecciona un punt d\'inici i una destinació per calcular la ruta.</string>
+
+    <!-- features/map/PollutionViewModel-->
+    <string name="error_pollution_connection">Error de connexió en carregar les dades de qualitat de l\'aire</string>
+    <string name="error_pollution_http">Error del servei de qualitat de l\'aire: %1$d</string>
+
+    <!-- features/map/BicingHelper-->
+    <string name="bicing_marker_snippet">
+    🚲 Mecàniques: %1$d\n
+    ⚡ Elèctriques: %2$d\n
+    🟢 Espais lliures: %3$d\n
+    ℹ️ Estat: %4$s
+</string>
 </resources>

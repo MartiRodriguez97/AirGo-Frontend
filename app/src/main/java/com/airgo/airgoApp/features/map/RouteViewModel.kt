@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.utils.UiText
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import retrofit2.HttpException
@@ -23,7 +25,7 @@ class RouteViewModel : ViewModel() {
     var currentRoute by mutableStateOf<RouteResponse?>(null)
         private set
 
-    var errorMessage by mutableStateOf<String?>(null)
+    var errorMessage by mutableStateOf<UiText?>(null)
         private set
 
     var isLoading by mutableStateOf(false)
@@ -45,11 +47,11 @@ class RouteViewModel : ViewModel() {
                 Log.d("Conexió exitosa", "La distància és de: ${currentRoute?.summary?.distanceMeters} metres")
             } catch (e: IOException) {
                 // Error de xarxa (ex: no hi ha internet o servidor apagat)
-                errorMessage = "Error de connexió al servidor"
+                errorMessage = UiText.StringResource(R.string.error_connection)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
                 // El servidor ha respost però amb un error (ex: 404 o 500)
-                errorMessage = "El servidor ha donat un error: ${e.code()}"
+                errorMessage = UiText.StringResource(R.string.error_route_http, e.code())
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             } finally {
                 isLoading = false
@@ -93,7 +95,7 @@ class RouteViewModel : ViewModel() {
         if (start != null && end != null) {
             fetchRoute(start, end)
         } else {
-            errorMessage = "Selecciona un punt d'origen i un de destí per calcular la ruta."
+            errorMessage = UiText.StringResource(R.string.error_route_selection_missing)
         }
     }
 

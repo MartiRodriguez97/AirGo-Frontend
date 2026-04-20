@@ -37,13 +37,13 @@ object BicingHelper {
 
                 marker.title = station.name
                 marker.snippet =
-                    """
-                    🚲 Mecàniques: ${station.mechanicalBikes}
-                    ⚡ Elèctriques: ${station.electricBikes}
-                    🟢 Llocs lliures: ${station.freeSlots}
-                    ℹ️ Estat: ${station.status}
-                    """.trimIndent()
-
+                    context.getString(
+                        R.string.bicing_marker_snippet,
+                        station.mechanicalBikes,
+                        station.electricBikes,
+                        station.freeSlots,
+                        station.status,
+                    )
                 marker.setOnMarkerClickListener { m, _ ->
                     // Deseleccionar els que abans s'han pres
                     folder.items.forEach { item ->

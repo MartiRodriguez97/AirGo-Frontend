@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.widget.Toast
+import com.airgo.airgoApp.R
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -53,7 +54,7 @@ object LocationHelper {
                         Toast
                             .makeText(
                                 context,
-                                "La teva ubicació està fora de la zona de servei d'AirGo",
+                                context.getString(R.string.map_location_outside_service),
                                 Toast.LENGTH_LONG,
                             ).show()
                     }

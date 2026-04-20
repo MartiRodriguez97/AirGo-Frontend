@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DividerDefaults
@@ -215,7 +218,8 @@ private fun showProfileInfoContent(
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
@@ -237,17 +241,12 @@ private fun showProfileInfoContent(
             color = DividerDefaults.color,
         )
         badgesAndActivitiesZone()
-        Spacer(modifier = Modifier.weight(1f))
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         deleteAccountSection(
             uiState = uiState,
             onDeleteClicked = onDeleteClicked,
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 16.dp),
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color,
         )
     }
 }

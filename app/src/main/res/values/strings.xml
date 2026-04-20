@@ -96,6 +96,36 @@
     <string name="edit_username_description">Change your username, which is displayed to other users of the application.</string>
     <string name="btn_save">Save</string>
 
+    <!-- features/map/LocationHelper-->
+    <string name="map_location_outside_service">Your location is outside of AirGo\'s service area</string>
 
+    <!-- features/map/UiComponents-->
+    <string name="map_route_start_label">Start point</string>
+    <string name="map_route_end_label">Destination</string>
+    <string name="map_route_calculating">Calculating…</string>
+    <string name="map_route_calculate_button">Calculate</string>
+    <string name="map_route_clear_button">Clear</string>
+    <string name="map_gps_disabled">GPS disabled</string>
 
+    <!-- features/map/OSMView-->
+    <string name="map_layers_description">Layers</string>
+    <string name="map_layer_bicing">Bicing stations</string>
+    <string name="map_layer_pollution">Air quality</string>
+
+    <!-- features/map/RouteViewModel-->
+    <string name="error_route_connection">Connection error to server</string>
+    <string name="error_route_http">The server returned an error: %1$d</string>
+    <string name="error_route_selection_missing">Select a start and destination point to calculate the route.</string>
+
+    <!-- features/map/PollutionViewModel-->
+    <string name="error_pollution_connection">Connection error while loading air quality data</string>
+    <string name="error_pollution_http">Air quality service error: %1$d</string>
+
+    <!-- features/map/BicingHelper-->
+    <string name="bicing_marker_snippet">
+        🚲 Mechanical: %1$d\n
+        ⚡ Electric: %2$d\n
+        🟢 Free slots: %3$d\n
+        ℹ️ Status: %4$s
+    </string>
 </resources>

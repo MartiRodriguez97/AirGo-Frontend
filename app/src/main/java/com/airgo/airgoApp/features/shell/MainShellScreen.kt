@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -69,7 +70,14 @@ fun mainShellScreen(
                         icon = {
                             Icon(imageVector = tab.icon, contentDescription = stringResource(tab.label))
                         },
-                        label = { Text(text = stringResource(tab.label)) },
+                        label = {
+                            Text(
+                                text = stringResource(tab.label),
+                                maxLines = 1,
+                                softWrap = false, // Evita que rompa la palabra
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        },
                     )
                 }
             }
