@@ -9,6 +9,7 @@ import com.airgo.airgoApp.features.profile.data.ProfileApi
 import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
 import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
 import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
+import com.airgo.airgoApp.features.social.SocialApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -53,4 +54,5 @@ object RetrofitProvider {
     val usernameApi: UsernameApi = retrofit.create(UsernameApi::class.java)
     val titolApi: TitolApi = retrofit.create(TitolApi::class.java)
     val teBiciApi: TeBiciApi = retrofit.create(TeBiciApi::class.java)
+    val socialApi: SocialApi = retrofit.create(SocialApi::class.java)
 }
