@@ -1,9 +1,9 @@
 package com.airgo.airgoApp.features.settings.account.username.domain
 
-import org.junit.Assert.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
