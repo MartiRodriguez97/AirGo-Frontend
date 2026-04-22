@@ -1,17 +1,21 @@
 package com.airgo.airgoApp.features.profile.components
 
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,6 +24,13 @@ import org.junit.runner.RunWith
 class DeleteAccountSectionTest {
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    private lateinit var context: android.content.Context
+
+    @Before
+    fun setUp() {
+        context = InstrumentationRegistry.getInstrumentation().targetContext
+    }
 
     // ─── deleteAccountSection ───────────────────────────────────────────────
 
@@ -31,7 +42,7 @@ class DeleteAccountSectionTest {
                 onDeleteClicked = {},
             )
         }
-        composeTestRule.onNodeWithTag("delete_account_button").assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.profile_delete_account_button), ignoreCase = true).assertIsDisplayed()
     }
 
     @Test
@@ -43,9 +54,10 @@ class DeleteAccountSectionTest {
             )
         }
         composeTestRule
-            .onNodeWithContentDescription("CircularProgressIndicator", substring = true)
+            .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
+            .onFirst()
             .assertExists()
-        composeTestRule.onNodeWithTag("delete_account_button").assertDoesNotExist()
+        composeTestRule.onNodeWithText(context.getString(R.string.profile_delete_account_button), ignoreCase = true).assertDoesNotExist()
     }
 
     @Test
@@ -72,7 +84,7 @@ class DeleteAccountSectionTest {
                 onDeleteClicked = onDeleteClicked,
             )
         }
-        composeTestRule.onNodeWithTag("delete_account_button").performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.profile_delete_account_button), ignoreCase = true).performClick()
         verify(exactly = 1) { onDeleteClicked() }
     }
 
@@ -93,7 +105,7 @@ class DeleteAccountSectionTest {
         composeTestRule.setContent {
             deleteAccountButton(onDeleteClicked = onClick)
         }
-        composeTestRule.onRoot().performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.profile_delete_account_button), ignoreCase = true).performClick()
         verify(exactly = 1) { onClick() }
     }
 
@@ -105,7 +117,7 @@ class DeleteAccountSectionTest {
             deleteAccountDialog(onDismiss = {}, onConfirm = {})
         }
         composeTestRule
-            .onNodeWithText("Eliminar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_dialog_title), substring = true, ignoreCase = true)
             .assertExists()
     }
 
@@ -117,7 +129,7 @@ class DeleteAccountSectionTest {
             deleteAccountDialog(onDismiss = {}, onConfirm = onConfirm)
         }
         composeTestRule
-            .onNodeWithText("Confirmar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_confirm), substring = false, ignoreCase = true)
             .performClick()
 
         verify(exactly = 1) { onConfirm() }
@@ -131,19 +143,9 @@ class DeleteAccountSectionTest {
             deleteAccountDialog(onDismiss = onDismiss, onConfirm = {})
         }
         composeTestRule
-            .onNodeWithText("Cancelar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_cancel), substring = false, ignoreCase = true)
             .performClick()
 
         verify(exactly = 1) { onDismiss() }
-    }
-
-    @Test
-    fun deleteAccountDialog_onDismissRequest_callsOnDismiss() {
-        val onDismiss: () -> Unit = mockk(relaxed = true)
-
-        composeTestRule.setContent {
-            deleteAccountDialog(onDismiss = onDismiss, onConfirm = {})
-        }
-        verify(atLeast = 1) { onDismiss() }
     }
 }

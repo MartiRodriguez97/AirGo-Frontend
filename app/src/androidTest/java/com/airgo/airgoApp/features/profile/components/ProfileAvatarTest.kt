@@ -15,8 +15,11 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.airgo.airgoApp.R
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,6 +28,13 @@ import org.junit.runner.RunWith
 class ProfileAvatarTest {
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    private lateinit var context: android.content.Context
+
+    @Before
+    fun setUp() {
+        context = InstrumentationRegistry.getInstrumentation().targetContext
+    }
 
     @Test
     fun profileAvatar_nullUrl_showsFallback() {
@@ -84,7 +94,7 @@ class ProfileAvatarTest {
             )
         }
         composeTestRule
-            .onNodeWithContentDescription("edit", substring = true, ignoreCase = true)
+            .onNodeWithContentDescription(context.getString(R.string.profile_edit_avatar_description), ignoreCase = true)
             .assertIsDisplayed()
     }
 
@@ -99,7 +109,7 @@ class ProfileAvatarTest {
             )
         }
         composeTestRule
-            .onNodeWithContentDescription("edit", substring = true, ignoreCase = true)
+            .onNodeWithContentDescription(context.getString(R.string.profile_edit_avatar_description), ignoreCase = true)
             .assertDoesNotExist()
     }
 
@@ -116,7 +126,7 @@ class ProfileAvatarTest {
             )
         }
         composeTestRule
-            .onNodeWithContentDescription("edit", substring = true, ignoreCase = true)
+            .onNodeWithContentDescription(context.getString(R.string.profile_edit_avatar_description), ignoreCase = true)
             .performClick()
 
         verify(exactly = 1) { onEditClick() }

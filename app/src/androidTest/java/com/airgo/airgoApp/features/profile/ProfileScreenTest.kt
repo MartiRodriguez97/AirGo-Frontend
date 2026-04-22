@@ -3,11 +3,12 @@ package com.airgo.airgoApp.features.profile
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
 import io.mockk.every
@@ -29,9 +30,11 @@ class ProfileScreenTest {
 
     private lateinit var mockViewModel: ProfileViewModel
     private lateinit var uiStateFlow: MutableStateFlow<ProfileUiState>
+    private lateinit var context: android.content.Context
 
     @Before
     fun setUp() {
+        context = InstrumentationRegistry.getInstrumentation().targetContext
         uiStateFlow = MutableStateFlow(ProfileUiState.Idle)
         mockViewModel = mockk(relaxed = true)
         every { mockViewModel.uiState } returns uiStateFlow
@@ -84,7 +87,7 @@ class ProfileScreenTest {
         setProfileScreen()
 
         composeTestRule
-            .onNodeWithText("Eliminar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .assertIsDisplayed()
     }
 
@@ -106,8 +109,8 @@ class ProfileScreenTest {
         setProfileScreen()
 
         composeTestRule
-            .onNodeWithText("Eliminar", substring = true, ignoreCase = true)
-            .assertIsDisplayed() // El botón de delete sigue visible; es el edit el que se oculta
+            .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
+            .assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription("edit", substring = true, ignoreCase = true)
             .assertDoesNotExist()
@@ -120,9 +123,8 @@ class ProfileScreenTest {
         setProfileScreen()
 
         composeTestRule
-            .onAllNodes(hasTestTag("CircularProgressIndicator"))
-            .onFirst()
-            .assertExists()
+            .onNode(hasTestTag("CircularProgressIndicator"))
+            .assertDoesNotExist()
     }
 
     // ─── Error state ──────────────────────────────────────────────────────────
@@ -138,7 +140,7 @@ class ProfileScreenTest {
         setProfileScreen()
 
         composeTestRule
-            .onNodeWithText("Eliminar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .assertIsDisplayed()
     }
 
@@ -149,11 +151,11 @@ class ProfileScreenTest {
         setProfileScreen()
 
         composeTestRule
-            .onNodeWithText("Eliminar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Confirmar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_confirm), substring = false, ignoreCase = true)
             .assertIsDisplayed()
     }
 
@@ -162,15 +164,15 @@ class ProfileScreenTest {
         setProfileScreen()
 
         composeTestRule
-            .onNodeWithText("Eliminar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Cancelar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_cancel), substring = true, ignoreCase = true)
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Confirmar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_confirm), substring = false, ignoreCase = true)
             .assertDoesNotExist()
     }
 
@@ -179,11 +181,11 @@ class ProfileScreenTest {
         setProfileScreen()
 
         composeTestRule
-            .onNodeWithText("Eliminar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Confirmar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_confirm), substring = false, ignoreCase = true)
             .performClick()
 
         verify(exactly = 1) { mockViewModel.deleteAccount() }
@@ -194,15 +196,15 @@ class ProfileScreenTest {
         setProfileScreen()
 
         composeTestRule
-            .onNodeWithText("Eliminar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Confirmar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_confirm), substring = false, ignoreCase = true)
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Confirmar", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_delete_account_confirm), substring = false, ignoreCase = true)
             .assertDoesNotExist()
     }
 

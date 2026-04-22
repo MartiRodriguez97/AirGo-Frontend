@@ -6,8 +6,11 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.airgo.airgoApp.R
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,6 +19,13 @@ import org.junit.runner.RunWith
 class ProfileUserInfoCardTest {
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    private lateinit var context: android.content.Context
+
+    @Before
+    fun setUp() {
+        context = InstrumentationRegistry.getInstrumentation().targetContext
+    }
 
     @Test
     fun profileUserInfoCard_displaysDisplayName() {
@@ -64,7 +74,7 @@ class ProfileUserInfoCardTest {
             )
         }
         composeTestRule
-            .onNodeWithText("Sin título", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_no_title), substring = true, ignoreCase = true)
             .assertExists()
     }
 
@@ -80,9 +90,8 @@ class ProfileUserInfoCardTest {
                 onEditProfilePictureClick = {},
             )
         }
-        // El texto de foto vinculada aparece solo cuando pictureUrl no es blank
         composeTestRule
-            .onNodeWithText("foto", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_photo_linked_success), substring = true, ignoreCase = true)
             .assertExists()
     }
 
@@ -99,7 +108,7 @@ class ProfileUserInfoCardTest {
             )
         }
         composeTestRule
-            .onNodeWithText("foto", substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_photo_linked_success), substring = true, ignoreCase = true)
             .assertDoesNotExist()
     }
 
@@ -118,7 +127,7 @@ class ProfileUserInfoCardTest {
             )
         }
         composeTestRule
-            .onNodeWithContentDescription("edit", substring = true, ignoreCase = true)
+            .onNodeWithContentDescription(context.getString(R.string.profile_edit_avatar_description), substring = false, ignoreCase = true)
             .performClick()
 
         verify(exactly = 1) { onEdit() }
@@ -137,7 +146,7 @@ class ProfileUserInfoCardTest {
             )
         }
         composeTestRule
-            .onNodeWithContentDescription("edit", substring = true, ignoreCase = true)
+            .onNodeWithContentDescription(context.getString(R.string.profile_edit_avatar_description), substring = false, ignoreCase = true)
             .assertDoesNotExist()
     }
 }
