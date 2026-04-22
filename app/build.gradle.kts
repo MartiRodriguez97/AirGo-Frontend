@@ -76,10 +76,11 @@ android {
     }
     packaging {
         resources {
-            excludes += setOf(
-                "META-INF/LICENSE.md",
-                "META-INF/LICENSE-notice.md",
-            )
+            excludes +=
+                setOf(
+                    "META-INF/LICENSE.md",
+                    "META-INF/LICENSE-notice.md",
+                )
         }
     }
 }
@@ -98,7 +99,7 @@ tasks.register<JacocoReport>("jacocoCombinedReport") {
     classDirectories.setFrom(
         fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
             exclude(fileFilter)
-        }
+        },
     )
 
     sourceDirectories.setFrom(files("src/main/java"))
@@ -109,7 +110,7 @@ tasks.register<JacocoReport>("jacocoCombinedReport") {
                 "jacoco/testDebugUnitTest.exec",
                 "outputs/code_coverage/debugAndroidTest/connected/**/*.ec",
             )
-        }
+        },
     )
 }
 

@@ -19,7 +19,10 @@ class MapUtilsTest {
     private lateinit var mapView: MapView
     private lateinit var context: android.content.Context
 
-    private fun triggerTap(overlay: org.osmdroid.views.overlay.MapEventsOverlay, point: GeoPoint?) {
+    private fun triggerTap(
+        overlay: org.osmdroid.views.overlay.MapEventsOverlay,
+        point: GeoPoint?,
+    ) {
         val field = overlay.javaClass.getDeclaredField("mReceiver")
         field.isAccessible = true
         val receiver = field.get(overlay) as MapEventsReceiver
@@ -50,12 +53,13 @@ class MapUtilsTest {
         val tapPoint = GeoPoint(41.385, 2.173)
         var selectedPoint: GeoPoint? = null
 
-        val overlay = createMapEventsOverlay(
-            mapView = mapView,
-            bicingOverlay = FolderOverlay(),
-            selectionModeProvider = { MapSelectionMode.START },
-            onPointSelectedProvider = { { p -> selectedPoint = p } },
-        )
+        val overlay =
+            createMapEventsOverlay(
+                mapView = mapView,
+                bicingOverlay = FolderOverlay(),
+                selectionModeProvider = { MapSelectionMode.START },
+                onPointSelectedProvider = { { p -> selectedPoint = p } },
+            )
 
         triggerTap(overlay, tapPoint)
 
@@ -67,12 +71,13 @@ class MapUtilsTest {
         val tapPoint = GeoPoint(41.385, 2.173)
         var selectedPoint: GeoPoint? = null
 
-        val overlay = createMapEventsOverlay(
-            mapView = mapView,
-            bicingOverlay = FolderOverlay(),
-            selectionModeProvider = { MapSelectionMode.NONE },
-            onPointSelectedProvider = { { p -> selectedPoint = p } },
-        )
+        val overlay =
+            createMapEventsOverlay(
+                mapView = mapView,
+                bicingOverlay = FolderOverlay(),
+                selectionModeProvider = { MapSelectionMode.NONE },
+                onPointSelectedProvider = { { p -> selectedPoint = p } },
+            )
 
         triggerTap(overlay, tapPoint)
 
@@ -83,12 +88,13 @@ class MapUtilsTest {
     fun tapWithNullPointDoesNotCallOnPointSelected() {
         var selectedPoint: GeoPoint? = null
 
-        val overlay = createMapEventsOverlay(
-            mapView = mapView,
-            bicingOverlay = FolderOverlay(),
-            selectionModeProvider = { MapSelectionMode.START },
-            onPointSelectedProvider = { { p -> selectedPoint = p } },
-        )
+        val overlay =
+            createMapEventsOverlay(
+                mapView = mapView,
+                bicingOverlay = FolderOverlay(),
+                selectionModeProvider = { MapSelectionMode.START },
+                onPointSelectedProvider = { { p -> selectedPoint = p } },
+            )
 
         triggerTap(overlay, null)
 
@@ -100,12 +106,13 @@ class MapUtilsTest {
         val tapPoint = GeoPoint(41.390, 2.180)
         var selectedPoint: GeoPoint? = null
 
-        val overlay = createMapEventsOverlay(
-            mapView = mapView,
-            bicingOverlay = FolderOverlay(),
-            selectionModeProvider = { MapSelectionMode.END },
-            onPointSelectedProvider = { { p -> selectedPoint = p } },
-        )
+        val overlay =
+            createMapEventsOverlay(
+                mapView = mapView,
+                bicingOverlay = FolderOverlay(),
+                selectionModeProvider = { MapSelectionMode.END },
+                onPointSelectedProvider = { { p -> selectedPoint = p } },
+            )
 
         triggerTap(overlay, tapPoint)
 
