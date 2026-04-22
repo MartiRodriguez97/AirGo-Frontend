@@ -4,10 +4,19 @@ import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -38,23 +47,24 @@ class TeBiciViewModelTest {
     }
 
     @Test
-    fun `cuando actualizamos disponibilidad de bici con exito, el estado es Success`() = runTest {
-        // Mocking datos
-        every { SessionManager.userId } returns 123
-        every { ApiEndpoints.getChangeInfoEndpoint(123) } returns "url_update_bike"
+    fun `cuando actualizamos disponibilidad de bici con exito, el estado es Success`() =
+        runTest {
+            // Mocking datos
+            every { SessionManager.userId } returns 123
+            every { ApiEndpoints.getChangeInfoEndpoint(123) } returns "url_update_bike"
 
-        // Mocking API
-        coEvery {
-            mockTeBiciApi.updateHasBike(any(), any())
-        } returns Response.success(Unit)
+            // Mocking API
+            coEvery {
+                mockTeBiciApi.updateHasBike(any(), any())
+            } returns Response.success(Unit)
 
-        // Mocking SessionManager setter
-        every { SessionManager.teBici = any() } returns Unit
+            // Mocking SessionManager setter
+            every { SessionManager.teBici = any() } returns Unit
 
-        viewModel.updateBikeAvailability(true)
-        advanceUntilIdle()
+            viewModel.updateBikeAvailability(true)
+            advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value is TeBiciUiState.Success)
-        verify { SessionManager.teBici = true }
-    }
+            assertTrue(viewModel.uiState.value is TeBiciUiState.Success)
+            verify { SessionManager.teBici = true }
+        }
 }
