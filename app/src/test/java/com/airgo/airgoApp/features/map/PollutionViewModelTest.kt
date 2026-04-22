@@ -2,9 +2,9 @@ package com.airgo.airgoApp.features.map
 
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import io.mockk.coEvery
+import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
-import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
