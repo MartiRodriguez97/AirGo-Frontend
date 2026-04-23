@@ -17,6 +17,7 @@
     <string name="profile_delete_account_dialog_text">Segur que vols eliminar el compte? Aquesta acció no es pot desfer.</string>
     <string name="profile_delete_account_confirm">Eliminar</string>
     <string name="profile_delete_account_cancel">Cancel·lar</string>
+    <string name="profile_badges_title">Insignies</string>
 
     <string name="profile_avatar_description">Foto de perfil</string>
     <string name="profile_edit_avatar_description">Canviar foto de perfil</string>
