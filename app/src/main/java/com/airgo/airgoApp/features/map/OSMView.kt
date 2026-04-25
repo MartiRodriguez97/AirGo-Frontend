@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
@@ -44,6 +45,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import androidx.compose.foundation.layout.statusBarsPadding
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
 private const val BCN_LONGITUDE = 2.1734 // Longitud inicial
@@ -399,7 +401,10 @@ private fun BoxScope.layerSelector(
     val inactiveBg = Color.Transparent
 
     Box(
-        modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 100.dp, end = 16.dp),
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .navigationBarsPadding()
+            .padding(bottom = 100.dp, end = 16.dp),
     ) {
         FloatingActionButton(
             onClick = { expanded = true },
