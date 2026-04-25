@@ -107,6 +107,8 @@
     <string name="map_route_calculate_button">Calculate</string>
     <string name="map_route_clear_button">Clear</string>
     <string name="map_gps_disabled">GPS disabled</string>
+    <string name="map_mode_walk">Walking mode</string>
+    <string name="map_mode_bike">Cycling mode</string>
 
     <!-- features/map/OSMView-->
     <string name="map_layers_description">Layers</string>

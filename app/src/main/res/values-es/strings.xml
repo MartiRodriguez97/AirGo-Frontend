@@ -108,6 +108,8 @@
     <string name="map_route_calculate_button">Calcular</string>
     <string name="map_route_clear_button">Limpiar</string>
     <string name="map_gps_disabled">GPS desactivado</string>
+    <string name="map_mode_walk">Modo a pie</string>
+    <string name="map_mode_bike">Modo bicicleta</string>
 
     <!-- features/map/OSMView-->
     <string name="map_layers_description">Capas</string>
@@ -129,5 +131,5 @@
     ⚡ Eléctricas: %2$d\n
     🟢 Espacios libres: %3$d\n
     ℹ️ Estado: %4$s
-</string>
+    </string>
 </resources>

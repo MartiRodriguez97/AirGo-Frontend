@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Cloud
@@ -45,7 +46,6 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import androidx.compose.foundation.layout.statusBarsPadding
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
 private const val BCN_LONGITUDE = 2.1734 // Longitud inicial
@@ -297,34 +297,18 @@ fun osmMapContainer(
     var showBicing by remember { mutableStateOf(true) }
     // Variable per saber si s'activa/desactiva la capa de qualitat de l'aire
     var showPollution by remember { mutableStateOf(true) }
-
     val selectionModeState = rememberUpdatedState(state.selectionMode)
     val onPointSelectedState = rememberUpdatedState(state.onPointSelected)
-
     val context = LocalContext.current
-    var isGpsOff by remember { mutableStateOf(!isGpsEnabled(context)) }
-    DisposableEffect(context) {
-        val reciver =
-            object : android.content.BroadcastReceiver() {
-                override fun onReceive(
-                    context: Context?,
-                    intent: android.content.Intent?,
-                ) {
-                    if (intent?.action == android.location.LocationManager.PROVIDERS_CHANGED_ACTION) {
-                        isGpsOff = !isGpsEnabled(context!!)
-                    }
-                }
-            }
-        val filter = android.content.IntentFilter(android.location.LocationManager.PROVIDERS_CHANGED_ACTION)
-        context.registerReceiver(reciver, filter)
-        onDispose { context.unregisterReceiver(reciver) }
-    }
+    var isBikingMode by remember { mutableStateOf(false) }
+    val isGpsOff by rememberGpsEnabledState(context)
 
     Box(modifier = modifier.fillMaxSize()) {
-        // Pont entre OSM i Jetpack Compose
         AndroidView(
-            modifier = modifier.fillMaxSize()
-                .statusBarsPadding(),
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .statusBarsPadding(),
             factory = { context ->
                 state.mapView.apply {
                     setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
@@ -364,8 +348,11 @@ fun osmMapContainer(
 
         if (isGpsOff) {
             gpsDisabledWarning(
-                modifier = Modifier.align(Alignment.TopCenter)
-                    .statusBarsPadding().padding(top = 180.dp), // Sota el panell de rutes
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .statusBarsPadding()
+                        .padding(top = 180.dp),
             )
         }
 
@@ -373,6 +360,16 @@ fun osmMapContainer(
         routeSelectionPanel(
             state = state,
             modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
+        )
+        // botó per seleccionar mode (peu-caminar)
+        modeSelector(
+            isBiking = isBikingMode,
+            onModeChange = { isBikingMode = it },
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter) // Centrado abajo
+                    .navigationBarsPadding() // Respetamos el menú inferior
+                    .padding(bottom = 100.dp), // Lo subimos para que no tape la barra del sistema
         )
 
         // Botó per seleccionar les capes
@@ -403,10 +400,11 @@ private fun BoxScope.layerSelector(
     val inactiveBg = Color.Transparent
 
     Box(
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .navigationBarsPadding()
-            .padding(bottom = 100.dp, end = 16.dp),
+        modifier =
+            Modifier
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .padding(bottom = 100.dp, end = 16.dp),
     ) {
         FloatingActionButton(
             onClick = { expanded = true },
@@ -461,4 +459,28 @@ private fun BoxScope.layerSelector(
             )
         }
     }
+}
+
+@Composable
+private fun rememberGpsEnabledState(context: Context): androidx.compose.runtime.State<Boolean> {
+    val isGpsEnabled = remember { mutableStateOf(isGpsEnabled(context)) }
+
+    DisposableEffect(context) {
+        val receiver =
+            object : android.content.BroadcastReceiver() {
+                override fun onReceive(
+                    context: Context?,
+                    intent: android.content.Intent?,
+                ) {
+                    if (intent?.action == android.location.LocationManager.PROVIDERS_CHANGED_ACTION) {
+                        isGpsEnabled.value = isGpsEnabled(context!!)
+                    }
+                }
+            }
+        val filter = android.content.IntentFilter(android.location.LocationManager.PROVIDERS_CHANGED_ACTION)
+        context.registerReceiver(receiver, filter)
+        onDispose { context.unregisterReceiver(receiver) }
+    }
+
+    return isGpsEnabled
 }

@@ -7,14 +7,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
@@ -203,6 +207,63 @@ internal fun gpsDisabledWarning(modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onErrorContainer,
             )
+        }
+    }
+}
+
+// selector mode (bici-correr)
+@Composable
+internal fun modeSelector(
+    isBiking: Boolean,
+    onModeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    androidx.compose.material3.Surface(
+        modifier = modifier,
+        shape = androidx.compose.foundation.shape.CircleShape,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+        tonalElevation = 4.dp,
+        shadowElevation = 6.dp,
+    ) {
+        androidx.compose.foundation.layout.Row(
+            modifier = Modifier.padding(4.dp),
+            horizontalArrangement =
+                androidx.compose.foundation.layout.Arrangement
+                    .spacedBy(4.dp),
+        ) {
+            // Botón Modo Pie / Correr
+            FilledTonalIconToggleButton(
+                checked = !isBiking,
+                onCheckedChange = { onModeChange(false) },
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DirectionsRun,
+                    contentDescription = stringResource(R.string.map_mode_walk),
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+
+            // Botón Modo Bici
+            FilledTonalIconToggleButton(
+                checked = isBiking,
+                onCheckedChange = { onModeChange(true) },
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.DirectionsBike,
+                    contentDescription = stringResource(R.string.map_mode_bike),
+                    modifier = Modifier.size(24.dp),
+                )
+            }
         }
     }
 }
