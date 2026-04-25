@@ -323,7 +323,8 @@ fun osmMapContainer(
     Box(modifier = modifier.fillMaxSize()) {
         // Pont entre OSM i Jetpack Compose
         AndroidView(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize()
+                .statusBarsPadding(),
             factory = { context ->
                 state.mapView.apply {
                     setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
@@ -363,14 +364,15 @@ fun osmMapContainer(
 
         if (isGpsOff) {
             gpsDisabledWarning(
-                modifier = Modifier.align(Alignment.TopCenter).padding(top = 220.dp), // Sota el panell de rutes
+                modifier = Modifier.align(Alignment.TopCenter)
+                    .statusBarsPadding().padding(top = 180.dp), // Sota el panell de rutes
             )
         }
 
         // Panell de selecció de ruta
         routeSelectionPanel(
             state = state,
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 30.dp),
+            modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
         )
 
         // Botó per seleccionar les capes
