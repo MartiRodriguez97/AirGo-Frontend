@@ -131,4 +131,9 @@
         🟢 Free slots: %3$d\n
         ℹ️ Status: %4$s
     </string>
+
+    <!-- features/home/HomeScreen-->
+    <string name="home_training_plan_title">Training plans</string>
+    <string name="home_training_plan_desc">Choose one of our training plans to start taking care of yourself with the cleanest routes.</string>
+    <string name="home_btn_create_plan">Create plan</string>
 </resources>

@@ -132,4 +132,9 @@
     🟢 Espais lliures: %3$d\n
     ℹ️ Estat: %4$s
     </string>
+
+    <!-- features/home/-->
+    <string name="home_training_plan_title">Plans d\'entrenament</string>
+    <string name="home_training_plan_desc">Tria un dels nostres plans d\'entrenament per començar a cuidar-te amb les rutes més netes.</string>
+    <string name="home_btn_create_plan">Crear pla</string>
 </resources>

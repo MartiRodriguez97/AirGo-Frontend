@@ -132,4 +132,8 @@
     🟢 Espacios libres: %3$d\n
     ℹ️ Estado: %4$s
     </string>
+    <!-- features/home/-->
+    <string name="home_training_plan_title">Planes de entrenamiento</string>
+    <string name="home_training_plan_desc">Elige uno de nuestros planes de entrenamiento para empezar a cuidarte con las rutas más limpias.</string>
+    <string name="home_btn_create_plan">Crear plan</string>
 </resources>
