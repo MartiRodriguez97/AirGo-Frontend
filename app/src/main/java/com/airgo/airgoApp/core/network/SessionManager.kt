@@ -1,8 +1,15 @@
 package com.airgo.airgoApp.core.network
 
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+
 object SessionManager {
+    private val _sessionExpiredEvent = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val sessionExpiredEvent = _sessionExpiredEvent.asSharedFlow()
+
     // temporal
     var accessToken: String? = null
+    var refreshToken: String? = null
     var profilePictureUrl: String? = null
     var username: String? = null
     var userId: Int? = null
@@ -12,6 +19,7 @@ object SessionManager {
 
     fun clear() {
         accessToken = null
+        refreshToken = null
         profilePictureUrl = null
         username = null
         userId = null
@@ -36,4 +44,9 @@ object SessionManager {
     var idioma: String? = null
     var limitRutes: Int? = null
     var insignies: String? = null
+
+    fun logout() {
+        clear()
+        _sessionExpiredEvent.tryEmit(Unit)
+    }
 }

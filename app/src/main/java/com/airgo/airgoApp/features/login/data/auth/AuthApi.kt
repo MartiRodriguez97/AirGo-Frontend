@@ -17,6 +17,17 @@ data class GoogleTokenRequest(
     val token: String,
 )
 
+data class RefreshTokenRequest(
+    val refresh: String,
+)
+
+data class TokenRefreshResponse(
+    val access: String?,
+    val accessToken: String?,
+    val refresh: String?,
+    val refreshToken: String?,
+)
+
 data class UserDetailResponse(
     val id: Int,
     @com.google.gson.annotations.SerializedName("profile_pic")
@@ -38,6 +49,11 @@ interface AuthApi {
     suspend fun loginWithGoogle(
         @Body body: GoogleTokenRequest,
     ): Response<AuthResponse>
+
+    @POST(ApiEndpoints.TOKEN_REFRESH)
+    suspend fun refreshToken(
+        @Body body: RefreshTokenRequest,
+    ): Response<TokenRefreshResponse>
 
     @GET(ApiEndpoints.USER_ACCOUNT_INFO)
     suspend fun getCurrentUserProfile(): Response<UserDetailResponse>

@@ -34,6 +34,7 @@ object RetrofitProvider {
         OkHttpClient
             .Builder()
             .addInterceptor(authInterceptor)
+            .authenticator(TokenAuthenticator())
             .connectTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)
             .readTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)
             .writeTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)
