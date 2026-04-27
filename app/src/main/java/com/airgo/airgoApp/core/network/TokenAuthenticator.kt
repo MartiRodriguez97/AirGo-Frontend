@@ -1,61 +1,78 @@
 package com.airgo.airgoApp.core.network
 
+import android.util.Log
+import com.airgo.airgoApp.BuildConfig
+import com.airgo.airgoApp.features.login.data.auth.AuthApi
+import com.airgo.airgoApp.features.login.data.auth.RefreshTokenRequest
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 
 class TokenAuthenticator : Authenticator {
-
-    override fun authenticate(route: Route?, response: Response): Request? {
-        val requestPath = response.request.url.encodedPath
-        if (requestPath.contains("token/refresh")) {
+    override fun authenticate(
+        route: Route?,
+        response: Response,
+    ): Request? {
+        if (response.request.url.encodedPath
+                .contains("token/refresh")
+        ) {
             return null
         }
 
         val refreshToken = SessionManager.refreshToken
-        if (refreshToken != null) {
-            val tokenRefreshed = runBlocking {
-                refreshAccessToken(refreshToken)
-            }
+        val tokenRefreshed =
+            refreshToken?.let { token ->
+                runBlocking { refreshAccessToken(token) }
+            } ?: false
 
-            if (tokenRefreshed) {
-                return response.request.newBuilder()
-                    .header("Authorization", "Bearer ${SessionManager.accessToken}")
-                    .build()
-            }
+        return if (tokenRefreshed) {
+            response.request
+                .newBuilder()
+                .header("Authorization", "Bearer ${SessionManager.accessToken}")
+                .build()
+        } else {
+            SessionManager.logout()
+            null
         }
-
-        SessionManager.logout()
-        return null
     }
 
-    private suspend fun refreshAccessToken(refreshToken: String): Boolean {
-        return try {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(com.airgo.airgoApp.BuildConfig.BACKEND_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+    private suspend fun refreshAccessToken(refreshToken: String): Boolean =
+        try {
+            val retrofit =
+                Retrofit
+                    .Builder()
+                    .baseUrl(BuildConfig.BACKEND_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
 
-            val authApi = retrofit.create(com.airgo.airgoApp.features.login.data.auth.AuthApi::class.java)
-            val response = authApi.refreshToken(com.airgo.airgoApp.features.login.data.auth.RefreshTokenRequest(refreshToken))
+            val authApi = retrofit.create(AuthApi::class.java)
+            val request = RefreshTokenRequest(refreshToken)
+            val authResponse = authApi.refreshToken(request)
+            val body = authResponse.body()
 
-            if (response.isSuccessful && response.body() != null) {
-                val newTokens = response.body()!!
-                SessionManager.accessToken = newTokens.access ?: newTokens.accessToken
-                if (newTokens.refresh != null || newTokens.refreshToken != null) {
-                    SessionManager.refreshToken = newTokens.refresh ?: newTokens.refreshToken
+            if (authResponse.isSuccessful && body != null) {
+                SessionManager.accessToken = body.access ?: body.accessToken
+                if (body.refresh != null || body.refreshToken != null) {
+                    SessionManager.refreshToken = body.refresh ?: body.refreshToken
                 }
                 true
             } else {
                 false
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            Log.e("TokenAuthenticator", "Network error refreshing token", e)
+            false
+        } catch (e: HttpException) {
+            Log.e("TokenAuthenticator", "HTTP error refreshing token", e)
+            false
+        } catch (e: IllegalArgumentException) {
+            Log.e("TokenAuthenticator", "Illegal argument error refreshing token", e)
             false
         }
-    }
 }
-

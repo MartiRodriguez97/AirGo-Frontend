@@ -50,7 +50,8 @@ class MainActivity : ComponentActivity() {
                                 isLoggedIn = false
                                 userEmail = null
                                 userPictureUrl = null
-                                com.airgo.airgoApp.core.network.SessionManager.logout()
+                                com.airgo.airgoApp.core.network.SessionManager
+                                    .logout()
                             },
                         )
                     } else {
