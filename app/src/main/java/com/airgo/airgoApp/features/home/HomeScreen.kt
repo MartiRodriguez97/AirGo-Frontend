@@ -1,6 +1,5 @@
 package com.airgo.airgoApp.features.home
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,47 +22,43 @@ import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 
 @Composable
-fun homeScreen(
-    onNavigateToQuestionnaire: () -> Unit = {}
-) {
+fun homeScreen(onNavigateToQuestionnaire: () -> Unit = {}) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // secció de entrament
-        TrainingPlanSection(onCreatePlanClick = onNavigateToQuestionnaire)
-
-
+        trainingPlanSection(onCreatePlanClick = onNavigateToQuestionnaire)
     }
 }
 
 @Composable
-fun TrainingPlanSection(
-    onCreatePlanClick: () -> Unit
-) {
+fun trainingPlanSection(onCreatePlanClick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             Text(
                 text = stringResource(R.string.home_training_plan_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -71,14 +66,14 @@ fun TrainingPlanSection(
             Text(
                 text = stringResource(R.string.home_training_plan_desc),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = onCreatePlanClick,
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.End),
             ) {
                 Text(text = stringResource(R.string.home_btn_create_plan))
             }
