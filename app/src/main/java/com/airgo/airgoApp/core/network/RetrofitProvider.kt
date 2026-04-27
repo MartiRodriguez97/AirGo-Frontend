@@ -6,6 +6,7 @@ import com.airgo.airgoApp.features.map.data.AirQualityApiService
 import com.airgo.airgoApp.features.map.data.BicingApiService
 import com.airgo.airgoApp.features.map.data.FavoriteRouteApiService
 import com.airgo.airgoApp.features.map.data.RouteGenerationApiService
+import com.airgo.airgoApp.features.onboarding.data.OnboardingApi
 import com.airgo.airgoApp.features.profile.data.ProfileApi
 import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
 import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
@@ -16,7 +17,6 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import com.airgo.airgoApp.features.onboarding.data.OnboardingApi
 
 object RetrofitProvider {
     private const val BACKEND_URL = BuildConfig.BACKEND_URL

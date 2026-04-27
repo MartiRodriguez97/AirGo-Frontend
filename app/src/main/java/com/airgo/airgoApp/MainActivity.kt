@@ -48,9 +48,10 @@ class MainActivity : ComponentActivity() {
                         }
                     } else if (needsOnboarding ||
                         onboardingViewModel.uiState is OnboardingUiState.NeedsOnboarding ||
-                        onboardingViewModel.uiState is OnboardingUiState.LoadingProfile) {
+                        onboardingViewModel.uiState is OnboardingUiState.LoadingProfile
+                    ) {
                         onboardingScreen(
-                            onCompleted = { needsOnboarding = false }
+                            onCompleted = { needsOnboarding = false },
                         )
                     } else {
                         mainShellScreen(

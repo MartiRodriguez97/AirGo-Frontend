@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.features.onboarding.data.OnboardingRequest
-import com.airgo.airgoApp.features.onboarding.data.UserProfileResponse
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -17,11 +16,18 @@ private const val LOG_TAG = "OnboardingViewModel"
 
 sealed class OnboardingUiState {
     data object Idle : OnboardingUiState()
+
     data object LoadingProfile : OnboardingUiState()
+
     data object NeedsOnboarding : OnboardingUiState()
+
     data object Saving : OnboardingUiState()
+
     data object Success : OnboardingUiState()
-    data class Error(val message: String) : OnboardingUiState()
+
+    data class Error(
+        val message: String,
+    ) : OnboardingUiState()
 }
 
 class OnboardingViewModel : ViewModel() {
@@ -40,11 +46,12 @@ class OnboardingViewModel : ViewModel() {
             try {
                 val profile = RetrofitProvider.onboardingApi.getUserProfile()
                 userId = profile.id
-                uiState = if (profile.pes == 0 || profile.altura == 0) {
-                    OnboardingUiState.NeedsOnboarding
-                } else {
-                    OnboardingUiState.Success
-                }
+                uiState =
+                    if (profile.pes == 0 || profile.altura == 0) {
+                        OnboardingUiState.NeedsOnboarding
+                    } else {
+                        OnboardingUiState.Success
+                    }
             } catch (e: IOException) {
                 uiState = OnboardingUiState.Error("Error de connexió")
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
@@ -73,12 +80,13 @@ class OnboardingViewModel : ViewModel() {
             try {
                 RetrofitProvider.onboardingApi.updateUserProfile(
                     id = userId,
-                    request = OnboardingRequest(
-                        username = username,
-                        pes = pes,
-                        altura = altura,
-                        teBici = teBici,
-                    ),
+                    request =
+                        OnboardingRequest(
+                            username = username,
+                            pes = pes,
+                            altura = altura,
+                            teBici = teBici,
+                        ),
                 )
                 uiState = OnboardingUiState.Success
                 Log.d(LOG_TAG, "Onboarding completat per usuari $userId")
