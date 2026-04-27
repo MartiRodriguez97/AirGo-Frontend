@@ -16,6 +16,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import com.airgo.airgoApp.features.onboarding.data.OnboardingApi
 
 object RetrofitProvider {
     private const val BACKEND_URL = BuildConfig.BACKEND_URL
@@ -57,4 +58,5 @@ object RetrofitProvider {
     val teBiciApi: TeBiciApi = retrofit.create(TeBiciApi::class.java)
     val socialApi: SocialApi = retrofit.create(SocialApi::class.java)
     val favoriteRouteApi: FavoriteRouteApiService = retrofit.create(FavoriteRouteApiService::class.java)
+    val onboardingApi: OnboardingApi = retrofit.create(OnboardingApi::class.java)
 }

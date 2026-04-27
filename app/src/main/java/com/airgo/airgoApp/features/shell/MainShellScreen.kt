@@ -57,6 +57,7 @@ fun mainShellScreen(
 
     Scaffold(
         bottomBar = {
+            // Ocultar la barra de navegació només quan estem a la pantalla de favorites
             if (currentRoute != "favorites") {
                 NavigationBar {
                     MainShellScreen.entries.forEach { tab ->
