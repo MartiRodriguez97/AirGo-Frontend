@@ -128,4 +128,10 @@
         🟢 Free slots: %3$d\n
         ℹ️ Status: %4$s
     </string>
+    <string name="add_favorite_route">Add to favorites</string>
+    <string name="view_favorites_routes">Favorites</string>
+    <string name="delete_favourite_route">Delete</string>
+    <string name="no_favorite_routes">No favorite rutes</string>
+    <string name="back_to_map">Back</string>
+    <string name="favorite_routes_screen_title">Favorite routes</string>
 </resources>

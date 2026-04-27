@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOff
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -66,6 +68,7 @@ internal fun routeSelectionPanel(
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 androidx.compose.foundation.layout.Row(
                     modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
                 ) {
                     val mins = summary.durationMinutes.toInt()
@@ -80,6 +83,25 @@ internal fun routeSelectionPanel(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.secondary,
                     )
+                    androidx.compose.material3.IconButton(
+                        onClick = { state.onAddToFavorites() },
+                    ) {
+                        Icon(
+                            imageVector =
+                                if (state.isFavorite) {
+                                    Icons.Default.Favorite
+                                } else {
+                                    Icons.Default.FavoriteBorder
+                                },
+                            contentDescription = "Afegir a preferits",
+                            tint =
+                                if (state.isFavorite) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                },
+                        )
+                    }
                 }
             }
 
