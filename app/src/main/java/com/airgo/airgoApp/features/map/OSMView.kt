@@ -121,9 +121,7 @@ fun osmView(
     val bicingOverlay = remember { FolderOverlay() }
     LaunchedEffect(bicingViewModel.stations) {
         bicingOverlay.items.clear()
-        bicingOverlay.items.addAll(
-            BicingHelper.createBicingOverlay(context, mapView, bicingViewModel.stations).items,
-        )
+        bicingOverlay.items.addAll(BicingHelper.createBicingOverlay(context, mapView, bicingViewModel.stations).items)
         mapView.invalidate()
     }
 
