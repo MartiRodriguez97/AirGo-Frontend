@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -79,6 +80,10 @@ data class MapState(
     val onCalculateRoute: () -> Unit,
     val onClearRoute: () -> Unit,
     val onSetSelectionMode: (MapSelectionMode) -> Unit,
+    val onAddToFavorites: () -> Unit,
+    val isFavorite: Boolean = false,
+    val favoriteMessage: String? = null,
+    val onNavigateToFavorites: () -> Unit,
 )
 
 /**
@@ -91,6 +96,7 @@ fun osmView(
     pollutionViewModel: PollutionViewModel = viewModel(),
     routeViewModel: RouteViewModel = viewModel(),
     bicingViewModel: BicingViewModel = viewModel(),
+    onNavigateToFavorites: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -117,9 +123,7 @@ fun osmView(
     val bicingOverlay = remember { FolderOverlay() }
     LaunchedEffect(bicingViewModel.stations) {
         bicingOverlay.items.clear()
-        bicingOverlay.items.addAll(
-            BicingHelper.createBicingOverlay(context, mapView, bicingViewModel.stations).items,
-        )
+        bicingOverlay.items.addAll(BicingHelper.createBicingOverlay(context, mapView, bicingViewModel.stations).items)
         mapView.invalidate()
     }
 
@@ -166,6 +170,8 @@ fun osmView(
             routeViewModel.endPoint,
             routeViewModel.currentRoute,
             routeViewModel.isLoading,
+            routeViewModel.isFavorite,
+            routeViewModel.favoriteMessage,
         ) {
             MapState(
                 mapView = mapView,
@@ -183,13 +189,14 @@ fun osmView(
                 onCalculateRoute = { routeViewModel.calculateRoute() },
                 onClearRoute = { routeViewModel.clearRoute() },
                 onSetSelectionMode = { routeViewModel.selectionMode = it },
+                onAddToFavorites = { routeViewModel.addToFavorites() },
+                isFavorite = routeViewModel.isFavorite,
+                favoriteMessage = routeViewModel.favoriteMessage,
+                onNavigateToFavorites = onNavigateToFavorites,
             )
         }
     // Funció que pinta el mapa i les capes
-    osmMapContainer(
-        state = mapState,
-        modifier = modifier,
-    )
+    osmMapContainer(state = mapState, modifier = modifier)
 }
 
 @Composable
@@ -215,6 +222,12 @@ private fun errorToastHandlers(
         routeViewModel.errorMessage?.let { uiText ->
             Toast.makeText(context, uiText.asString(context), Toast.LENGTH_LONG).show()
             routeViewModel.clearError()
+        }
+    }
+    LaunchedEffect(routeViewModel.favoriteMessage) {
+        routeViewModel.favoriteMessage?.let { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+            routeViewModel.clearFavoriteMessage()
         }
     }
 }
@@ -379,6 +392,22 @@ fun osmMapContainer(
             showPollution = showPollution,
             onTogglePollution = { showPollution = it },
         )
+
+        // Botó de preferits
+        FloatingActionButton(
+            onClick = { state.onNavigateToFavorites() },
+            modifier =
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(bottom = 100.dp, start = 16.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = stringResource(R.string.view_favorites_routes),
+            )
+        }
     }
 }
 

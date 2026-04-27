@@ -8,6 +8,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOff
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.HorizontalDivider
@@ -48,7 +50,6 @@ internal fun routeSelectionPanel(
                 .cardElevation(8.dp),
     ) {
         androidx.compose.foundation.layout.Column(Modifier.padding(12.dp)) {
-            // Camp Inici
             routePointField(
                 label = stringResource(R.string.map_route_start_label),
                 point = state.startPoint,
@@ -57,69 +58,87 @@ internal fun routeSelectionPanel(
             )
             androidx.compose.foundation.layout
                 .Spacer(Modifier.padding(4.dp))
-            // Camp Destí
             routePointField(
                 label = stringResource(R.string.map_route_end_label),
                 point = state.endPoint,
                 isSelected = state.selectionMode == MapSelectionMode.END,
                 onClick = { state.onSetSelectionMode(MapSelectionMode.END) },
             )
-
-            // Mostrar resum si hi ha ruta
             state.currentRoute?.summary?.let { summary ->
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
-                androidx.compose.foundation.layout.Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                ) {
-                    val mins = summary.durationMinutes.toInt()
-
-                    Text(
-                        text = "⏱ $mins min",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Text(
-                        text = "📏 ${summary.distanceMeters} m",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                }
+                routeSummaryRow(state = state, summary = summary)
             }
+            routeActionButtons(state = state)
+        }
+    }
+}
 
-            androidx.compose.foundation.layout.Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                horizontalArrangement =
-                    androidx.compose.foundation.layout.Arrangement
-                        .spacedBy(8.dp),
-            ) {
-                androidx.compose.material3.Button(
-                    onClick = { state.onCalculateRoute() },
-                    enabled = state.startPoint != null && state.endPoint != null && !state.isCalculatingRoute,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    if (state.isCalculatingRoute) {
-                        androidx.compose.foundation.layout.Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            androidx.compose.material3.CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp).padding(end = 4.dp),
-                                color = MaterialTheme.colorScheme.primary,
-                                strokeWidth = 2.dp,
-                            )
-                            Text(stringResource(R.string.map_route_calculating))
-                        }
-                    } else {
-                        Text(stringResource(R.string.map_route_calculate_button))
-                    }
+/**
+ * Fila que mostra el resum de la ruta calculada, amb durada, distància i botó per afegir a preferits.
+ */
+@Composable
+private fun routeSummaryRow(
+    state: MapState,
+    summary: RouteSummary,
+) {
+    androidx.compose.foundation.layout.Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = "⏱ ${summary.durationMinutes.toInt()} min",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = "📏 ${summary.distanceMeters} m",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        androidx.compose.material3.IconButton(onClick = { state.onAddToFavorites() }) {
+            Icon(
+                imageVector = if (state.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = "Afegir a preferits",
+                tint = if (state.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+/**
+ * Botons d'acció per calcular o netejar la ruta.
+ */
+@Composable
+private fun routeActionButtons(state: MapState) {
+    androidx.compose.foundation.layout.Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        horizontalArrangement =
+            androidx.compose.foundation.layout.Arrangement
+                .spacedBy(8.dp),
+    ) {
+        androidx.compose.material3.Button(
+            onClick = { state.onCalculateRoute() },
+            enabled = state.startPoint != null && state.endPoint != null && !state.isCalculatingRoute,
+            modifier = Modifier.weight(1f),
+        ) {
+            if (state.isCalculatingRoute) {
+                androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp).padding(end = 4.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 2.dp,
+                    )
+                    Text(stringResource(R.string.map_route_calculating))
                 }
-
-                androidx.compose.material3.OutlinedButton(
-                    onClick = { state.onClearRoute() },
-                    modifier = Modifier.weight(1f),
-                ) { Text(stringResource(R.string.map_route_clear_button)) }
+            } else {
+                Text(stringResource(R.string.map_route_calculate_button))
             }
         }
+        androidx.compose.material3.OutlinedButton(
+            onClick = { state.onClearRoute() },
+            modifier = Modifier.weight(1f),
+        ) { Text(stringResource(R.string.map_route_clear_button)) }
     }
 }
 

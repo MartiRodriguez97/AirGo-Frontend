@@ -4,6 +4,7 @@ import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.features.login.data.auth.AuthApi
 import com.airgo.airgoApp.features.map.AirQualityApiService
 import com.airgo.airgoApp.features.map.BicingApiService
+import com.airgo.airgoApp.features.map.FavoriteRouteApiService
 import com.airgo.airgoApp.features.map.RouteGenerationApiService
 import com.airgo.airgoApp.features.profile.data.ProfileApi
 import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
@@ -55,4 +56,5 @@ object RetrofitProvider {
     val titolApi: TitolApi = retrofit.create(TitolApi::class.java)
     val teBiciApi: TeBiciApi = retrofit.create(TeBiciApi::class.java)
     val socialApi: SocialApi = retrofit.create(SocialApi::class.java)
+    val favoriteRouteApi: FavoriteRouteApiService = retrofit.create(FavoriteRouteApiService::class.java)
 }

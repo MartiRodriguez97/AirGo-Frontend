@@ -132,4 +132,12 @@
     🟢 Espacios libres: %3$d\n
     ℹ️ Estado: %4$s
     </string>
+
+    <!-- features/map/FavoriteRoutes -->
+    <string name="add_favorite_route">Añadir a favoritos</string>
+    <string name="view_favorites_routes">Favoritos</string>
+    <string name="delete_favourite_route">Eliminar</string>
+    <string name="no_favorite_routes">No tienes ninguna ruta favorita</string>
+    <string name="back_to_map">Atrás</string>
+    <string name="favorite_routes_screen_title">Rutas favoritas</string>
 </resources>

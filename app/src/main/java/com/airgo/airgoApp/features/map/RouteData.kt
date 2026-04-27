@@ -22,6 +22,8 @@ data class RouteRequest(
 
 data class RouteResponse(
     val status: String,
+    @com.google.gson.annotations.SerializedName("route_id")
+    val routeId: Int,
     val summary: RouteSummary,
     val geometry: RouteGeometry,
     @com.google.gson.annotations.SerializedName("pollution_details")

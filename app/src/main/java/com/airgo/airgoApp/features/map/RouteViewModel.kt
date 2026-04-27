@@ -16,6 +16,9 @@ import java.io.IOException
 
 private const val LOG_TAG = "RouteViewModel"
 
+private const val OK = 201
+private const val JA_EXISTEIX = 409
+
 class RouteViewModel : ViewModel() {
     var selectionMode by mutableStateOf(MapSelectionMode.NONE)
     var startPoint by mutableStateOf<GeoPoint?>(null)
@@ -29,6 +32,12 @@ class RouteViewModel : ViewModel() {
         private set
 
     var isLoading by mutableStateOf(false)
+        private set
+
+    var isFavorite by mutableStateOf(false)
+        private set
+
+    var favoriteMessage by mutableStateOf<String?>(null)
         private set
 
     /**
@@ -104,5 +113,47 @@ class RouteViewModel : ViewModel() {
      */
     fun clearError() {
         errorMessage = null
+    }
+
+    /**
+     * Funció per afegir la ruta actual a les rutes favorites de l'usuari.
+     * Es fa una crida a l'API per guardar la ruta.
+     * Si la ruta ja està guardada, es mostra un missatge indicant-ho.
+     * Si hi ha un error de connexió o del servidor, es mostra el missatge corresponent.
+     */
+    fun addToFavorites() {
+        val routeId = currentRoute?.routeId ?: return
+        viewModelScope.launch {
+            try {
+                val response =
+                    RetrofitProvider.favoriteRouteApi.saveFavoriteRoute(
+                        SaveFavoriteRouteRequest(routeId),
+                    )
+                when (response.code()) {
+                    OK -> {
+                        isFavorite = true
+                        favoriteMessage = null
+                    }
+                    JA_EXISTEIX -> favoriteMessage = "La ruta ja estava guardada"
+                    else -> {
+                        favoriteMessage = "Error al guardar la ruta: ${response.code()}"
+                        Log.e(LOG_TAG, "Save favorite failed: ${response.code()} - ${response.errorBody()?.string()}")
+                    }
+                }
+            } catch (e: IOException) {
+                favoriteMessage = "Error de connexió"
+                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
+            } catch (e: HttpException) {
+                favoriteMessage = "Error del servidor: ${e.code()}"
+                Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
+            }
+        }
+    }
+
+    /**
+     * Netejar el missatge de favorit per no mostrar el missatge múltiples vegades
+     */
+    fun clearFavoriteMessage() {
+        favoriteMessage = null
     }
 }
