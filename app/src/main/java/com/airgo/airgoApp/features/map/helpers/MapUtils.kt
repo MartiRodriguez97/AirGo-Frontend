@@ -1,13 +1,21 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.helpers
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.drawable.LayerDrawable
+import android.location.LocationManager
 import android.view.View
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.features.map.domain.MapSelectionMode
+import com.airgo.airgoApp.features.map.domain.MapState
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -140,10 +148,10 @@ internal fun updateRouteElements(
 
     // Pintar els marcadors d'inici i destí
     state.startPoint?.let {
-        map.overlays.add(createRouteMarker(map, it, android.graphics.Color.parseColor("#4A7C59")))
+        map.overlays.add(createRouteMarker(map, it, Color.parseColor("#4A7C59")))
     }
     state.endPoint?.let {
-        map.overlays.add(createRouteMarker(map, it, android.graphics.Color.RED))
+        map.overlays.add(createRouteMarker(map, it, Color.RED))
     }
 
     map.invalidate()
@@ -154,8 +162,8 @@ internal fun updateRouteElements(
  * Retorna true si el GPS està habilitat, false en cas contrari.
  */
 internal fun isGpsEnabled(context: Context): Boolean {
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
-    return locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 }
 
 /**
@@ -166,3 +174,27 @@ internal fun checkInitialLocationPermission(context: Context): Boolean =
         context,
         Manifest.permission.ACCESS_FINE_LOCATION,
     ) == PackageManager.PERMISSION_GRANTED
+
+@Composable
+internal fun rememberGpsEnabledState(context: Context): androidx.compose.runtime.State<Boolean> {
+    val isGpsEnabled = remember { mutableStateOf(isGpsEnabled(context)) }
+
+    DisposableEffect(context) {
+        val receiver =
+            object : android.content.BroadcastReceiver() {
+                override fun onReceive(
+                    context: Context?,
+                    intent: android.content.Intent?,
+                ) {
+                    if (intent?.action == android.location.LocationManager.PROVIDERS_CHANGED_ACTION) {
+                        isGpsEnabled.value = isGpsEnabled(context!!)
+                    }
+                }
+            }
+        val filter = android.content.IntentFilter(android.location.LocationManager.PROVIDERS_CHANGED_ACTION)
+        context.registerReceiver(receiver, filter)
+        onDispose { context.unregisterReceiver(receiver) }
+    }
+
+    return isGpsEnabled
+}

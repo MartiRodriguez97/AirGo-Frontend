@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.helpers
 
 import android.content.Context
 import android.graphics.Bitmap

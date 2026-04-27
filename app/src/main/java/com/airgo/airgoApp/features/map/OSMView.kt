@@ -1,29 +1,15 @@
 package com.airgo.airgoApp.features.map
 
-import android.Manifest
-import android.content.Context
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.DirectionsBike
-import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -34,19 +20,36 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.features.map.components.errorToastHandlers
+import com.airgo.airgoApp.features.map.components.fetchLocationDataEffect
+import com.airgo.airgoApp.features.map.components.gpsDisabledWarning
+import com.airgo.airgoApp.features.map.components.layerSelector
+import com.airgo.airgoApp.features.map.components.modeSelector
+import com.airgo.airgoApp.features.map.components.rememberLocationPermissions
+import com.airgo.airgoApp.features.map.components.routeSelectionPanel
+import com.airgo.airgoApp.features.map.domain.BicingViewModel
+import com.airgo.airgoApp.features.map.domain.MapState
+import com.airgo.airgoApp.features.map.domain.PollutionViewModel
+import com.airgo.airgoApp.features.map.domain.RouteViewModel
+import com.airgo.airgoApp.features.map.helpers.BicingHelper
+import com.airgo.airgoApp.features.map.helpers.LocationHelper
+import com.airgo.airgoApp.features.map.helpers.PollutionHelper
+import com.airgo.airgoApp.features.map.helpers.checkInitialLocationPermission
+import com.airgo.airgoApp.features.map.helpers.configureMapView
+import com.airgo.airgoApp.features.map.helpers.createMapEventsOverlay
+import com.airgo.airgoApp.features.map.helpers.rememberGpsEnabledState
+import com.airgo.airgoApp.features.map.helpers.updateRouteElements
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
 private const val BCN_LONGITUDE = 2.1734 // Longitud inicial
@@ -57,34 +60,6 @@ private const val CACHE_TILE_COUNT: Short = 1000
 private const val MEGABYTES_TO_BYTES = 1024L * 1024L
 private const val MAX_CACHE_MB = 100L
 private const val MAX_CACHE_BYTES = MAX_CACHE_MB * MEGABYTES_TO_BYTES
-
-private const val DEFAULT_LATITUDE = 41.385
-private const val DEFAULT_LONGITUDE = 2.153
-
-/**
- * Classe que encapsula tot l'estat necessari per renderitzar el mapa i les seves capes.
- */
-data class MapState(
-    val mapView: MapView,
-    val locationOverlay: MyLocationNewOverlay,
-    val bicingOverlay: FolderOverlay,
-    val pollutionOverlay: FolderOverlay,
-    val hasLocationPermission: Boolean,
-    val stations: List<PollutionPoint>,
-    val selectionMode: MapSelectionMode,
-    val startPoint: org.osmdroid.util.GeoPoint?,
-    val endPoint: org.osmdroid.util.GeoPoint?,
-    val currentRoute: RouteResponse?,
-    val isCalculatingRoute: Boolean,
-    val onPointSelected: (org.osmdroid.util.GeoPoint) -> Unit,
-    val onCalculateRoute: () -> Unit,
-    val onClearRoute: () -> Unit,
-    val onSetSelectionMode: (MapSelectionMode) -> Unit,
-    val onAddToFavorites: () -> Unit,
-    val isFavorite: Boolean = false,
-    val favoriteMessage: String? = null,
-    val onNavigateToFavorites: () -> Unit,
-)
 
 /**
  * Composable principal que mostra el mapa i les capes.
@@ -199,105 +174,6 @@ fun osmView(
     osmMapContainer(state = mapState, modifier = modifier)
 }
 
-@Composable
-private fun errorToastHandlers(
-    context: Context,
-    pollutionViewModel: PollutionViewModel,
-    routeViewModel: RouteViewModel,
-    bicingViewModel: BicingViewModel,
-) {
-    LaunchedEffect(pollutionViewModel.errorMessage) {
-        pollutionViewModel.errorMessage?.let { uiText ->
-            Toast.makeText(context, uiText.asString(context), Toast.LENGTH_LONG).show()
-            pollutionViewModel.clearError()
-        }
-    }
-    LaunchedEffect(bicingViewModel.errorMessage) {
-        bicingViewModel.errorMessage?.let { errorMsg ->
-            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
-            bicingViewModel.clearError()
-        }
-    }
-    LaunchedEffect(routeViewModel.errorMessage) {
-        routeViewModel.errorMessage?.let { uiText ->
-            Toast.makeText(context, uiText.asString(context), Toast.LENGTH_LONG).show()
-            routeViewModel.clearError()
-        }
-    }
-    LaunchedEffect(routeViewModel.favoriteMessage) {
-        routeViewModel.favoriteMessage?.let { msg ->
-            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-            routeViewModel.clearFavoriteMessage()
-        }
-    }
-}
-
-@Composable
-private fun fetchLocationDataEffect(
-    hasLocationPermission: Boolean,
-    requestLocationPermission: () -> Unit,
-    pollutionViewModel: PollutionViewModel,
-    bicingViewModel: BicingViewModel,
-    context: Context,
-) {
-    LaunchedEffect(hasLocationPermission) {
-        if (!hasLocationPermission) {
-            requestLocationPermission()
-            pollutionViewModel.fetchBarcelonaData()
-            bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
-        } else {
-            pollutionViewModel.fetchBarcelonaData()
-            try {
-                val locationManager =
-                    context.getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
-                val lastLoc =
-                    locationManager.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER)
-                        ?: locationManager.getLastKnownLocation(
-                            android.location.LocationManager.NETWORK_PROVIDER,
-                        )
-
-                if (lastLoc != null) {
-                    bicingViewModel.fetchStations(lastLoc.latitude, lastLoc.longitude)
-                } else {
-                    bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
-                }
-            } catch (e: SecurityException) {
-                e.printStackTrace()
-                bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
-            }
-        }
-    }
-}
-
-/**
- * Lògica de permissos
- */
-@Composable
-fun rememberLocationPermissions(onPermissionGranted: (Boolean) -> Unit): () -> Unit {
-    val context = LocalContext.current
-
-    // Mirar si ja tenia permissos
-    val launcher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions(),
-        ) { permissions ->
-            val granted =
-                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-            onPermissionGranted(granted)
-        }
-
-    // Missatge per demanar permissos
-    return {
-        launcher.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-            ),
-        )
-    }
-}
-
 /**
  * Funció per pintar el mapa
  */
@@ -317,46 +193,11 @@ fun osmMapContainer(
     val isGpsOff by rememberGpsEnabledState(context)
 
     Box(modifier = modifier.fillMaxSize()) {
-        AndroidView(
-            modifier =
-                modifier
-                    .fillMaxSize()
-                    .statusBarsPadding(),
-            factory = { context ->
-                state.mapView.apply {
-                    setTileSource(TileSourceFactory.MAPNIK) // Estil del mapa per defecte
-                    setMultiTouchControls(true) // Zoom amb dos dits
-                    controller.setZoom(INITIAL_ZOOM_LEVEL) // Zoom incial
-                    // Centrar inicialment a un punt definit
-                    controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE))
-
-                    overlays.add(state.pollutionOverlay)
-                    val eventsOverlay =
-                        createMapEventsOverlay(
-                            mapView = this,
-                            bicingOverlay = state.bicingOverlay,
-                            selectionModeProvider = { selectionModeState.value },
-                            onPointSelectedProvider = { onPointSelectedState.value },
-                        )
-                    overlays.add(eventsOverlay)
-                    overlays.add(state.bicingOverlay)
-                    overlays.add(state.locationOverlay)
-                }
-            },
-            update = { map ->
-                // Refrescar la ubicació
-                if (state.hasLocationPermission && !state.locationOverlay.isMyLocationEnabled) {
-                    state.locationOverlay.enableMyLocation()
-                }
-                // Mostrar o ocultar les capes segons les variables d'estat
-                state.bicingOverlay.isEnabled = showBicing
-                state.pollutionOverlay.isEnabled = showPollution
-
-                // Actualitzar la ruta i els punts d'inici/destí
-                updateRouteElements(map, state)
-
-                map.invalidate()
-            },
+        mapRenderer(
+            state = state,
+            showBicing = showBicing,
+            showPollution = showPollution,
+            modifier = Modifier.fillMaxSize().statusBarsPadding(),
         )
 
         if (isGpsOff) {
@@ -411,105 +252,47 @@ fun osmMapContainer(
     }
 }
 
-/**
- * Composable per al selector de capes, on l'usuari pot activar o desactivar les capes de Bicing i qualitat de l'aire.
- * Activa i desactiva un menú desplegable amb les opcions de capes.
- */
 @Composable
-private fun BoxScope.layerSelector(
+private fun mapRenderer(
+    state: MapState,
     showBicing: Boolean,
-    onToggleBicing: (Boolean) -> Unit,
     showPollution: Boolean,
-    onTogglePollution: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    val selectionModeState = rememberUpdatedState(state.selectionMode)
+    val onPointSelectedState = rememberUpdatedState(state.onPointSelected)
 
-    // Colors per indicar si la capa està activa o no
-    val activeBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-    val inactiveBg = Color.Transparent
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            state.mapView.apply {
+                setTileSource(TileSourceFactory.MAPNIK)
+                setMultiTouchControls(true)
+                controller.setZoom(INITIAL_ZOOM_LEVEL)
+                controller.setCenter(GeoPoint(BCN_LATITUDE, BCN_LONGITUDE))
 
-    Box(
-        modifier =
-            Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(bottom = 100.dp, end = 16.dp),
-    ) {
-        FloatingActionButton(
-            onClick = { expanded = true },
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.primary,
-        ) {
-            Icon(Icons.Default.Layers, contentDescription = stringResource(R.string.map_layers_description))
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            // Capa Bicing
-            DropdownMenuItem(
-                modifier = Modifier.background(if (showBicing) activeBg else inactiveBg),
-                text = {
-                    Text(
-                        text = stringResource(R.string.map_layer_bicing),
-                        color = if (showBicing) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                overlays.add(state.pollutionOverlay)
+                val eventsOverlay =
+                    createMapEventsOverlay(
+                        mapView = this,
+                        bicingOverlay = state.bicingOverlay,
+                        selectionModeProvider = { selectionModeState.value },
+                        onPointSelectedProvider = { onPointSelectedState.value },
                     )
-                },
-                leadingIcon = {
-                    Icon(
-                        Icons.AutoMirrored.Filled.DirectionsBike,
-                        contentDescription = null,
-                        tint = if (showBicing) MaterialTheme.colorScheme.primary else Color.Gray,
-                    )
-                },
-                onClick = { onToggleBicing(!showBicing) },
-            )
-
-            HorizontalDivider()
-
-            // Capa qualitat de l'aire
-            DropdownMenuItem(
-                modifier = Modifier.background(if (showPollution) activeBg else inactiveBg),
-                text = {
-                    Text(
-                        text = stringResource(R.string.map_layer_pollution),
-                        color = if (showPollution) MaterialTheme.colorScheme.primary else Color.Unspecified,
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        Icons.Default.Cloud,
-                        contentDescription = null,
-                        tint = if (showPollution) MaterialTheme.colorScheme.primary else Color.Gray,
-                    )
-                },
-                onClick = { onTogglePollution(!showPollution) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun rememberGpsEnabledState(context: Context): androidx.compose.runtime.State<Boolean> {
-    val isGpsEnabled = remember { mutableStateOf(isGpsEnabled(context)) }
-
-    DisposableEffect(context) {
-        val receiver =
-            object : android.content.BroadcastReceiver() {
-                override fun onReceive(
-                    context: Context?,
-                    intent: android.content.Intent?,
-                ) {
-                    if (intent?.action == android.location.LocationManager.PROVIDERS_CHANGED_ACTION) {
-                        isGpsEnabled.value = isGpsEnabled(context!!)
-                    }
-                }
+                overlays.add(eventsOverlay)
+                overlays.add(state.bicingOverlay)
+                overlays.add(state.locationOverlay)
             }
-        val filter = android.content.IntentFilter(android.location.LocationManager.PROVIDERS_CHANGED_ACTION)
-        context.registerReceiver(receiver, filter)
-        onDispose { context.unregisterReceiver(receiver) }
-    }
+        },
+        update = { map ->
+            if (state.hasLocationPermission && !state.locationOverlay.isMyLocationEnabled) {
+                state.locationOverlay.enableMyLocation()
+            }
+            state.bicingOverlay.isEnabled = showBicing
+            state.pollutionOverlay.isEnabled = showPollution
 
-    return isGpsEnabled
+            updateRouteElements(map, state)
+            map.invalidate()
+        },
+    )
 }

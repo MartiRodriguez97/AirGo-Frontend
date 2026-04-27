@@ -1,6 +1,11 @@
 package com.airgo.airgoApp.features.map
 
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.features.map.data.RouteGeometry
+import com.airgo.airgoApp.features.map.data.RouteResponse
+import com.airgo.airgoApp.features.map.data.RouteSummary
+import com.airgo.airgoApp.features.map.domain.MapSelectionMode
+import com.airgo.airgoApp.features.map.domain.RouteViewModel
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

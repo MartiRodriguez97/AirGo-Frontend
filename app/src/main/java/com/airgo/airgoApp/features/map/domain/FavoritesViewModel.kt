@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.domain
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.features.map.data.FavoriteRouteItem
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException

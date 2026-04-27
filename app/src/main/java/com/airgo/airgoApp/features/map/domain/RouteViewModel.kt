@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.domain
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -9,6 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.map.data.RouteRequest
+import com.airgo.airgoApp.features.map.data.RouteResponse
+import com.airgo.airgoApp.features.map.data.SaveFavoriteRouteRequest
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import retrofit2.HttpException
@@ -51,7 +54,8 @@ class RouteViewModel : ViewModel() {
             isLoading = true
             try {
                 errorMessage = null // Netegem errors previs
-                val request = RouteRequest(start.latitude, start.longitude, end.latitude, end.longitude)
+                val request =
+                    RouteRequest(start.latitude, start.longitude, end.latitude, end.longitude)
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
                 Log.d("Conexió exitosa", "La distància és de: ${currentRoute?.summary?.distanceMeters} metres")
             } catch (e: IOException) {

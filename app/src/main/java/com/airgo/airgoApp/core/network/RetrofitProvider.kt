@@ -2,10 +2,10 @@ package com.airgo.airgoApp.core.network
 
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.features.login.data.auth.AuthApi
-import com.airgo.airgoApp.features.map.AirQualityApiService
-import com.airgo.airgoApp.features.map.BicingApiService
-import com.airgo.airgoApp.features.map.FavoriteRouteApiService
-import com.airgo.airgoApp.features.map.RouteGenerationApiService
+import com.airgo.airgoApp.features.map.data.AirQualityApiService
+import com.airgo.airgoApp.features.map.data.BicingApiService
+import com.airgo.airgoApp.features.map.data.FavoriteRouteApiService
+import com.airgo.airgoApp.features.map.data.RouteGenerationApiService
 import com.airgo.airgoApp.features.profile.data.ProfileApi
 import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
 import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
