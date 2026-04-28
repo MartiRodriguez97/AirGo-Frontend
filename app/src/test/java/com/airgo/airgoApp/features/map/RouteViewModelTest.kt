@@ -41,6 +41,7 @@ class RouteViewModelTest {
     private val mockRoute =
         RouteResponse(
             status = "ok",
+            routeId = 1,
             summary =
                 RouteSummary(
                     durationMinutes = 10.0,

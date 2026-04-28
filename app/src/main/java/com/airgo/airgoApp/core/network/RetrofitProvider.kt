@@ -37,7 +37,7 @@ object RetrofitProvider {
             val requestBuilder = originalRequest.newBuilder()
 
             SessionManager.accessToken?.let { token ->
-                requestBuilder.addHeader("Authorization", "Bearer $token")
+                requestBuilder.header("Authorization", "Bearer $token")
             }
             chain.proceed(requestBuilder.build())
         }
