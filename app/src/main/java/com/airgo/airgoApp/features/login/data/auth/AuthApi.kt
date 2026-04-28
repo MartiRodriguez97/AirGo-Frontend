@@ -4,6 +4,7 @@ import com.airgo.airgoApp.core.network.ApiEndpoints
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 
 data class AuthResponse(
@@ -50,6 +51,7 @@ interface AuthApi {
         @Body body: GoogleTokenRequest,
     ): Response<AuthResponse>
 
+    @Headers("No-Authentication: true")
     @POST(ApiEndpoints.TOKEN_REFRESH)
     suspend fun refreshToken(
         @Body body: RefreshTokenRequest,

@@ -21,6 +21,18 @@ object RetrofitProvider {
     private val authInterceptor =
         Interceptor { chain ->
             val originalRequest = chain.request()
+
+            // Comprobamos si la petición tiene nuestro Header especial
+            if (originalRequest.header("No-Authentication") == "true") {
+                // Quitamos la bandera porque ya no la necesitamos, y no le ponemos el Authorization
+                val modifiedRequest =
+                    originalRequest
+                        .newBuilder()
+                        .removeHeader("No-Authentication")
+                        .build()
+                return@Interceptor chain.proceed(modifiedRequest)
+            }
+
             val requestBuilder = originalRequest.newBuilder()
 
             SessionManager.accessToken?.let { token ->
