@@ -29,7 +29,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.onboarding.domain.OnboardingUiState
 import com.airgo.airgoApp.features.onboarding.domain.OnboardingViewModel
 import java.lang.Character.toString
@@ -127,7 +126,7 @@ private fun onboardingFormContent(
         Button(
             onClick = { onSave(username, pes.toIntOrNull() ?: 0, altura.toIntOrNull() ?: 0, teBici) },
             modifier = Modifier.fillMaxWidth(),
-        ) { stringResource(R.string.continue_on_boarding) }
+        ) { Text(stringResource(R.string.continue_on_boarding)) }
     }
 }
 
@@ -147,7 +146,7 @@ private fun onboardingFields(state: OnboardingFieldsState) {
     OutlinedTextField(
         value = state.username,
         onValueChange = state.onUsernameChange,
-        label = { stringResource(R.string.account_settings_username_label) },
+        label = { Text(stringResource(R.string.account_settings_username_label)) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
     )
@@ -155,7 +154,7 @@ private fun onboardingFields(state: OnboardingFieldsState) {
     OutlinedTextField(
         value = state.pes,
         onValueChange = state.onPesChange,
-        label = { stringResource(R.string.weight_on_boarding) },
+        label = { Text(stringResource(R.string.weight_on_boarding)) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -164,7 +163,7 @@ private fun onboardingFields(state: OnboardingFieldsState) {
     OutlinedTextField(
         value = state.altura,
         onValueChange = state.onAlturaChange,
-        label = { stringResource(R.string.height_on_boarding) },
+        label = { Text(stringResource(R.string.height_on_boarding)) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

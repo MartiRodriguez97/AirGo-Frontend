@@ -145,6 +145,7 @@
     <string name="weight_on_boarding">Weight (kg)</string>
     <string name="height_on_boarding">Height (cm)</string>
     <string name="own_bike_on_boarding">Do you have own bicycle?</string>
+
     <string name="error_not_fill_files">Fill in all fields correctly</string>
     <string name="error_incorrect_on_boarding_implementation">Unable to store attributes. Please try again</string>
 
