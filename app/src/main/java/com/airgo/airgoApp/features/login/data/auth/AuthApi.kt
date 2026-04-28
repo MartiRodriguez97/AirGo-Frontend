@@ -24,9 +24,7 @@ data class RefreshTokenRequest(
 
 data class TokenRefreshResponse(
     val access: String?,
-    val accessToken: String?,
     val refresh: String?,
-    val refreshToken: String?,
 )
 
 data class UserDetailResponse(

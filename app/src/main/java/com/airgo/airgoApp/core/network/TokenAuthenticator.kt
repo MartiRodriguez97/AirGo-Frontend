@@ -57,9 +57,9 @@ class TokenAuthenticator : Authenticator {
             val body = authResponse.body()
 
             if (authResponse.isSuccessful && body != null) {
-                SessionManager.accessToken = body.access ?: body.accessToken
-                if (body.refresh != null || body.refreshToken != null) {
-                    SessionManager.refreshToken = body.refresh ?: body.refreshToken
+                SessionManager.accessToken = body.access
+                if (body.refresh != null) {
+                    SessionManager.refreshToken = body.refresh
                 }
                 true
             } else {
