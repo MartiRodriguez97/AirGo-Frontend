@@ -24,11 +24,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.onboarding.domain.OnboardingUiState
 import com.airgo.airgoApp.features.onboarding.domain.OnboardingViewModel
+import java.lang.Character.toString
 
 private data class OnboardingFieldsState(
     val username: String,
@@ -65,7 +69,7 @@ fun onboardingScreen(
             )
         is OnboardingUiState.Error ->
             onboardingFormContent(
-                errorMessage = (viewModel.uiState as OnboardingUiState.Error).message,
+                errorMessage = toString((R.string.error_incorrect_on_boarding_implementation)),
                 onSave = { username, pes, altura, teBici ->
                     viewModel.saveOnboarding(username, pes, altura, teBici)
                 },
@@ -123,16 +127,16 @@ private fun onboardingFormContent(
         Button(
             onClick = { onSave(username, pes.toIntOrNull() ?: 0, altura.toIntOrNull() ?: 0, teBici) },
             modifier = Modifier.fillMaxWidth(),
-        ) { Text("Continuar") }
+        ) { stringResource(R.string.continue_on_boarding) }
     }
 }
 
 @Composable
 private fun onboardingHeader() {
-    Text(text = "Benvingut a AirGo!", style = MaterialTheme.typography.headlineMedium)
+    Text(text = stringResource(R.string.welcome_on_boarding), style = MaterialTheme.typography.headlineMedium)
     Spacer(modifier = Modifier.height(8.dp))
     Text(
-        text = "Completa el teu perfil per continuar",
+        text = stringResource(R.string.complete_profile_on_boarding),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -143,7 +147,7 @@ private fun onboardingFields(state: OnboardingFieldsState) {
     OutlinedTextField(
         value = state.username,
         onValueChange = state.onUsernameChange,
-        label = { Text("Nom d'usuari") },
+        label = { stringResource(R.string.account_settings_username_label) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
     )
@@ -151,7 +155,7 @@ private fun onboardingFields(state: OnboardingFieldsState) {
     OutlinedTextField(
         value = state.pes,
         onValueChange = state.onPesChange,
-        label = { Text("Pes (kg)") },
+        label = { stringResource(R.string.weight_on_boarding) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -160,7 +164,7 @@ private fun onboardingFields(state: OnboardingFieldsState) {
     OutlinedTextField(
         value = state.altura,
         onValueChange = state.onAlturaChange,
-        label = { Text("Altura (cm)") },
+        label = { stringResource(R.string.height_on_boarding) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -171,7 +175,7 @@ private fun onboardingFields(state: OnboardingFieldsState) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(text = "Tens bicicleta pròpia?", style = MaterialTheme.typography.bodyLarge)
+        Text(text = stringResource(R.string.own_bike_on_boarding), style = MaterialTheme.typography.bodyLarge)
         Switch(checked = state.teBici, onCheckedChange = state.onTeBiciChange)
     }
 }

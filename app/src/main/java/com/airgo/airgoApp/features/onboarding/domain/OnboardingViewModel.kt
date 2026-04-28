@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.onboarding.data.OnboardingRequest
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -26,7 +28,7 @@ sealed class OnboardingUiState {
     data object Success : OnboardingUiState()
 
     data class Error(
-        val message: String,
+        val message: UiText.StringResource,
     ) : OnboardingUiState()
 }
 
@@ -53,10 +55,10 @@ class OnboardingViewModel : ViewModel() {
                         OnboardingUiState.Success
                     }
             } catch (e: IOException) {
-                uiState = OnboardingUiState.Error("Error de connexió")
+                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_network_generic))
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                uiState = OnboardingUiState.Error("Error del servidor: ${e.code()}")
+                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_server_generic))
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }
         }
@@ -72,7 +74,7 @@ class OnboardingViewModel : ViewModel() {
         teBici: Boolean,
     ) {
         if (username.isBlank() || pes <= 0 || altura <= 0) {
-            uiState = OnboardingUiState.Error("Omple tots els camps correctament")
+            uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_not_fill_files))
             return
         }
         viewModelScope.launch {
@@ -91,10 +93,10 @@ class OnboardingViewModel : ViewModel() {
                 uiState = OnboardingUiState.Success
                 Log.d(LOG_TAG, "Onboarding completat per usuari $userId")
             } catch (e: IOException) {
-                uiState = OnboardingUiState.Error("Error de connexió")
+                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_network_generic))
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                uiState = OnboardingUiState.Error("Error del servidor: ${e.code()}")
+                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_server_generic))
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }
         }

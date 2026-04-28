@@ -140,4 +140,12 @@
     <string name="no_favorite_routes">No tienes ninguna ruta favorita</string>
     <string name="back_to_map">Atrás</string>
     <string name="favorite_routes_screen_title">Rutas favoritas</string>
+    <string name="continue_on_boarding">Continua</string>
+    <string name="welcome_on_boarding">Bienvenido a AirGo!</string>
+    <string name="complete_profile_on_boarding">Completa tu perfil para continuar</string>
+    <string name="weight_on_boarding">Peso (kg)</string>
+    <string name="height_on_boarding">Altura (cm)</string>
+    <string name="own_bike_on_boarding">Tienes bicicleta propia?</string>
+    <string name="error_not_fill_files">Rellena todos los campos correctamente</string>
+    <string name="error_incorrect_on_boarding_implementation">No se puede guardar los atributos. Por favor, inténtelo de nuevo.</string>
 </resources>
