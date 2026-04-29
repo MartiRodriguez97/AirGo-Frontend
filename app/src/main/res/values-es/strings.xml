@@ -133,10 +133,15 @@
     ℹ️ Estado: %4$s
     </string>
 
-    <!-- features/home/-->
+    <!-- features/home/HomeScreen-->
     <string name="home_training_plan_title">Planes de entrenamiento</string>
     <string name="home_training_plan_desc">Elige uno de nuestros planes de entrenamiento para empezar a cuidarte con las rutas más limpias.</string>
     <string name="home_btn_create_plan">Crear plan</string>
+    <string name="home_active_plan_title">Tu Plan de Entrenamiento</string>
+    <string name="home_plan_sport">Deporte: %1$s</string>
+    <string name="home_plan_level">Nivel: %1$s</string>
+    <string name="home_plan_days">Días: %1$s</string>
+    <string name="home_plan_ends">Finaliza: %1$s</string>
 
     <!-- features/home/questionnaireScreen-->
     <string name="plan_create_title">Crear plan</string>

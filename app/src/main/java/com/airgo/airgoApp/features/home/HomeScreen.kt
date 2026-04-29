@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,7 +33,10 @@ fun homeScreen(onNavigateToQuestionnaire: () -> Unit = {}) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToQuestionnaire) {
-                Icon(Icons.Default.Add, contentDescription = "Crear nuevo plan")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.plan_create_title),
+                )
             }
         },
     ) { padding ->
@@ -82,15 +84,15 @@ fun activePlanSection(plan: TrainingPlan) {
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             Text(
-                text = "Tu Plan de Entrenamiento",
+                text = stringResource(R.string.home_active_plan_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Deporte: ${plan.sport}")
-            Text("Nivel: ${plan.level}")
-            Text("Días: ${plan.days.joinToString(", ")}")
-            Text("Finaliza: ${plan.endDate}")
+            Text(text = stringResource(R.string.home_plan_sport, plan.sport))
+            Text(text = stringResource(R.string.home_plan_level, plan.level))
+            Text(text = stringResource(R.string.home_plan_days, plan.days.joinToString(", ")))
+            Text(text = stringResource(R.string.home_plan_ends, plan.endDate))
         }
     }
 }

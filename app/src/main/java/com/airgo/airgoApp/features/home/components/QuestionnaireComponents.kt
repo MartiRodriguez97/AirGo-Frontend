@@ -42,17 +42,19 @@ internal fun stepSportSelection(
     Text(stringResource(R.string.quest_title_sport), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        val sportRun = stringResource(R.string.sport_run)
         selectionButton(
-            text = stringResource(R.string.sport_run),
+            text = sportRun,
             icon = Icons.Default.DirectionsRun,
-            selected = selectedSport == stringResource(R.string.sport_run),
-            onClick = { onSportSelected("Correr") },
+            selected = selectedSport == sportRun,
+            onClick = { onSportSelected(sportRun) },
         )
+        val sportBike = stringResource(R.string.sport_bike)
         selectionButton(
-            text = stringResource(R.string.sport_bike),
+            text = sportBike,
             icon = Icons.Default.DirectionsBike,
-            selected = selectedSport ==  stringResource(R.string.sport_bike),
-            onClick = { onSportSelected("Bici") },
+            selected = selectedSport == sportBike,
+            onClick = { onSportSelected(sportBike) },
         )
     }
 }
@@ -65,23 +67,26 @@ internal fun stepLevelSelection(
     Text(stringResource(R.string.quest_title_level), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        val easy = stringResource(R.string.level_easy)
         selectionButton(
-            text = "Fácil",
+            text = easy,
             icon = Icons.Default.SignalCellularAlt1Bar,
-            selected = selectedLevel == "Fácil",
-            onClick = { onLevelSelected("Fácil") },
+            selected = selectedLevel == easy,
+            onClick = { onLevelSelected(easy) },
         )
+        val medium = stringResource(R.string.level_medium)
         selectionButton(
-            text = "Medio",
+            text = medium,
             icon = Icons.Default.SignalCellularAlt2Bar,
-            selected = selectedLevel == "Medio",
-            onClick = { onLevelSelected("Medio") },
+            selected = selectedLevel == medium,
+            onClick = { onLevelSelected(medium) },
         )
+        val advanced = stringResource(R.string.level_advanced)
         selectionButton(
-            text = "Avanzado",
+            text = advanced,
             icon = Icons.Default.SignalCellularAlt,
-            selected = selectedLevel == "Avanzado",
-            onClick = { onLevelSelected("Avanzado") },
+            selected = selectedLevel == advanced,
+            onClick = { onLevelSelected(advanced) },
         )
     }
 }
@@ -90,22 +95,23 @@ internal fun stepLevelSelection(
 internal fun stepDaysSelection(selectedDays: SnapshotStateList<String>) {
     val daysOfWeek =
         listOf(
-            "Lunes",
-            "Martes",
-            "Miércoles",
-            "Jueves",
-            "Viernes",
-            "Sábado",
-            "Domingo",
+            R.string.day_monday,
+            R.string.day_tuesday,
+            R.string.day_wednesday,
+            R.string.day_thursday,
+            R.string.day_friday,
+            R.string.day_saturday,
+            R.string.day_sunday,
         )
-    Text("¿Qué días puedes entrenar?", style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.quest_title_days), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        daysOfWeek.forEach { day ->
+        daysOfWeek.forEach { dayRes ->
+            val day = stringResource(dayRes)
             val isSelected = selectedDays.contains(day)
             FilterChip(
                 selected = isSelected,
@@ -132,7 +138,7 @@ internal fun stepDaysSelection(selectedDays: SnapshotStateList<String>) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun stepDateSelection(datePickerState: DatePickerState) {
-    Text("Selecciona la fecha de finalización", style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.quest_title_date), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(16.dp))
     DatePicker(
         state = datePickerState,

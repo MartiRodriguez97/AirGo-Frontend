@@ -136,6 +136,11 @@
     <string name="home_training_plan_title">Training plans</string>
     <string name="home_training_plan_desc">Choose one of our training plans to start taking care of yourself with the cleanest routes.</string>
     <string name="home_btn_create_plan">Create plan</string>
+    <string name="home_active_plan_title">Your Training Plan</string>
+    <string name="home_plan_sport">Sport: %1$s</string>
+    <string name="home_plan_level">Level: %1$s</string>
+    <string name="home_plan_days">Days: %1$s</string>
+    <string name="home_plan_ends">Ends: %1$s</string>
 
     <!-- features/home/questionnaireScreen-->
     <string name="plan_create_title">Create Plan</string>
@@ -143,6 +148,7 @@
     <string name="plan_btn_finish">Finish</string>
     <string name="plan_unspecified_date">Not specified</string>
     <string name="acc_close">Close</string>
+
 
     <!-- features/home/components/questionnaireComponents-->
     <string name="quest_title_sport">What is your preferred activity?</string>
