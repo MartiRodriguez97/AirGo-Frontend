@@ -135,13 +135,11 @@ fun questionnaireScreen(
                         selectedLevel,
                         selectedDays,
                         formattedDate,
-                        unspecifiedDateLabel
+                        unspecifiedDateLabel,
                     )
                     onPlanCreated()
                 },
             )
-
-
         }
     }
 }
@@ -227,7 +225,7 @@ private fun questionnaireBottomButton(
     currentStep: Int,
     isNextEnabled: Boolean,
     onNextStep: () -> Unit,
-    onFinish:()-> Unit,
+    onFinish: () -> Unit,
 ) {
     Button(
         onClick = {
@@ -242,13 +240,16 @@ private fun questionnaireBottomButton(
     ) {
         // Los textos de las etiquetas SÍ pueden usar stringResource porque están en el mundo UI
         Text(
-            text = if (currentStep == TARGET_MAX_STEP)
-                stringResource(R.string.plan_btn_finish)
-            else
-                stringResource(R.string.plan_btn_continue)
+            text =
+                if (currentStep == TARGET_MAX_STEP) {
+                    stringResource(R.string.plan_btn_finish)
+                } else {
+                    stringResource(R.string.plan_btn_continue)
+                },
         )
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun rememberDateState(): DatePickerState {
@@ -270,12 +271,13 @@ private fun rememberDateState(): DatePickerState {
             },
     )
 }
+
 private fun savePlan(
     sport: String?,
     level: String?,
     days: List<String>,
     endDate: String,
-    unspecifiedDateText: String
+    unspecifiedDateText: String,
 ) {
     TrainingPlanStore.plans.add(
         TrainingPlan(
