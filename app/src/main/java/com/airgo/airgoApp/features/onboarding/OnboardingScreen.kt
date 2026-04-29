@@ -87,7 +87,7 @@ private fun onboardingLoadingContent() {
 @Composable
 private fun onboardingFormContent(
     errorMessage: String?,
-    onSave: (username: String, pes: Int, altura: Int, teBici: Boolean) -> Unit,
+    onSave: (username: String, pes: Double, altura: Double, teBici: Boolean) -> Unit,
 ) {
     var username by remember { mutableStateOf("") }
     var pes by remember { mutableStateOf("") }
@@ -124,7 +124,7 @@ private fun onboardingFormContent(
             Spacer(modifier = Modifier.height(8.dp))
         }
         Button(
-            onClick = { onSave(username, pes.toIntOrNull() ?: 0, altura.toIntOrNull() ?: 0, teBici) },
+            onClick = { onSave(username, pes.toDoubleOrNull() ?: 0.0, altura.toDoubleOrNull() ?: 0.0, teBici) },
             modifier = Modifier.fillMaxWidth(),
         ) { Text(stringResource(R.string.continue_on_boarding)) }
     }

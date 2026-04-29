@@ -5,15 +5,15 @@ import com.google.gson.annotations.SerializedName
 data class UserProfileResponse(
     val id: Int,
     @SerializedName("profile_pic")
-    val profilePic: String?,
+    val profilePic: String,
     @SerializedName("google_id")
     val googleId: String?,
-    val username: String?,
+    val username: String,
     val punts: Int,
     @SerializedName("teBici")
-    val teBici: Boolean,
-    val pes: Int,
-    val altura: Int,
+    val teBici: Boolean?,
+    val pes: Double,
+    val altura: Double,
     val ratxa: Int,
     val idioma: String?,
     @SerializedName("limitRutes")
@@ -24,8 +24,8 @@ data class UserProfileResponse(
 
 data class OnboardingRequest(
     val username: String,
-    val pes: Int,
-    val altura: Int,
+    val pes: Double,
+    val altura: Double,
     @SerializedName("teBici")
     val teBici: Boolean,
 )

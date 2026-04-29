@@ -147,6 +147,9 @@
     <string name="own_bike_on_boarding">Do you have own bicycle?</string>
 
     <string name="error_not_fill_files">Fill in all fields correctly</string>
-    <string name="error_incorrect_on_boarding_implementation">Unable to store attributes. Please try again</string>
+    <string name="error_incorrect_on_boarding_implementation">Unable to store attributes. Please, try again</string>
+    <string name="error_username_already_exists">The username already exists. Please, change it</string>
+    <string name="error_invalid_weight">The weight is not valid. Please, change it</string>
+    <string name="error_invalid_height">The height is not valid. Please, change it</string>
 
 </resources>
