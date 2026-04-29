@@ -29,6 +29,7 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.activity.activityScreen
 import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.home.homeScreen
+import com.airgo.airgoApp.features.home.planDetailsScreen
 import com.airgo.airgoApp.features.home.questionnaireScreen
 import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.socialScreen
@@ -75,6 +76,18 @@ fun mainShellScreen(
                         onNavigateToQuestionnaire = {
                             navController.navigate("questionnaire")
                         },
+                        onNavigateToDetails = { planId ->
+                            navController.navigate("planDetails/$planId")
+                        }
+                    )
+                }
+            }
+            composable("planDetails/{planId}") { backStackEntry ->
+                val planId = backStackEntry.arguments?.getString("planId")?.toIntOrNull() ?: -1
+                screenWrapper(innerPadding) {
+                    planDetailsScreen(
+                        planId = planId,
+                        onBack = { navController.popBackStack() }
                     )
                 }
             }

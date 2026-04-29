@@ -24,11 +24,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.clickable
+import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.home.domain.HomeViewModel
 
 @Composable
-fun homeScreen(onNavigateToQuestionnaire: () -> Unit = {}) {
-    val plans = TrainingPlanStore.plans
+fun homeScreen(
+    onNavigateToQuestionnaire: () -> Unit = {},
+    onNavigateToDetails: (Int) -> Unit = {},
+    viewModel: HomeViewModel = viewModel()
+) {
+    val plans by viewModel.plans.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.loadPlans()
+    }
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let { resId ->
+            Toast.makeText(context, resId, Toast.LENGTH_SHORT).show()
+            viewModel.clearErrorMessage()
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -53,7 +79,7 @@ fun homeScreen(onNavigateToQuestionnaire: () -> Unit = {}) {
 
             if (plans.isNotEmpty()) {
                 items(plans) { plan ->
-                    activePlanSection(plan)
+                    activePlanSection(plan, onClick = { onNavigateToDetails(plan.id) })
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             } else {
@@ -67,9 +93,9 @@ fun homeScreen(onNavigateToQuestionnaire: () -> Unit = {}) {
 }
 
 @Composable
-fun activePlanSection(plan: TrainingPlan) {
+fun activePlanSection(plan: TrainingPlanResponse, onClick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
     ) {
         Column(
             modifier =
@@ -84,15 +110,18 @@ fun activePlanSection(plan: TrainingPlan) {
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             Text(
-                text = stringResource(R.string.home_active_plan_title),
+                text = stringResource(R.string.home_active_plan_label),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = stringResource(R.string.home_plan_sport, plan.sport))
-            Text(text = stringResource(R.string.home_plan_level, plan.level))
-            Text(text = stringResource(R.string.home_plan_days, plan.days.joinToString(", ")))
-            Text(text = stringResource(R.string.home_plan_ends, plan.endDate))
+            Text(text = stringResource(R.string.home_plan_duration, plan.diesDurada))
+            Text(text = stringResource(R.string.home_plan_workouts_per_week, plan.numEntrenamentsSetmanals))
+
+            val nextExercise = plan.templates.flatMap { it.exercicis }.firstOrNull { !it.completat }
+            val nextTitle = plan.templates.firstOrNull { template -> template.exercicis.any { it == nextExercise } }?.nom ?: stringResource(R.string.home_plan_no_next_workout)
+
+            Text(text = stringResource(R.string.home_plan_next_workout, nextTitle))
         }
     }
 }

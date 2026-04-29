@@ -46,9 +46,14 @@ import com.airgo.airgoApp.features.home.components.stepDateSelection
 import com.airgo.airgoApp.features.home.components.stepDaysSelection
 import com.airgo.airgoApp.features.home.components.stepLevelSelection
 import com.airgo.airgoApp.features.home.components.stepSportSelection
+import com.airgo.airgoApp.features.home.data.TrainingPlan
+import com.airgo.airgoApp.features.home.data.TrainingPlanStore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.features.home.domain.HomeViewModel
+import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 
 internal const val STEP_SPORT = 0
 internal const val STEP_LEVEL = 1
@@ -73,6 +78,7 @@ internal data class QuestionnaireFormState(
 fun questionnaireScreen(
     onPlanCreated: () -> Unit,
     onClose: () -> Unit,
+    viewModel: HomeViewModel = viewModel()
 ) {
     val unspecifiedDateLabel = stringResource(R.string.plan_unspecified_date)
     var selectedSport by remember { mutableStateOf<String?>(null) }
@@ -130,14 +136,14 @@ fun questionnaireScreen(
                 onFinish = {
                     val formattedDate = formatSelectedDate(datePickerState.selectedDateMillis)
 
-                    savePlan(
-                        selectedSport,
-                        selectedLevel,
-                        selectedDays,
-                        formattedDate,
-                        unspecifiedDateLabel,
-                    )
-                    onPlanCreated()
+                    viewModel.createPlan(TrainingPlanRequest(
+                        sport = selectedSport ?: "",
+                        level = selectedLevel ?: "",
+                        days = selectedDays.toList(),
+                        endDate = if (formattedDate.isBlank()) unspecifiedDateLabel else formattedDate
+                    ))
+                    // Quitamos onPlanCreated() de aquí, lo manejaremos en el ViewModel o con un efecto
+                    onClose()
                 },
             )
         }
@@ -272,29 +278,12 @@ private fun rememberDateState(): DatePickerState {
     )
 }
 
-private fun savePlan(
-    sport: String?,
-    level: String?,
-    days: List<String>,
-    endDate: String,
-    unspecifiedDateText: String,
-) {
-    TrainingPlanStore.plans.add(
-        TrainingPlan(
-            sport = sport ?: "",
-            level = level ?: "",
-            days = days,
-            endDate = if (endDate.isBlank()) unspecifiedDateText else endDate,
-        ),
-    )
-}
-
 private fun formatSelectedDate(millis: Long?): String =
     if (millis == null) {
         ""
     } else {
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        formatter.format(Date(millis))
+        val formatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.getDefault())
+        formatter.format(java.util.Date(millis))
     }
 
 @OptIn(ExperimentalMaterial3Api::class)

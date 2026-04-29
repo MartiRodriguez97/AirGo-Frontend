@@ -141,6 +141,21 @@
     <string name="home_plan_level">Level: %1$s</string>
     <string name="home_plan_days">Days: %1$s</string>
     <string name="home_plan_ends">Ends: %1$s</string>
+    <string name="home_plan_finish_btn">Finish training plan</string>
+    <string name="home_plan_details_title">Plan Details</string>
+    <string name="home_error_load_plans">Error loading training plans</string>
+    <string name="home_error_create_plan">Error creating training plan</string>
+    <string name="home_error_delete_plan">Error deleting training plan</string>
+    <string name="home_success_create_plan">Training plan created successfully</string>
+    <string name="home_success_delete_plan">Training plan deleted successfully</string>
+    <string name="home_active_plan_label">Active Training Plan</string>
+    <string name="home_plan_duration">Duration: %1$d days</string>
+    <string name="home_plan_workouts_per_week">Workouts per week: %1$d</string>
+    <string name="home_plan_next_workout">Next workout: %1$s</string>
+    <string name="home_plan_no_next_workout">No upcoming workout</string>
+    <string name="home_plan_summary_title">Plan Summary</string>
+    <string name="home_plan_workouts_title">Workouts</string>
+    <string name="home_plan_not_found">Training plan not found</string>
 
     <!-- features/home/questionnaireScreen-->
     <string name="plan_create_title">Create Plan</string>
