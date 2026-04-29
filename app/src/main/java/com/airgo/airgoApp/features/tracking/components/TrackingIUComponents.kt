@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -61,7 +61,7 @@ internal fun trackingFab(
         contentColor = MaterialTheme.colorScheme.onPrimary,
         icon = {
             Icon(
-                imageVector = if (state.isTracking) Icons.Default.Stop else Icons.Default.DirectionsRun,
+                imageVector = if (state.isTracking) Icons.Default.Stop else Icons.AutoMirrored.Filled.DirectionsRun,
                 contentDescription = null,
             )
         },

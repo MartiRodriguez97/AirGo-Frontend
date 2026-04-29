@@ -57,7 +57,6 @@ class RouteViewModelTest {
                 ),
             pollutionDetails = emptyList(),
             stationsInfo = emptyList(),
-            routeId = TODO(),
         )
 
     @Before
