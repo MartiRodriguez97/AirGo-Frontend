@@ -198,3 +198,30 @@ internal fun rememberGpsEnabledState(context: Context): androidx.compose.runtime
 
     return isGpsEnabled
 }
+
+private const val ROUTE_LINE_WIDTH = 8f
+
+/**
+ * Funció per actualitzar la línia de tracking al mapa. Neteja la línia anterior i pinta la nova amb els punts actuals.
+ */
+internal fun updateTrackingPolyline(
+    map: MapView,
+    points: List<GeoPoint>,
+) {
+    map.overlays.removeAll(
+        map.overlays
+            .filterIsInstance<org.osmdroid.views.overlay.Polyline>()
+            .filter { it.title == "TrackingLine" },
+    )
+    if (points.size >= 2) {
+        val polyline =
+            org.osmdroid.views.overlay.Polyline(map).apply {
+                title = "TrackingLine"
+                setPoints(points)
+                outlinePaint.color = android.graphics.Color.BLUE
+                outlinePaint.strokeWidth = ROUTE_LINE_WIDTH
+            }
+        map.overlays.add(polyline)
+    }
+    map.invalidate()
+}

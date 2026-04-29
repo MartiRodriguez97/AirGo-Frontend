@@ -1,6 +1,7 @@
 package com.airgo.airgoApp.features.map
 
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.map.data.RouteGeometry
 import com.airgo.airgoApp.features.map.data.RouteResponse
 import com.airgo.airgoApp.features.map.data.RouteSummary
@@ -56,6 +57,7 @@ class RouteViewModelTest {
                 ),
             pollutionDetails = emptyList(),
             stationsInfo = emptyList(),
+            routeId = TODO(),
         )
 
     @Before
@@ -128,7 +130,7 @@ class RouteViewModelTest {
             advanceUntilIdle()
 
             assertNotNull(viewModel.errorMessage)
-            assertTrue(viewModel.errorMessage is com.airgo.airgoApp.core.utils.UiText.StringResource)
+            assertTrue(viewModel.errorMessage is UiText.StringResource)
             assertFalse(viewModel.isLoading)
         }
 
@@ -145,7 +147,7 @@ class RouteViewModelTest {
             advanceUntilIdle()
 
             assertNotNull(viewModel.errorMessage)
-            assertTrue(viewModel.errorMessage is com.airgo.airgoApp.core.utils.UiText.StringResource)
+            assertTrue(viewModel.errorMessage is UiText.StringResource)
             assertFalse(viewModel.isLoading)
         }
 

@@ -2,6 +2,7 @@ package com.airgo.airgoApp.features.map.domain
 
 import com.airgo.airgoApp.features.map.data.PollutionPoint
 import com.airgo.airgoApp.features.map.data.RouteResponse
+import com.airgo.airgoApp.features.tracking.data.TrackingData
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -29,4 +30,9 @@ data class MapState(
     val isFavorite: Boolean = false,
     val favoriteMessage: String? = null,
     val onNavigateToFavorites: () -> Unit,
+    val isTracking: Boolean = false,
+    val trackingData: TrackingData = TrackingData(),
+    val trackPoints: List<org.osmdroid.util.GeoPoint> = emptyList(),
+    val onStartTracking: () -> Unit = {},
+    val onStopTracking: () -> Unit = {},
 )
