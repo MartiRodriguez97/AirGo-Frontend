@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class HomeViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
@@ -44,7 +45,7 @@ class HomeViewModel : ViewModel() {
                 val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e("HomeViewModel", "Error fetching plans", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
             } finally {
@@ -62,7 +63,7 @@ class HomeViewModel : ViewModel() {
                 currentPlans.add(newPlan)
                 SessionManager.trainingPlans = currentPlans
                 _plans.value = currentPlans
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e("HomeViewModel", "Error creating plan", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
             } finally {
@@ -71,7 +72,10 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun deletePlan(id: Int, onSuccess: () -> Unit) {
+    fun deletePlan(
+        id: Int,
+        onSuccess: () -> Unit,
+    ) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -81,7 +85,7 @@ class HomeViewModel : ViewModel() {
                 SessionManager.trainingPlans = currentPlans
                 _plans.value = currentPlans
                 onSuccess()
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e("HomeViewModel", "Error deleting plan", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_delete_plan
             } finally {

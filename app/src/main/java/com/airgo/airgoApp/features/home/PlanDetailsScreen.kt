@@ -35,7 +35,7 @@ import com.airgo.airgoApp.features.home.domain.HomeViewModel
 fun planDetailsScreen(
     planId: Int,
     onBack: () -> Unit,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
 ) {
     val plans by viewModel.plans.collectAsState()
     val plan = plans.find { it.id == planId }
@@ -48,46 +48,47 @@ fun planDetailsScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.acc_back_button))
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         if (plan != null) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 Text(
                     text = stringResource(R.string.home_plan_summary_title),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(text = stringResource(R.string.home_plan_duration, plan.diesDurada))
                 Text(text = stringResource(R.string.home_plan_workouts_per_week, plan.numEntrenamentsSetmanals))
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
-                
+
                 Text(
                     text = stringResource(R.string.home_plan_workouts_title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
-                
+
                 plan.templates.forEach { template ->
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = template.nom,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                     Text(
                         text = template.descripcio,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
 
@@ -101,9 +102,10 @@ fun planDetailsScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    )
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                        ),
                 ) {
                     Text(text = stringResource(R.string.home_plan_finish_btn))
                 }
@@ -112,7 +114,7 @@ fun planDetailsScreen(
             // Handle plan not found
             Text(
                 text = stringResource(R.string.home_plan_not_found),
-                modifier = Modifier.padding(padding).padding(16.dp)
+                modifier = Modifier.padding(padding).padding(16.dp),
             )
         }
     }

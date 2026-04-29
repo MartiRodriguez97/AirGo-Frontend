@@ -12,16 +12,19 @@ interface TrainingPlanApi {
     suspend fun getTrainingPlans(): List<TrainingPlanResponse>
 
     @POST(PLA_ENTRENAMENT)
-    suspend fun createTrainingPlan(@Body request: TrainingPlanRequest): TrainingPlanResponse
+    suspend fun createTrainingPlan(
+        @Body request: TrainingPlanRequest,
+    ): TrainingPlanResponse
 
     @DELETE("$PLA_ENTRENAMENT/{id}")
-    suspend fun deleteTrainingPlan(@Path("id") id: Int)
+    suspend fun deleteTrainingPlan(
+        @Path("id") id: Int,
+    )
 }
 
 data class TrainingPlanRequest(
     val sport: String,
     val level: String,
     val days: List<String>,
-    val endDate: String
+    val endDate: String,
 )
-

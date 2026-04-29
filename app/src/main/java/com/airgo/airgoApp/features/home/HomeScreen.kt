@@ -1,5 +1,7 @@
 package com.airgo.airgoApp.features.home
 
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,18 +21,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.foundation.clickable
-import android.widget.Toast
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
@@ -39,7 +39,7 @@ import com.airgo.airgoApp.features.home.domain.HomeViewModel
 fun homeScreen(
     onNavigateToQuestionnaire: () -> Unit = {},
     onNavigateToDetails: (Int) -> Unit = {},
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
 ) {
     val plans by viewModel.plans.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
@@ -93,7 +93,10 @@ fun homeScreen(
 }
 
 @Composable
-fun activePlanSection(plan: TrainingPlanResponse, onClick: () -> Unit) {
+fun activePlanSection(
+    plan: TrainingPlanResponse,
+    onClick: () -> Unit,
+) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
     ) {
@@ -119,7 +122,9 @@ fun activePlanSection(plan: TrainingPlanResponse, onClick: () -> Unit) {
             Text(text = stringResource(R.string.home_plan_workouts_per_week, plan.numEntrenamentsSetmanals))
 
             val nextExercise = plan.templates.flatMap { it.exercicis }.firstOrNull { !it.completat }
-            val nextTitle = plan.templates.firstOrNull { template -> template.exercicis.any { it == nextExercise } }?.nom ?: stringResource(R.string.home_plan_no_next_workout)
+            val nextTitle =
+                plan.templates.firstOrNull { template -> template.exercicis.any { it == nextExercise } }?.nom
+                    ?: stringResource(R.string.home_plan_no_next_workout)
 
             Text(text = stringResource(R.string.home_plan_next_workout, nextTitle))
         }

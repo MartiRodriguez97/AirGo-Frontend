@@ -55,5 +55,8 @@ object RetrofitProvider {
     val titolApi: TitolApi = retrofit.create(TitolApi::class.java)
     val teBiciApi: TeBiciApi = retrofit.create(TeBiciApi::class.java)
     val socialApi: SocialApi = retrofit.create(SocialApi::class.java)
-    val trainingPlanApi: com.airgo.airgoApp.features.home.data.TrainingPlanApi = retrofit.create(com.airgo.airgoApp.features.home.data.TrainingPlanApi::class.java)
+    val trainingPlanApi: com.airgo.airgoApp.features.home.data.TrainingPlanApi =
+        retrofit.create(
+            com.airgo.airgoApp.features.home.data.TrainingPlanApi::class.java,
+        )
 }

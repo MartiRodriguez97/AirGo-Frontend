@@ -78,7 +78,7 @@ fun mainShellScreen(
                         },
                         onNavigateToDetails = { planId ->
                             navController.navigate("planDetails/$planId")
-                        }
+                        },
                     )
                 }
             }
@@ -87,7 +87,7 @@ fun mainShellScreen(
                 screenWrapper(innerPadding) {
                     planDetailsScreen(
                         planId = planId,
-                        onBack = { navController.popBackStack() }
+                        onBack = { navController.popBackStack() },
                     )
                 }
             }

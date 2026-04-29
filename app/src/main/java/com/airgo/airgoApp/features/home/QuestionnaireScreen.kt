@@ -41,19 +41,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.home.components.stepDateSelection
 import com.airgo.airgoApp.features.home.components.stepDaysSelection
 import com.airgo.airgoApp.features.home.components.stepLevelSelection
 import com.airgo.airgoApp.features.home.components.stepSportSelection
-import com.airgo.airgoApp.features.home.data.TrainingPlan
-import com.airgo.airgoApp.features.home.data.TrainingPlanStore
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.airgo.airgoApp.features.home.domain.HomeViewModel
 import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
+import com.airgo.airgoApp.features.home.domain.HomeViewModel
 
 internal const val STEP_SPORT = 0
 internal const val STEP_LEVEL = 1
@@ -76,9 +71,9 @@ internal data class QuestionnaireFormState(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun questionnaireScreen(
-    onPlanCreated: () -> Unit,
     onClose: () -> Unit,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
+    onPlanCreated: () -> Boolean,
 ) {
     val unspecifiedDateLabel = stringResource(R.string.plan_unspecified_date)
     var selectedSport by remember { mutableStateOf<String?>(null) }
@@ -136,12 +131,14 @@ fun questionnaireScreen(
                 onFinish = {
                     val formattedDate = formatSelectedDate(datePickerState.selectedDateMillis)
 
-                    viewModel.createPlan(TrainingPlanRequest(
-                        sport = selectedSport ?: "",
-                        level = selectedLevel ?: "",
-                        days = selectedDays.toList(),
-                        endDate = if (formattedDate.isBlank()) unspecifiedDateLabel else formattedDate
-                    ))
+                    viewModel.createPlan(
+                        TrainingPlanRequest(
+                            sport = selectedSport ?: "",
+                            level = selectedLevel ?: "",
+                            days = selectedDays.toList(),
+                            endDate = if (formattedDate.isBlank()) unspecifiedDateLabel else formattedDate,
+                        ),
+                    )
                     // Quitamos onPlanCreated() de aquí, lo manejaremos en el ViewModel o con un efecto
                     onClose()
                 },
