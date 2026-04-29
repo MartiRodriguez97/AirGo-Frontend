@@ -1,6 +1,9 @@
 package com.airgo.airgoApp.features.map
 
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.features.map.data.GeoPointResponse
+import com.airgo.airgoApp.features.map.data.PollutionPoint
+import com.airgo.airgoApp.features.map.domain.PollutionViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.mockkObject

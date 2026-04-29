@@ -3,6 +3,9 @@ package com.airgo.airgoApp.features.map
 import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.airgo.airgoApp.features.map.data.BicingStation
+import com.airgo.airgoApp.features.map.data.GeoPoint
+import com.airgo.airgoApp.features.map.helpers.BicingHelper
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

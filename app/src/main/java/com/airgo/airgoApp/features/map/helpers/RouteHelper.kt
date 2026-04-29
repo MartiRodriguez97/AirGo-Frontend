@@ -1,6 +1,8 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.helpers
 
 import android.graphics.Color
+import android.graphics.Paint
+import com.airgo.airgoApp.features.map.data.RouteResponse
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
@@ -48,7 +50,7 @@ object RouteHelper {
                         // Estil de la línia segons el nivell de contaminació
                         outlinePaint.color = getColorForPollution(pollutionValue)
                         outlinePaint.strokeWidth = ROUTE_WIDTH
-                        outlinePaint.strokeCap = android.graphics.Paint.Cap.ROUND
+                        outlinePaint.strokeCap = Paint.Cap.ROUND
                     }
                 routeFolder.add(polyline)
             }

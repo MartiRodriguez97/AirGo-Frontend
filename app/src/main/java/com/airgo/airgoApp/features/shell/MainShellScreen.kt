@@ -31,6 +31,7 @@ import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.home.homeScreen
 import com.airgo.airgoApp.features.home.planDetailsScreen
 import com.airgo.airgoApp.features.home.questionnaireScreen
+import com.airgo.airgoApp.features.map.favoritesScreen
 import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.socialScreen
 
@@ -104,7 +105,7 @@ fun mainShellScreen(
                 screenWrapper(innerPadding) { socialScreen() }
             }
             composable(MainShellScreen.ACTIVITY.route) {
-                activityScreen()
+                activityScreen(navController = navController)
             }
             composable(MainShellScreen.CALENDAR.route) {
                 screenWrapper(innerPadding) { calendarScreen() }
@@ -117,6 +118,11 @@ fun mainShellScreen(
                         onAccountDeleted = onLogout,
                     )
                 }
+            }
+            composable("favorites") {
+                favoritesScreen(
+                    onBack = { navController.popBackStack() },
+                )
             }
         }
     }
@@ -147,31 +153,36 @@ private fun bottomNavigationBar(
     currentRoute: String?,
     navController: NavHostController,
 ) {
-    if (currentRoute != "questionnaire") {
+    if (currentRoute != "questionnaire" && currentRoute != "favorites") {
         NavigationBar {
-            MainShellScreen.entries.forEach { tab ->
-                NavigationBarItem(
-                    selected = currentRoute == tab.route,
-                    onClick = {
-                        navController.navigate(tab.route) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    icon = {
-                        Icon(imageVector = tab.icon, contentDescription = stringResource(tab.label))
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(tab.label),
-                            maxLines = 1,
-                            softWrap = false, // Evita que rompa la palabra
-                            style = MaterialTheme.typography.labelSmall,
+                    MainShellScreen.entries.forEach { tab ->
+                        NavigationBarItem(
+                            selected = currentRoute == tab.route,
+                            onClick = {
+                                navController.navigate(tab.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = tab.icon,
+                                    contentDescription = stringResource(tab.label),
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = stringResource(tab.label),
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    style = MaterialTheme.typography.labelSmall,
+                                )
+                            },
                         )
-                    },
-                )
-            }
-        }
+                    }
+       }
     }
 }

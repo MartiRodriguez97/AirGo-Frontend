@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,15 +34,21 @@ class MainActivity : ComponentActivity() {
                     var userEmail by rememberSaveable { mutableStateOf<String?>(null) }
                     var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
 
+                    LaunchedEffect(Unit) {
+                        com.airgo.airgoApp.core.network.SessionManager.sessionExpiredEvent.collect {
+                            isLoggedIn = false
+                            userEmail = null
+                            userPictureUrl = null
+                        }
+                    }
+
                     if (isLoggedIn) {
                         mainShellScreen(
                             email = userEmail,
                             pictureUrl = userPictureUrl,
                             onLogout = {
-                                isLoggedIn = false
-                                userEmail = null
-                                userPictureUrl = null
-                                com.airgo.airgoApp.core.network.SessionManager.accessToken = null
+                                com.airgo.airgoApp.core.network.SessionManager
+                                    .logout()
                             },
                         )
                     } else {

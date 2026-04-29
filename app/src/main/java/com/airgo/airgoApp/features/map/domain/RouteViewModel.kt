@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.domain
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -9,12 +9,18 @@ import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.map.data.RouteRequest
+import com.airgo.airgoApp.features.map.data.RouteResponse
+import com.airgo.airgoApp.features.map.data.SaveFavoriteRouteRequest
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import retrofit2.HttpException
 import java.io.IOException
 
 private const val LOG_TAG = "RouteViewModel"
+
+private const val OK = 201
+private const val JA_EXISTEIX = 409
 
 class RouteViewModel : ViewModel() {
     var selectionMode by mutableStateOf(MapSelectionMode.NONE)
@@ -31,6 +37,12 @@ class RouteViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
         private set
 
+    var isFavorite by mutableStateOf(false)
+        private set
+
+    var favoriteMessage by mutableStateOf<String?>(null)
+        private set
+
     /**
      * Funció per fer la crida a l'API i obtenir la ruta entre els punts seleccionats.
      */
@@ -42,7 +54,8 @@ class RouteViewModel : ViewModel() {
             isLoading = true
             try {
                 errorMessage = null // Netegem errors previs
-                val request = RouteRequest(start.latitude, start.longitude, end.latitude, end.longitude)
+                val request =
+                    RouteRequest(start.latitude, start.longitude, end.latitude, end.longitude)
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
                 Log.d("Conexió exitosa", "La distància és de: ${currentRoute?.summary?.distanceMeters} metres")
             } catch (e: IOException) {
@@ -104,5 +117,47 @@ class RouteViewModel : ViewModel() {
      */
     fun clearError() {
         errorMessage = null
+    }
+
+    /**
+     * Funció per afegir la ruta actual a les rutes favorites de l'usuari.
+     * Es fa una crida a l'API per guardar la ruta.
+     * Si la ruta ja està guardada, es mostra un missatge indicant-ho.
+     * Si hi ha un error de connexió o del servidor, es mostra el missatge corresponent.
+     */
+    fun addToFavorites() {
+        val routeId = currentRoute?.routeId ?: return
+        viewModelScope.launch {
+            try {
+                val response =
+                    RetrofitProvider.favoriteRouteApi.saveFavoriteRoute(
+                        SaveFavoriteRouteRequest(routeId),
+                    )
+                when (response.code()) {
+                    OK -> {
+                        isFavorite = true
+                        favoriteMessage = null
+                    }
+                    JA_EXISTEIX -> favoriteMessage = "La ruta ja estava guardada"
+                    else -> {
+                        favoriteMessage = "Error al guardar la ruta: ${response.code()}"
+                        Log.e(LOG_TAG, "Save favorite failed: ${response.code()} - ${response.errorBody()?.string()}")
+                    }
+                }
+            } catch (e: IOException) {
+                favoriteMessage = "Error de connexió"
+                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
+            } catch (e: HttpException) {
+                favoriteMessage = "Error del servidor: ${e.code()}"
+                Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
+            }
+        }
+    }
+
+    /**
+     * Netejar el missatge de favorit per no mostrar el missatge múltiples vegades
+     */
+    fun clearFavoriteMessage() {
+        favoriteMessage = null
     }
 }
