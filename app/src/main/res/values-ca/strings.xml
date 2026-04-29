@@ -143,6 +143,10 @@
     <string name="home_plan_days">Dies: %1$s</string>
     <string name="home_plan_ends">Finalitza: %1$s</string>
     <string name="home_plan_finish_btn">Finalitzar pla d\'entrenament</string>
+    <string name="home_plan_delete_dialog_title">Finalitzar pla d\'entrenament</string>
+    <string name="home_plan_delete_dialog_text">Estàs segur que vols finalitzar i eliminar aquest pla d\'entrenament? Aquesta acció no es pot desfer.</string>
+    <string name="home_plan_delete_confirm">Finalitzar pla</string>
+    <string name="home_plan_delete_cancel">Cancel·lar</string>
     <string name="home_plan_details_title">Detalls del Pla</string>
     <string name="home_error_load_plans">Error al carregar els plans d\'entrenament</string>
     <string name="home_error_create_plan">Error al crear el pla d\'entrenament</string>

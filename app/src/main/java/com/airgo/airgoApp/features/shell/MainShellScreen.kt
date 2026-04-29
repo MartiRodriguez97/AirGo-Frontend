@@ -94,9 +94,6 @@ fun mainShellScreen(
             composable("questionnaire") {
                 screenWrapper(innerPadding) {
                     questionnaireScreen(
-                        onPlanCreated = {
-                            navController.popBackStack()
-                        },
                         onClose = {
                             navController.popBackStack()
                         },

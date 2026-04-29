@@ -73,9 +73,7 @@ internal data class QuestionnaireFormState(
 fun questionnaireScreen(
     onClose: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
-    onPlanCreated: () -> Boolean,
 ) {
-    val unspecifiedDateLabel = stringResource(R.string.plan_unspecified_date)
     var selectedSport by remember { mutableStateOf<String?>(null) }
     var selectedLevel by remember { mutableStateOf<String?>(null) }
     val selectedDays = remember { mutableStateListOf<String>() }
@@ -129,18 +127,20 @@ fun questionnaireScreen(
                 isNextEnabled = isNextEnabled,
                 onNextStep = { currentStep++ },
                 onFinish = {
-                    val formattedDate = formatSelectedDate(datePickerState.selectedDateMillis)
+                    val endDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                    val diffMillis = endDateMillis - System.currentTimeMillis()
+                    val daysDuration = (diffMillis / MILLIS_IN_DAY).toInt().coerceAtLeast(0)
+                    val workoutsPerWeek = selectedDays.size
 
                     viewModel.createPlan(
                         TrainingPlanRequest(
-                            sport = selectedSport ?: "",
-                            level = selectedLevel ?: "",
-                            days = selectedDays.toList(),
-                            endDate = if (formattedDate.isBlank()) unspecifiedDateLabel else formattedDate,
+                            diesDurada = daysDuration,
+                            numEntrenamentsSetmanals = workoutsPerWeek,
                         ),
+                        onSuccess = {
+                            onClose()
+                        },
                     )
-                    // Quitamos onPlanCreated() de aquí, lo manejaremos en el ViewModel o con un efecto
-                    onClose()
                 },
             )
         }
@@ -274,14 +274,6 @@ private fun rememberDateState(): DatePickerState {
             },
     )
 }
-
-private fun formatSelectedDate(millis: Long?): String =
-    if (millis == null) {
-        ""
-    } else {
-        val formatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.getDefault())
-        formatter.format(java.util.Date(millis))
-    }
 
 @OptIn(ExperimentalMaterial3Api::class)
 private fun checkNextEnabled(

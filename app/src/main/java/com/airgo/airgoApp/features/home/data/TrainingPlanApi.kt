@@ -16,15 +16,13 @@ interface TrainingPlanApi {
         @Body request: TrainingPlanRequest,
     ): TrainingPlanResponse
 
-    @DELETE("$PLA_ENTRENAMENT/{id}")
+    @DELETE("$PLA_ENTRENAMENT{id}/")
     suspend fun deleteTrainingPlan(
         @Path("id") id: Int,
     )
 }
 
 data class TrainingPlanRequest(
-    val sport: String,
-    val level: String,
-    val days: List<String>,
-    val endDate: String,
+    val diesDurada: Int,
+    val numEntrenamentsSetmanals: Int,
 )

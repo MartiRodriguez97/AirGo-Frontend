@@ -34,27 +34,40 @@ class HomeViewModel : ViewModel() {
     }
 
     fun loadPlans() {
-        if (SessionManager.trainingPlans != null && SessionManager.trainingPlans!!.isNotEmpty()) {
-            _plans.value = SessionManager.trainingPlans!!
-            return
-        }
-
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                val url = com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT
+                Log.d("HomeViewModel", "Requesting GET training plans from URL: $url")
+
                 val fetchedPlans = repository.getTrainingPlans()
+                Log.d("HomeViewModel", "Successfully fetched ${fetchedPlans.size} plans: $fetchedPlans")
+
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
-            } catch (e: IOException) {
-                Log.e("HomeViewModel", "Error fetching plans", e)
+            } catch (e: retrofit2.HttpException) {
+                val code = e.code()
+                val errorBody = e.response()?.errorBody()?.string()
+                Log.e("HomeViewModel", "HTTP Error $code: $errorBody", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
+            } catch (e: java.io.IOException) {
+                Log.e("HomeViewModel", "Network error (IOException): ${e.message}", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
+                // Fallback to SessionManager if available
+                SessionManager.trainingPlans?.let {
+                    Log.d("HomeViewModel", "Using cached plans from SessionManager as fallback")
+                    _plans.value = it
+                }
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun createPlan(request: TrainingPlanRequest) {
+    fun createPlan(
+        request: TrainingPlanRequest,
+        onSuccess: () -> Unit,
+    ) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -63,7 +76,11 @@ class HomeViewModel : ViewModel() {
                 currentPlans.add(newPlan)
                 SessionManager.trainingPlans = currentPlans
                 _plans.value = currentPlans
-            } catch (e: IOException) {
+                onSuccess()
+            } catch (e: java.io.IOException) {
+                Log.e("HomeViewModel", "Error creating plan", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
+            } catch (e: retrofit2.HttpException) {
                 Log.e("HomeViewModel", "Error creating plan", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
             } finally {
@@ -85,7 +102,10 @@ class HomeViewModel : ViewModel() {
                 SessionManager.trainingPlans = currentPlans
                 _plans.value = currentPlans
                 onSuccess()
-            } catch (e: IOException) {
+            } catch (e: java.io.IOException) {
+                Log.e("HomeViewModel", "Error deleting plan", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.home_error_delete_plan
+            } catch (e: retrofit2.HttpException) {
                 Log.e("HomeViewModel", "Error deleting plan", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_delete_plan
             } finally {

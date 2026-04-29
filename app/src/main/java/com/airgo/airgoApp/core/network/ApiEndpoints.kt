@@ -17,5 +17,5 @@ object ApiEndpoints {
 
     const val USER_ACCOUNT_INFO = "api/usuaris/me/profile/"
 
-    const val PLA_ENTRENAMENT = "api/pla-entrenament"
+    const val PLA_ENTRENAMENT = "api/pla-entrenament/"
 }

@@ -142,6 +142,10 @@
     <string name="home_plan_days">Days: %1$s</string>
     <string name="home_plan_ends">Ends: %1$s</string>
     <string name="home_plan_finish_btn">Finish training plan</string>
+    <string name="home_plan_delete_dialog_title">Finish Training Plan</string>
+    <string name="home_plan_delete_dialog_text">Are you sure you want to finish and delete this training plan? This action cannot be undone.</string>
+    <string name="home_plan_delete_confirm">Finish Plan</string>
+    <string name="home_plan_delete_cancel">Cancel</string>
     <string name="home_plan_details_title">Plan Details</string>
     <string name="home_error_load_plans">Error loading training plans</string>
     <string name="home_error_create_plan">Error creating training plan</string>

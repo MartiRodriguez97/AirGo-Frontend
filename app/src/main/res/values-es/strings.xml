@@ -143,6 +143,10 @@
     <string name="home_plan_days">Días: %1$s</string>
     <string name="home_plan_ends">Finaliza: %1$s</string>
     <string name="home_plan_finish_btn">Finalizar plan de entrenamiento</string>
+    <string name="home_plan_delete_dialog_title">Finalizar plan de entrenamiento</string>
+    <string name="home_plan_delete_dialog_text">¿Estás seguro de que quieres finalizar y eliminar este plan de entrenamiento? Esta acción no se puede deshacer.</string>
+    <string name="home_plan_delete_confirm">Finalizar plan</string>
+    <string name="home_plan_delete_cancel">Cancelar</string>
     <string name="home_plan_details_title">Detalles del Plan</string>
     <string name="home_error_load_plans">Error al cargar los planes de entrenamiento</string>
     <string name="home_error_create_plan">Error al crear el plan de entrenamiento</string>
