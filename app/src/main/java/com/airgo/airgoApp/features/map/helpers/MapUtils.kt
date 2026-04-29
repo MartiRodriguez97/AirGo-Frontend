@@ -131,7 +131,6 @@ internal fun updateRouteElements(
     map: MapView,
     state: MapState,
 ) {
-    // Netejar els elements de ruta anteriors (marcadors i línies)
     val toRemove =
         map.overlays.filter { overlay ->
             (overlay is Marker && overlay.title == "RouteMarker") ||
@@ -139,23 +138,53 @@ internal fun updateRouteElements(
         }
     map.overlays.removeAll(toRemove)
 
-    // Pintar la ruta si existeix
     state.currentRoute?.let { route ->
         val routeOverlay = RouteHelper.createRouteOverlay(map, route)
         routeOverlay.name = "RouteElement"
         map.overlays.add(1, routeOverlay)
     }
 
-    // Pintar els marcadors d'inici i destí
     state.startPoint?.let {
         map.overlays.add(createRouteMarker(map, it, Color.parseColor("#4A7C59")))
     }
+
+    state.waypoints.forEachIndexed { index, waypoint ->
+        map.overlays.add(
+            createWaypointMarker(map, waypoint, index + 1),
+        )
+    }
+
     state.endPoint?.let {
         map.overlays.add(createRouteMarker(map, it, Color.RED))
     }
 
     map.invalidate()
 }
+
+/**
+ * Crea un marcador per a un punt intermedi amb el número de parada.
+ */
+private fun createWaypointMarker(
+    map: MapView,
+    point: GeoPoint,
+    index: Int,
+): Marker =
+    Marker(map).apply {
+        position = point
+        title = "RouteMarker"
+        icon = ContextCompat.getDrawable(map.context, R.drawable.ic_route_marker)?.mutate()
+        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        subDescription = "Parada $index"
+        (icon as? LayerDrawable)?.let { layer ->
+            val flag = layer.findDrawableByLayerId(R.id.flag_layer)
+            flag?.let {
+                DrawableCompat.setTint(
+                    DrawableCompat.wrap(it).mutate(),
+                    Color.parseColor("#FF8C00"),
+                )
+            }
+        }
+    }
 
 /**
  * Funció per comprovar si el GPS està activat al dispositiu.

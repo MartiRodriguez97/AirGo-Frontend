@@ -12,13 +12,13 @@ import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.map.data.RouteRequest
 import com.airgo.airgoApp.features.map.data.RouteResponse
 import com.airgo.airgoApp.features.map.data.SaveFavoriteRouteRequest
+import com.airgo.airgoApp.features.map.data.WaypointRequest
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import retrofit2.HttpException
 import java.io.IOException
 
 private const val LOG_TAG = "RouteViewModel"
-
 private const val OK = 201
 private const val JA_EXISTEIX = 409
 
@@ -26,26 +26,19 @@ class RouteViewModel : ViewModel() {
     var selectionMode by mutableStateOf(MapSelectionMode.NONE)
     var startPoint by mutableStateOf<GeoPoint?>(null)
     var endPoint by mutableStateOf<GeoPoint?>(null)
+    var waypoints by mutableStateOf<List<GeoPoint>>(emptyList()) // nuevo
 
-    // Ruta actual obtinguda de l'API
     var currentRoute by mutableStateOf<RouteResponse?>(null)
         private set
-
     var errorMessage by mutableStateOf<UiText?>(null)
         private set
-
     var isLoading by mutableStateOf(false)
         private set
-
     var isFavorite by mutableStateOf(false)
         private set
-
     var favoriteMessage by mutableStateOf<String?>(null)
         private set
 
-    /**
-     * Funció per fer la crida a l'API i obtenir la ruta entre els punts seleccionats.
-     */
     fun fetchRoute(
         start: GeoPoint,
         end: GeoPoint,
@@ -53,17 +46,21 @@ class RouteViewModel : ViewModel() {
         viewModelScope.launch {
             isLoading = true
             try {
-                errorMessage = null // Netegem errors previs
+                errorMessage = null
                 val request =
-                    RouteRequest(start.latitude, start.longitude, end.latitude, end.longitude)
+                    RouteRequest(
+                        latStart = start.latitude,
+                        lonStart = start.longitude,
+                        latEnd = end.latitude,
+                        lonEnd = end.longitude,
+                        waypoints = waypoints.map { WaypointRequest(it.latitude, it.longitude) },
+                    )
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
-                Log.d("Conexió exitosa", "La distància és de: ${currentRoute?.summary?.distanceMeters} metres")
+                Log.d("Connexió exitosa", "Distància: ${currentRoute?.summary?.distanceMeters} m")
             } catch (e: IOException) {
-                // Error de xarxa (ex: no hi ha internet o servidor apagat)
                 errorMessage = UiText.StringResource(R.string.error_connection)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                // El servidor ha respost però amb un error (ex: 404 o 500)
                 errorMessage = UiText.StringResource(R.string.error_route_http, e.code())
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             } finally {
@@ -72,37 +69,46 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Funció per gestionar la selecció de punts inici o final al mapa.
-     */
     fun onPointSelected(point: GeoPoint) {
-        if (selectionMode == MapSelectionMode.START) {
-            startPoint = point
-            currentRoute = null // Despintar la ruta actual en canviar el punt inici
-            selectionMode = MapSelectionMode.NONE // Tornem a mode normal
-        } else if (selectionMode == MapSelectionMode.END) {
-            endPoint = point
-            currentRoute = null // Despintar la ruta actual en canviar el punt final
-            selectionMode = MapSelectionMode.NONE
+        when (selectionMode) {
+            MapSelectionMode.START -> {
+                startPoint = point
+                currentRoute = null
+                selectionMode = MapSelectionMode.NONE
+            }
+            MapSelectionMode.END -> {
+                endPoint = point
+                currentRoute = null
+                selectionMode = MapSelectionMode.NONE
+            }
+            MapSelectionMode.WAYPOINT -> {
+                waypoints = waypoints + point
+                currentRoute = null
+                selectionMode = MapSelectionMode.NONE
+            }
+            MapSelectionMode.NONE -> {}
         }
     }
 
-    /**
-     * Funció per netejar la ruta actual i els punts seleccionats, tornant a l'estat inicial.
-     */
+    fun addWaypoint() {
+        selectionMode = MapSelectionMode.WAYPOINT
+    }
+
+    fun removeWaypoint(index: Int) {
+        waypoints = waypoints.toMutableList().also { it.removeAt(index) }
+        currentRoute = null
+    }
+
     fun clearRoute() {
         startPoint = null
         endPoint = null
+        waypoints = emptyList()
         currentRoute = null
         selectionMode = MapSelectionMode.NONE
     }
 
-    /**
-     * Funció per calcular la ruta entre els punts seleccionats.
-     * Si ambdós punts estan definits, es fa la crida a l'API per obtenir la ruta.
-     */
     fun calculateRoute() {
-        currentRoute = null // Netejar la visualització anterior a l'hora de recalcular
+        currentRoute = null
         val start = startPoint
         val end = endPoint
         if (start != null && end != null) {
@@ -112,19 +118,10 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Netejar l'error per no mostrar el missatge múltiples vegades
-     */
     fun clearError() {
         errorMessage = null
     }
 
-    /**
-     * Funció per afegir la ruta actual a les rutes favorites de l'usuari.
-     * Es fa una crida a l'API per guardar la ruta.
-     * Si la ruta ja està guardada, es mostra un missatge indicant-ho.
-     * Si hi ha un error de connexió o del servidor, es mostra el missatge corresponent.
-     */
     fun addToFavorites() {
         val routeId = currentRoute?.routeId ?: return
         viewModelScope.launch {
@@ -141,22 +138,17 @@ class RouteViewModel : ViewModel() {
                     JA_EXISTEIX -> favoriteMessage = "La ruta ja estava guardada"
                     else -> {
                         favoriteMessage = "Error al guardar la ruta: ${response.code()}"
-                        Log.e(LOG_TAG, "Save favorite failed: ${response.code()} - ${response.errorBody()?.string()}")
+                        Log.e(LOG_TAG, "Save favorite failed: ${response.code()}")
                     }
                 }
             } catch (e: IOException) {
-                favoriteMessage = "Error de connexió"
-                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
+                favoriteMessage = "Error de connexió: ${e.message}"
             } catch (e: HttpException) {
                 favoriteMessage = "Error del servidor: ${e.code()}"
-                Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }
         }
     }
 
-    /**
-     * Netejar el missatge de favorit per no mostrar el missatge múltiples vegades
-     */
     fun clearFavoriteMessage() {
         favoriteMessage = null
     }

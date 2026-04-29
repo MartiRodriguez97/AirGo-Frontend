@@ -7,14 +7,16 @@ import com.google.gson.annotations.SerializedName
  */
 
 data class RouteRequest(
-    @SerializedName("lat_start")
-    val latStart: Double,
-    @SerializedName("lon_start")
-    val lonStart: Double,
-    @SerializedName("lat_end")
-    val latEnd: Double,
-    @SerializedName("lon_end")
-    val lonEnd: Double,
+    @SerializedName("lat_start") val latStart: Double,
+    @SerializedName("lon_start") val lonStart: Double,
+    @SerializedName("lat_end") val latEnd: Double,
+    @SerializedName("lon_end") val lonEnd: Double,
+    @SerializedName("waypoints") val waypoints: List<WaypointRequest> = emptyList(),
+)
+
+data class WaypointRequest(
+    @SerializedName("lat") val lat: Double,
+    @SerializedName("lon") val lon: Double,
 )
 
 /**

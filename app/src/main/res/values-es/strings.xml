@@ -140,4 +140,6 @@
     <string name="no_favorite_routes">No tienes ninguna ruta favorita</string>
     <string name="back_to_map">Atrás</string>
     <string name="favorite_routes_screen_title">Rutas favoritas</string>
+    <string name="map_route_add_waypoint">Añadir parada intermedia</string>
+    <string name="map_route_selecting_waypoint">Seleccione la parada en el mapa...</string>
 </resources>
