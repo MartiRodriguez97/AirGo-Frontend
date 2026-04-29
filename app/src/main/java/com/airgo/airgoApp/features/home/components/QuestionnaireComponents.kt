@@ -27,8 +27,10 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.R
 
 private const val HALF_WIDTH = 0.5f
 
@@ -37,19 +39,19 @@ internal fun stepSportSelection(
     selectedSport: String?,
     onSportSelected: (String) -> Unit,
 ) {
-    Text("¿Cuál es tu modalidad preferida?", style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.quest_title_sport), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         selectionButton(
-            text = "Correr",
+            text = stringResource(R.string.sport_run),
             icon = Icons.Default.DirectionsRun,
-            selected = selectedSport == "Correr",
+            selected = selectedSport == stringResource(R.string.sport_run),
             onClick = { onSportSelected("Correr") },
         )
         selectionButton(
-            text = "Bici",
+            text = stringResource(R.string.sport_bike),
             icon = Icons.Default.DirectionsBike,
-            selected = selectedSport == "Bici",
+            selected = selectedSport ==  stringResource(R.string.sport_bike),
             onClick = { onSportSelected("Bici") },
         )
     }
@@ -60,7 +62,7 @@ internal fun stepLevelSelection(
     selectedLevel: String?,
     onLevelSelected: (String) -> Unit,
 ) {
-    Text("¿Cuál es tu nivel actual?", style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.quest_title_level), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         selectionButton(

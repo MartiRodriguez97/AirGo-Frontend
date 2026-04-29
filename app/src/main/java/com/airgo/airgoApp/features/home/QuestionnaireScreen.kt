@@ -39,7 +39,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.home.components.stepDateSelection
 import com.airgo.airgoApp.features.home.components.stepDaysSelection
 import com.airgo.airgoApp.features.home.components.stepLevelSelection
@@ -72,6 +74,7 @@ fun questionnaireScreen(
     onPlanCreated: () -> Unit,
     onClose: () -> Unit,
 ) {
+    val unspecifiedDateLabel = stringResource(R.string.plan_unspecified_date)
     var selectedSport by remember { mutableStateOf<String?>(null) }
     var selectedLevel by remember { mutableStateOf<String?>(null) }
     val selectedDays = remember { mutableStateListOf<String>() }
@@ -126,10 +129,19 @@ fun questionnaireScreen(
                 onNextStep = { currentStep++ },
                 onFinish = {
                     val formattedDate = formatSelectedDate(datePickerState.selectedDateMillis)
-                    savePlan(selectedSport, selectedLevel, selectedDays, formattedDate)
+
+                    savePlan(
+                        selectedSport,
+                        selectedLevel,
+                        selectedDays,
+                        formattedDate,
+                        unspecifiedDateLabel
+                    )
                     onPlanCreated()
                 },
             )
+
+
         }
     }
 }
@@ -180,15 +192,15 @@ private fun questionnaireTopBar(
     onClose: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text("Crear Plan") },
+        title = { Text(stringResource(R.string.plan_create_title)) },
         navigationIcon = {
             if (currentStep > 0) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                    Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.acc_back_button))
                 }
             } else {
                 IconButton(onClick = onClose) {
-                    Icon(Icons.Default.Close, contentDescription = "Cerrar")
+                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.acc_close))
                 }
             }
         },
@@ -215,7 +227,7 @@ private fun questionnaireBottomButton(
     currentStep: Int,
     isNextEnabled: Boolean,
     onNextStep: () -> Unit,
-    onFinish: () -> Unit,
+    onFinish:()-> Unit,
 ) {
     Button(
         onClick = {
@@ -228,10 +240,15 @@ private fun questionnaireBottomButton(
         enabled = isNextEnabled,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Text(if (currentStep == TARGET_MAX_STEP) "Finalizar" else "Continuar")
+        // Los textos de las etiquetas SÍ pueden usar stringResource porque están en el mundo UI
+        Text(
+            text = if (currentStep == TARGET_MAX_STEP)
+                stringResource(R.string.plan_btn_finish)
+            else
+                stringResource(R.string.plan_btn_continue)
+        )
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun rememberDateState(): DatePickerState {
@@ -253,19 +270,19 @@ private fun rememberDateState(): DatePickerState {
             },
     )
 }
-
 private fun savePlan(
     sport: String?,
     level: String?,
     days: List<String>,
     endDate: String,
+    unspecifiedDateText: String
 ) {
     TrainingPlanStore.plans.add(
         TrainingPlan(
             sport = sport ?: "",
             level = level ?: "",
             days = days,
-            endDate = if (endDate.isBlank()) "Sin especificar" else endDate,
+            endDate = if (endDate.isBlank()) unspecifiedDateText else endDate,
         ),
     )
 }

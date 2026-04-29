@@ -136,4 +136,33 @@
     <string name="home_training_plan_title">Training plans</string>
     <string name="home_training_plan_desc">Choose one of our training plans to start taking care of yourself with the cleanest routes.</string>
     <string name="home_btn_create_plan">Create plan</string>
+
+    <!-- features/home/questionnaireScreen-->
+    <string name="plan_create_title">Create Plan</string>
+    <string name="plan_btn_continue">Continue</string>
+    <string name="plan_btn_finish">Finish</string>
+    <string name="plan_unspecified_date">Not specified</string>
+    <string name="acc_close">Close</string>
+
+    <!-- features/home/components/questionnaireComponents-->
+    <string name="quest_title_sport">What is your preferred activity?</string>
+    <string name="quest_title_level">What is your current level?</string>
+    <string name="quest_title_days">Which days can you train?</string>
+    <string name="quest_title_date">Select your end date</string>
+
+    <string name="sport_run">Running</string>
+    <string name="sport_bike">Cycling</string>
+
+    <string name="level_easy">Beginner</string>
+    <string name="level_medium">Intermediate</string>
+    <string name="level_advanced">Advanced</string>
+
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+
 </resources>
