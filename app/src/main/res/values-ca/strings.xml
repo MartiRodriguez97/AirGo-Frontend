@@ -137,4 +137,32 @@
     <string name="home_training_plan_title">Plans d\'entrenament</string>
     <string name="home_training_plan_desc">Tria un dels nostres plans d\'entrenament per començar a cuidar-te amb les rutes més netes.</string>
     <string name="home_btn_create_plan">Crear pla</string>
+
+    <!-- features/home/questionnaireScreen-->
+    <string name="plan_create_title">Crear pla</string>
+    <string name="plan_btn_continue">Continuar</string>
+    <string name="plan_btn_finish">Finalitzar</string>
+    <string name="plan_unspecified_date">No especificada</string>
+    <string name="acc_close">Tancar</string>
+
+    <!-- features/home/components/questionnaireComponents-->
+    <string name="quest_title_sport">Quina és la teva activitat preferida?</string>
+    <string name="quest_title_level">Quin és el teu nivell actual?</string>
+    <string name="quest_title_days">Quins dies pots entrenar?</string>
+    <string name="quest_title_date">Selecciona la teva data de finalització</string>
+
+    <string name="sport_run">Running</string>
+    <string name="sport_bike">Ciclisme</string>
+
+    <string name="level_easy">Principiant</string>
+    <string name="level_medium">Intermedi</string>
+    <string name="level_advanced">Avançat</string>
+
+    <string name="day_monday">Dilluns</string>
+    <string name="day_tuesday">Dimarts</string>
+    <string name="day_wednesday">Dimecres</string>
+    <string name="day_thursday">Dijous</string>
+    <string name="day_friday">Divendres</string>
+    <string name="day_saturday">Dissabte</string>
+    <string name="day_sunday">Diumenge</string>
 </resources>
