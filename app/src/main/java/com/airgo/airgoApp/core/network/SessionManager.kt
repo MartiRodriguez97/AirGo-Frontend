@@ -16,6 +16,7 @@ object SessionManager {
     var email: String? = null
     var titol: String? = null
     var availableTitols: List<com.airgo.airgoApp.features.settings.account.titols.data.UserTitol>? = null
+    var trainingPlans: List<com.airgo.airgoApp.features.home.data.TrainingPlanResponse>? = null
 
     fun clear() {
         accessToken = null
@@ -26,6 +27,7 @@ object SessionManager {
         email = null
         titol = null
         availableTitols = null
+        trainingPlans = null
         punts = null
         teBici = null
         pes = null

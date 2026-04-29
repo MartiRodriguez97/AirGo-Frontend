@@ -133,6 +133,63 @@
     ℹ️ Estado: %4$s
     </string>
 
+    <!-- features/home/HomeScreen-->
+    <string name="home_training_plan_title">Planes de entrenamiento</string>
+    <string name="home_training_plan_desc">Elige uno de nuestros planes de entrenamiento para empezar a cuidarte con las rutas más limpias.</string>
+    <string name="home_btn_create_plan">Crear plan</string>
+    <string name="home_active_plan_title">Tu Plan de Entrenamiento</string>
+    <string name="home_plan_sport">Deporte: %1$s</string>
+    <string name="home_plan_level">Nivel: %1$s</string>
+    <string name="home_plan_days">Días: %1$s</string>
+    <string name="home_plan_ends">Finaliza: %1$s</string>
+    <string name="home_plan_finish_btn">Finalizar plan de entrenamiento</string>
+    <string name="home_plan_delete_dialog_title">Finalizar plan de entrenamiento</string>
+    <string name="home_plan_delete_dialog_text">¿Estás seguro de que quieres finalizar y eliminar este plan de entrenamiento? Esta acción no se puede deshacer.</string>
+    <string name="home_plan_delete_confirm">Finalizar plan</string>
+    <string name="home_plan_delete_cancel">Cancelar</string>
+    <string name="home_plan_details_title">Detalles del Plan</string>
+    <string name="home_error_load_plans">Error al cargar los planes de entrenamiento</string>
+    <string name="home_error_create_plan">Error al crear el plan de entrenamiento</string>
+    <string name="home_error_delete_plan">Error al eliminar el plan de entrenamiento</string>
+    <string name="home_success_create_plan">Plan de entrenamiento creado correctamente</string>
+    <string name="home_success_delete_plan">Plan de entrenamiento eliminado correctamente</string>
+    <string name="home_active_plan_label">Plan de Entrenamiento Activo</string>
+    <string name="home_plan_duration">Duración: %1$d días</string>
+    <string name="home_plan_workouts_per_week">Entrenamientos por semana: %1$d</string>
+    <string name="home_plan_next_workout">Próximo entrenamiento: %1$s</string>
+    <string name="home_plan_no_next_workout">Sin próximo entrenamiento</string>
+    <string name="home_plan_summary_title">Resumen del Plan</string>
+    <string name="home_plan_workouts_title">Entrenamientos</string>
+    <string name="home_plan_not_found">No se ha encontrado el plan de entrenamiento</string>
+
+    <!-- features/home/questionnaireScreen-->
+    <string name="plan_create_title">Crear plan</string>
+    <string name="plan_btn_continue">Continuar</string>
+    <string name="plan_btn_finish">Finalizar</string>
+    <string name="plan_unspecified_date">No especificada</string>
+    <string name="acc_close">Cerrar</string>
+
+
+    <!-- features/home/components/questionnaireComponents-->
+    <string name="quest_title_sport">¿Cuál es tu actividad preferida?</string>
+    <string name="quest_title_level">¿Cuál es tu nivel actual?</string>
+    <string name="quest_title_days">¿Qué días puedes entrenar?</string>
+    <string name="quest_title_date">Selecciona tu fecha de finalización</string>
+
+    <string name="sport_run">Running</string>
+    <string name="sport_bike">Ciclismo</string>
+
+    <string name="level_easy">Principiante</string>
+    <string name="level_medium">Intermedio</string>
+    <string name="level_advanced">Avanzado</string>
+
+    <string name="day_monday">Lunes</string>
+    <string name="day_tuesday">Martes</string>
+    <string name="day_wednesday">Miércoles</string>
+    <string name="day_thursday">Jueves</string>
+    <string name="day_friday">Viernes</string>
+    <string name="day_saturday">Sábado</string>
+    <string name="day_sunday">Domingo</string>
     <!-- features/map/FavoriteRoutes -->
     <string name="add_favorite_route">Añadir a favoritos</string>
     <string name="view_favorites_routes">Favoritos</string>

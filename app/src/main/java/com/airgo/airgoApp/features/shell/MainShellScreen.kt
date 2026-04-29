@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -28,6 +29,8 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.activity.activityScreen
 import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.home.homeScreen
+import com.airgo.airgoApp.features.home.planDetailsScreen
+import com.airgo.airgoApp.features.home.questionnaireScreen
 import com.airgo.airgoApp.features.map.favoritesScreen
 import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.socialScreen
@@ -57,38 +60,10 @@ fun mainShellScreen(
 
     Scaffold(
         bottomBar = {
-            if (currentRoute != "favorites") {
-                NavigationBar {
-                    MainShellScreen.entries.forEach { tab ->
-                        NavigationBarItem(
-                            selected = currentRoute == tab.route,
-                            onClick = {
-                                navController.navigate(tab.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = tab.icon,
-                                    contentDescription = stringResource(tab.label),
-                                )
-                            },
-                            label = {
-                                Text(
-                                    text = stringResource(tab.label),
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    style = MaterialTheme.typography.labelSmall,
-                                )
-                            },
-                        )
-                    }
-                }
-            }
+            bottomNavigationBar(
+                currentRoute = currentRoute,
+                navController = navController,
+            )
         },
     ) { innerPadding ->
         NavHost(
@@ -97,7 +72,34 @@ fun mainShellScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             composable(MainShellScreen.HOME.route) {
-                screenWrapper(innerPadding) { homeScreen() }
+                screenWrapper(innerPadding) {
+                    homeScreen(
+                        onNavigateToQuestionnaire = {
+                            navController.navigate("questionnaire")
+                        },
+                        onNavigateToDetails = { planId ->
+                            navController.navigate("planDetails/$planId")
+                        },
+                    )
+                }
+            }
+            composable("planDetails/{planId}") { backStackEntry ->
+                val planId = backStackEntry.arguments?.getString("planId")?.toIntOrNull() ?: -1
+                screenWrapper(innerPadding) {
+                    planDetailsScreen(
+                        planId = planId,
+                        onBack = { navController.popBackStack() },
+                    )
+                }
+            }
+            composable("questionnaire") {
+                screenWrapper(innerPadding) {
+                    questionnaireScreen(
+                        onClose = {
+                            navController.popBackStack()
+                        },
+                    )
+                }
             }
             composable(MainShellScreen.SOCIAL.route) {
                 screenWrapper(innerPadding) { socialScreen() }
@@ -143,5 +145,44 @@ fun screenWrapper(
                 .padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
         content()
+    }
+}
+
+@Composable
+private fun bottomNavigationBar(
+    currentRoute: String?,
+    navController: NavHostController,
+) {
+    if (currentRoute != "questionnaire" && currentRoute != "favorites") {
+        NavigationBar {
+                    MainShellScreen.entries.forEach { tab ->
+                        NavigationBarItem(
+                            selected = currentRoute == tab.route,
+                            onClick = {
+                                navController.navigate(tab.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = tab.icon,
+                                    contentDescription = stringResource(tab.label),
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = stringResource(tab.label),
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    style = MaterialTheme.typography.labelSmall,
+                                )
+                            },
+                        )
+                    }
+       }
     }
 }
