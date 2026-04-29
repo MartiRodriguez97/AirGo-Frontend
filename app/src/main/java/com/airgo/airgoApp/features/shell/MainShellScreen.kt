@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -57,33 +58,10 @@ fun mainShellScreen(
 
     Scaffold(
         bottomBar = {
-            if (currentRoute != "questionnaire") {
-                NavigationBar {
-                    MainShellScreen.entries.forEach { tab ->
-                        NavigationBarItem(
-                            selected = currentRoute == tab.route,
-                            onClick = {
-                                navController.navigate(tab.route) {
-                                    popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                Icon(imageVector = tab.icon, contentDescription = stringResource(tab.label))
-                            },
-                            label = {
-                                Text(
-                                    text = stringResource(tab.label),
-                                    maxLines = 1,
-                                    softWrap = false, // Evita que rompa la palabra
-                                    style = MaterialTheme.typography.labelSmall,
-                                )
-                            },
-                        )
-                    }
-                }
-            }
+            bottomNavigationBar(
+                currentRoute = currentRoute,
+                navController = navController,
+            )
         },
     ) { innerPadding ->
         NavHost(
@@ -151,5 +129,39 @@ fun screenWrapper(
                 .padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
         content()
+    }
+}
+
+@Composable
+private fun bottomNavigationBar(
+    currentRoute: String?,
+    navController: NavHostController,
+) {
+    if (currentRoute != "questionnaire") {
+        NavigationBar {
+            MainShellScreen.entries.forEach { tab ->
+                NavigationBarItem(
+                    selected = currentRoute == tab.route,
+                    onClick = {
+                        navController.navigate(tab.route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = {
+                        Icon(imageVector = tab.icon, contentDescription = stringResource(tab.label))
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(tab.label),
+                            maxLines = 1,
+                            softWrap = false, // Evita que rompa la palabra
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    },
+                )
+            }
+        }
     }
 }
