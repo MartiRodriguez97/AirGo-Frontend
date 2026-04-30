@@ -196,4 +196,20 @@
     <string name="no_favorite_routes">No favorite rutes</string>
     <string name="back_to_map">Back</string>
     <string name="favorite_routes_screen_title">Favorite routes</string>
+
+    <!-- features/onboarding/OnboardingScreen-->
+    <string name="continue_on_boarding">Continue</string>
+    <string name="welcome_on_boarding">Welcome to AirGo!</string>
+    <string name="complete_profile_on_boarding">Complete your profile to continue</string>
+    <string name="weight_on_boarding">Weight (kg)</string>
+    <string name="height_on_boarding">Height (cm)</string>
+    <string name="own_bike_on_boarding">Do you have own bicycle?</string>
+
+    <string name="error_not_fill_files">Fill in all fields correctly</string>
+    <string name="error_incorrect_on_boarding_implementation">Unable to store attributes. Please, try again</string>
+    <string name="error_username_already_exists">The username already exists. Please, change it</string>
+    <string name="error_username_too_short">The username must be at least 4 characters long.</string>
+    <string name="error_invalid_weight">The weight is not valid. Please, change it</string>
+    <string name="error_invalid_height">The height is not valid. Please, change it</string>
+
 </resources>

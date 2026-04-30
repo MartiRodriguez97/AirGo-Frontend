@@ -5,6 +5,7 @@ import android.content.Context
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.FileUtils
+import com.airgo.airgoApp.features.onboarding.data.UserProfileResponse
 import com.airgo.airgoApp.features.profile.data.ProfileApi
 import com.airgo.airgoApp.features.profile.data.ProfilePictureResponse
 import io.mockk.Runs
@@ -47,6 +48,28 @@ class ProfileViewModelTest {
         every { RetrofitProvider.profileApi } returns mockApi
 
         mockkObject(SessionManager)
+
+        // Mock getUserProfile() called in ViewModel init
+        val fakeProfile =
+            UserProfileResponse(
+                id = 1,
+                profilePic = "url",
+                googleId = null,
+                username = "testuser",
+                punts = 100,
+                teBici = true,
+                pes = 70.0,
+                altura = 175.0,
+                ratxa = 5,
+                idioma = "en",
+                limitRutes = 10,
+                titol = null,
+                insignies = null,
+            )
+        coEvery { mockApi.getUserProfile() } returns fakeProfile
+        every { SessionManager.pes = any() } just Runs
+        every { SessionManager.altura = any() } just Runs
+        every { SessionManager.username = any() } just Runs
 
         viewModel = ProfileViewModel()
     }

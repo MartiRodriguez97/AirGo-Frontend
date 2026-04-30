@@ -196,4 +196,16 @@
     <string name="no_favorite_routes">No tens cap ruta preferida</string>
     <string name="back_to_map">Enrere</string>
     <string name="favorite_routes_screen_title">Rutes preferides</string>
+    <string name="continue_on_boarding">Continua</string>
+    <string name="welcome_on_boarding">Benvingut a AirGo!</string>
+    <string name="complete_profile_on_boarding">Completa el teu perfil per continuar</string>
+    <string name="weight_on_boarding">Pes (kg)</string>
+    <string name="height_on_boarding">Alçada (cm)</string>
+    <string name="own_bike_on_boarding">Tens bicicleta pròpia?</string>
+    <string name="error_not_fill_files">Omple tots els camps correctament</string>
+    <string name="error_incorrect_on_boarding_implementation">No es pot desar els atributs. Si us plau, intentar-lo de nou</string>
+    <string name="error_username_already_exists">El nom d\'usuari ja existeix. Si us plau, canvieu-lo</string>
+    <string name="error_username_too_short">El nom d\'usuari ha de tenir com a mínim 4 caràcters.</string>
+    <string name="error_invalid_weight">El pes no és vàlid. Si us plau, canvieu-lo</string>
+    <string name="error_invalid_height">La alçada no és valida. Si us plau, canvieu-lo</string>
 </resources>

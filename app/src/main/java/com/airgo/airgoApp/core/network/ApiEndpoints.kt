@@ -20,6 +20,7 @@ object ApiEndpoints {
     fun getAvailableTitolsEndpoint(id: Int): String = "api/usuaris/$id/titols/"
 
     const val USER_ACCOUNT_INFO = "api/usuaris/me/profile/"
+    const val ONBOARDING_UPDATE = "api/usuaris/{id}/"
 
     const val PLA_ENTRENAMENT = "api/pla-entrenament/"
 }

@@ -161,7 +161,6 @@ private fun handleTeBiciSideEffects(
     LaunchedEffect(uiState) {
         when (uiState) {
             is TeBiciUiState.Success -> {
-                Toast.makeText(context, context.getString(R.string.msg_bike_status_updated), Toast.LENGTH_SHORT).show()
                 viewModel.resetUiState()
             }
             is TeBiciUiState.Error -> {
@@ -179,26 +178,18 @@ private fun handleTeBiciSideEffects(
 // con opciones para editar cada uno y un botón de retroceso en el encabezado
 @Composable
 private fun accountSettingsContent(
-    state: AccountSettingsState, // Agrupamos los 4 parámetros de interfaz aquí
+    state: AccountSettingsState,
     onBicycleToggle: (Boolean) -> Unit,
     onEditUsername: () -> Unit,
     onEditTitol: () -> Unit,
     onBackClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-    ) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         accountSettingsHeader(onBackClick = onBackClick)
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
-        usernameRow(
-            displayName = state.displayName,
-            onEditUsername = onEditUsername,
-        )
+        usernameRow(displayName = state.displayName, onEditUsername = onEditUsername)
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
-        titolRow(
-            titol = state.titol,
-            onEditTitol = onEditTitol,
-        )
+        titolRow(titol = state.titol, onEditTitol = onEditTitol)
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         bicycleAvailableRow(
             isEnabled = state.isEnabled,
@@ -206,6 +197,37 @@ private fun accountSettingsContent(
             onBicycleToggle = onBicycleToggle,
         )
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
+
+        // Nuevo: leer directamente de SessionManager
+        val pes = SessionManager.pes?.takeIf { it > 0 }
+        val altura = SessionManager.altura?.takeIf { it > 0 }
+
+        if (pes != null) {
+            infoRow(label = stringResource(R.string.weight_on_boarding), value = "${pes.toInt()} kg")
+            HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
+        }
+        if (altura != null) {
+            infoRow(label = stringResource(R.string.height_on_boarding), value = "${altura.toInt()} cm")
+            HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
+        }
+    }
+}
+
+@Composable
+private fun infoRow(
+    label: String,
+    value: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
