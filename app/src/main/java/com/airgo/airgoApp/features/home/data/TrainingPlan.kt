@@ -18,6 +18,7 @@ data class TrainingTemplate(
 )
 
 data class Exercise(
+    val id: Int,
     val dataInici: String?,
     val dataFi: String?,
     val completat: Boolean,
