@@ -11,7 +11,7 @@ object ApiEndpoints {
     const val BICING = "bicing/"
 
     const val SEARCH_USERS = "api/usuaris/"
-    const val SAVE_FAVORITE_ROUTE = "api/usuaris/me/routes/save"
+    const val SAVE_FAVORITE_ROUTE = "api/usuaris/me/routes/save/"
     const val FAVORITE_ROUTES = "api/usuaris/me/routes/"
     const val DELETE_FAVORITE_ROUTE = "api/usuaris/me/routes/{route_id}/"
 
