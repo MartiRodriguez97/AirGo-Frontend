@@ -46,6 +46,7 @@ class CalendarViewModelTest {
             val mockData =
                 listOf(
                     PlaEntrenament(
+                        id = 1,
                         diesDurada = 30,
                         numEntrenamentsSetmanals = 3,
                         templates =
