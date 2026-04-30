@@ -133,6 +133,62 @@
     ℹ️ Estat: %4$s
     </string>
 
+    <!-- features/home/HomeScreen-->
+    <string name="home_training_plan_title">Plans d\'entrenament</string>
+    <string name="home_training_plan_desc">Tria un dels nostres plans d\'entrenament per començar a cuidar-te amb les rutes més netes.</string>
+    <string name="home_btn_create_plan">Crear pla</string>
+    <string name="home_active_plan_title">El teu Pla d\'Entrenament</string>
+    <string name="home_plan_sport">Esport: %1$s</string>
+    <string name="home_plan_level">Nivell: %1$s</string>
+    <string name="home_plan_days">Dies: %1$s</string>
+    <string name="home_plan_ends">Finalitza: %1$s</string>
+    <string name="home_plan_finish_btn">Finalitzar pla d\'entrenament</string>
+    <string name="home_plan_delete_dialog_title">Finalitzar pla d\'entrenament</string>
+    <string name="home_plan_delete_dialog_text">Estàs segur que vols finalitzar i eliminar aquest pla d\'entrenament? Aquesta acció no es pot desfer.</string>
+    <string name="home_plan_delete_confirm">Finalitzar pla</string>
+    <string name="home_plan_delete_cancel">Cancel·lar</string>
+    <string name="home_plan_details_title">Detalls del Pla</string>
+    <string name="home_error_load_plans">Error al carregar els plans d\'entrenament</string>
+    <string name="home_error_create_plan">Error al crear el pla d\'entrenament</string>
+    <string name="home_error_delete_plan">Error al eliminar el pla d\'entrenament</string>
+    <string name="home_success_create_plan">Pla d\'entrenament creat correctament</string>
+    <string name="home_success_delete_plan">Pla d\'entrenament eliminat correctament</string>
+    <string name="home_active_plan_label">Pla d\'Entrenament Actiu</string>
+    <string name="home_plan_duration">Durada: %1$d dies</string>
+    <string name="home_plan_workouts_per_week">Entrenaments per setmana: %1$d</string>
+    <string name="home_plan_next_workout">Pròxim entrenament: %1$s</string>
+    <string name="home_plan_no_next_workout">Sense proper entrenament</string>
+    <string name="home_plan_summary_title">Resum del Pla</string>
+    <string name="home_plan_workouts_title">Entrenaments</string>
+    <string name="home_plan_not_found">No s\'ha trobat el pla d\'entrenament</string>
+
+    <!-- features/home/questionnaireScreen-->
+    <string name="plan_create_title">Crear pla</string>
+    <string name="plan_btn_continue">Continuar</string>
+    <string name="plan_btn_finish">Finalitzar</string>
+    <string name="plan_unspecified_date">No especificada</string>
+    <string name="acc_close">Tancar</string>
+
+    <!-- features/home/components/questionnaireComponents-->
+    <string name="quest_title_sport">Quina és la teva activitat preferida?</string>
+    <string name="quest_title_level">Quin és el teu nivell actual?</string>
+    <string name="quest_title_days">Quins dies pots entrenar?</string>
+    <string name="quest_title_date">Selecciona la teva data de finalització</string>
+
+    <string name="sport_run">Running</string>
+    <string name="sport_bike">Ciclisme</string>
+
+    <string name="level_easy">Principiant</string>
+    <string name="level_medium">Intermedi</string>
+    <string name="level_advanced">Avançat</string>
+
+    <string name="day_monday">Dilluns</string>
+    <string name="day_tuesday">Dimarts</string>
+    <string name="day_wednesday">Dimecres</string>
+    <string name="day_thursday">Dijous</string>
+    <string name="day_friday">Divendres</string>
+    <string name="day_saturday">Dissabte</string>
+    <string name="day_sunday">Diumenge</string>
     <!-- features/map/FavoriteRoutes -->
     <string name="add_favorite_route">Afegir a preferits</string>
     <string name="view_favorites_routes">Preferits</string>

@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Favorite
@@ -58,8 +58,9 @@ import org.osmdroid.util.GeoPoint
  */
 
 private const val N_DECIMALS = 6
-private const val GPS_CARD_WIDTH = 0.4f
-private const val ROUTE_PANEL_WIDTH = 0.9f
+private const val SELECTION_PANEL_WIDTH = 0.9f
+
+private const val ROUTE_PANEL_WIDTH = SELECTION_PANEL_WIDTH
 
 /**
  * Panell de selecció de ruta.
@@ -224,33 +225,22 @@ private fun routePointField(
 @Composable
 internal fun gpsDisabledWarning(modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier.fillMaxWidth(GPS_CARD_WIDTH),
+        modifier = modifier,
+        shape = CircleShape,
         colors =
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.85f),
+                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = SELECTION_PANEL_WIDTH),
             ),
         elevation =
             CardDefaults
                 .cardElevation(4.dp),
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Default.LocationOff,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(16.dp),
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(R.string.map_gps_disabled),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onErrorContainer,
-            )
-        }
+        Icon(
+            imageVector = Icons.Default.LocationOff,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(55.dp),
+        )
     }
 }
 
@@ -264,13 +254,13 @@ internal fun modeSelector(
     Surface(
         modifier = modifier,
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = SELECTION_PANEL_WIDTH),
         tonalElevation = 4.dp,
         shadowElevation = 6.dp,
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(4.dp),
-            horizontalArrangement =
+            verticalArrangement =
                 Arrangement
                     .spacedBy(4.dp),
         ) {
@@ -285,7 +275,7 @@ internal fun modeSelector(
                     ),
             ) {
                 Icon(
-                    imageVector = Icons.Default.DirectionsRun,
+                    imageVector = Icons.AutoMirrored.Filled.DirectionsRun,
                     contentDescription = stringResource(R.string.map_mode_walk),
                     modifier = Modifier.size(24.dp),
                 )

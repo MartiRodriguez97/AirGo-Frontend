@@ -21,9 +21,9 @@ data class FavoriteRouteDetail(
     val startLocation: String,
     @SerializedName("end_location")
     val endLocation: String,
-    val distance: Int,
+    val distance: Double,
     @SerializedName("air_quality")
-    val airQuality: Int,
+    val airQuality: Double,
     @SerializedName("is_safe")
     val isSafe: Boolean,
 )
