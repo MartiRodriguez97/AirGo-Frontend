@@ -1,12 +1,13 @@
 package com.airgo.airgoApp.features.calendar.presentation.viewmodel
 
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
-import com.airgo.airgoApp.features.calendar.domain.model.DetallsEspecifics
-import com.airgo.airgoApp.features.calendar.domain.model.Exercici
-import com.airgo.airgoApp.features.calendar.domain.model.PlaEntrenament
-import com.airgo.airgoApp.features.calendar.domain.model.Template
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
+import com.airgo.airgoApp.features.home.data.Exercise
+import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.home.data.TrainingTemplate
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,6 +32,7 @@ class CalendarViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        SessionManager.clear()
         apiService = mockk()
         viewModel = CalendarViewModel(apiService)
     }
@@ -45,24 +47,24 @@ class CalendarViewModelTest {
         runTest {
             val mockData =
                 listOf(
-                    PlaEntrenament(
+                    TrainingPlanResponse(
                         id = 1,
                         diesDurada = 30,
                         numEntrenamentsSetmanals = 3,
                         templates =
                             listOf(
-                                Template(
+                                TrainingTemplate(
                                     nom = "Sessio de Bici",
                                     descripcio = "Ciclisme",
                                     tipusExercici = "BIC",
                                     exercicis =
                                         listOf(
-                                            Exercici(
+                                            Exercise(
                                                 dataInici = "2024-05-22T18:00:00Z",
                                                 dataFi = null,
                                                 completat = false,
                                                 tipusExercici = "BIC",
-                                                detallsEspecifics = DetallsEspecifics(distFetaKm = 12.0),
+                                                detallsEspecifics = mapOf("distFetaKm" to 12.0),
                                             ),
                                         ),
                                 ),
@@ -88,7 +90,7 @@ class CalendarViewModelTest {
 
             assertFalse(viewModel.isLoading.value)
             assertEquals(com.airgo.airgoApp.R.string.calendar_error_server, viewModel.errorResId.value)
-            assertEquals(emptyList<PlaEntrenament>(), viewModel.plaEntrenamentList.value)
+            assertEquals(emptyList<TrainingPlanResponse>(), viewModel.plaEntrenamentList.value)
         }
 
     @Test
@@ -111,7 +113,29 @@ class CalendarViewModelTest {
 
             assertFalse(viewModel.isLoading.value)
             assertNull(viewModel.errorResId.value)
-            assertEquals(emptyList<PlaEntrenament>(), viewModel.plaEntrenamentList.value)
+            assertEquals(emptyList<TrainingPlanResponse>(), viewModel.plaEntrenamentList.value)
+        }
+
+    @Test
+    fun `fetchPlaEntrenament should use cache from SessionManager if available`() =
+        runTest {
+            val cachedData =
+                listOf(
+                    TrainingPlanResponse(
+                        id = 2,
+                        diesDurada = 15,
+                        numEntrenamentsSetmanals = 2,
+                        templates = emptyList(),
+                    ),
+                )
+            SessionManager.trainingPlans = cachedData
+
+            viewModel.fetchPlaEntrenament()
+
+            assertFalse(viewModel.isLoading.value)
+            assertEquals(cachedData, viewModel.plaEntrenamentList.value)
+            // verify no API call was made
+            coVerify(exactly = 0) { apiService.getPlaEntrenament() }
         }
 
     @Test

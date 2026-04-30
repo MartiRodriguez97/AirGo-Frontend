@@ -46,9 +46,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.calendar.details.calendarDetailsScreen
-import com.airgo.airgoApp.features.calendar.domain.model.Exercici
-import com.airgo.airgoApp.features.calendar.domain.model.PlaEntrenament
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
+import com.airgo.airgoApp.features.home.data.Exercise
+import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeParseException
@@ -193,7 +193,7 @@ fun calendarHeader(
 fun calendarGrid(
     modifier: Modifier = Modifier,
     currentMonth: YearMonth,
-    plaList: List<PlaEntrenament>,
+    plaList: List<TrainingPlanResponse>,
     onDateSelected: (LocalDate) -> Unit,
 ) {
     val daysInMonth = currentMonth.lengthOfMonth()
@@ -239,7 +239,7 @@ fun calendarGrid(
             val exercisesToday =
                 allExercises.filter { exer ->
                     val exerDate =
-                        if (exer.dataInici.length >= DATE_SUBSTRING_END) {
+                        if (exer.dataInici != null && exer.dataInici.length >= DATE_SUBSTRING_END) {
                             try {
                                 val dateStr = exer.dataInici.substring(0, DATE_SUBSTRING_END)
                                 LocalDate.parse(dateStr)
@@ -265,7 +265,7 @@ fun calendarGrid(
 @Composable
 fun dayCell(
     date: LocalDate,
-    exercises: List<Exercici>,
+    exercises: List<Exercise>,
     onClick: () -> Unit,
 ) {
     val padding4 = 4.dp

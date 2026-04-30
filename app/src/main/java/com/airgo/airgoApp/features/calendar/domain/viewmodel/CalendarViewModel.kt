@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
-import com.airgo.airgoApp.features.calendar.domain.model.PlaEntrenament
+import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -15,8 +16,8 @@ import java.io.IOException
 class CalendarViewModel(
     private val apiService: CalendarApiService,
 ) : ViewModel() {
-    private val _plaEntrenamentList = MutableStateFlow<List<PlaEntrenament>>(emptyList())
-    val plaEntrenamentList: StateFlow<List<PlaEntrenament>> = _plaEntrenamentList
+    private val _plaEntrenamentList = MutableStateFlow<List<TrainingPlanResponse>>(emptyList())
+    val plaEntrenamentList: StateFlow<List<TrainingPlanResponse>> = _plaEntrenamentList
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -25,13 +26,20 @@ class CalendarViewModel(
     val errorResId: StateFlow<Int?> = _errorResId
 
     fun fetchPlaEntrenament() {
+        if (!SessionManager.trainingPlans.isNullOrEmpty()) {
+            _plaEntrenamentList.value = SessionManager.trainingPlans!!
+            return
+        }
+
         viewModelScope.launch {
             _isLoading.value = true
             _errorResId.value = null
             try {
                 val response = apiService.getPlaEntrenament()
                 if (response.isSuccessful) {
-                    _plaEntrenamentList.value = response.body() ?: emptyList()
+                    val body = response.body() ?: emptyList()
+                    _plaEntrenamentList.value = body
+                    SessionManager.trainingPlans = body
                 } else {
                     _errorResId.value = R.string.calendar_error_server
                 }

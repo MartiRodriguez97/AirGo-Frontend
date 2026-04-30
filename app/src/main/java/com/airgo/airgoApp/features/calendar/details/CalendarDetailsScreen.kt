@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.features.calendar.domain.model.PlaEntrenament
+import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import java.time.LocalDate
 
 private const val DATE_SUBSTRING_END = 10
@@ -27,7 +27,7 @@ private const val DATE_SUBSTRING_END = 10
 @Composable
 fun calendarDetailsScreen(
     date: LocalDate,
-    plaList: List<PlaEntrenament>,
+    plaList: List<TrainingPlanResponse>,
     onBackClick: () -> Unit,
 ) {
     val padding16 = 16.dp
@@ -61,7 +61,7 @@ fun calendarDetailsScreen(
                 pla.templates.forEach { template ->
                     template.exercicis.forEach { ex ->
                         val exDate =
-                            if (ex.dataInici.length >= DATE_SUBSTRING_END) {
+                            if (ex.dataInici != null && ex.dataInici.length >= DATE_SUBSTRING_END) {
                                 try {
                                     LocalDate.parse(ex.dataInici.substring(0, DATE_SUBSTRING_END))
                                 } catch (_: java.time.format.DateTimeParseException) {
@@ -91,7 +91,7 @@ fun calendarDetailsScreen(
                                     Text(text = stringResource(R.string.calendar_template, template.nom))
                                     Text(text = template.descripcio)
                                     Text(text = stringResource(R.string.calendar_type, template.tipusExercici))
-                                    Text(text = stringResource(R.string.calendar_exercise_date, ex.dataInici))
+                                    Text(text = stringResource(R.string.calendar_exercise_date, ex.dataInici ?: ""))
                                     Text(text = stringResource(R.string.calendar_completed, ex.completat))
 
                                     ex.detallsEspecifics?.let { details ->
