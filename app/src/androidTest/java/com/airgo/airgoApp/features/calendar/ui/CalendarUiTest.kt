@@ -6,11 +6,10 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
-import com.airgo.airgoApp.features.calendar.domain.model.DetallsEspecifics
-import com.airgo.airgoApp.features.calendar.domain.model.Exercici
-import com.airgo.airgoApp.features.calendar.domain.model.PlaEntrenament
-import com.airgo.airgoApp.features.calendar.domain.model.Template
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
+import com.airgo.airgoApp.features.home.data.Exercise
+import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.home.data.TrainingTemplate
 import io.mockk.coEvery
 import io.mockk.mockk
 import org.junit.Before
@@ -42,23 +41,24 @@ class CalendarUiTest {
 
         val mockData =
             listOf(
-                PlaEntrenament(
+                TrainingPlanResponse(
+                    id = 1,
                     diesDurada = 30,
                     numEntrenamentsSetmanals = 3,
                     templates =
                         listOf(
-                            Template(
+                            TrainingTemplate(
                                 nom = "Test Template",
                                 descripcio = "Test Description",
                                 tipusExercici = "RUN",
                                 exercicis =
                                     listOf(
-                                        Exercici(
+                                        Exercise(
                                             dataInici = dateStr,
                                             dataFi = null,
                                             completat = true,
                                             tipusExercici = "RUN",
-                                            detallsEspecifics = DetallsEspecifics(distFetaKm = 5.0),
+                                            detallsEspecifics = mapOf("distFetaKm" to 5.0),
                                         ),
                                     ),
                             ),

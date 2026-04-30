@@ -34,6 +34,11 @@ class HomeViewModel : ViewModel() {
     }
 
     fun loadPlans() {
+        if (!SessionManager.trainingPlans.isNullOrEmpty()) {
+            _plans.value = SessionManager.trainingPlans!!
+            return
+        }
+
         viewModelScope.launch {
             _isLoading.value = true
             try {
