@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.activity.activityScreen
 import com.airgo.airgoApp.features.calendar.calendarScreen
+import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
 import com.airgo.airgoApp.features.home.homeScreen
 import com.airgo.airgoApp.features.home.planDetailsScreen
 import com.airgo.airgoApp.features.home.questionnaireScreen
@@ -108,7 +110,10 @@ fun mainShellScreen(
                 activityScreen(navController = navController)
             }
             composable(MainShellScreen.CALENDAR.route) {
-                screenWrapper(innerPadding) { calendarScreen() }
+                screenWrapper(innerPadding) {
+                    val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
+                    calendarScreen(viewModel = calendarViewModel)
+                }
             }
             composable(MainShellScreen.PROFILE.route) {
                 screenWrapper(innerPadding) {

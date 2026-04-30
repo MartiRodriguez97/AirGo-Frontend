@@ -1,6 +1,7 @@
 package com.airgo.airgoApp.core.network
 
 import com.airgo.airgoApp.BuildConfig
+import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
 import com.airgo.airgoApp.features.login.data.auth.AuthApi
 import com.airgo.airgoApp.features.map.data.AirQualityApiService
 import com.airgo.airgoApp.features.map.data.BicingApiService
@@ -70,6 +71,7 @@ object RetrofitProvider {
     val titolApi: TitolApi = retrofit.create(TitolApi::class.java)
     val teBiciApi: TeBiciApi = retrofit.create(TeBiciApi::class.java)
     val socialApi: SocialApi = retrofit.create(SocialApi::class.java)
+    val calendarApi: CalendarApiService = retrofit.create(CalendarApiService::class.java)
     val trainingPlanApi: com.airgo.airgoApp.features.home.data.TrainingPlanApi =
         retrofit.create(
             com.airgo.airgoApp.features.home.data.TrainingPlanApi::class.java,
