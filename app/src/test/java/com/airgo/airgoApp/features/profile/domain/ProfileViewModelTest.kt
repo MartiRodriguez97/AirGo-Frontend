@@ -50,21 +50,22 @@ class ProfileViewModelTest {
         mockkObject(SessionManager)
 
         // Mock getUserProfile() called in ViewModel init
-        val fakeProfile = UserProfileResponse(
-            id = 1,
-            profilePic = "url",
-            googleId = null,
-            username = "testuser",
-            punts = 100,
-            teBici = true,
-            pes = 70.0,
-            altura = 175.0,
-            ratxa = 5,
-            idioma = "en",
-            limitRutes = 10,
-            titol = null,
-            insignies = null
-        )
+        val fakeProfile =
+            UserProfileResponse(
+                id = 1,
+                profilePic = "url",
+                googleId = null,
+                username = "testuser",
+                punts = 100,
+                teBici = true,
+                pes = 70.0,
+                altura = 175.0,
+                ratxa = 5,
+                idioma = "en",
+                limitRutes = 10,
+                titol = null,
+                insignies = null,
+            )
         coEvery { mockApi.getUserProfile() } returns fakeProfile
         every { SessionManager.pes = any() } just Runs
         every { SessionManager.altura = any() } just Runs
