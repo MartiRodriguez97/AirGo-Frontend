@@ -149,6 +149,7 @@
     <string name="error_not_fill_files">Omple tots els camps correctament</string>
     <string name="error_incorrect_on_boarding_implementation">No es pot desar els atributs. Si us plau, intentar-lo de nou</string>
     <string name="error_username_already_exists">El nom d\'usuari ja existeix. Si us plau, canvieu-lo</string>
+    <string name="error_username_too_short">El nom d\'usuari ha de tenir com a mínim 4 caràcters.</string>
     <string name="error_invalid_weight">El pes no és vàlid. Si us plau, canvieu-lo</string>
     <string name="error_invalid_height">La alçada no és valida. Si us plau, canvieu-lo</string>
 </resources>

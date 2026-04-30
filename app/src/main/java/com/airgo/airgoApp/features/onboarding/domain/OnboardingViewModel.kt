@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.onboarding.data.OnboardingRequest
 import kotlinx.coroutines.launch
@@ -15,6 +16,8 @@ import retrofit2.HttpException
 import java.io.IOException
 
 private const val LOG_TAG = "OnboardingViewModel"
+
+private const val HTTP_400 = 400
 
 sealed class OnboardingUiState {
     data object Idle : OnboardingUiState()
@@ -30,6 +33,9 @@ sealed class OnboardingUiState {
     data class Error(
         val message: UiText.StringResource,
     ) : OnboardingUiState()
+
+    val isHandledByOnboarding: Boolean
+        get() = this is LoadingProfile || this is NeedsOnboarding || this is Saving || this is Error
 }
 
 class OnboardingViewModel : ViewModel() {
@@ -58,7 +64,11 @@ class OnboardingViewModel : ViewModel() {
                 uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_network_generic))
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_server_generic))
+                if (e.code() == HTTP_400) {
+                    uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_username_already_exists))
+                } else {
+                    uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+                }
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }
         }
@@ -90,13 +100,21 @@ class OnboardingViewModel : ViewModel() {
                             teBici = teBici,
                         ),
                 )
+                SessionManager.username = username
+                SessionManager.pes = pes
+                SessionManager.altura = altura
+                SessionManager.teBici = teBici
                 uiState = OnboardingUiState.Success
                 Log.d(LOG_TAG, "Onboarding completat per usuari $userId")
             } catch (e: IOException) {
                 uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_network_generic))
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_server_generic))
+                if (e.code() == HTTP_400) {
+                    uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_username_already_exists))
+                } else {
+                    uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+                }
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }
         }

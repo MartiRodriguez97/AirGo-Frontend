@@ -149,6 +149,7 @@
     <string name="error_not_fill_files">Rellena todos los campos correctamente</string>
     <string name="error_incorrect_on_boarding_implementation">No se puede guardar los atributos. Por favor, inténtelo de nuevo.</string>
     <string name="error_username_already_exists">El nombre de usuario ya existe. Por favor, cámbielo.</string>
+    <string name="error_username_too_short">El nombre de usuario debe tener al menos 4 caracteres.</string>
     <string name="error_invalid_weight">El peso no es válido. Por favor, cámbielo.</string>
     <string name="error_invalid_height">La altura no es válida. Por favor, cámbielo.</string>
 </resources>

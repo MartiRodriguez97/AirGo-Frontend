@@ -15,7 +15,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.core.theme.airGoTheme
 import com.airgo.airgoApp.features.login.ui.loginScreen
-import com.airgo.airgoApp.features.onboarding.domain.OnboardingUiState
 import com.airgo.airgoApp.features.onboarding.domain.OnboardingViewModel
 import com.airgo.airgoApp.features.onboarding.onboardingScreen
 import com.airgo.airgoApp.features.shell.mainShellScreen
@@ -46,10 +45,7 @@ class MainActivity : ComponentActivity() {
                             isLoggedIn = true
                             onboardingViewModel.checkOnboardingNeeded()
                         }
-                    } else if (needsOnboarding ||
-                        onboardingViewModel.uiState is OnboardingUiState.NeedsOnboarding ||
-                        onboardingViewModel.uiState is OnboardingUiState.LoadingProfile
-                    ) {
+                    } else if (needsOnboarding || onboardingViewModel.uiState.isHandledByOnboarding) {
                         onboardingScreen(
                             onCompleted = { needsOnboarding = false },
                         )

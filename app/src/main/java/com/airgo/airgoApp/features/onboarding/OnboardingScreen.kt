@@ -29,15 +29,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.onboarding.domain.OnboardingUiState
 import com.airgo.airgoApp.features.onboarding.domain.OnboardingViewModel
-import java.lang.Character.toString
 
 private data class OnboardingFieldsState(
     val username: String,
     val pes: String,
     val altura: String,
     val teBici: Boolean,
+    val usernameError: String?,
+    val pesError: String?,
+    val alturaError: String?,
     val onUsernameChange: (String) -> Unit,
     val onPesChange: (String) -> Unit,
     val onAlturaChange: (String) -> Unit,
@@ -55,25 +58,31 @@ fun onboardingScreen(
         }
     }
 
-    when (viewModel.uiState) {
-        is OnboardingUiState.LoadingProfile,
-        is OnboardingUiState.Saving,
-        -> onboardingLoadingContent()
-        is OnboardingUiState.NeedsOnboarding ->
+    val state = viewModel.uiState
+    if (state is OnboardingUiState.LoadingProfile) {
+        onboardingLoadingContent()
+    } else {
+        val isSaving = state is OnboardingUiState.Saving
+        val errorMessage = if (state is OnboardingUiState.Error) state.message.asString() else null
+
+        Box(modifier = Modifier.fillMaxSize()) {
             onboardingFormContent(
-                errorMessage = null,
+                errorMessage = errorMessage,
+                isSaving = isSaving,
                 onSave = { username, pes, altura, teBici ->
                     viewModel.saveOnboarding(username, pes, altura, teBici)
                 },
             )
-        is OnboardingUiState.Error ->
-            onboardingFormContent(
-                errorMessage = toString((R.string.error_incorrect_on_boarding_implementation)),
-                onSave = { username, pes, altura, teBici ->
-                    viewModel.saveOnboarding(username, pes, altura, teBici)
-                },
-            )
-        else -> {}
+            if (isSaving) {
+                // Dim screen slightly while showing progress
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
     }
 }
 
@@ -87,12 +96,25 @@ private fun onboardingLoadingContent() {
 @Composable
 private fun onboardingFormContent(
     errorMessage: String?,
+    isSaving: Boolean,
     onSave: (username: String, pes: Double, altura: Double, teBici: Boolean) -> Unit,
 ) {
-    var username by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf(SessionManager.username ?: "") }
     var pes by remember { mutableStateOf("") }
     var altura by remember { mutableStateOf("") }
     var teBici by remember { mutableStateOf(false) }
+
+    var usernameError by remember { mutableStateOf<String?>(null) }
+    var pesError by remember { mutableStateOf<String?>(null) }
+    var alturaError by remember { mutableStateOf<String?>(null) }
+
+    val userAlreadyExistsMsg = stringResource(R.string.error_username_already_exists)
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage == userAlreadyExistsMsg) {
+            usernameError = errorMessage
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 32.dp),
@@ -108,26 +130,102 @@ private fun onboardingFormContent(
                     pes = pes,
                     altura = altura,
                     teBici = teBici,
-                    onUsernameChange = { username = it },
-                    onPesChange = { pes = it },
-                    onAlturaChange = { altura = it },
+                    usernameError = usernameError,
+                    pesError = pesError,
+                    alturaError = alturaError,
+                    onUsernameChange = {
+                        username = it
+                        usernameError = null
+                    },
+                    onPesChange = {
+                        if (isValidNumberInput(it)) {
+                            pes = it
+                            pesError = null
+                        }
+                    },
+                    onAlturaChange = {
+                        if (isValidNumberInput(it)) {
+                            altura = it
+                            alturaError = null
+                        }
+                    },
                     onTeBiciChange = { teBici = it },
                 ),
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        Button(
-            onClick = { onSave(username, pes.toDoubleOrNull() ?: 0.0, altura.toDoubleOrNull() ?: 0.0, teBici) },
-            modifier = Modifier.fillMaxWidth(),
-        ) { Text(stringResource(R.string.continue_on_boarding)) }
+        onboardingErrorText(errorMessage, userAlreadyExistsMsg)
+        onboardingSubmitButton(
+            isSaving = isSaving,
+            username = username,
+            pes = pes,
+            altura = altura,
+            teBici = teBici,
+            onValidationError = { u, p, a ->
+                usernameError = u
+                pesError = p
+                alturaError = a
+            },
+            onSave = onSave,
+        )
     }
+}
+
+@Composable
+private fun onboardingErrorText(
+    errorMessage: String?,
+    userAlreadyExistsMsg: String,
+) {
+    if (errorMessage != null && errorMessage != userAlreadyExistsMsg) {
+        Text(
+            text = errorMessage,
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+private fun isValidNumberInput(input: String) = input.isEmpty() || input.matches(Regex("^\\d*$|^\\d+\\.\\d*$"))
+
+@Composable
+private fun onboardingSubmitButton(
+    isSaving: Boolean,
+    username: String,
+    pes: String,
+    altura: String,
+    teBici: Boolean,
+    onValidationError: (String?, String?, String?) -> Unit,
+    onSave: (String, Double, Double, Boolean) -> Unit,
+) {
+    val emptyUsernameMsg = stringResource(R.string.error_username_empty)
+    val shortUsernameMsg = stringResource(R.string.error_username_too_short)
+    val invalidWeightMsg = stringResource(R.string.error_invalid_weight)
+    val invalidHeightMsg = stringResource(R.string.error_invalid_height)
+
+    Button(
+        onClick = {
+            if (isSaving) return@Button
+            val p = pes.toDoubleOrNull() ?: 0.0
+            val a = altura.toDoubleOrNull() ?: 0.0
+
+            val uError =
+                when {
+                    username.isBlank() -> emptyUsernameMsg
+                    username.length < 4 -> shortUsernameMsg
+                    else -> null
+                }
+            val pError = if (p <= 0) invalidWeightMsg else null
+            val aError = if (a <= 0) invalidHeightMsg else null
+
+            if (uError == null && pError == null && aError == null) {
+                onSave(username, p, a, teBici)
+            } else {
+                onValidationError(uError, pError, aError)
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+        enabled = !isSaving,
+    ) { Text(stringResource(R.string.continue_on_boarding)) }
 }
 
 @Composable
@@ -147,6 +245,12 @@ private fun onboardingFields(state: OnboardingFieldsState) {
         value = state.username,
         onValueChange = state.onUsernameChange,
         label = { Text(stringResource(R.string.account_settings_username_label)) },
+        isError = state.usernameError != null,
+        supportingText = {
+            if (state.usernameError != null) {
+                Text(text = state.usernameError)
+            }
+        },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
     )
@@ -155,6 +259,12 @@ private fun onboardingFields(state: OnboardingFieldsState) {
         value = state.pes,
         onValueChange = state.onPesChange,
         label = { Text(stringResource(R.string.weight_on_boarding)) },
+        isError = state.pesError != null,
+        supportingText = {
+            if (state.pesError != null) {
+                Text(text = state.pesError)
+            }
+        },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -164,6 +274,12 @@ private fun onboardingFields(state: OnboardingFieldsState) {
         value = state.altura,
         onValueChange = state.onAlturaChange,
         label = { Text(stringResource(R.string.height_on_boarding)) },
+        isError = state.alturaError != null,
+        supportingText = {
+            if (state.alturaError != null) {
+                Text(text = state.alturaError)
+            }
+        },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
