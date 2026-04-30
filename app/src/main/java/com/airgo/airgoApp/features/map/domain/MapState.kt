@@ -35,4 +35,5 @@ data class MapState(
     val trackPoints: List<org.osmdroid.util.GeoPoint> = emptyList(),
     val onStartTracking: () -> Unit = {},
     val onStopTracking: () -> Unit = {},
+    val onNavigateToTrackingSummary: () -> Unit = {},
 )
