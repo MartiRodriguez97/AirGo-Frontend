@@ -162,6 +162,16 @@
     <string name="home_plan_workouts_title">Entrenamientos</string>
     <string name="home_plan_not_found">No se ha encontrado el plan de entrenamiento</string>
 
+    <string name="home_today_task_title">Hoy tienes:</string>
+    <string name="home_pending_activity_card">Actividad pendiente</string>
+    <string name="home_pending_activity_desc">Toca para ver detalles y empezar la actividad.</string>
+    <string name="acc_pending_activity_icon">Icono de actividad de carrera</string>
+
+    <!-- features/home/ActivityDetailScreen-->
+    <string name="activity_detail_title">Detalles de la actividad</string>
+    <string name="activity_today_header">Actividad de hoy</string>
+    <string name="btn_start">Empezar</string>
+
     <!-- features/home/questionnaireScreen-->
     <string name="plan_create_title">Crear plan</string>
     <string name="plan_btn_continue">Continuar</string>

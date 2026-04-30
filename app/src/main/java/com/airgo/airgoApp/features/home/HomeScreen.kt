@@ -39,6 +39,7 @@ import com.airgo.airgoApp.features.home.domain.HomeViewModel
 fun homeScreen(
     onNavigateToQuestionnaire: () -> Unit = {},
     onNavigateToDetails: (Int) -> Unit = {},
+    onNavigateToPendingActivity: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(),
 ) {
     val plans by viewModel.plans.collectAsState()
@@ -76,6 +77,8 @@ fun homeScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
+
+            item { pendingActivitySection(onNavigateToPendingActivity) }
 
             if (plans.isNotEmpty()) {
                 items(plans) { plan ->
@@ -171,6 +174,48 @@ fun trainingPlanSection(onCreatePlanClick: () -> Unit) {
                 modifier = Modifier.align(Alignment.End),
             ) {
                 Text(text = stringResource(R.string.home_btn_create_plan))
+            }
+        }
+    }
+}
+
+@Composable
+fun pendingActivitySection(onNavigateToPendingActivity: () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+        Text(
+            text = stringResource(R.string.home_today_task_title),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp),
+        )
+        ElevatedCard(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToPendingActivity() },
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+                Text(
+                    text = stringResource(R.string.home_pending_activity_card),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.home_pending_activity_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
         }
     }
