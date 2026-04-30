@@ -43,6 +43,25 @@ class ProfileViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState: StateFlow<ProfileUiState> = _uiState
 
+    init {
+        loadProfile()
+    }
+
+    private fun loadProfile() {
+        viewModelScope.launch {
+            try {
+                val profile = RetrofitProvider.profileApi.getUserProfile()
+                SessionManager.pes = profile.pes
+                SessionManager.altura = profile.altura
+                SessionManager.username = profile.username
+            } catch (e: IOException) {
+                Log.e(TAG, "loadProfile network error", e)
+            } catch (e: retrofit2.HttpException) {
+                Log.e(TAG, "loadProfile HTTP ${e.code()}", e)
+            }
+        }
+    }
+
     fun deleteAccount() {
         viewModelScope.launch {
             _uiState.value = ProfileUiState.Loading

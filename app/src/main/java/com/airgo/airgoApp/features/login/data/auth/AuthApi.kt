@@ -4,6 +4,7 @@ import com.airgo.airgoApp.core.network.ApiEndpoints
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 
 data class AuthResponse(
@@ -15,6 +16,15 @@ data class AuthResponse(
 
 data class GoogleTokenRequest(
     val token: String,
+)
+
+data class RefreshTokenRequest(
+    val refresh: String,
+)
+
+data class TokenRefreshResponse(
+    val access: String?,
+    val refresh: String?,
 )
 
 data class UserDetailResponse(
@@ -38,6 +48,12 @@ interface AuthApi {
     suspend fun loginWithGoogle(
         @Body body: GoogleTokenRequest,
     ): Response<AuthResponse>
+
+    @Headers("No-Authentication: true")
+    @POST(ApiEndpoints.TOKEN_REFRESH)
+    suspend fun refreshToken(
+        @Body body: RefreshTokenRequest,
+    ): Response<TokenRefreshResponse>
 
     @GET(ApiEndpoints.USER_ACCOUNT_INFO)
     suspend fun getCurrentUserProfile(): Response<UserDetailResponse>

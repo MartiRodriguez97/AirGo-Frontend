@@ -2,6 +2,9 @@ package com.airgo.airgoApp.features.map
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.airgo.airgoApp.features.map.domain.MapSelectionMode
+import com.airgo.airgoApp.features.map.helpers.createMapEventsOverlay
+import com.airgo.airgoApp.features.map.helpers.isGpsEnabled
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull

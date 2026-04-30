@@ -12,8 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.core.theme.airGoTheme
 import com.airgo.airgoApp.features.login.ui.loginScreen
+import com.airgo.airgoApp.features.onboarding.domain.OnboardingViewModel
+import com.airgo.airgoApp.features.onboarding.onboardingScreen
 import com.airgo.airgoApp.features.shell.mainShellScreen
 
 class MainActivity : ComponentActivity() {
@@ -32,24 +35,29 @@ class MainActivity : ComponentActivity() {
                     var isLoggedIn by rememberSaveable { mutableStateOf(false) }
                     var userEmail by rememberSaveable { mutableStateOf<String?>(null) }
                     var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
+                    var needsOnboarding by rememberSaveable { mutableStateOf(false) }
+                    val onboardingViewModel: OnboardingViewModel = viewModel()
 
-                    if (isLoggedIn) {
-                        mainShellScreen(
-                            email = userEmail,
-                            pictureUrl = userPictureUrl,
-                            onLogout = {
-                                isLoggedIn = false
-                                userEmail = null
-                                userPictureUrl = null
-                                com.airgo.airgoApp.core.network.SessionManager.accessToken = null
-                            },
-                        )
-                    } else {
+                    if (!isLoggedIn) {
                         loginScreen { email, pictureUrl ->
                             userEmail = email
                             userPictureUrl = pictureUrl
                             isLoggedIn = true
+                            onboardingViewModel.checkOnboardingNeeded()
                         }
+                    } else if (needsOnboarding || onboardingViewModel.uiState.isHandledByOnboarding) {
+                        onboardingScreen(
+                            onCompleted = { needsOnboarding = false },
+                        )
+                    } else {
+                        mainShellScreen(
+                            email = userEmail,
+                            pictureUrl = userPictureUrl,
+                            onLogout = {
+                                com.airgo.airgoApp.core.network.SessionManager
+                                    .logout()
+                            },
+                        )
                     }
                 }
             }

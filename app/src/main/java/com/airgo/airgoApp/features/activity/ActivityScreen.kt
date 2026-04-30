@@ -7,10 +7,11 @@ import androidx.compose.ui.Modifier
 import com.airgo.airgoApp.features.map.osmView
 
 @Composable
-fun activityScreen() {
+fun activityScreen(navController: androidx.navigation.NavController) {
     Box(modifier = Modifier.fillMaxSize()) {
         osmView(
             modifier = Modifier.fillMaxSize(),
+            onNavigateToFavorites = { navController.navigate("favorites") },
         )
     }
 }

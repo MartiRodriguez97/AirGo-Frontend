@@ -62,9 +62,10 @@ class LoginViewModel : ViewModel() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    val session = com.airgo.airgoApp.core.network.SessionManager
+                    val session = SessionManager
                     session.accessToken = body.access
                     session.email = body.user
+                    session.refreshToken = body.refresh
 
                     if (body.user != null) {
                         fetchAndSaveUserDetails(session)
@@ -128,7 +129,7 @@ class LoginViewModel : ViewModel() {
                     "Error (HTTP ${userResponse.code()}): $errBody",
                 )
             }
-        } catch (e: java.io.IOException) {
+        } catch (e: IOException) {
             Log.e("LoginViewModel", "IO Error fetching user details", e)
         } catch (e: retrofit2.HttpException) {
             Log.e("LoginViewModel", "HTTP Error fetching user details", e)

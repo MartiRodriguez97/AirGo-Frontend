@@ -1,6 +1,7 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.helpers
 
 import android.graphics.Color
+import com.airgo.airgoApp.features.map.data.PollutionPoint
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
