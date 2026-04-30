@@ -37,26 +37,20 @@ object LocationHelper {
 
         // Desplaçar el mapa a la teva ubicació (si s'han donat permnissos i està a Barcelona)
         locationOverlay.runOnFirstFix {
+            val outsideMessage = context.getString(R.string.map_location_outside_service)
+
             locationOverlay.myLocation?.let { loc ->
-                // Comprovem si està dins dels límits de Barcelona
                 val isInsideBcn =
                     loc.latitude in LAT_SOUTH..LAT_NORTH &&
                         loc.longitude in LNG_WEST..LNG_EAST
 
                 if (isInsideBcn) {
-                    // Si està a Barcelona movem el mapa
-                    map.post {
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
                         map.controller.animateTo(loc)
                     }
                 } else {
-                    // Si està fora mostrem el missatge d'avís
-                    map.post {
-                        Toast
-                            .makeText(
-                                context,
-                                context.getString(R.string.map_location_outside_service),
-                                Toast.LENGTH_LONG,
-                            ).show()
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                        Toast.makeText(context, outsideMessage, Toast.LENGTH_LONG).show()
                     }
                 }
             }

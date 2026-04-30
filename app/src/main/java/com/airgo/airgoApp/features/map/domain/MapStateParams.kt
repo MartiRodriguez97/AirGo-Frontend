@@ -5,18 +5,31 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 
 /**
- * Classe que encapsula els paràmetres necessaris per construir l'estat del mapa.
- * Aquesta classe és útil per passar tots els paràmetres necessaris a la funció que construeix l'estat del mapa
- * sense haver de passar-los individualment.
+ * Paràmetres relacionats amb les capes i la vista del mapa.
  */
-class MapStateParams(
-    val hasLocationPermission: Boolean,
+data class MapLayerParams(
     val mapView: MapView,
     val locationOverlay: org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay,
     val bicingOverlay: FolderOverlay,
     val pollutionOverlay: FolderOverlay,
+    val hasLocationPermission: Boolean,
+)
+
+/**
+ * Paràmetres relacionats amb els ViewModels i la navegació.
+ */
+data class MapViewModelParams(
     val pollutionViewModel: PollutionViewModel,
     val routeViewModel: RouteViewModel,
     val trackingViewModel: TrackingViewModel,
     val onNavigateToFavorites: () -> Unit,
+    val onNavigateToTrackingSummary: () -> Unit,
+)
+
+/**
+ * Classe que encapsula els paràmetres necessaris per construir l'estat del mapa.
+ */
+data class MapStateParams(
+    val layerParams: MapLayerParams,
+    val viewModelParams: MapViewModelParams,
 )
