@@ -1,6 +1,7 @@
 package com.airgo.airgoApp.features.calendar.domain.model
 
 data class PlaEntrenament(
+    val id: Int,
     val diesDurada: Int,
     val numEntrenamentsSetmanals: Int,
     val templates: List<Template>,
