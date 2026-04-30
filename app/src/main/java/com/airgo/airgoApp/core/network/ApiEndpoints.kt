@@ -23,5 +23,4 @@ object ApiEndpoints {
 
     const val PLA_ENTRENAMENT = "/api/pla-entrenament/"
     const val ONBOARDING_UPDATE = "api/usuaris/{id}/"
-
 }
