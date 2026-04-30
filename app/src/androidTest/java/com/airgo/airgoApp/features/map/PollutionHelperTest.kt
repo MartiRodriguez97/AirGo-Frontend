@@ -3,6 +3,9 @@ package com.airgo.airgoApp.features.map
 import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.airgo.airgoApp.features.map.data.GeoPointResponse
+import com.airgo.airgoApp.features.map.data.PollutionPoint
+import com.airgo.airgoApp.features.map.helpers.PollutionHelper
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

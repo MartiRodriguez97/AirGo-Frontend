@@ -2,10 +2,12 @@ package com.airgo.airgoApp.features.profile.data
 
 import android.media.Image
 import com.airgo.airgoApp.core.network.ApiEndpoints
+import com.airgo.airgoApp.features.onboarding.data.UserProfileResponse
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.DELETE
+import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.Part
@@ -21,6 +23,9 @@ data class ProfilePictureResponse(
 
 interface ProfileApi {
     // Define API endpoints related to user profile here
+    @GET(ApiEndpoints.USER_ACCOUNT_INFO)
+    suspend fun getUserProfile(): UserProfileResponse
+
     @DELETE(ApiEndpoints.DELETE_ACCOUNT)
     suspend fun deleteAccount(): Response<Void>
 

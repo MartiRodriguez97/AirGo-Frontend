@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.helpers
 
 import android.content.Context
 import android.graphics.Color
@@ -6,6 +6,7 @@ import android.graphics.drawable.LayerDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.features.map.data.BicingStation
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay

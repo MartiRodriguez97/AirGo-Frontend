@@ -1,6 +1,12 @@
 package com.airgo.airgoApp.features.map
 
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.map.data.RouteGeometry
+import com.airgo.airgoApp.features.map.data.RouteResponse
+import com.airgo.airgoApp.features.map.data.RouteSummary
+import com.airgo.airgoApp.features.map.domain.MapSelectionMode
+import com.airgo.airgoApp.features.map.domain.RouteViewModel
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -36,6 +42,7 @@ class RouteViewModelTest {
     private val mockRoute =
         RouteResponse(
             status = "ok",
+            routeId = 1,
             summary =
                 RouteSummary(
                     durationMinutes = 10.0,
@@ -122,7 +129,7 @@ class RouteViewModelTest {
             advanceUntilIdle()
 
             assertNotNull(viewModel.errorMessage)
-            assertTrue(viewModel.errorMessage is com.airgo.airgoApp.core.utils.UiText.StringResource)
+            assertTrue(viewModel.errorMessage is UiText.StringResource)
             assertFalse(viewModel.isLoading)
         }
 
@@ -139,7 +146,7 @@ class RouteViewModelTest {
             advanceUntilIdle()
 
             assertNotNull(viewModel.errorMessage)
-            assertTrue(viewModel.errorMessage is com.airgo.airgoApp.core.utils.UiText.StringResource)
+            assertTrue(viewModel.errorMessage is UiText.StringResource)
             assertFalse(viewModel.isLoading)
         }
 

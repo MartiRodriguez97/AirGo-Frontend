@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.domain
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -6,7 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.map.data.BicingStation
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -15,7 +18,7 @@ class BicingViewModel : ViewModel() {
     var stations by mutableStateOf<List<BicingStation>>(emptyList())
         private set
 
-    var errorMessage by mutableStateOf<String?>(null)
+    var errorMessage by mutableStateOf<UiText?>(null)
         private set
 
     fun fetchStations(
@@ -32,10 +35,10 @@ class BicingViewModel : ViewModel() {
                     Log.d("BicingViewModel", "Primera estació rebuda: ${stations.first()}")
                 }
             } catch (e: IOException) {
-                errorMessage = "Error de connexió al carregar el Bicing. Revisa la teva xarxa."
+                errorMessage = UiText.StringResource(R.string.error_connection_generic)
                 e.printStackTrace()
             } catch (e: HttpException) {
-                errorMessage = "Error del servidor al carregar el Bicing: ${e.code()}"
+                errorMessage = UiText.StringResource(R.string.error_connection_generic, e.code())
                 e.printStackTrace()
             }
         }

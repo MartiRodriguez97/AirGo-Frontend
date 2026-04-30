@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.map
+package com.airgo.airgoApp.features.map.data
 
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import retrofit2.http.GET

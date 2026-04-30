@@ -1,6 +1,9 @@
 package com.airgo.airgoApp.features.map
 
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.features.map.data.BicingStation
+import com.airgo.airgoApp.features.map.data.GeoPoint
+import com.airgo.airgoApp.features.map.domain.BicingViewModel
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
