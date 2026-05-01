@@ -94,9 +94,8 @@ fun calendarDetailsScreen(
                                     Text(text = stringResource(R.string.calendar_exercise_date, ex.dataInici ?: ""))
                                     Text(text = stringResource(R.string.calendar_completed, ex.completat))
 
-                                    ex.detallsEspecifics?.let { details ->
-                                        Text(text = stringResource(R.string.calendar_details, details.toString()))
-                                    }
+                                    Text(text = "Objectiu: ${ex.distanciaObjectiu} km")
+                                    Text(text = "Fet: ${ex.distanciaFeta} km")
                                 }
                             }
                         }

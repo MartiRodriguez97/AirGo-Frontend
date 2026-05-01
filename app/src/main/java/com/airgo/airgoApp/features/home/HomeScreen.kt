@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
 
@@ -78,7 +79,12 @@ fun homeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            item { pendingActivitySection(onNavigateToPendingActivity) }
+            item {
+                pendingActivitySection(
+                    viewModel = viewModel,
+                    onNavigateToPendingActivity = onNavigateToPendingActivity
+                )
+            }
 
             if (plans.isNotEmpty()) {
                 items(plans) { plan ->
@@ -180,42 +186,65 @@ fun trainingPlanSection(onCreatePlanClick: () -> Unit) {
 }
 
 @Composable
-fun pendingActivitySection(onNavigateToPendingActivity: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
-        Text(
-            text = stringResource(R.string.home_today_task_title),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 12.dp),
-        )
-        ElevatedCard(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { onNavigateToPendingActivity() },
-        ) {
-            Column(
-                modifier =
-                    Modifier
+fun pendingActivitySection(
+    viewModel: HomeViewModel,
+    onNavigateToPendingActivity: () -> Unit
+) {
+    val exercises = SessionManager.exercicis ?: emptyList()
+
+    if (exercises.isNotEmpty()) {
+        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+            Text(
+                text = stringResource(R.string.home_today_task_title),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
+
+            exercises.forEach { exercise ->
+                val template = SessionManager.trainingPlans?.flatMap { it.templates }
+                    ?.find { it.exercicis.any { ex -> ex.id == exercise.id } }
+                val templateName = template?.nom ?: stringResource(R.string.home_pending_activity_card)
+
+                ElevatedCard(
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-                Text(
-                    text = stringResource(R.string.home_pending_activity_card),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.home_pending_activity_desc),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                        .padding(bottom = 8.dp)
+                        .clickable {
+                            viewModel.startExercise(exercise)
+                            onNavigateToPendingActivity()
+                        },
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                        Text(
+                            text = templateName,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Objectiu: ${exercise.distanciaObjectiu} km",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        if (exercise.distanciaFeta > 0) {
+                            Text(
+                                text = "Progress: ${exercise.distanciaFeta} km",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+                }
             }
         }
     }

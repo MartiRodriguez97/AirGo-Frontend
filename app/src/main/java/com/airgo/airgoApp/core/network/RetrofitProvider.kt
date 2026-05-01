@@ -15,6 +15,7 @@ import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
 import com.airgo.airgoApp.features.social.SocialApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okio.Buffer
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -44,11 +45,36 @@ object RetrofitProvider {
             chain.proceed(requestBuilder.build())
         }
 
+    private val loggingInterceptor =
+        Interceptor { chain ->
+            val request = chain.request()
+            val url = request.url.toString()
+
+            if (url.contains("pla-entrenament")) {
+                if (request.method == "POST") {
+                    val requestBuffer = Buffer()
+                    request.body?.writeTo(requestBuffer)
+                    android.util.Log.d("TrainingPlanApi", ">>> POST REQUEST Body: ${requestBuffer.readUtf8()}")
+                } else {
+                    android.util.Log.d("TrainingPlanApi", ">>> GET REQUEST: $url")
+                }
+            }
+
+            val response = chain.proceed(request)
+
+            if (url.contains("pla-entrenament")) {
+                val responseBody = response.peekBody(1024 * 1024) // Peek up to 1MB
+                android.util.Log.d("TrainingPlanApi", "<<< RESPONSE Body: ${responseBody.string()}")
+            }
+            response
+        }
+
     const val MIN_TIME_WAITING_FOR_RESPONSE = 30L // segundos
     private val httpClient =
         OkHttpClient
             .Builder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
             .authenticator(TokenAuthenticator())
             .connectTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)
             .readTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)

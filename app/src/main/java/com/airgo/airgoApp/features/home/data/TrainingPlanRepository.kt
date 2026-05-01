@@ -12,4 +12,10 @@ class TrainingPlanRepository {
     suspend fun deleteTrainingPlan(id: Int) {
         api.deleteTrainingPlan(id)
     }
+
+    suspend fun updateExercise(
+        id: Int,
+        completat: Boolean,
+        distanciaFeta: Double,
+    ): Exercise = api.updateExercise(id, UpdateExerciseRequest(completat, distanciaFeta))
 }

@@ -38,6 +38,7 @@ class CalendarViewModel(
                 val response = apiService.getPlaEntrenament()
                 if (response.isSuccessful) {
                     val body = response.body() ?: emptyList()
+                    android.util.Log.d("CalendarViewModel", "Successfully fetched training plans: $body")
                     _plaEntrenamentList.value = body
                     SessionManager.trainingPlans = body
                 } else {

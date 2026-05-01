@@ -20,7 +20,18 @@ interface TrainingPlanApi {
     suspend fun deleteTrainingPlan(
         @Path("id") id: Int,
     )
+
+    @retrofit2.http.PATCH("/api/exercici/{id}/")
+    suspend fun updateExercise(
+        @Path("id") id: Int,
+        @Body request: UpdateExerciseRequest,
+    ): Exercise
 }
+
+data class UpdateExerciseRequest(
+    val completat: Boolean,
+    val distanciaFeta: Double,
+)
 
 data class TrainingPlanRequest(
     val diesDurada: Int,

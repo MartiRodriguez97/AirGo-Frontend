@@ -19,8 +19,10 @@ object SessionManager {
     var titol: String? = null
     var availableTitols: List<UserTitol>? = null
     var trainingPlans: List<TrainingPlanResponse>? = null
-
     var exercicis: List<Exercise>? = null
+    var exerciciActiu: Exercise? = null
+    var nomTemplateActiu: String? = null
+
     fun clear() {
         accessToken = null
         refreshToken = null
@@ -31,6 +33,9 @@ object SessionManager {
         titol = null
         availableTitols = null
         trainingPlans = null
+        exercicis = null
+        exerciciActiu = null
+        nomTemplateActiu = null
         punts = null
         teBici = null
         pes = null

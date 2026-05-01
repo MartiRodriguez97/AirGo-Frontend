@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
@@ -29,6 +30,29 @@ class HomeViewModel : ViewModel() {
         loadPlans()
     }
 
+    fun updateTodayExercises() {
+        val today = java.time.LocalDate.now().toString() // "yyyy-MM-dd"
+        Log.d("HomeViewModel", "Updating today's exercises for date: $today")
+
+        val todayExercises = _plans.value.flatMap { plan ->
+            plan.templates.flatMap { template ->
+                template.exercicis.filter { exercise ->
+                    exercise.dataInici?.startsWith(today) == true && !exercise.completat
+                }
+            }
+        }
+        Log.d("HomeViewModel", "Found ${todayExercises.size} pending exercises for today")
+        SessionManager.exercicis = todayExercises
+    }
+
+    fun startExercise(exercise: Exercise) {
+        val template = _plans.value.flatMap { it.templates }
+            .find { it.exercicis.any { ex -> ex.id == exercise.id } }
+
+        SessionManager.exerciciActiu = exercise
+        SessionManager.nomTemplateActiu = template?.nom ?: "Activitat"
+    }
+
     fun clearErrorMessage() {
         _errorMessage.value = null
     }
@@ -45,11 +69,12 @@ class HomeViewModel : ViewModel() {
                 val url = com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT
                 Log.d("HomeViewModel", "Requesting GET training plans from URL: $url")
 
-                val fetchedPlans = repository.getTrainingPlans()
+                val fetchedPlans = repository.getTrainingPlans().filterNotNull()
                 Log.d("HomeViewModel", "Successfully fetched ${fetchedPlans.size} plans: $fetchedPlans")
 
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
+                updateTodayExercises()
             } catch (e: retrofit2.HttpException) {
                 val code = e.code()
                 val errorBody = e.response()?.errorBody()?.string()
@@ -77,12 +102,14 @@ class HomeViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 val newPlan = repository.createTrainingPlan(request)
+                Log.d("HomeViewModel", "Create plan response: $newPlan")
+
                 val currentPlans = _plans.value.toMutableList()
                 currentPlans.add(newPlan)
                 SessionManager.trainingPlans = currentPlans
                 _plans.value = currentPlans
                 onSuccess()
-            } catch (e: java.io.IOException) {
+            } catch (e: IOException) {
                 Log.e("HomeViewModel", "Error creating plan", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
             } catch (e: retrofit2.HttpException) {
