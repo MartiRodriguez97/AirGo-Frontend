@@ -2,7 +2,9 @@ package com.airgo.airgoApp.features.map.data
 
 import com.google.gson.annotations.SerializedName
 
-enum class TransportProfile(val value: String) {
+enum class TransportProfile(
+    val value: String,
+) {
     BIKE("eco_bike"),
     FOOT("eco_foot"),
     RUNNING("running"),

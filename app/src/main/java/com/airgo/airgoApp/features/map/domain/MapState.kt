@@ -24,7 +24,7 @@ data class MapState(
     val waypoints: List<org.osmdroid.util.GeoPoint> = emptyList(),
     val currentRoute: RouteResponse?,
     val isCalculatingRoute: Boolean,
-    val transportProfile: TransportProfile = TransportProfile.BIKE,  // nuevo
+    val transportProfile: TransportProfile = TransportProfile.BIKE, // nuevo
     val onPointSelected: (org.osmdroid.util.GeoPoint) -> Unit,
     val onCalculateRoute: () -> Unit,
     val onClearRoute: () -> Unit,
@@ -32,7 +32,7 @@ data class MapState(
     val onAddToFavorites: () -> Unit,
     val onAddWaypoint: () -> Unit = {},
     val onRemoveWaypoint: (Int) -> Unit = {},
-    val onTransportProfileChange: (TransportProfile) -> Unit = {},  // nuevo
+    val onTransportProfileChange: (TransportProfile) -> Unit = {}, // nuevo
     val isFavorite: Boolean = false,
     val favoriteMessage: String? = null,
     val onNavigateToFavorites: () -> Unit,

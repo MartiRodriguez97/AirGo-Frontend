@@ -31,12 +31,13 @@ object RouteHelper {
         if (response.pollutionDetails.isEmpty()) {
             val allPoints = coords.map { GeoPoint(it[1], it[0]) } // GeoJSON es [lon, lat]
             if (allPoints.size >= 2) {
-                val polyline = Polyline(map).apply {
-                    setPoints(allPoints)
-                    outlinePaint.color = Color.GREEN
-                    outlinePaint.strokeWidth = ROUTE_WIDTH
-                    outlinePaint.strokeCap = Paint.Cap.ROUND
-                }
+                val polyline =
+                    Polyline(map).apply {
+                        setPoints(allPoints)
+                        outlinePaint.color = Color.GREEN
+                        outlinePaint.strokeWidth = ROUTE_WIDTH
+                        outlinePaint.strokeCap = Paint.Cap.ROUND
+                    }
                 routeFolder.add(polyline)
             }
             return routeFolder
@@ -55,12 +56,13 @@ object RouteHelper {
             }
 
             if (segmentPoints.size >= 2) {
-                val polyline = Polyline(map).apply {
-                    setPoints(segmentPoints)
-                    outlinePaint.color = getColorForPollution(pollutionValue)
-                    outlinePaint.strokeWidth = ROUTE_WIDTH
-                    outlinePaint.strokeCap = Paint.Cap.ROUND
-                }
+                val polyline =
+                    Polyline(map).apply {
+                        setPoints(segmentPoints)
+                        outlinePaint.color = getColorForPollution(pollutionValue)
+                        outlinePaint.strokeWidth = ROUTE_WIDTH
+                        outlinePaint.strokeCap = Paint.Cap.ROUND
+                    }
                 routeFolder.add(polyline)
             }
         }

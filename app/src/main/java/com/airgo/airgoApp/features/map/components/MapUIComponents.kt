@@ -336,10 +336,11 @@ internal fun modeSelector(
             FilledTonalIconToggleButton(
                 checked = transportProfile == TransportProfile.BIKE,
                 onCheckedChange = { onModeChange(TransportProfile.BIKE) },
-                colors = IconButtonDefaults.filledTonalIconToggleButtonColors(
-                    containerColor = Color.Transparent,
-                    checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                ),
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.DirectionsBike,
@@ -351,10 +352,11 @@ internal fun modeSelector(
             FilledTonalIconToggleButton(
                 checked = transportProfile == TransportProfile.FOOT,
                 onCheckedChange = { onModeChange(TransportProfile.FOOT) },
-                colors = IconButtonDefaults.filledTonalIconToggleButtonColors(
-                    containerColor = Color.Transparent,
-                    checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                ),
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.Default.DirectionsWalk,
@@ -366,10 +368,11 @@ internal fun modeSelector(
             FilledTonalIconToggleButton(
                 checked = transportProfile == TransportProfile.RUNNING,
                 onCheckedChange = { onModeChange(TransportProfile.RUNNING) },
-                colors = IconButtonDefaults.filledTonalIconToggleButtonColors(
-                    containerColor = Color.Transparent,
-                    checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                ),
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.DirectionsRun,

@@ -40,25 +40,34 @@ class RouteViewModel : ViewModel() {
     var favoriteMessage by mutableStateOf<String?>(null)
         private set
 
-    fun fetchRoute(start: GeoPoint, end: GeoPoint) {
+    fun fetchRoute(
+        start: GeoPoint,
+        end: GeoPoint,
+    ) {
         viewModelScope.launch {
             isLoading = true
             try {
                 errorMessage = null
 
-                val allPoints = buildList {
-                    add(listOf(start.latitude, start.longitude))
-                    waypoints.forEach { add(listOf(it.latitude, it.longitude)) }
-                    add(listOf(end.latitude, end.longitude))
-                }
+                val allPoints =
+                    buildList {
+                        add(listOf(start.latitude, start.longitude))
+                        waypoints.forEach { add(listOf(it.latitude, it.longitude)) }
+                        add(listOf(end.latitude, end.longitude))
+                    }
 
-                val request = RouteRequest(
-                    profile = transportProfile.value,
-                    points = allPoints,
-                )
+                val request =
+                    RouteRequest(
+                        profile = transportProfile.value,
+                        points = allPoints,
+                    )
 
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
-                Log.d(LOG_TAG, "Ruta calculada amb perfil=${transportProfile.value}, distància=${currentRoute?.summary?.distanceMeters} m")
+                Log.d(
+                    LOG_TAG,
+                    "Ruta calculada amb perfil=${transportProfile.value}, " +
+                        "distància=${currentRoute?.summary?.distanceMeters} m",
+                )
             } catch (e: IOException) {
                 errorMessage = UiText.StringResource(R.string.error_connection)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
@@ -92,7 +101,9 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    fun addWaypoint() { selectionMode = MapSelectionMode.WAYPOINT }
+    fun addWaypoint() {
+        selectionMode = MapSelectionMode.WAYPOINT
+    }
 
     fun removeWaypoint(index: Int) {
         waypoints = waypoints.toMutableList().also { it.removeAt(index) }
@@ -118,17 +129,23 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    fun clearError() { errorMessage = null }
+    fun clearError() {
+        errorMessage = null
+    }
 
     fun addToFavorites() {
         val routeId = currentRoute?.routeId ?: return
         viewModelScope.launch {
             try {
-                val response = RetrofitProvider.favoriteRouteApi.saveFavoriteRoute(
-                    SaveFavoriteRouteRequest(routeId),
-                )
+                val response =
+                    RetrofitProvider.favoriteRouteApi.saveFavoriteRoute(
+                        SaveFavoriteRouteRequest(routeId),
+                    )
                 when (response.code()) {
-                    OK -> { isFavorite = true; favoriteMessage = null }
+                    OK -> {
+                        isFavorite = true
+                        favoriteMessage = null
+                    }
                     JA_EXISTEIX -> favoriteMessage = "La ruta ja estava guardada"
                     else -> {
                         favoriteMessage = "Error al guardar la ruta: ${response.code()}"
@@ -143,5 +160,7 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    fun clearFavoriteMessage() { favoriteMessage = null }
+    fun clearFavoriteMessage() {
+        favoriteMessage = null
+    }
 }

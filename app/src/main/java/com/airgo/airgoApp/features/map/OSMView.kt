@@ -402,10 +402,11 @@ private fun BoxScope.mapNormalModeUi(
     modeSelector(
         transportProfile = state.transportProfile,
         onModeChange = { state.onTransportProfileChange(it) },
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .navigationBarsPadding()
-            .padding(bottom = 240.dp, end = 16.dp),
+        modifier =
+            Modifier
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .padding(bottom = 240.dp, end = 16.dp),
     )
 
     // Selector de capes (Bicing i contaminació)
