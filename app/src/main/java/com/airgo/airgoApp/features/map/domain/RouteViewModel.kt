@@ -12,7 +12,7 @@ import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.map.data.RouteRequest
 import com.airgo.airgoApp.features.map.data.RouteResponse
 import com.airgo.airgoApp.features.map.data.SaveFavoriteRouteRequest
-import com.airgo.airgoApp.features.map.data.WaypointRequest
+import com.airgo.airgoApp.features.map.data.TransportProfile
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import retrofit2.HttpException
@@ -26,7 +26,8 @@ class RouteViewModel : ViewModel() {
     var selectionMode by mutableStateOf(MapSelectionMode.NONE)
     var startPoint by mutableStateOf<GeoPoint?>(null)
     var endPoint by mutableStateOf<GeoPoint?>(null)
-    var waypoints by mutableStateOf<List<GeoPoint>>(emptyList()) // nuevo
+    var waypoints by mutableStateOf<List<GeoPoint>>(emptyList())
+    var transportProfile by mutableStateOf(TransportProfile.BIKE) // nuevo
 
     var currentRoute by mutableStateOf<RouteResponse?>(null)
         private set
@@ -39,24 +40,25 @@ class RouteViewModel : ViewModel() {
     var favoriteMessage by mutableStateOf<String?>(null)
         private set
 
-    fun fetchRoute(
-        start: GeoPoint,
-        end: GeoPoint,
-    ) {
+    fun fetchRoute(start: GeoPoint, end: GeoPoint) {
         viewModelScope.launch {
             isLoading = true
             try {
                 errorMessage = null
-                val request =
-                    RouteRequest(
-                        latStart = start.latitude,
-                        lonStart = start.longitude,
-                        latEnd = end.latitude,
-                        lonEnd = end.longitude,
-                        waypoints = waypoints.map { WaypointRequest(it.latitude, it.longitude) },
-                    )
+
+                val allPoints = buildList {
+                    add(listOf(start.latitude, start.longitude))
+                    waypoints.forEach { add(listOf(it.latitude, it.longitude)) }
+                    add(listOf(end.latitude, end.longitude))
+                }
+
+                val request = RouteRequest(
+                    profile = transportProfile.value,
+                    points = allPoints,
+                )
+
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
-                Log.d("Connexió exitosa", "Distància: ${currentRoute?.summary?.distanceMeters} m")
+                Log.d(LOG_TAG, "Ruta calculada amb perfil=${transportProfile.value}, distància=${currentRoute?.summary?.distanceMeters} m")
             } catch (e: IOException) {
                 errorMessage = UiText.StringResource(R.string.error_connection)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
@@ -90,9 +92,7 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    fun addWaypoint() {
-        selectionMode = MapSelectionMode.WAYPOINT
-    }
+    fun addWaypoint() { selectionMode = MapSelectionMode.WAYPOINT }
 
     fun removeWaypoint(index: Int) {
         waypoints = waypoints.toMutableList().also { it.removeAt(index) }
@@ -118,23 +118,17 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    fun clearError() {
-        errorMessage = null
-    }
+    fun clearError() { errorMessage = null }
 
     fun addToFavorites() {
         val routeId = currentRoute?.routeId ?: return
         viewModelScope.launch {
             try {
-                val response =
-                    RetrofitProvider.favoriteRouteApi.saveFavoriteRoute(
-                        SaveFavoriteRouteRequest(routeId),
-                    )
+                val response = RetrofitProvider.favoriteRouteApi.saveFavoriteRoute(
+                    SaveFavoriteRouteRequest(routeId),
+                )
                 when (response.code()) {
-                    OK -> {
-                        isFavorite = true
-                        favoriteMessage = null
-                    }
+                    OK -> { isFavorite = true; favoriteMessage = null }
                     JA_EXISTEIX -> favoriteMessage = "La ruta ja estava guardada"
                     else -> {
                         favoriteMessage = "Error al guardar la ruta: ${response.code()}"
@@ -149,7 +143,5 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    fun clearFavoriteMessage() {
-        favoriteMessage = null
-    }
+    fun clearFavoriteMessage() { favoriteMessage = null }
 }

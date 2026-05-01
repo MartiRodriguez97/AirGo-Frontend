@@ -142,4 +142,5 @@
     <string name="favorite_routes_screen_title">Rutes preferides</string>
     <string name="map_route_add_waypoint">Afegir parada intermèdia</string>
     <string name="map_route_selecting_waypoint">Selecciona la parada al mapa…</string>
+    <string name="map_mode_run">Mode córrer</string>
 </resources>

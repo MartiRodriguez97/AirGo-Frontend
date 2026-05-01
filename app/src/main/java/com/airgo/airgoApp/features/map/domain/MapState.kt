@@ -2,6 +2,7 @@ package com.airgo.airgoApp.features.map.domain
 
 import com.airgo.airgoApp.features.map.data.PollutionPoint
 import com.airgo.airgoApp.features.map.data.RouteResponse
+import com.airgo.airgoApp.features.map.data.TransportProfile
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
@@ -23,6 +24,7 @@ data class MapState(
     val waypoints: List<org.osmdroid.util.GeoPoint> = emptyList(),
     val currentRoute: RouteResponse?,
     val isCalculatingRoute: Boolean,
+    val transportProfile: TransportProfile = TransportProfile.BIKE,  // nuevo
     val onPointSelected: (org.osmdroid.util.GeoPoint) -> Unit,
     val onCalculateRoute: () -> Unit,
     val onClearRoute: () -> Unit,
@@ -30,6 +32,7 @@ data class MapState(
     val onAddToFavorites: () -> Unit,
     val onAddWaypoint: () -> Unit = {},
     val onRemoveWaypoint: (Int) -> Unit = {},
+    val onTransportProfileChange: (TransportProfile) -> Unit = {},  // nuevo
     val isFavorite: Boolean = false,
     val favoriteMessage: String? = null,
     val onNavigateToFavorites: () -> Unit,

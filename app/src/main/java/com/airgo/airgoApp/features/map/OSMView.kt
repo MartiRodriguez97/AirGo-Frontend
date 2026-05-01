@@ -1,5 +1,10 @@
 package com.airgo.airgoApp.features.map
 
+import android.content.Context
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -163,7 +168,7 @@ fun osmView(
 
 @Composable
 private fun rememberBicingOverlay(
-    context: android.content.Context,
+    context: Context,
     mapView: MapView,
     bicingViewModel: BicingViewModel,
 ): FolderOverlay {
@@ -194,26 +199,26 @@ private fun rememberPollutionOverlay(
 private fun trackingLocationEffect(
     isTracking: Boolean,
     hasLocationPermission: Boolean,
-    context: android.content.Context,
-    onNewLocation: (android.location.Location) -> Unit,
+    context: Context,
+    onNewLocation: (Location) -> Unit,
 ) {
     DisposableEffect(isTracking) {
         val locationManager =
             context.getSystemService(
-                android.content.Context.LOCATION_SERVICE,
-            ) as android.location.LocationManager
-        val listener = android.location.LocationListener { onNewLocation(it) }
+                Context.LOCATION_SERVICE,
+            ) as LocationManager
+        val listener = LocationListener { onNewLocation(it) }
 
         if (isTracking && hasLocationPermission) {
             try {
                 locationManager.requestLocationUpdates(
-                    android.location.LocationManager.GPS_PROVIDER,
+                    LocationManager.GPS_PROVIDER,
                     TRACKING_INTERVAL_MS,
                     TRACKING_MIN_DISTANCE_M,
                     listener,
                 )
             } catch (e: SecurityException) {
-                android.util.Log.e("Tracking", "No location permission", e)
+                Log.e("Tracking", "No location permission", e)
             }
         }
         onDispose { locationManager.removeUpdates(listener) }
@@ -236,6 +241,7 @@ private fun rememberMapState(params: MapStateParams): MapState =
         params.trackingViewModel.isTracking,
         params.trackingViewModel.data,
         params.trackingViewModel.trackPoints,
+        params.routeViewModel.transportProfile,
     ) {
         MapState(
             mapView = params.mapView,
@@ -265,6 +271,8 @@ private fun rememberMapState(params: MapStateParams): MapState =
             trackPoints = params.trackingViewModel.trackPoints,
             onStartTracking = { params.trackingViewModel.startTracking() },
             onStopTracking = { params.trackingViewModel.stopTracking() },
+            transportProfile = params.routeViewModel.transportProfile,
+            onTransportProfileChange = { params.routeViewModel.transportProfile = it },
         )
     }
 
@@ -283,7 +291,6 @@ fun osmMapContainer(
     val selectionModeState = rememberUpdatedState(state.selectionMode)
     val onPointSelectedState = rememberUpdatedState(state.onPointSelected)
     val context = LocalContext.current
-    var isBikingMode by remember { mutableStateOf(false) }
     val isGpsEnabled by rememberGpsEnabledState(context)
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -312,10 +319,8 @@ fun osmMapContainer(
                 state = state,
                 showBicing = showBicing,
                 showPollution = showPollution,
-                isBikingMode = isBikingMode,
                 onToggleBicing = { showBicing = it },
                 onTogglePollution = { showPollution = it },
-                onModeChange = { isBikingMode = it },
             )
         }
 
@@ -384,10 +389,8 @@ private fun BoxScope.mapNormalModeUi(
     state: MapState,
     showBicing: Boolean,
     showPollution: Boolean,
-    isBikingMode: Boolean,
     onToggleBicing: (Boolean) -> Unit,
     onTogglePollution: (Boolean) -> Unit,
-    onModeChange: (Boolean) -> Unit,
 ) {
     // Panell de selecció de ruta
     routeSelectionPanel(
@@ -397,13 +400,12 @@ private fun BoxScope.mapNormalModeUi(
 
     // Botó per canviar entre mode bici i mode a peu
     modeSelector(
-        isBiking = isBikingMode,
-        onModeChange = onModeChange,
-        modifier =
-            Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(bottom = 240.dp, end = 16.dp),
+        transportProfile = state.transportProfile,
+        onModeChange = { state.onTransportProfileChange(it) },
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .navigationBarsPadding()
+            .padding(bottom = 240.dp, end = 16.dp),
     )
 
     // Selector de capes (Bicing i contaminació)
