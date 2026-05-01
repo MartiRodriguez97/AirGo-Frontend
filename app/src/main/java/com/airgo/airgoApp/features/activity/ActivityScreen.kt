@@ -1,17 +1,20 @@
 package com.airgo.airgoApp.features.activity
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.airgo.airgoApp.features.map.osmView
+import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun activityScreen(navController: androidx.navigation.NavController) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        osmView(
-            modifier = Modifier.fillMaxSize(),
-            onNavigateToFavorites = { navController.navigate("favorites") },
-        )
-    }
+fun activityScreen(navController: NavController) {
+    val trackingViewModel: TrackingViewModel = viewModel()
+    osmView(
+        onNavigateToFavorites = { navController.navigate("favorites") },
+        onNavigateToTrackingSummary = { navController.navigate("tracking_summary") },
+        trackingViewModel = trackingViewModel,
+    )
 }

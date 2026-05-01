@@ -1,6 +1,9 @@
 package com.airgo.airgoApp.features.shell
 
 import androidx.compose.foundation.layout.PaddingValues
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -17,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -39,6 +43,8 @@ import com.airgo.airgoApp.features.home.questionnaireScreen
 import com.airgo.airgoApp.features.map.favoritesScreen
 import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.socialScreen
+import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
+import com.airgo.airgoApp.features.tracking.trackingSummaryScreen
 
 enum class MainShellScreen(
     val label: Int,
@@ -52,6 +58,8 @@ enum class MainShellScreen(
     PROFILE(label = R.string.nav_profile, icon = Icons.Outlined.Person, route = "profile"),
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun mainShellScreen(
     email: String?,
@@ -59,7 +67,6 @@ fun mainShellScreen(
     onLogout: () -> Unit,
 ) {
     val navController = rememberNavController()
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -227,6 +234,19 @@ private fun NavGraphBuilder.featuresNavGraph(
     composable("favorites") {
         favoritesScreen(
             onBack = { navController.popBackStack() },
+        )
+    }
+    
+    composable("tracking_summary") {
+        val activityEntry = remember(it) {
+            navController.getBackStackEntry(MainShellScreen.ACTIVITY.route)
+        }
+        val summaryViewModel: TrackingViewModel = viewModel(activityEntry)
+
+        trackingSummaryScreen(
+            onBack = { navController.popBackStack() },
+            onSave = { navController.popBackStack() },
+            viewModel = summaryViewModel,
         )
     }
 }

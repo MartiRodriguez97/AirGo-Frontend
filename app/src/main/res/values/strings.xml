@@ -208,7 +208,10 @@
     <string name="no_favorite_routes">No favorite rutes</string>
     <string name="back_to_map">Back</string>
     <string name="favorite_routes_screen_title">Favorite routes</string>
-  
+    <string name="map_route_add_waypoint">Add intermediate stop</string>
+    <string name="map_route_selecting_waypoint">Select the stop on the map...</string>
+    <string name="map_mode_run">Running mode</string>
+
     <!-- calendar -->
     <string name="calendar_unknown_error">Unknown error</string>
     <string name="calendar_details_for">Details for %1$s</string>
@@ -231,7 +234,7 @@
     <string name="calendar_day_fri">Fr</string>
     <string name="calendar_day_sat">Sa</string>
     <string name="calendar_back_desc">Back</string>
-  
+
     <!-- features/onboarding/OnboardingScreen-->
     <string name="continue_on_boarding">Continue</string>
     <string name="welcome_on_boarding">Welcome to AirGo!</string>
@@ -249,4 +252,19 @@
 
 
 
+    <string name="location_permission_required">Location permission required</string>
+    <string name="activity_saved">Activity successfully saved</string>
+    <string name="activity_summary">Activity Summary</string>
+    <string name="back">Back</string>
+    <string name="share">Share</string>
+    <string name="statistics">Statistics</string>
+    <string name="time">Time</string>
+    <string name="avg_speed">Average speed</string>
+    <string name="route">Route</string>
+    <string name="tracking_summary_gps_points">%d GPS points registered.</string>
+    <string name="save_activity">Save activity</string>
+    <string name="discard">Discard</string>
+    <string name="share_activity_text">I have done %.0f m in %02d:%02d min at %.1f km/h average with AirGo 🚴</string>
+    <string name="distance">Distance</string>
+    <string name="center_location">Center to location</string>
 </resources>

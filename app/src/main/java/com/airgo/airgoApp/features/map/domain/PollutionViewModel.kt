@@ -21,7 +21,12 @@ private const val RADI_BARCELONA = 15.0
 
 private const val LOG_TAG = "PollutionViewModel"
 
-enum class MapSelectionMode { NONE, START, END }
+enum class MapSelectionMode {
+    NONE,
+    START,
+    END,
+    WAYPOINT,
+}
 
 /**
  * ViewModel per gestionar les dades de contaminació.

@@ -1,6 +1,9 @@
 package com.airgo.airgoApp.features.map
 
-import android.widget.Toast
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,12 +35,16 @@ import com.airgo.airgoApp.features.map.components.errorToastHandlers
 import com.airgo.airgoApp.features.map.components.fetchLocationDataEffect
 import com.airgo.airgoApp.features.map.components.gpsDisabledWarning
 import com.airgo.airgoApp.features.map.components.layerSelector
+import com.airgo.airgoApp.features.map.components.locationCenteringButton
 import com.airgo.airgoApp.features.map.components.modeSelector
 import com.airgo.airgoApp.features.map.components.rememberLocationPermissions
 import com.airgo.airgoApp.features.map.components.routeSelectionPanel
+import com.airgo.airgoApp.features.map.components.trackingFabSection
 import com.airgo.airgoApp.features.map.domain.BicingViewModel
+import com.airgo.airgoApp.features.map.domain.MapLayerParams
 import com.airgo.airgoApp.features.map.domain.MapState
 import com.airgo.airgoApp.features.map.domain.MapStateParams
+import com.airgo.airgoApp.features.map.domain.MapViewModelParams
 import com.airgo.airgoApp.features.map.domain.PollutionViewModel
 import com.airgo.airgoApp.features.map.domain.RouteViewModel
 import com.airgo.airgoApp.features.map.helpers.BicingHelper
@@ -49,10 +56,9 @@ import com.airgo.airgoApp.features.map.helpers.createMapEventsOverlay
 import com.airgo.airgoApp.features.map.helpers.rememberGpsEnabledState
 import com.airgo.airgoApp.features.map.helpers.updateRouteElements
 import com.airgo.airgoApp.features.map.helpers.updateTrackingPolyline
-import com.airgo.airgoApp.features.tracking.components.TrackingFabState
-import com.airgo.airgoApp.features.tracking.components.trackingFab
 import com.airgo.airgoApp.features.tracking.components.trackingPanel
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
+import com.airgo.airgoApp.features.tracking.helpers.TrackingService
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -68,14 +74,13 @@ private const val CACHE_TILE_COUNT: Short = 1000
 private const val MEGABYTES_TO_BYTES = 1024L * 1024L
 private const val MAX_CACHE_MB = 100L
 private const val MAX_CACHE_BYTES = MAX_CACHE_MB * MEGABYTES_TO_BYTES
-private const val TRACKING_INTERVAL_MS = 1000L
-private const val TRACKING_MIN_DISTANCE_M = 2f
 private const val TRACKING_ZOOM_LEVEL = 18.0
 
 /**
  * Composable principal que mostra el mapa i les capes.
  * Gestiona els permissos, la configuració del mapa i la interacció amb el ViewModel.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun osmView(
     modifier: Modifier = Modifier,
@@ -83,6 +88,7 @@ fun osmView(
     routeViewModel: RouteViewModel = viewModel(),
     bicingViewModel: BicingViewModel = viewModel(),
     onNavigateToFavorites: () -> Unit = {},
+    onNavigateToTrackingSummary: () -> Unit = {},
     trackingViewModel: TrackingViewModel = viewModel(),
 ) {
     val context = LocalContext.current
@@ -156,25 +162,36 @@ fun osmView(
     }
 
     trackingLocationEffect(
-        isTracking = trackingViewModel.isTracking,
-        hasLocationPermission = hasLocationPermission,
+        trackingViewModel = trackingViewModel,
         context = context,
-        onNewLocation = { trackingViewModel.onNewLocation(it) },
     )
+
+    LaunchedEffect(trackingViewModel.hasSummary) {
+        if (trackingViewModel.hasSummary) {
+            onNavigateToTrackingSummary()
+        }
+    }
 
     // Encapsular tot l'estat del mapa en una sola classe per passar-la a la funció de renderitzat
     val mapState =
         rememberMapState(
             MapStateParams(
-                hasLocationPermission = hasLocationPermission,
-                mapView = mapView,
-                locationOverlay = locationOverlay,
-                bicingOverlay = bicingOverlay,
-                pollutionOverlay = pollutionOverlay,
-                pollutionViewModel = pollutionViewModel,
-                routeViewModel = routeViewModel,
-                trackingViewModel = trackingViewModel,
-                onNavigateToFavorites = onNavigateToFavorites,
+                layerParams =
+                    MapLayerParams(
+                        mapView = mapView,
+                        locationOverlay = locationOverlay,
+                        bicingOverlay = bicingOverlay,
+                        pollutionOverlay = pollutionOverlay,
+                        hasLocationPermission = hasLocationPermission,
+                    ),
+                viewModelParams =
+                    MapViewModelParams(
+                        pollutionViewModel = pollutionViewModel,
+                        routeViewModel = routeViewModel,
+                        trackingViewModel = trackingViewModel,
+                        onNavigateToFavorites = onNavigateToFavorites,
+                        onNavigateToTrackingSummary = onNavigateToTrackingSummary,
+                    ),
             ),
         )
     // Funció que pinta el mapa i les capes
@@ -210,79 +227,88 @@ private fun rememberPollutionOverlay(
     return overlay
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun trackingLocationEffect(
-    isTracking: Boolean,
-    hasLocationPermission: Boolean,
+    trackingViewModel: TrackingViewModel,
     context: android.content.Context,
-    onNewLocation: (android.location.Location) -> Unit,
 ) {
-    DisposableEffect(isTracking) {
-        val locationManager =
-            context.getSystemService(
-                android.content.Context.LOCATION_SERVICE,
-            ) as android.location.LocationManager
-        val listener = android.location.LocationListener { onNewLocation(it) }
-
-        if (isTracking && hasLocationPermission) {
-            try {
-                locationManager.requestLocationUpdates(
-                    android.location.LocationManager.GPS_PROVIDER,
-                    TRACKING_INTERVAL_MS,
-                    TRACKING_MIN_DISTANCE_M,
-                    listener,
+    DisposableEffect(trackingViewModel.isTracking) {
+        if (trackingViewModel.isTracking) {
+            trackingViewModel.registerLocationReceiver(context)
+            context.startForegroundService(
+                Intent(context, TrackingService::class.java).apply {
+                    action = TrackingService.ACTION_START
+                },
+            )
+        }
+        onDispose {
+            if (!trackingViewModel.isTracking) {
+                trackingViewModel.unregisterLocationReceiver()
+                context.startService(
+                    Intent(context, TrackingService::class.java).apply {
+                        action = TrackingService.ACTION_STOP
+                    },
                 )
-            } catch (e: SecurityException) {
-                android.util.Log.e("Tracking", "No location permission", e)
             }
         }
-        onDispose { locationManager.removeUpdates(listener) }
     }
 }
 
 @Composable
-private fun rememberMapState(params: MapStateParams): MapState =
-    remember(
-        params.hasLocationPermission,
-        params.pollutionViewModel.stations,
-        params.routeViewModel.selectionMode,
-        params.routeViewModel.startPoint,
-        params.routeViewModel.endPoint,
-        params.routeViewModel.currentRoute,
-        params.routeViewModel.isLoading,
-        params.routeViewModel.isFavorite,
-        params.routeViewModel.favoriteMessage,
-        params.trackingViewModel.isTracking,
-        params.trackingViewModel.data,
-        params.trackingViewModel.trackPoints,
+private fun rememberMapState(params: MapStateParams): MapState {
+    val l = params.layerParams
+    val vm = params.viewModelParams
+    return remember(
+        l.hasLocationPermission,
+        vm.pollutionViewModel.stations,
+        vm.routeViewModel.selectionMode,
+        vm.routeViewModel.startPoint,
+        vm.routeViewModel.endPoint,
+        vm.routeViewModel.currentRoute,
+        vm.routeViewModel.isLoading,
+        vm.routeViewModel.isFavorite,
+        vm.routeViewModel.favoriteMessage,
+        vm.trackingViewModel.isTracking,
+        vm.trackingViewModel.data,
+        vm.trackingViewModel.trackPoints,
+        vm.routeViewModel.waypoints,
+        vm.routeViewModel.transportProfile,
     ) {
         MapState(
-            mapView = params.mapView,
-            locationOverlay = params.locationOverlay,
-            bicingOverlay = params.bicingOverlay,
-            pollutionOverlay = params.pollutionOverlay,
-            hasLocationPermission = params.hasLocationPermission,
-            stations = params.pollutionViewModel.stations,
-            selectionMode = params.routeViewModel.selectionMode,
-            startPoint = params.routeViewModel.startPoint,
-            endPoint = params.routeViewModel.endPoint,
-            currentRoute = params.routeViewModel.currentRoute,
-            isCalculatingRoute = params.routeViewModel.isLoading,
-            onPointSelected = { params.routeViewModel.onPointSelected(it) },
-            onCalculateRoute = { params.routeViewModel.calculateRoute() },
-            onClearRoute = { params.routeViewModel.clearRoute() },
-            onSetSelectionMode = { params.routeViewModel.selectionMode = it },
-            onAddToFavorites = { params.routeViewModel.addToFavorites() },
-            isFavorite = params.routeViewModel.isFavorite,
-            favoriteMessage = params.routeViewModel.favoriteMessage,
-            onNavigateToFavorites = params.onNavigateToFavorites,
-            isTracking = params.trackingViewModel.isTracking,
-            trackingData = params.trackingViewModel.data,
-            trackPoints = params.trackingViewModel.trackPoints,
-            onStartTracking = { params.trackingViewModel.startTracking() },
-            onStopTracking = { params.trackingViewModel.stopTracking() },
+            mapView = l.mapView,
+            locationOverlay = l.locationOverlay,
+            bicingOverlay = l.bicingOverlay,
+            pollutionOverlay = l.pollutionOverlay,
+            hasLocationPermission = l.hasLocationPermission,
+            stations = vm.pollutionViewModel.stations,
+            selectionMode = vm.routeViewModel.selectionMode,
+            startPoint = vm.routeViewModel.startPoint,
+            endPoint = vm.routeViewModel.endPoint,
+            currentRoute = vm.routeViewModel.currentRoute,
+            isCalculatingRoute = vm.routeViewModel.isLoading,
+            onPointSelected = { vm.routeViewModel.onPointSelected(it) },
+            onCalculateRoute = { vm.routeViewModel.calculateRoute() },
+            onClearRoute = { vm.routeViewModel.clearRoute() },
+            onSetSelectionMode = { vm.routeViewModel.selectionMode = it },
+            onAddToFavorites = { vm.routeViewModel.addToFavorites() },
+            isFavorite = vm.routeViewModel.isFavorite,
+            favoriteMessage = vm.routeViewModel.favoriteMessage,
+            onNavigateToFavorites = vm.onNavigateToFavorites,
+            onNavigateToTrackingSummary = vm.onNavigateToTrackingSummary,
+            isTracking = vm.trackingViewModel.isTracking,
+            trackingData = vm.trackingViewModel.data,
+            trackPoints = vm.trackingViewModel.trackPoints,
+            onStartTracking = { vm.trackingViewModel.startTracking() },
+            onStopTracking = { vm.trackingViewModel.stopTracking() },
+            waypoints = vm.routeViewModel.waypoints,
+            onAddWaypoint = { vm.routeViewModel.addWaypoint() },
+            onRemoveWaypoint = { vm.routeViewModel.removeWaypoint(it) },
+            transportProfile = vm.routeViewModel.transportProfile,
+            onTransportProfileChange = { vm.routeViewModel.transportProfile = it },
         )
     }
+}
 
 /**
  * Funció per pintar el mapa
@@ -296,10 +322,7 @@ fun osmMapContainer(
     var showBicing by remember { mutableStateOf(true) }
     // Variable per saber si s'activa/desactiva la capa de qualitat de l'aire
     var showPollution by remember { mutableStateOf(true) }
-    val selectionModeState = rememberUpdatedState(state.selectionMode)
-    val onPointSelectedState = rememberUpdatedState(state.onPointSelected)
     val context = LocalContext.current
-    var isBikingMode by remember { mutableStateOf(false) }
     val isGpsEnabled by rememberGpsEnabledState(context)
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -312,8 +335,18 @@ fun osmMapContainer(
 
         trackingMapEffects(state)
 
-        if (!isGpsEnabled) {
+        if (!isGpsEnabled or !state.hasLocationPermission) {
             gpsDisabledWarning(
+                hasLocationPermission = state.hasLocationPermission,
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .navigationBarsPadding()
+                        .padding(bottom = 170.dp, end = 16.dp),
+            )
+        } else {
+            locationCenteringButton(
+                state,
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
@@ -322,16 +355,18 @@ fun osmMapContainer(
             )
         }
 
+        // Selector de capes (Bicing i contaminació)
+        layerSelector(
+            showBicing = showBicing,
+            onToggleBicing = { showBicing = it },
+            showPollution = showPollution,
+            onTogglePollution = { showPollution = it },
+        )
+
         // Panell de selecció de ruta i botons només si no estem en mode tracking
         if (!state.isTracking) {
             mapNormalModeUi(
                 state = state,
-                showBicing = showBicing,
-                showPollution = showPollution,
-                isBikingMode = isBikingMode,
-                onToggleBicing = { showBicing = it },
-                onTogglePollution = { showPollution = it },
-                onModeChange = { isBikingMode = it },
             )
         }
 
@@ -344,36 +379,10 @@ fun osmMapContainer(
         }
 
         // Botó de tracking
-        trackingFab(
-            state =
-                TrackingFabState(
-                    isTracking = state.isTracking,
-                    hasLocationPermission = state.hasLocationPermission,
-                    isGpsOn = isGpsEnabled,
-                    onStartTracking = state.onStartTracking,
-                    onStopTracking = state.onStopTracking,
-                    onShowPermissionError = {
-                        Toast
-                            .makeText(
-                                context,
-                                "Cal activar els permisos de localització",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    },
-                    onShowGpsError = {
-                        Toast
-                            .makeText(
-                                context,
-                                "Cal activar el GPS per fer tracking",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    },
-                ),
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(bottom = 100.dp),
+        trackingFabSection(
+            state = state,
+            isGpsEnabled = isGpsEnabled,
+            context = context,
         )
     }
 }
@@ -396,15 +405,7 @@ private fun trackingMapEffects(state: MapState) {
 }
 
 @Composable
-private fun BoxScope.mapNormalModeUi(
-    state: MapState,
-    showBicing: Boolean,
-    showPollution: Boolean,
-    isBikingMode: Boolean,
-    onToggleBicing: (Boolean) -> Unit,
-    onTogglePollution: (Boolean) -> Unit,
-    onModeChange: (Boolean) -> Unit,
-) {
+private fun BoxScope.mapNormalModeUi(state: MapState) {
     // Panell de selecció de ruta
     routeSelectionPanel(
         state = state,
@@ -413,21 +414,13 @@ private fun BoxScope.mapNormalModeUi(
 
     // Botó per canviar entre mode bici i mode a peu
     modeSelector(
-        isBiking = isBikingMode,
-        onModeChange = onModeChange,
+        transportProfile = state.transportProfile,
+        onModeChange = { state.onTransportProfileChange(it) },
         modifier =
             Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
                 .padding(bottom = 240.dp, end = 16.dp),
-    )
-
-    // Selector de capes (Bicing i contaminació)
-    layerSelector(
-        showBicing = showBicing,
-        onToggleBicing = onToggleBicing,
-        showPollution = showPollution,
-        onTogglePollution = onTogglePollution,
     )
 
     // Botó per navegar a rutes favorites

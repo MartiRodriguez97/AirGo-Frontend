@@ -13,6 +13,7 @@ import com.airgo.airgoApp.features.settings.account.tebici.data.TeBiciApi
 import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
 import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
 import com.airgo.airgoApp.features.social.SocialApi
+import com.airgo.airgoApp.features.tracking.data.TrackingApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okio.Buffer
@@ -102,5 +103,6 @@ object RetrofitProvider {
             com.airgo.airgoApp.features.home.data.TrainingPlanApi::class.java,
         )
     val favoriteRouteApi: FavoriteRouteApiService = retrofit.create(FavoriteRouteApiService::class.java)
+    val trackingApi: TrackingApi = retrofit.create(TrackingApi::class.java)
     val onboardingApi: OnboardingApi = retrofit.create(OnboardingApi::class.java)
 }

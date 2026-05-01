@@ -1,5 +1,7 @@
 package com.airgo.airgoApp.features.map.components
 
+import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,12 +17,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,12 +51,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.map.data.RouteSummary
+import com.airgo.airgoApp.features.map.data.TransportProfile
 import com.airgo.airgoApp.features.map.domain.MapSelectionMode
 import com.airgo.airgoApp.features.map.domain.MapState
+import com.airgo.airgoApp.features.tracking.components.TrackingFabState
+import com.airgo.airgoApp.features.tracking.components.trackingFab
 import org.osmdroid.util.GeoPoint
 
 /**
@@ -73,9 +83,7 @@ internal fun routeSelectionPanel(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(ROUTE_PANEL_WIDTH),
-        elevation =
-            CardDefaults
-                .cardElevation(8.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
     ) {
         Column(Modifier.padding(12.dp)) {
             routePointField(
@@ -85,17 +93,85 @@ internal fun routeSelectionPanel(
                 onClick = { state.onSetSelectionMode(MapSelectionMode.START) },
             )
             Spacer(Modifier.padding(4.dp))
+
+            // Waypoints intermedios
+            state.waypoints.forEachIndexed { index, waypoint ->
+                Spacer(Modifier.padding(2.dp))
+                routeWaypointField(
+                    index = index,
+                    point = waypoint,
+                    onRemove = { state.onRemoveWaypoint(index) },
+                )
+                Spacer(Modifier.padding(2.dp))
+            }
+
+            // Botón añadir parada intermedia
+            OutlinedButton(
+                onClick = { state.onAddWaypoint() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = state.selectionMode == MapSelectionMode.NONE,
+            ) {
+                Text(
+                    text =
+                        if (state.selectionMode == MapSelectionMode.WAYPOINT) {
+                            stringResource(R.string.map_route_selecting_waypoint)
+                        } else {
+                            stringResource(R.string.map_route_add_waypoint)
+                        },
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Spacer(Modifier.padding(4.dp))
+
             routePointField(
                 label = stringResource(R.string.map_route_end_label),
                 point = state.endPoint,
                 isSelected = state.selectionMode == MapSelectionMode.END,
                 onClick = { state.onSetSelectionMode(MapSelectionMode.END) },
             )
+
             state.currentRoute?.summary?.let { summary ->
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 routeSummaryRow(state = state, summary = summary)
             }
             routeActionButtons(state = state)
+        }
+    }
+}
+
+@Composable
+private fun routeWaypointField(
+    index: Int,
+    point: GeoPoint,
+    onRemove: () -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "${index + 1}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+            )
+            Spacer(Modifier.padding(start = 8.dp))
+            Text(
+                text = "${point.latitude.toString().take(N_DECIMALS)}, ${point.longitude.toString().take(N_DECIMALS)}",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+            )
+            IconButton(onClick = onRemove, modifier = Modifier.size(24.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Eliminar parada",
+                    modifier = Modifier.size(16.dp),
+                )
+            }
         }
     }
 }
@@ -126,7 +202,7 @@ private fun routeSummaryRow(
         IconButton(onClick = { state.onAddToFavorites() }) {
             Icon(
                 imageVector = if (state.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                contentDescription = "Afegir a preferits",
+                contentDescription = stringResource(R.string.add_favorite_route),
                 tint = if (state.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
             )
         }
@@ -222,24 +298,55 @@ private fun routePointField(
 /**
  * Missatge de GPS desactivat.
  */
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
-internal fun gpsDisabledWarning(modifier: Modifier = Modifier) {
-    Card(
+internal fun gpsDisabledWarning(
+    hasLocationPermission: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    FloatingActionButton(
+        onClick = {
+            val message =
+                if (!hasLocationPermission) {
+                    context.getString(R.string.location_permission_required)
+                } else {
+                    context.getString(R.string.map_gps_disabled)
+                }
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        },
         modifier = modifier,
-        shape = CircleShape,
-        colors =
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = SELECTION_PANEL_WIDTH),
-            ),
-        elevation =
-            CardDefaults
-                .cardElevation(4.dp),
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.error,
     ) {
         Icon(
             imageVector = Icons.Default.LocationOff,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier.size(55.dp),
+            contentDescription = stringResource(R.string.map_gps_disabled),
+            modifier = Modifier.size(24.dp),
+        )
+    }
+}
+
+@Composable
+internal fun locationCenteringButton(
+    state: MapState,
+    modifier: Modifier = Modifier,
+) {
+    FloatingActionButton(
+        onClick = {
+            state.locationOverlay.myLocation?.let { loc ->
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    state.mapView.controller.animateTo(loc)
+                }
+            }
+        },
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) {
+        Icon(
+            imageVector = Icons.Default.MyLocation,
+            contentDescription = stringResource(R.string.center_location),
         )
     }
 }
@@ -247,8 +354,8 @@ internal fun gpsDisabledWarning(modifier: Modifier = Modifier) {
 // selector mode (bici-correr)
 @Composable
 internal fun modeSelector(
-    isBiking: Boolean,
-    onModeChange: (Boolean) -> Unit,
+    transportProfile: TransportProfile,
+    onModeChange: (TransportProfile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -260,31 +367,12 @@ internal fun modeSelector(
     ) {
         Column(
             modifier = Modifier.padding(4.dp),
-            verticalArrangement =
-                Arrangement
-                    .spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            // Botón Modo Pie / Correr
+            // Bici
             FilledTonalIconToggleButton(
-                checked = !isBiking,
-                onCheckedChange = { onModeChange(false) },
-                colors =
-                    IconButtonDefaults.filledTonalIconToggleButtonColors(
-                        containerColor = Color.Transparent,
-                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    ),
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.DirectionsRun,
-                    contentDescription = stringResource(R.string.map_mode_walk),
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-
-            // Botón Modo Bici
-            FilledTonalIconToggleButton(
-                checked = isBiking,
-                onCheckedChange = { onModeChange(true) },
+                checked = transportProfile == TransportProfile.BIKE,
+                onCheckedChange = { onModeChange(TransportProfile.BIKE) },
                 colors =
                     IconButtonDefaults.filledTonalIconToggleButtonColors(
                         containerColor = Color.Transparent,
@@ -294,6 +382,38 @@ internal fun modeSelector(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.DirectionsBike,
                     contentDescription = stringResource(R.string.map_mode_bike),
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+            // A peu
+            FilledTonalIconToggleButton(
+                checked = transportProfile == TransportProfile.FOOT,
+                onCheckedChange = { onModeChange(TransportProfile.FOOT) },
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DirectionsWalk,
+                    contentDescription = stringResource(R.string.map_mode_walk),
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+            // Running
+            FilledTonalIconToggleButton(
+                checked = transportProfile == TransportProfile.RUNNING,
+                onCheckedChange = { onModeChange(TransportProfile.RUNNING) },
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.DirectionsRun,
+                    contentDescription = stringResource(R.string.map_mode_run),
                     modifier = Modifier.size(24.dp),
                 )
             }
@@ -378,4 +498,39 @@ internal fun BoxScope.layerSelector(
             )
         }
     }
+}
+
+/**
+ * Botó de tracking, que canvia d'estat segons si s'està fent tracking, si es tenen permisos i si el GPS està activat.
+ * Mostra un missatge d'error si es vol iniciar el tracking sense permisos o amb el GPS desactivat.
+ */
+@Composable
+internal fun BoxScope.trackingFabSection(
+    state: MapState,
+    isGpsEnabled: Boolean,
+    context: android.content.Context,
+) {
+    val permissionError = stringResource(R.string.location_permission_required)
+    val gpsError = stringResource(R.string.map_gps_disabled)
+    trackingFab(
+        state =
+            TrackingFabState(
+                isTracking = state.isTracking,
+                hasLocationPermission = state.hasLocationPermission,
+                isGpsOn = isGpsEnabled,
+                onStartTracking = state.onStartTracking,
+                onStopTracking = state.onStopTracking,
+                onShowPermissionError = {
+                    Toast.makeText(context, permissionError, Toast.LENGTH_SHORT).show()
+                },
+                onShowGpsError = {
+                    Toast.makeText(context, gpsError, Toast.LENGTH_SHORT).show()
+                },
+            ),
+        modifier =
+            Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 100.dp),
+    )
 }
