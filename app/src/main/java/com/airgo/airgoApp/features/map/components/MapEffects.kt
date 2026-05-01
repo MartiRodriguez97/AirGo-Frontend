@@ -73,10 +73,9 @@ internal fun fetchLocationDataEffect(
                         ?: locationManager.getLastKnownLocation(
                             android.location.LocationManager.NETWORK_PROVIDER,
                         )
-
                 if (bicingViewModel.stations.isEmpty()) {
                     if (lastLoc != null) {
-                        bicingViewModel.fetchStations(lastLoc.latitude, lastLoc.longitude)
+                        bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
                     } else {
                         bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
                     }
