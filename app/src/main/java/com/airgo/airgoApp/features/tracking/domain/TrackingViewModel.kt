@@ -69,13 +69,13 @@ class TrackingViewModel : ViewModel() {
     fun startTracking() {
         isTracking = true
         hasSummary = false
+        saveState = SaveState.Idle
         data = TrackingData()
         trackPoints = emptyList()
         lastLocation = null
         startTimer()
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun stopTracking() {
         isTracking = false
         timerJob?.cancel()
@@ -83,9 +83,6 @@ class TrackingViewModel : ViewModel() {
         if (data.distanceMeters > 0 || data.elapsedSeconds > 0) {
             hasSummary = true
         }
-
-        saveActivityPlanning()
-        saveActivity()
     }
 
     private fun saveActivityPlanning() {
@@ -226,6 +223,7 @@ class TrackingViewModel : ViewModel() {
                         routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
                     )
                 RetrofitProvider.trackingApi.saveActivity(request)
+                saveActivityPlanning()
                 saveState = SaveState.Success
             } catch (e: IOException) {
                 saveState = SaveState.Error("Error de connexió: ${e.message}")
