@@ -196,9 +196,18 @@
     <string name="no_favorite_routes">No tens cap ruta preferida</string>
     <string name="back_to_map">Enrere</string>
     <string name="favorite_routes_screen_title">Rutes preferides</string>
+
+    <string name="home_today_task_title">Avui tens:</string>
+    <string name="home_pending_activity_card">Activitat pendent</string>
+    <string name="home_pending_activity_desc">Toca per veure els detalls i començar l\'activitat.</string>
+    <string name="home_pending_activity_objective">Objectiu: %1$.2f km</string>
+    <string name="home_pending_activity_progress">Progrés: %1$.2f km</string>
     <string name="acc_pending_activity_icon">Icona d\'activitat de cursa</string>
 
     <!-- features/home/ActivityDetailScreen-->
+    <string name="activity_detail_title">Detalls de l\'activitat</string>
+    <string name="activity_today_header">Activitat d\'avui</string>
+    <string name="btn_start">Començar</string>
     <string name="map_route_add_waypoint">Afegir parada intermèdia</string>
     <string name="map_route_selecting_waypoint">Selecciona la parada al mapa…</string>
     <string name="map_mode_run">Mode córrer</string>
