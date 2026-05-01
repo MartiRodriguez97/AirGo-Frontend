@@ -2,7 +2,6 @@ package com.airgo.airgoApp.features.map
 
 import android.content.Intent
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -35,9 +34,11 @@ import com.airgo.airgoApp.features.map.components.errorToastHandlers
 import com.airgo.airgoApp.features.map.components.fetchLocationDataEffect
 import com.airgo.airgoApp.features.map.components.gpsDisabledWarning
 import com.airgo.airgoApp.features.map.components.layerSelector
+import com.airgo.airgoApp.features.map.components.locationCenteringButton
 import com.airgo.airgoApp.features.map.components.modeSelector
 import com.airgo.airgoApp.features.map.components.rememberLocationPermissions
 import com.airgo.airgoApp.features.map.components.routeSelectionPanel
+import com.airgo.airgoApp.features.map.components.trackingFabSection
 import com.airgo.airgoApp.features.map.domain.BicingViewModel
 import com.airgo.airgoApp.features.map.domain.MapLayerParams
 import com.airgo.airgoApp.features.map.domain.MapState
@@ -54,8 +55,6 @@ import com.airgo.airgoApp.features.map.helpers.createMapEventsOverlay
 import com.airgo.airgoApp.features.map.helpers.rememberGpsEnabledState
 import com.airgo.airgoApp.features.map.helpers.updateRouteElements
 import com.airgo.airgoApp.features.map.helpers.updateTrackingPolyline
-import com.airgo.airgoApp.features.tracking.components.TrackingFabState
-import com.airgo.airgoApp.features.tracking.components.trackingFab
 import com.airgo.airgoApp.features.tracking.components.trackingPanel
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
@@ -295,8 +294,6 @@ fun osmMapContainer(
     var showBicing by remember { mutableStateOf(true) }
     // Variable per saber si s'activa/desactiva la capa de qualitat de l'aire
     var showPollution by remember { mutableStateOf(true) }
-    val selectionModeState = rememberUpdatedState(state.selectionMode)
-    val onPointSelectedState = rememberUpdatedState(state.onPointSelected)
     val context = LocalContext.current
     var isBikingMode by remember { mutableStateOf(false) }
     val isGpsEnabled by rememberGpsEnabledState(context)
@@ -311,8 +308,17 @@ fun osmMapContainer(
 
         trackingMapEffects(state)
 
-        if (!isGpsEnabled) {
+        if (!isGpsEnabled or !state.hasLocationPermission) {
             gpsDisabledWarning(
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .navigationBarsPadding()
+                        .padding(bottom = 170.dp, end = 16.dp),
+            )
+        } else {
+            locationCenteringButton(
+                state,
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
@@ -321,15 +327,19 @@ fun osmMapContainer(
             )
         }
 
+        // Selector de capes (Bicing i contaminació)
+        layerSelector(
+            showBicing = showBicing,
+            onToggleBicing = { showBicing = it },
+            showPollution = showPollution,
+            onTogglePollution = { showPollution = it },
+        )
+
         // Panell de selecció de ruta i botons només si no estem en mode tracking
-        if (!state.isTracking) {
+        if (!state.isTracking or !state.hasLocationPermission) {
             mapNormalModeUi(
                 state = state,
-                showBicing = showBicing,
-                showPollution = showPollution,
                 isBikingMode = isBikingMode,
-                onToggleBicing = { showBicing = it },
-                onTogglePollution = { showPollution = it },
                 onModeChange = { isBikingMode = it },
             )
         }
@@ -343,36 +353,10 @@ fun osmMapContainer(
         }
 
         // Botó de tracking
-        trackingFab(
-            state =
-                TrackingFabState(
-                    isTracking = state.isTracking,
-                    hasLocationPermission = state.hasLocationPermission,
-                    isGpsOn = isGpsEnabled,
-                    onStartTracking = state.onStartTracking,
-                    onStopTracking = state.onStopTracking,
-                    onShowPermissionError = {
-                        Toast
-                            .makeText(
-                                context,
-                                "Cal activar els permisos de localització",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    },
-                    onShowGpsError = {
-                        Toast
-                            .makeText(
-                                context,
-                                "Cal activar el GPS per fer tracking",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    },
-                ),
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(bottom = 100.dp),
+        trackingFabSection(
+            state = state,
+            isGpsEnabled = isGpsEnabled,
+            context = context,
         )
     }
 }
@@ -397,11 +381,7 @@ private fun trackingMapEffects(state: MapState) {
 @Composable
 private fun BoxScope.mapNormalModeUi(
     state: MapState,
-    showBicing: Boolean,
-    showPollution: Boolean,
     isBikingMode: Boolean,
-    onToggleBicing: (Boolean) -> Unit,
-    onTogglePollution: (Boolean) -> Unit,
     onModeChange: (Boolean) -> Unit,
 ) {
     // Panell de selecció de ruta
@@ -419,14 +399,6 @@ private fun BoxScope.mapNormalModeUi(
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
                 .padding(bottom = 240.dp, end = 16.dp),
-    )
-
-    // Selector de capes (Bicing i contaminació)
-    layerSelector(
-        showBicing = showBicing,
-        onToggleBicing = onToggleBicing,
-        showPollution = showPollution,
-        onTogglePollution = onTogglePollution,
     )
 
     // Botó per navegar a rutes favorites

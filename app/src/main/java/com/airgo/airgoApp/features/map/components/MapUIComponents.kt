@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.map.components
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -51,6 +53,8 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.map.data.RouteSummary
 import com.airgo.airgoApp.features.map.domain.MapSelectionMode
 import com.airgo.airgoApp.features.map.domain.MapState
+import com.airgo.airgoApp.features.tracking.components.TrackingFabState
+import com.airgo.airgoApp.features.tracking.components.trackingFab
 import org.osmdroid.util.GeoPoint
 
 /**
@@ -224,22 +228,40 @@ private fun routePointField(
  */
 @Composable
 internal fun gpsDisabledWarning(modifier: Modifier = Modifier) {
-    Card(
+    FloatingActionButton(
+        onClick = {},
         modifier = modifier,
-        shape = CircleShape,
-        colors =
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = SELECTION_PANEL_WIDTH),
-            ),
-        elevation =
-            CardDefaults
-                .cardElevation(4.dp),
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.error,
     ) {
         Icon(
             imageVector = Icons.Default.LocationOff,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier.size(55.dp),
+            contentDescription = stringResource(R.string.map_gps_disabled),
+            modifier = Modifier.size(24.dp),
+        )
+    }
+}
+
+@Composable
+internal fun locationCenteringButton(
+    state: MapState,
+    modifier: Modifier = Modifier,
+) {
+    FloatingActionButton(
+        onClick = {
+            state.locationOverlay.myLocation?.let { loc ->
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    state.mapView.controller.animateTo(loc)
+                }
+            }
+        },
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) {
+        Icon(
+            imageVector = Icons.Default.MyLocation,
+            contentDescription = "Centrar a la meva ubicació",
         )
     }
 }
@@ -378,4 +400,47 @@ internal fun BoxScope.layerSelector(
             )
         }
     }
+}
+
+/**
+ * Botó de tracking, que canvia d'estat segons si s'està fent tracking, si es tenen permisos i si el GPS està activat.
+ * Mostra un missatge d'error si es vol iniciar el tracking sense permisos o amb el GPS desactivat.
+ */
+@Composable
+internal fun BoxScope.trackingFabSection(
+    state: MapState,
+    isGpsEnabled: Boolean,
+    context: android.content.Context,
+) {
+    trackingFab(
+        state =
+            TrackingFabState(
+                isTracking = state.isTracking,
+                hasLocationPermission = state.hasLocationPermission,
+                isGpsOn = isGpsEnabled,
+                onStartTracking = state.onStartTracking,
+                onStopTracking = state.onStopTracking,
+                onShowPermissionError = {
+                    Toast
+                        .makeText(
+                            context,
+                            "Cal activar els permisos de localització",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                },
+                onShowGpsError = {
+                    Toast
+                        .makeText(
+                            context,
+                            "Cal activar el GPS per fer tracking",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                },
+            ),
+        modifier =
+            Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 100.dp),
+    )
 }

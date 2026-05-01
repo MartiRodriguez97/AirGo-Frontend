@@ -60,7 +60,9 @@ internal fun fetchLocationDataEffect(
         if (!hasLocationPermission) {
             requestLocationPermission()
             pollutionViewModel.fetchBarcelonaData()
-            bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+            if (bicingViewModel.stations.isEmpty()) {
+                bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+            }
         } else {
             pollutionViewModel.fetchBarcelonaData()
             try {
@@ -72,10 +74,12 @@ internal fun fetchLocationDataEffect(
                             android.location.LocationManager.NETWORK_PROVIDER,
                         )
 
-                if (lastLoc != null) {
-                    bicingViewModel.fetchStations(lastLoc.latitude, lastLoc.longitude)
-                } else {
-                    bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+                if (bicingViewModel.stations.isEmpty()) {
+                    if (lastLoc != null) {
+                        bicingViewModel.fetchStations(lastLoc.latitude, lastLoc.longitude)
+                    } else {
+                        bicingViewModel.fetchStations(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+                    }
                 }
             } catch (e: SecurityException) {
                 e.printStackTrace()
