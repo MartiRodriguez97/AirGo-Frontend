@@ -39,8 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.airgo.airgoApp.R
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.map.helpers.configureMapView
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
@@ -70,11 +70,12 @@ fun trackingSummaryScreen(
     val shareTitle = stringResource(R.string.share)
     val backDescription = stringResource(R.string.back)
     val summaryTitle = stringResource(R.string.activity_summary)
-    val shareText = buildShareText(
-        distanceMeters = data.distanceMeters,
-        elapsedSeconds = data.elapsedSeconds,
-        avgSpeedKmh = data.avgSpeedKmh,
-    )
+    val shareText =
+        buildShareText(
+            distanceMeters = data.distanceMeters,
+            elapsedSeconds = data.elapsedSeconds,
+            avgSpeedKmh = data.avgSpeedKmh,
+        )
 
     LaunchedEffect(saveState) {
         if (saveState is SaveState.Success) {
@@ -102,10 +103,11 @@ fun trackingSummaryScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        val intent = Intent(Intent.ACTION_SEND).apply {
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, shareText)
-                        }
+                        val intent =
+                            Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
                         context.startActivity(Intent.createChooser(intent, shareTitle))
                     }) {
                         Icon(
@@ -118,10 +120,11 @@ fun trackingSummaryScreen(
         },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             trackingSummaryStatsCard(data = data)
@@ -245,7 +248,10 @@ private fun trackingSummaryActions(
     onSave: () -> Unit,
     onDiscard: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 80.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 80.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         Button(
             onClick = onSave,
             enabled = saveState !is SaveState.Saving,

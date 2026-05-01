@@ -237,11 +237,12 @@ internal fun gpsDisabledWarning(
     val context = LocalContext.current
     FloatingActionButton(
         onClick = {
-            val message = if (!hasLocationPermission) {
-                context.getString(R.string.location_permission_required)
-            } else {
-                context.getString(R.string.map_gps_disabled)
-            }
+            val message =
+                if (!hasLocationPermission) {
+                    context.getString(R.string.location_permission_required)
+                } else {
+                    context.getString(R.string.map_gps_disabled)
+                }
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         },
         modifier = modifier,
