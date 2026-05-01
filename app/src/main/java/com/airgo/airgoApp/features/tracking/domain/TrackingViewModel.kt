@@ -3,7 +3,6 @@ package com.airgo.airgoApp.features.tracking.domain
 import android.location.Location
 import android.util.Log
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
@@ -76,6 +75,7 @@ class TrackingViewModel : ViewModel() {
         startTimer()
     }
 
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun stopTracking() {
         isTracking = false
         timerJob?.cancel()
@@ -84,10 +84,11 @@ class TrackingViewModel : ViewModel() {
             hasSummary = true
         }
         
+        saveActivityPlanning()
         saveActivity()
     }
 
-    private fun saveActivity() {
+    private fun saveActivityPlanning() {
         val activeExercise = SessionManager.exerciciActiu ?: return
         val distanceDoneKm = data.distanceMeters / 1000.0
 
