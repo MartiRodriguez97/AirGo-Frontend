@@ -83,7 +83,7 @@ class TrackingViewModel : ViewModel() {
         if (data.distanceMeters > 0 || data.elapsedSeconds > 0) {
             hasSummary = true
         }
-        
+
         saveActivityPlanning()
         saveActivity()
     }
