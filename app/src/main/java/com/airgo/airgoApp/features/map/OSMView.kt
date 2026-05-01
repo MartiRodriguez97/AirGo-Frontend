@@ -1,11 +1,6 @@
 package com.airgo.airgoApp.features.map
 
 import android.content.Context
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.util.Log
-import android.widget.Toast
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -259,7 +254,7 @@ private fun rememberMapState(params: MapStateParams): MapState {
         vm.trackingViewModel.trackPoints,
         vm.routeViewModel.waypoints,
         vm.routeViewModel.transportProfile,
-        ) {
+    ) {
         MapState(
             mapView = l.mapView,
             locationOverlay = l.locationOverlay,
@@ -291,7 +286,7 @@ private fun rememberMapState(params: MapStateParams): MapState {
             onRemoveWaypoint = { vm.routeViewModel.removeWaypoint(it) },
             transportProfile = vm.routeViewModel.transportProfile,
             onTransportProfileChange = { vm.routeViewModel.transportProfile = it },
-            )
+        )
     }
 }
 
@@ -390,9 +385,7 @@ private fun trackingMapEffects(state: MapState) {
 }
 
 @Composable
-private fun BoxScope.mapNormalModeUi(
-    state: MapState,
-) {
+private fun BoxScope.mapNormalModeUi(state: MapState) {
     // Panell de selecció de ruta
     routeSelectionPanel(
         state = state,
