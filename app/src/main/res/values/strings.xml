@@ -164,6 +164,8 @@
     <string name="home_today_task_title">Today you have:</string>
     <string name="home_pending_activity_card">Pending Activity</string>
     <string name="home_pending_activity_desc">Tap to see details and start the activity.</string>
+    <string name="home_pending_activity_objective">Objective: %1$.2f km</string>
+    <string name="home_pending_activity_progress">Progress: %1$.2f km</string>
     <string name="acc_pending_activity_icon">Running activity icon</string>
 
     <!-- features/home/ActivityDetailScreen-->

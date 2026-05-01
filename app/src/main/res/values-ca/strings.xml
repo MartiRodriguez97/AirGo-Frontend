@@ -200,6 +200,8 @@
     <string name="home_today_task_title">Avui tens:</string>
     <string name="home_pending_activity_card">Activitat pendent</string>
     <string name="home_pending_activity_desc">Toca per veure els detalls i començar l\'activitat.</string>
+    <string name="home_pending_activity_objective">Objectiu: %1$.2f km</string>
+    <string name="home_pending_activity_progress">Progrés: %1$.2f km</string>
     <string name="acc_pending_activity_icon">Icona d\'activitat de cursa</string>
 
     <!-- features/home/ActivityDetailScreen-->

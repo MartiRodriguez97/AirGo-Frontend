@@ -50,21 +50,20 @@ object RetrofitProvider {
             val request = chain.request()
             val url = request.url.toString()
 
-            if (url.contains("pla-entrenament")) {
+            // Solo logueamos rutas y planes para no saturar
+            if (url.contains("route-generation") || url.contains("pla-entrenament")) {
                 if (request.method == "POST") {
                     val requestBuffer = Buffer()
                     request.body?.writeTo(requestBuffer)
-                    android.util.Log.d("TrainingPlanApi", ">>> POST REQUEST Body: ${requestBuffer.readUtf8()}")
-                } else {
-                    android.util.Log.d("TrainingPlanApi", ">>> GET REQUEST: $url")
+                    android.util.Log.d("NetworkDebug", ">>> POST Body ($url): ${requestBuffer.readUtf8()}")
                 }
             }
 
             val response = chain.proceed(request)
 
-            if (url.contains("pla-entrenament")) {
-                val responseBody = response.peekBody(1024 * 1024) // Peek up to 1MB
-                android.util.Log.d("TrainingPlanApi", "<<< RESPONSE Body: ${responseBody.string()}")
+            if (url.contains("route-generation") || url.contains("pla-entrenament")) {
+                val responseBody = response.peekBody(1024 * 1024)
+                android.util.Log.d("NetworkDebug", "<<< Response ($url): ${responseBody.string()}")
             }
             response
         }

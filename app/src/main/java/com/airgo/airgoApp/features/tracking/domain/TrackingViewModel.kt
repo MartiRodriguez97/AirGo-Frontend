@@ -12,6 +12,8 @@ import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 
@@ -29,6 +31,9 @@ class TrackingViewModel : ViewModel() {
 
     var trackPoints by mutableStateOf<List<GeoPoint>>(emptyList())
         private set
+
+    private val _uiEvent = MutableSharedFlow<TrackingUiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
     private var timerJob: Job? = null
     private var lastLocation: Location? = null
@@ -62,18 +67,29 @@ class TrackingViewModel : ViewModel() {
                 repository.updateExercise(
                     id = activeExercise.id,
                     completat = isCompleted,
-                    distanciaFeta = totalDistance
+                    distanciaFeta = totalDistance,
                 )
 
                 // Limpiar ejercicio activo tras completar/guardar
                 SessionManager.exerciciActiu = null
                 SessionManager.nomTemplateActiu = null
-                
+
                 // Actualizar la lista de ejercicios de hoy en el SessionManager
                 // Esto forzará que desaparezca de la lista de pendientes en la Home si se completó
-                SessionManager.exercicis = SessionManager.exercicis?.filter { it.id != activeExercise.id }
+                if (isCompleted) {
+                    SessionManager.exercicis = SessionManager.exercicis?.filter { it.id != activeExercise.id }
+                } else {
+                    // Si no está completado, actualizamos la distancia en el objeto de la lista
+                    SessionManager.exercicis =
+                        SessionManager.exercicis?.map {
+                            if (it.id == activeExercise.id) it.copy(distanciaFeta = totalDistance) else it
+                        }
+                }
+
+                _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
             } catch (e: Exception) {
                 Log.e("TrackingViewModel", "Error saving exercise progress", e)
+                _uiEvent.emit(TrackingUiEvent.SaveError("Error en guardar l'activitat"))
             }
         }
     }
@@ -108,4 +124,14 @@ class TrackingViewModel : ViewModel() {
                 }
             }
     }
+}
+
+sealed class TrackingUiEvent {
+    data class SaveSuccess(
+        val completed: Boolean,
+    ) : TrackingUiEvent()
+
+    data class SaveError(
+        val message: String,
+    ) : TrackingUiEvent()
 }

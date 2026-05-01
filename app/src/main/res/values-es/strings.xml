@@ -165,6 +165,8 @@
     <string name="home_today_task_title">Hoy tienes:</string>
     <string name="home_pending_activity_card">Actividad pendiente</string>
     <string name="home_pending_activity_desc">Toca para ver detalles y empezar la actividad.</string>
+    <string name="home_pending_activity_objective">Objetivo: %1$.2f km</string>
+    <string name="home_pending_activity_progress">Progreso: %1$.2f km</string>
     <string name="acc_pending_activity_icon">Icono de actividad de carrera</string>
 
     <!-- features/home/ActivityDetailScreen-->

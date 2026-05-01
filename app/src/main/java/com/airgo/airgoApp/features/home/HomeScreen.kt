@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
 
@@ -44,6 +45,7 @@ fun homeScreen(
     viewModel: HomeViewModel = viewModel(),
 ) {
     val plans by viewModel.plans.collectAsState()
+    val exercises by viewModel.exercises.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val context = LocalContext.current
 
@@ -82,7 +84,8 @@ fun homeScreen(
             item {
                 pendingActivitySection(
                     viewModel = viewModel,
-                    onNavigateToPendingActivity = onNavigateToPendingActivity
+                    exercises = exercises,
+                    onNavigateToPendingActivity = onNavigateToPendingActivity,
                 )
             }
 
@@ -188,10 +191,9 @@ fun trainingPlanSection(onCreatePlanClick: () -> Unit) {
 @Composable
 fun pendingActivitySection(
     viewModel: HomeViewModel,
-    onNavigateToPendingActivity: () -> Unit
+    exercises: List<Exercise>,
+    onNavigateToPendingActivity: () -> Unit,
 ) {
-    val exercises = SessionManager.exercicis ?: emptyList()
-
     if (exercises.isNotEmpty()) {
         Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
             Text(
@@ -202,23 +204,27 @@ fun pendingActivitySection(
             )
 
             exercises.forEach { exercise ->
-                val template = SessionManager.trainingPlans?.flatMap { it.templates }
-                    ?.find { it.exercicis.any { ex -> ex.id == exercise.id } }
+                val template =
+                    SessionManager.trainingPlans
+                        ?.flatMap { it.templates }
+                        ?.find { it.exercicis.any { ex -> ex.id == exercise.id } }
                 val templateName = template?.nom ?: stringResource(R.string.home_pending_activity_card)
 
                 ElevatedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
-                        .clickable {
-                            viewModel.startExercise(exercise)
-                            onNavigateToPendingActivity()
-                        },
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                            .clickable {
+                                viewModel.startExercise(exercise)
+                                onNavigateToPendingActivity()
+                            },
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,
@@ -233,14 +239,14 @@ fun pendingActivitySection(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Objectiu: ${exercise.distanciaObjectiu} km",
+                            text = stringResource(R.string.home_pending_activity_objective, exercise.distanciaObjectiu),
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         if (exercise.distanciaFeta > 0) {
                             Text(
-                                text = "Progress: ${exercise.distanciaFeta} km",
+                                text = stringResource(R.string.home_pending_activity_progress, exercise.distanciaFeta),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.secondary
+                                color = MaterialTheme.colorScheme.secondary,
                             )
                         }
                     }
