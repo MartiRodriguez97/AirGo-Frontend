@@ -1,8 +1,8 @@
 package com.airgo.airgoApp.features.tracking.domain
 
 import android.location.Location
-import android.util.Log
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
@@ -10,11 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.airgo.airgoApp.core.network.SessionManager
-import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.airgo.airgoApp.core.AppEvents
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
@@ -80,7 +80,7 @@ class TrackingViewModel : ViewModel() {
     fun stopTracking() {
         isTracking = false
         timerJob?.cancel()
-        
+
         if (data.distanceMeters > 0 || data.elapsedSeconds > 0) {
             hasSummary = true
         }
@@ -133,7 +133,6 @@ class TrackingViewModel : ViewModel() {
         trackPoints = emptyList()
     }
 
-    
     /**
      * Crida cada vegada que arriba una nova posició GPS.
      */

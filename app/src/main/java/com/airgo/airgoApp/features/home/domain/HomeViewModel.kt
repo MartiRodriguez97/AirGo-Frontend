@@ -28,6 +28,16 @@ class HomeViewModel : ViewModel() {
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _errorMessage = MutableStateFlow<Int?>(null)
+
+    companion object {
+        private const val TEMPLATE_ID_1 = 1
+        private const val TEMPLATE_ID_2 = 2
+        private const val TEMPLATE_ID_3 = 3
+        private const val TEMPLATE_ID_4 = 4
+        private const val TEMPLATE_ID_5 = 5
+        private const val TEMPLATE_ID_6 = 6
+    }
+
     val errorMessage: StateFlow<Int?> = _errorMessage.asStateFlow()
 
     init {
@@ -132,9 +142,21 @@ class HomeViewModel : ViewModel() {
                 // 1. Determine template IDs based on level
                 val templateIds =
                     when (level) {
-                        "Bàsic", "Básico", "Basic", "Principiant", "Principiante", "Beginner" -> listOf(1, 2, 3, 4)
-                        "Mitjà", "Medio", "Medium", "Intermedi", "Intermedio", "Intermediate" -> listOf(2, 3, 4, 5)
-                        "Avançat", "Avanzado", "Advanced" -> listOf(3, 4, 5, 6)
+                        "Bàsic", "Básico", "Basic", "Principiant", "Principiante", "Beginner" ->
+                            listOf(
+                                TEMPLATE_ID_1,
+                                TEMPLATE_ID_2,
+                                TEMPLATE_ID_3,
+                                TEMPLATE_ID_4,
+                            )
+                        "Mitjà", "Medio", "Medium", "Intermedi", "Intermedio", "Intermediate" ->
+                            listOf(
+                                TEMPLATE_ID_2,
+                                TEMPLATE_ID_3,
+                                TEMPLATE_ID_4,
+                                TEMPLATE_ID_5,
+                            )
+                        "Avançat", "Avanzado", "Advanced" -> listOf(TEMPLATE_ID_3, TEMPLATE_ID_4, TEMPLATE_ID_5, TEMPLATE_ID_6)
                         else -> emptyList()
                     }
                 Log.d("HomeViewModel", "Selected level: $level, identified template IDs: $templateIds")

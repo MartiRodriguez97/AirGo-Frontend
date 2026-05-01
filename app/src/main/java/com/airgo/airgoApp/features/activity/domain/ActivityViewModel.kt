@@ -12,13 +12,19 @@ import java.io.IOException
 
 sealed class ActivityUiState {
     object Loading : ActivityUiState()
+
     object Empty : ActivityUiState()
-    data class Success(val activities: List<ActivityResponse>) : ActivityUiState()
-    data class Error(val message: String) : ActivityUiState()
+
+    data class Success(
+        val activities: List<ActivityResponse>,
+    ) : ActivityUiState()
+
+    data class Error(
+        val message: String,
+    ) : ActivityUiState()
 }
 
 class ActivityViewModel : ViewModel() {
-
     companion object {
         private const val TAG = "ActivityViewModel"
     }
@@ -35,11 +41,12 @@ class ActivityViewModel : ViewModel() {
             _uiState.value = ActivityUiState.Loading
             try {
                 val activities = RetrofitProvider.activityApi.getActivities()
-                _uiState.value = if (activities.isEmpty()) {
-                    ActivityUiState.Empty
-                } else {
-                    ActivityUiState.Success(activities)
-                }
+                _uiState.value =
+                    if (activities.isEmpty()) {
+                        ActivityUiState.Empty
+                    } else {
+                        ActivityUiState.Success(activities)
+                    }
             } catch (e: IOException) {
                 Log.e(TAG, "Network error loading activities", e)
                 _uiState.value = ActivityUiState.Error("Error de connexió")
