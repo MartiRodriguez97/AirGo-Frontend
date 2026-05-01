@@ -17,8 +17,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Layers
@@ -53,6 +56,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.map.data.RouteSummary
+import com.airgo.airgoApp.features.map.data.TransportProfile
 import com.airgo.airgoApp.features.map.domain.MapSelectionMode
 import com.airgo.airgoApp.features.map.domain.MapState
 import com.airgo.airgoApp.features.tracking.components.TrackingFabState
@@ -79,9 +83,7 @@ internal fun routeSelectionPanel(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(ROUTE_PANEL_WIDTH),
-        elevation =
-            CardDefaults
-                .cardElevation(8.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
     ) {
         Column(Modifier.padding(12.dp)) {
             routePointField(
@@ -91,17 +93,85 @@ internal fun routeSelectionPanel(
                 onClick = { state.onSetSelectionMode(MapSelectionMode.START) },
             )
             Spacer(Modifier.padding(4.dp))
+
+            // Waypoints intermedios
+            state.waypoints.forEachIndexed { index, waypoint ->
+                Spacer(Modifier.padding(2.dp))
+                routeWaypointField(
+                    index = index,
+                    point = waypoint,
+                    onRemove = { state.onRemoveWaypoint(index) },
+                )
+                Spacer(Modifier.padding(2.dp))
+            }
+
+            // Botón añadir parada intermedia
+            OutlinedButton(
+                onClick = { state.onAddWaypoint() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = state.selectionMode == MapSelectionMode.NONE,
+            ) {
+                Text(
+                    text =
+                        if (state.selectionMode == MapSelectionMode.WAYPOINT) {
+                            stringResource(R.string.map_route_selecting_waypoint)
+                        } else {
+                            stringResource(R.string.map_route_add_waypoint)
+                        },
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Spacer(Modifier.padding(4.dp))
+
             routePointField(
                 label = stringResource(R.string.map_route_end_label),
                 point = state.endPoint,
                 isSelected = state.selectionMode == MapSelectionMode.END,
                 onClick = { state.onSetSelectionMode(MapSelectionMode.END) },
             )
+
             state.currentRoute?.summary?.let { summary ->
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 routeSummaryRow(state = state, summary = summary)
             }
             routeActionButtons(state = state)
+        }
+    }
+}
+
+@Composable
+private fun routeWaypointField(
+    index: Int,
+    point: GeoPoint,
+    onRemove: () -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "${index + 1}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+            )
+            Spacer(Modifier.padding(start = 8.dp))
+            Text(
+                text = "${point.latitude.toString().take(N_DECIMALS)}, ${point.longitude.toString().take(N_DECIMALS)}",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+            )
+            IconButton(onClick = onRemove, modifier = Modifier.size(24.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Eliminar parada",
+                    modifier = Modifier.size(16.dp),
+                )
+            }
         }
     }
 }
@@ -284,8 +354,8 @@ internal fun locationCenteringButton(
 // selector mode (bici-correr)
 @Composable
 internal fun modeSelector(
-    isBiking: Boolean,
-    onModeChange: (Boolean) -> Unit,
+    transportProfile: TransportProfile,
+    onModeChange: (TransportProfile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -297,31 +367,12 @@ internal fun modeSelector(
     ) {
         Column(
             modifier = Modifier.padding(4.dp),
-            verticalArrangement =
-                Arrangement
-                    .spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            // Botón Modo Pie / Correr
+            // Bici
             FilledTonalIconToggleButton(
-                checked = !isBiking,
-                onCheckedChange = { onModeChange(false) },
-                colors =
-                    IconButtonDefaults.filledTonalIconToggleButtonColors(
-                        containerColor = Color.Transparent,
-                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    ),
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.DirectionsRun,
-                    contentDescription = stringResource(R.string.map_mode_walk),
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-
-            // Botón Modo Bici
-            FilledTonalIconToggleButton(
-                checked = isBiking,
-                onCheckedChange = { onModeChange(true) },
+                checked = transportProfile == TransportProfile.BIKE,
+                onCheckedChange = { onModeChange(TransportProfile.BIKE) },
                 colors =
                     IconButtonDefaults.filledTonalIconToggleButtonColors(
                         containerColor = Color.Transparent,
@@ -331,6 +382,38 @@ internal fun modeSelector(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.DirectionsBike,
                     contentDescription = stringResource(R.string.map_mode_bike),
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+            // A peu
+            FilledTonalIconToggleButton(
+                checked = transportProfile == TransportProfile.FOOT,
+                onCheckedChange = { onModeChange(TransportProfile.FOOT) },
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DirectionsWalk,
+                    contentDescription = stringResource(R.string.map_mode_walk),
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+            // Running
+            FilledTonalIconToggleButton(
+                checked = transportProfile == TransportProfile.RUNNING,
+                onCheckedChange = { onModeChange(TransportProfile.RUNNING) },
+                colors =
+                    IconButtonDefaults.filledTonalIconToggleButtonColors(
+                        containerColor = Color.Transparent,
+                        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.DirectionsRun,
+                    contentDescription = stringResource(R.string.map_mode_run),
                     modifier = Modifier.size(24.dp),
                 )
             }

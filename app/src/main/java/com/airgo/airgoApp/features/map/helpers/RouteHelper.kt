@@ -28,26 +28,37 @@ object RouteHelper {
         val routeFolder = FolderOverlay().apply { name = "RouteLayer" }
         val coords = response.geometry.coordinates
 
-        // Per a cada segment de contaminació, extraiem els punts corresponents i pintem la línia amb el color adequat
+        if (response.pollutionDetails.isEmpty()) {
+            val allPoints = coords.map { GeoPoint(it[1], it[0]) } // GeoJSON es [lon, lat]
+            if (allPoints.size >= 2) {
+                val polyline =
+                    Polyline(map).apply {
+                        setPoints(allPoints)
+                        outlinePaint.color = Color.GREEN
+                        outlinePaint.strokeWidth = ROUTE_WIDTH
+                        outlinePaint.strokeCap = Paint.Cap.ROUND
+                    }
+                routeFolder.add(polyline)
+            }
+            return routeFolder
+        }
+
         response.pollutionDetails.forEach { detail ->
             val startIndex = detail[0].toInt()
             val endIndex = detail[1].toInt()
             val pollutionValue = detail[2]
 
             val segmentPoints = mutableListOf<GeoPoint>()
-            // Afegim els punts del segment a la llista de punts per a la línia
             for (i in startIndex..endIndex) {
                 if (i < coords.size) {
-                    segmentPoints.add(GeoPoint(coords[i][0], coords[i][1]))
+                    segmentPoints.add(GeoPoint(coords[i][1], coords[i][0]))
                 }
             }
 
-            // Si hi ha almenys dos punts, creem la línia per al segment i l'afegim a la carpeta de la ruta
             if (segmentPoints.size >= 2) {
                 val polyline =
                     Polyline(map).apply {
                         setPoints(segmentPoints)
-                        // Estil de la línia segons el nivell de contaminació
                         outlinePaint.color = getColorForPollution(pollutionValue)
                         outlinePaint.strokeWidth = ROUTE_WIDTH
                         outlinePaint.strokeCap = Paint.Cap.ROUND

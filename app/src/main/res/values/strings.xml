@@ -196,7 +196,10 @@
     <string name="no_favorite_routes">No favorite rutes</string>
     <string name="back_to_map">Back</string>
     <string name="favorite_routes_screen_title">Favorite routes</string>
-  
+    <string name="map_route_add_waypoint">Add intermediate stop</string>
+    <string name="map_route_selecting_waypoint">Select the stop on the map...</string>
+    <string name="map_mode_run">Running mode</string>
+
     <!-- calendar -->
     <string name="calendar_unknown_error">Unknown error</string>
     <string name="calendar_details_for">Details for %1$s</string>
@@ -219,7 +222,7 @@
     <string name="calendar_day_fri">Fr</string>
     <string name="calendar_day_sat">Sa</string>
     <string name="calendar_back_desc">Back</string>
-  
+
     <!-- features/onboarding/OnboardingScreen-->
     <string name="continue_on_boarding">Continue</string>
     <string name="welcome_on_boarding">Welcome to AirGo!</string>

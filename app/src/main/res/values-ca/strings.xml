@@ -196,7 +196,10 @@
     <string name="no_favorite_routes">No tens cap ruta preferida</string>
     <string name="back_to_map">Enrere</string>
     <string name="favorite_routes_screen_title">Rutes preferides</string>
-  
+    <string name="map_route_add_waypoint">Afegir parada intermèdia</string>
+    <string name="map_route_selecting_waypoint">Selecciona la parada al mapa…</string>
+    <string name="map_mode_run">Mode córrer</string>
+
     <!-- calendar -->
     <string name="calendar_unknown_error">Error desconegut</string>
     <string name="calendar_details_for">Detalls per a %1$s</string>
@@ -219,7 +222,7 @@
     <string name="calendar_day_fri">Dv</string>
     <string name="calendar_day_sat">Ds</string>
     <string name="calendar_back_desc">Enrere</string>
-  
+
     <!-- features/onboarding/OnboardingScreen-->
     <string name="continue_on_boarding">Continua</string>
     <string name="welcome_on_boarding">Benvingut a AirGo!</string>
@@ -227,7 +230,7 @@
     <string name="weight_on_boarding">Pes (kg)</string>
     <string name="height_on_boarding">Alçada (cm)</string>
     <string name="own_bike_on_boarding">Tens bicicleta pròpia?</string>
-  
+
     <string name="error_not_fill_files">Omple tots els camps correctament</string>
     <string name="error_incorrect_on_boarding_implementation">No es pot desar els atributs. Si us plau, intentar-lo de nou</string>
     <string name="error_username_already_exists">El nom d\'usuari ja existeix. Si us plau, canvieu-lo</string>

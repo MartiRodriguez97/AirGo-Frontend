@@ -1,5 +1,11 @@
 package com.airgo.airgoApp.features.map
 
+import android.content.Context
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.util.Log
+import android.widget.Toast
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -251,7 +257,9 @@ private fun rememberMapState(params: MapStateParams): MapState {
         vm.trackingViewModel.isTracking,
         vm.trackingViewModel.data,
         vm.trackingViewModel.trackPoints,
-    ) {
+        vm.routeViewModel.waypoints,
+        vm.routeViewModel.transportProfile,
+        ) {
         MapState(
             mapView = l.mapView,
             locationOverlay = l.locationOverlay,
@@ -278,7 +286,12 @@ private fun rememberMapState(params: MapStateParams): MapState {
             trackPoints = vm.trackingViewModel.trackPoints,
             onStartTracking = { vm.trackingViewModel.startTracking() },
             onStopTracking = { vm.trackingViewModel.stopTracking() },
-        )
+            waypoints = vm.routeViewModel.waypoints,
+            onAddWaypoint = { vm.routeViewModel.addWaypoint() },
+            onRemoveWaypoint = { vm.routeViewModel.removeWaypoint(it) },
+            transportProfile = vm.routeViewModel.transportProfile,
+            onTransportProfileChange = { vm.routeViewModel.transportProfile = it },
+            )
     }
 }
 
@@ -295,7 +308,6 @@ fun osmMapContainer(
     // Variable per saber si s'activa/desactiva la capa de qualitat de l'aire
     var showPollution by remember { mutableStateOf(true) }
     val context = LocalContext.current
-    var isBikingMode by remember { mutableStateOf(false) }
     val isGpsEnabled by rememberGpsEnabledState(context)
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -337,11 +349,9 @@ fun osmMapContainer(
         )
 
         // Panell de selecció de ruta i botons només si no estem en mode tracking
-        if (!state.isTracking or !state.hasLocationPermission) {
+        if (!state.isTracking) {
             mapNormalModeUi(
                 state = state,
-                isBikingMode = isBikingMode,
-                onModeChange = { isBikingMode = it },
             )
         }
 
@@ -382,8 +392,6 @@ private fun trackingMapEffects(state: MapState) {
 @Composable
 private fun BoxScope.mapNormalModeUi(
     state: MapState,
-    isBikingMode: Boolean,
-    onModeChange: (Boolean) -> Unit,
 ) {
     // Panell de selecció de ruta
     routeSelectionPanel(
@@ -393,8 +401,8 @@ private fun BoxScope.mapNormalModeUi(
 
     // Botó per canviar entre mode bici i mode a peu
     modeSelector(
-        isBiking = isBikingMode,
-        onModeChange = onModeChange,
+        transportProfile = state.transportProfile,
+        onModeChange = { state.onTransportProfileChange(it) },
         modifier =
             Modifier
                 .align(Alignment.BottomEnd)

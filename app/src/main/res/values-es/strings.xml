@@ -190,7 +190,7 @@
     <string name="day_friday">Viernes</string>
     <string name="day_saturday">Sábado</string>
     <string name="day_sunday">Domingo</string>
-  
+
     <!-- features/map/FavoriteRoutes -->
     <string name="add_favorite_route">Añadir a favoritos</string>
     <string name="view_favorites_routes">Favoritos</string>
@@ -198,7 +198,10 @@
     <string name="no_favorite_routes">No tienes ninguna ruta favorita</string>
     <string name="back_to_map">Atrás</string>
     <string name="favorite_routes_screen_title">Rutas favoritas</string>
-  
+    <string name="map_route_add_waypoint">Añadir parada intermedia</string>
+    <string name="map_route_selecting_waypoint">Seleccione la parada en el mapa...</string>
+    <string name="map_mode_run">Modo correr</string>
+
     <!-- calendar -->
     <string name="calendar_unknown_error">Error desconocido</string>
     <string name="calendar_details_for">Detalles para %1$s</string>
@@ -221,7 +224,7 @@
     <string name="calendar_day_fri">Vi</string>
     <string name="calendar_day_sat">Sa</string>
     <string name="calendar_back_desc">Atrás</string>
-  
+
     <!-- features/onboarding/OnboardingScreen-->
     <string name="continue_on_boarding">Continua</string>
     <string name="welcome_on_boarding">Bienvenido a AirGo!</string>
@@ -229,7 +232,7 @@
     <string name="weight_on_boarding">Peso (kg)</string>
     <string name="height_on_boarding">Altura (cm)</string>
     <string name="own_bike_on_boarding">Tienes bicicleta propia?</string>
-  
+
     <string name="error_not_fill_files">Rellena todos los campos correctamente</string>
     <string name="error_incorrect_on_boarding_implementation">No se puede guardar los atributos. Por favor, inténtelo de nuevo.</string>
     <string name="error_username_already_exists">El nombre de usuario ya existe. Por favor, cámbielo.</string>
