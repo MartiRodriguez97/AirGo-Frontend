@@ -48,17 +48,18 @@ class CalendarUiTest {
                     templates =
                         listOf(
                             TrainingTemplate(
+                                id = 1,
                                 nom = "Test Template",
                                 descripcio = "Test Description",
-                                tipusExercici = "RUN",
+                                tipusExercici = "CAM",
                                 exercicis =
                                     listOf(
                                         Exercise(
+                                            id = 1,
                                             dataInici = dateStr,
-                                            dataFi = null,
-                                            completat = true,
-                                            tipusExercici = "RUN",
-                                            detallsEspecifics = mapOf("distFetaKm" to 5.0),
+                                            completat = false,
+                                            distanciaObjectiu = 10.0,
+                                            distanciaFeta = 0.0,
                                         ),
                                     ),
                             ),
