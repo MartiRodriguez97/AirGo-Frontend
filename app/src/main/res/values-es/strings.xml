@@ -161,26 +161,7 @@
     <string name="home_plan_summary_title">Resumen del Plan</string>
     <string name="home_plan_workouts_title">Entrenamientos</string>
     <string name="home_plan_not_found">No se ha encontrado el plan de entrenamiento</string>
-
-    <string name="home_today_task_title">Hoy tienes:</string>
-    <string name="home_pending_activity_card">Actividad pendiente</string>
-    <string name="home_pending_activity_desc">Toca para ver detalles y empezar la actividad.</string>
-    <string name="home_pending_activity_objective">Objetivo: %1$.2f km</string>
-    <string name="home_pending_activity_progress">Progreso: %1$.2f km</string>
     <string name="acc_pending_activity_icon">Icono de actividad de carrera</string>
-
-    <!-- features/home/ActivityDetailScreen-->
-    <string name="activity_detail_title">Detalles de la actividad</string>
-    <string name="activity_today_header">Actividad de hoy</string>
-    <string name="btn_start">Empezar</string>
-
-    <!-- features/home/questionnaireScreen-->
-    <string name="plan_create_title">Crear plan</string>
-    <string name="plan_btn_continue">Continuar</string>
-    <string name="plan_btn_finish">Finalizar</string>
-    <string name="plan_unspecified_date">No especificada</string>
-    <string name="acc_close">Cerrar</string>
-
 
     <!-- features/home/components/questionnaireComponents-->
     <string name="quest_title_sport">¿Cuál es tu actividad preferida?</string>
@@ -266,5 +247,4 @@
     <string name="share_activity_text">He recorrido %.0f m en %02d:%02d min a %.1f km/h de media con AirGo 🚴</string>
     <string name="distance">Distancia</string>
     <string name="center_location">Centrar a localización</string>
-    <string name="profile_no_activities">Todavía no tienes actividades registradas</string>
 </resources>
