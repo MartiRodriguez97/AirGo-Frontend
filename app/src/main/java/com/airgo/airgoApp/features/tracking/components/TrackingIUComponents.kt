@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 
 private const val TRACKING_PANEL_WIDTH = 0.9f
@@ -77,22 +78,47 @@ internal fun trackingPanel(
     data: TrackingData,
     modifier: Modifier = Modifier,
 ) {
-    Card(
+    val activeExerciseName = SessionManager.nomTemplateActiu ?: "Activitat"
+    val targetDistance = SessionManager.exerciciActiu?.distanciaObjectiu ?: 0.0
+
+    Column(
         modifier = modifier.fillMaxWidth(TRACKING_PANEL_WIDTH),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors =
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(8.dp),
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
         ) {
-            trackingStatItem(label = "Distància", value = "%.0f m".format(data.distanceMeters))
-            trackingStatItem(label = "Temps", value = formatElapsedTime(data.elapsedSeconds))
-            trackingStatItem(label = "Velocitat", value = "%.1f km/h".format(data.speedKmh))
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = activeExerciseName,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+                if (targetDistance > 0) {
+                    Text(
+                        text = "Objectiu: %.2f km".format(targetDistance),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(bottom = 16.dp),
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    trackingStatItem(label = "Distància", value = "%.0f m".format(data.distanceMeters))
+                    trackingStatItem(label = "Temps", value = formatElapsedTime(data.elapsedSeconds))
+                    trackingStatItem(label = "Velocitat", value = "%.1f km/h".format(data.speedKmh))
+                }
+            }
         }
     }
 }

@@ -47,7 +47,6 @@ import com.airgo.airgoApp.features.home.components.stepDateSelection
 import com.airgo.airgoApp.features.home.components.stepDaysSelection
 import com.airgo.airgoApp.features.home.components.stepLevelSelection
 import com.airgo.airgoApp.features.home.components.stepSportSelection
-import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
 
 internal const val STEP_SPORT = 0
@@ -133,10 +132,9 @@ fun questionnaireScreen(
                     val workoutsPerWeek = selectedDays.size
 
                     viewModel.createPlan(
-                        TrainingPlanRequest(
-                            diesDurada = daysDuration,
-                            numEntrenamentsSetmanals = workoutsPerWeek,
-                        ),
+                        daysDuration = daysDuration,
+                        workoutsPerWeek = workoutsPerWeek,
+                        level = selectedLevel,
                         onSuccess = {
                             onClose()
                         },

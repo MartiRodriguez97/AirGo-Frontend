@@ -16,6 +16,7 @@ import com.airgo.airgoApp.features.social.SocialApi
 import com.airgo.airgoApp.features.tracking.data.TrackingApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okio.Buffer
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -45,11 +46,35 @@ object RetrofitProvider {
             chain.proceed(requestBuilder.build())
         }
 
+    private val loggingInterceptor =
+        Interceptor { chain ->
+            val request = chain.request()
+            val url = request.url.toString()
+
+            // Solo logueamos rutas y planes para no saturar
+            if (url.contains("route-generation") || url.contains("pla-entrenament")) {
+                if (request.method == "POST") {
+                    val requestBuffer = Buffer()
+                    request.body?.writeTo(requestBuffer)
+                    android.util.Log.d("NetworkDebug", ">>> POST Body ($url): ${requestBuffer.readUtf8()}")
+                }
+            }
+
+            val response = chain.proceed(request)
+
+            if (url.contains("route-generation") || url.contains("pla-entrenament")) {
+                val responseBody = response.peekBody(1024 * 1024)
+                android.util.Log.d("NetworkDebug", "<<< Response ($url): ${responseBody.string()}")
+            }
+            response
+        }
+
     const val MIN_TIME_WAITING_FOR_RESPONSE = 30L // segundos
     private val httpClient =
         OkHttpClient
             .Builder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
             .authenticator(TokenAuthenticator())
             .connectTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)
             .readTimeout(MIN_TIME_WAITING_FOR_RESPONSE, TimeUnit.SECONDS)

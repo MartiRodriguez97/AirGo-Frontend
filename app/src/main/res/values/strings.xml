@@ -161,6 +161,18 @@
     <string name="home_plan_workouts_title">Workouts</string>
     <string name="home_plan_not_found">Training plan not found</string>
 
+    <string name="home_today_task_title">Today you have:</string>
+    <string name="home_pending_activity_card">Pending Activity</string>
+    <string name="home_pending_activity_desc">Tap to see details and start the activity.</string>
+    <string name="home_pending_activity_objective">Objective: %1$.2f km</string>
+    <string name="home_pending_activity_progress">Progress: %1$.2f km</string>
+    <string name="acc_pending_activity_icon">Running activity icon</string>
+
+    <!-- features/home/ActivityDetailScreen-->
+    <string name="activity_detail_title">Activity Details</string>
+    <string name="activity_today_header">Today\'s Activity</string>
+    <string name="btn_start">Start</string>
+
     <!-- features/home/questionnaireScreen-->
     <string name="plan_create_title">Create Plan</string>
     <string name="plan_btn_continue">Continue</string>
@@ -237,6 +249,9 @@
     <string name="error_username_too_short">The username must be at least 4 characters long.</string>
     <string name="error_invalid_weight">The weight is not valid. Please, change it</string>
     <string name="error_invalid_height">The height is not valid. Please, change it</string>
+
+
+
     <string name="location_permission_required">Location permission required</string>
     <string name="activity_saved">Activity successfully saved</string>
     <string name="activity_summary">Activity Summary</string>

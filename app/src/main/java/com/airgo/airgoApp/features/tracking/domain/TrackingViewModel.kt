@@ -1,6 +1,7 @@
 package com.airgo.airgoApp.features.tracking.domain
 
 import android.location.Location
+import android.util.Log
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -10,6 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
@@ -17,6 +20,8 @@ import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import retrofit2.HttpException
@@ -26,6 +31,8 @@ private const val TIMER_INTERVAL_MS = 1000L
 private const val MS_TO_KMH = 3.6
 
 class TrackingViewModel : ViewModel() {
+    private val repository = TrainingPlanRepository()
+
     var isTracking by mutableStateOf(false)
         private set
 
@@ -37,6 +44,9 @@ class TrackingViewModel : ViewModel() {
 
     var trackPoints by mutableStateOf<List<GeoPoint>>(emptyList())
         private set
+
+    private val _uiEvent = MutableSharedFlow<TrackingUiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
     private var timerJob: Job? = null
     private var lastLocation: Location? = null
@@ -69,8 +79,53 @@ class TrackingViewModel : ViewModel() {
     fun stopTracking() {
         isTracking = false
         timerJob?.cancel()
+        
         if (data.distanceMeters > 0 || data.elapsedSeconds > 0) {
             hasSummary = true
+        }
+        
+        saveActivity()
+    }
+
+    private fun saveActivity() {
+        val activeExercise = SessionManager.exerciciActiu ?: return
+        val distanceDoneKm = data.distanceMeters / 1000.0
+
+        viewModelScope.launch {
+            try {
+                // Sumamos la distancia recorrida a la que ya tenía
+                val totalDistance = activeExercise.distanciaFeta + distanceDoneKm
+                val isCompleted = totalDistance >= activeExercise.distanciaObjectiu
+
+                Log.d("TrackingViewModel", "Updating exercise ${activeExercise.id}: distance=$totalDistance, completed=$isCompleted")
+
+                repository.updateExercise(
+                    id = activeExercise.id,
+                    completat = isCompleted,
+                    distanciaFeta = totalDistance,
+                )
+
+                // Limpiar ejercicio activo tras completar/guardar
+                SessionManager.exerciciActiu = null
+                SessionManager.nomTemplateActiu = null
+
+                // Actualizar la lista de ejercicios de hoy en el SessionManager
+                // Esto forzará que desaparezca de la lista de pendientes en la Home si se completó
+                if (isCompleted) {
+                    SessionManager.exercicis = SessionManager.exercicis?.filter { it.id != activeExercise.id }
+                } else {
+                    // Si no está completado, actualizamos la distancia en el objeto de la lista
+                    SessionManager.exercicis =
+                        SessionManager.exercicis?.map {
+                            if (it.id == activeExercise.id) it.copy(distanciaFeta = totalDistance) else it
+                        }
+                }
+
+                _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
+            } catch (e: Exception) {
+                Log.e("TrackingViewModel", "Error saving exercise progress", e)
+                _uiEvent.emit(TrackingUiEvent.SaveError("Error en guardar l'activitat"))
+            }
         }
     }
 
@@ -79,6 +134,7 @@ class TrackingViewModel : ViewModel() {
         trackPoints = emptyList()
     }
 
+    
     /**
      * Crida cada vegada que arriba una nova posició GPS.
      */
@@ -181,4 +237,14 @@ class TrackingViewModel : ViewModel() {
     fun clearSaveState() {
         saveState = SaveState.Idle
     }
+}
+
+sealed class TrackingUiEvent {
+    data class SaveSuccess(
+        val completed: Boolean,
+    ) : TrackingUiEvent()
+
+    data class SaveError(
+        val message: String,
+    ) : TrackingUiEvent()
 }

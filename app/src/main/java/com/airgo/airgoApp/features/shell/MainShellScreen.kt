@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.shell
 
+import androidx.compose.foundation.layout.PaddingValues
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,6 +36,7 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.activity.activityScreen
 import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
+import com.airgo.airgoApp.features.home.activityDetailScreen
 import com.airgo.airgoApp.features.home.homeScreen
 import com.airgo.airgoApp.features.home.planDetailsScreen
 import com.airgo.airgoApp.features.home.questionnaireScreen
@@ -80,64 +83,8 @@ fun mainShellScreen(
             startDestination = MainShellScreen.HOME.route,
             modifier = Modifier.fillMaxSize(),
         ) {
-            composable(MainShellScreen.HOME.route) {
-                screenWrapper(innerPadding) {
-                    homeScreen(
-                        onNavigateToQuestionnaire = { navController.navigate("questionnaire") },
-                        onNavigateToDetails = { planId -> navController.navigate("planDetails/$planId") },
-                    )
-                }
-            }
-            composable("planDetails/{planId}") { backStackEntry ->
-                val planId = backStackEntry.arguments?.getString("planId")?.toIntOrNull() ?: -1
-                screenWrapper(innerPadding) {
-                    planDetailsScreen(
-                        planId = planId,
-                        onBack = { navController.popBackStack() },
-                    )
-                }
-            }
-            composable("questionnaire") {
-                screenWrapper(innerPadding) {
-                    questionnaireScreen(onClose = { navController.popBackStack() })
-                }
-            }
-            composable(MainShellScreen.SOCIAL.route) {
-                screenWrapper(innerPadding) { socialScreen() }
-            }
-            composable(MainShellScreen.ACTIVITY.route) {
-                activityScreen(navController = navController)
-            }
-            composable(MainShellScreen.CALENDAR.route) {
-                screenWrapper(innerPadding) {
-                    val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
-                    calendarScreen(viewModel = calendarViewModel)
-                }
-            }
-            composable(MainShellScreen.PROFILE.route) {
-                screenWrapper(innerPadding) {
-                    profileScreen(
-                        email = email,
-                        pictureUrl = pictureUrl,
-                        onAccountDeleted = onLogout,
-                    )
-                }
-            }
-            composable("favorites") {
-                favoritesScreen(onBack = { navController.popBackStack() })
-            }
-            composable("tracking_summary") {
-                val activityEntry =
-                    remember(it) {
-                        navController.getBackStackEntry(MainShellScreen.ACTIVITY.route)
-                    }
-                val summaryViewModel: TrackingViewModel = viewModel(activityEntry)
-                trackingSummaryScreen(
-                    onBack = { navController.popBackStack() },
-                    onSave = { navController.popBackStack() },
-                    viewModel = summaryViewModel,
-                )
-            }
+            homeNavGraph(navController, innerPadding)
+            featuresNavGraph(navController, innerPadding, email, pictureUrl, onLogout)
         }
     }
 }
@@ -198,5 +145,108 @@ private fun bottomNavigationBar(
                 )
             }
         }
+    }
+}
+
+private fun NavGraphBuilder.homeNavGraph(
+    navController: NavHostController,
+    innerPadding: PaddingValues,
+) {
+    composable(MainShellScreen.HOME.route) {
+        screenWrapper(innerPadding) {
+            homeScreen(
+                onNavigateToQuestionnaire = {
+                    navController.navigate("questionnaire")
+                },
+                onNavigateToDetails = { planId ->
+                    navController.navigate("planDetails/$planId")
+                },
+                onNavigateToPendingActivity = {
+                    navController.navigate("activityDetail")
+                },
+            )
+        }
+    }
+    composable("planDetails/{planId}") { backStackEntry ->
+        val planId = backStackEntry.arguments?.getString("planId")?.toIntOrNull() ?: -1
+        screenWrapper(innerPadding) {
+            planDetailsScreen(
+                planId = planId,
+                onBack = { navController.popBackStack() },
+            )
+        }
+    }
+    composable("questionnaire") {
+        screenWrapper(innerPadding) {
+            questionnaireScreen(
+                onClose = {
+                    navController.popBackStack()
+                },
+            )
+        }
+    }
+    composable("activityDetail") {
+        screenWrapper(innerPadding) {
+            activityDetailScreen(
+                onBackClick = { navController.popBackStack() },
+                onStartActivityClick = {
+                    navController.navigate(MainShellScreen.ACTIVITY.route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            )
+        }
+    }
+}
+
+private fun NavGraphBuilder.featuresNavGraph(
+    navController: NavHostController,
+    innerPadding: PaddingValues,
+    email: String?,
+    pictureUrl: String?,
+    onLogout: () -> Unit,
+) {
+    composable(MainShellScreen.SOCIAL.route) {
+        screenWrapper(innerPadding) { socialScreen() }
+    }
+    composable(MainShellScreen.ACTIVITY.route) {
+        activityScreen(navController = navController)
+    }
+    composable(MainShellScreen.CALENDAR.route) {
+        screenWrapper(innerPadding) {
+            val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
+            calendarScreen(viewModel = calendarViewModel)
+        }
+    }
+    composable(MainShellScreen.PROFILE.route) {
+        screenWrapper(innerPadding) {
+            profileScreen(
+                email = email,
+                pictureUrl = pictureUrl,
+                onAccountDeleted = onLogout,
+            )
+        }
+    }
+    composable("favorites") {
+        favoritesScreen(
+            onBack = { navController.popBackStack() },
+        )
+    }
+    
+    composable("tracking_summary") {
+        val activityEntry = remember(it) {
+            navController.getBackStackEntry(MainShellScreen.ACTIVITY.route)
+        }
+        val summaryViewModel: TrackingViewModel = viewModel(activityEntry)
+
+        trackingSummaryScreen(
+            onBack = { navController.popBackStack() },
+            onSave = { navController.popBackStack() },
+            viewModel = summaryViewModel,
+        )
     }
 }

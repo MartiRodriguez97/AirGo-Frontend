@@ -1,5 +1,8 @@
 package com.airgo.airgoApp.core.network
 
+import com.airgo.airgoApp.features.home.data.Exercise
+import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -15,8 +18,11 @@ object SessionManager {
     var userId: Int? = null
     var email: String? = null
     var titol: String? = null
-    var availableTitols: List<com.airgo.airgoApp.features.settings.account.titols.data.UserTitol>? = null
-    var trainingPlans: List<com.airgo.airgoApp.features.home.data.TrainingPlanResponse>? = null
+    var availableTitols: List<UserTitol>? = null
+    var trainingPlans: List<TrainingPlanResponse>? = null
+    var exercicis: List<Exercise>? = null
+    var exerciciActiu: Exercise? = null
+    var nomTemplateActiu: String? = null
 
     fun clear() {
         accessToken = null
@@ -28,6 +34,9 @@ object SessionManager {
         titol = null
         availableTitols = null
         trainingPlans = null
+        exercicis = null
+        exerciciActiu = null
+        nomTemplateActiu = null
         punts = null
         teBici = null
         pes = null
