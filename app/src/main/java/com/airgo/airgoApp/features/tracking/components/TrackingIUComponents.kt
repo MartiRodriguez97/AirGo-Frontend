@@ -29,8 +29,8 @@ data class TrackingFabState(
     val isGpsOn: Boolean,
     val onStartTracking: () -> Unit,
     val onStopTracking: () -> Unit,
-    val onShowPermissionError: () -> Unit,
-    val onShowGpsError: () -> Unit,
+    val onShowPermissionError: @Composable () -> Unit,
+    val onShowGpsError: @Composable () -> Unit,
 )
 
 /**

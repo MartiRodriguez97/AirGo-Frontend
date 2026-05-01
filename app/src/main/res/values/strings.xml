@@ -234,5 +234,19 @@
     <string name="error_username_too_short">The username must be at least 4 characters long.</string>
     <string name="error_invalid_weight">The weight is not valid. Please, change it</string>
     <string name="error_invalid_height">The height is not valid. Please, change it</string>
-
+    <string name="location_permission_required">Location permission required</string>
+    <string name="activity_saved">Activity successfully saved</string>
+    <string name="activity_summary">Activity Summary</string>
+    <string name="back">Back</string>
+    <string name="share">Share</string>
+    <string name="statistics">Statistics</string>
+    <string name="time">Time</string>
+    <string name="avg_speed">Average speed</string>
+    <string name="route">Route</string>
+    <string name="tracking_summary_gps_points">%d GPS points registered.</string>
+    <string name="save_activity">Save activity</string>
+    <string name="discard">Discard</string>
+    <string name="share_activity_text">I have done %.0f m in %02d:%02d min at %.1f km/h average with AirGo 🚴</string>
+    <string name="distance">Distance</string>
+    <string name="center_location">Center to location</string>
 </resources>

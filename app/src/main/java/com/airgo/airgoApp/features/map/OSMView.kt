@@ -310,6 +310,7 @@ fun osmMapContainer(
 
         if (!isGpsEnabled or !state.hasLocationPermission) {
             gpsDisabledWarning(
+                hasLocationPermission = state.hasLocationPermission,
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)

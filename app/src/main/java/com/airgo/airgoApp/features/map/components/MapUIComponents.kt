@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.map.components
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
@@ -130,7 +132,7 @@ private fun routeSummaryRow(
         IconButton(onClick = { state.onAddToFavorites() }) {
             Icon(
                 imageVector = if (state.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                contentDescription = "Afegir a preferits",
+                contentDescription = stringResource(R.string.add_favorite_route),
                 tint = if (state.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
             )
         }
@@ -226,10 +228,22 @@ private fun routePointField(
 /**
  * Missatge de GPS desactivat.
  */
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
-internal fun gpsDisabledWarning(modifier: Modifier = Modifier) {
+internal fun gpsDisabledWarning(
+    hasLocationPermission: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
     FloatingActionButton(
-        onClick = {},
+        onClick = {
+            val message = if (!hasLocationPermission) {
+                context.getString(R.string.location_permission_required)
+            } else {
+                context.getString(R.string.map_gps_disabled)
+            }
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        },
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.errorContainer,
         contentColor = MaterialTheme.colorScheme.error,
@@ -261,7 +275,7 @@ internal fun locationCenteringButton(
     ) {
         Icon(
             imageVector = Icons.Default.MyLocation,
-            contentDescription = "Centrar a la meva ubicació",
+            contentDescription = stringResource(R.string.center_location),
         )
     }
 }
@@ -424,7 +438,7 @@ internal fun BoxScope.trackingFabSection(
                     Toast
                         .makeText(
                             context,
-                            "Cal activar els permisos de localització",
+                            stringResource(R.string.location_permission_required),
                             Toast.LENGTH_SHORT,
                         ).show()
                 },
@@ -432,7 +446,7 @@ internal fun BoxScope.trackingFabSection(
                     Toast
                         .makeText(
                             context,
-                            "Cal activar el GPS per fer tracking",
+                            stringResource(R.string.map_gps_disabled),
                             Toast.LENGTH_SHORT,
                         ).show()
                 },
