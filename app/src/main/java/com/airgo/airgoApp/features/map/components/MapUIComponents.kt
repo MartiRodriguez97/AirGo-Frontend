@@ -426,6 +426,8 @@ internal fun BoxScope.trackingFabSection(
     isGpsEnabled: Boolean,
     context: android.content.Context,
 ) {
+    val permissionError = stringResource(R.string.location_permission_required)
+    val gpsError = stringResource(R.string.map_gps_disabled)
     trackingFab(
         state =
             TrackingFabState(
@@ -435,20 +437,10 @@ internal fun BoxScope.trackingFabSection(
                 onStartTracking = state.onStartTracking,
                 onStopTracking = state.onStopTracking,
                 onShowPermissionError = {
-                    Toast
-                        .makeText(
-                            context,
-                            stringResource(R.string.location_permission_required),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    Toast.makeText(context, permissionError, Toast.LENGTH_SHORT).show()
                 },
                 onShowGpsError = {
-                    Toast
-                        .makeText(
-                            context,
-                            stringResource(R.string.map_gps_disabled),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    Toast.makeText(context, gpsError, Toast.LENGTH_SHORT).show()
                 },
             ),
         modifier =
