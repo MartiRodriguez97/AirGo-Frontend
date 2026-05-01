@@ -1,6 +1,7 @@
 package com.airgo.airgoApp.core.network
 
 import com.airgo.airgoApp.BuildConfig
+import com.airgo.airgoApp.features.activity.data.ActivityApi
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
 import com.airgo.airgoApp.features.login.data.auth.AuthApi
 import com.airgo.airgoApp.features.map.data.AirQualityApiService
@@ -105,4 +106,7 @@ object RetrofitProvider {
     val favoriteRouteApi: FavoriteRouteApiService = retrofit.create(FavoriteRouteApiService::class.java)
     val trackingApi: TrackingApi = retrofit.create(TrackingApi::class.java)
     val onboardingApi: OnboardingApi = retrofit.create(OnboardingApi::class.java)
+    val activityApi: ActivityApi by lazy {
+        retrofit.create(ActivityApi::class.java)
+    }
 }

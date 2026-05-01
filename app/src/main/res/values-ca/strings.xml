@@ -264,4 +264,5 @@
     <string name="share_activity_text">He recorregut %.0f m en %02d:%02d min a %.1f km/h de mitjana amb AirGo 🚴</string>
     <string name="distance">Distància</string>
     <string name="center_location">Centrar a localització</string>
+    <string name="profile_no_activities">Encara no tens activitats registrades</string>
 </resources>

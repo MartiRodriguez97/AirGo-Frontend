@@ -267,4 +267,5 @@
     <string name="share_activity_text">I have done %.0f m in %02d:%02d min at %.1f km/h average with AirGo 🚴</string>
     <string name="distance">Distance</string>
     <string name="center_location">Center to location</string>
+    <string name="profile_no_activities">You have no registered activities yet</string>
 </resources>

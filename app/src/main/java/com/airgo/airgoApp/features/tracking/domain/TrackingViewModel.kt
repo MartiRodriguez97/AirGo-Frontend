@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.airgo.airgoApp.core.AppEvents
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
@@ -224,6 +225,7 @@ class TrackingViewModel : ViewModel() {
                     )
                 RetrofitProvider.trackingApi.saveActivity(request)
                 saveActivityPlanning()
+                AppEvents.notifyActivitySaved()
                 saveState = SaveState.Success
             } catch (e: IOException) {
                 saveState = SaveState.Error("Error de connexió: ${e.message}")
