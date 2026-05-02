@@ -9,6 +9,7 @@ class TrainingPlanRepository {
 
     suspend fun getTemplate(id: Int): TrainingTemplate = api.getTemplate(id)
 
+    @Suppress("MaxLineLength")
     suspend fun createTrainingPlan(request: TrainingPlanRequest): TrainingPlanRawResponse = api.createTrainingPlan(request)
 
     suspend fun initializeTrainingPlan(

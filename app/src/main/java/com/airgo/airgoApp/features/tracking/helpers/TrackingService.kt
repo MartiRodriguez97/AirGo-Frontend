@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 private const val TRACKING_INTERVAL_MS = 1000L
 private const val TRACKING_MIN_DISTANCE_M = 2f
@@ -86,7 +85,8 @@ class TrackingService : Service() {
                 putExtra(EXTRA_SPEED, location.speed)
                 putExtra(EXTRA_TIME, location.time)
             }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+        intent.setPackage(packageName)
+        sendBroadcast(intent)
     }
 
     companion object {

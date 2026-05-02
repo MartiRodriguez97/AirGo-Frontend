@@ -156,7 +156,8 @@ class HomeViewModel : ViewModel() {
                                 TEMPLATE_ID_4,
                                 TEMPLATE_ID_5,
                             )
-                        "Avançat", "Avanzado", "Advanced" -> listOf(TEMPLATE_ID_3, TEMPLATE_ID_4, TEMPLATE_ID_5, TEMPLATE_ID_6)
+                        "Avançat", "Avanzado", "Advanced" ->
+                            listOf(TEMPLATE_ID_3, TEMPLATE_ID_4, TEMPLATE_ID_5, TEMPLATE_ID_6)
                         else -> emptyList()
                     }
                 Log.d("HomeViewModel", "Selected level: $level, identified template IDs: $templateIds")
@@ -196,8 +197,11 @@ class HomeViewModel : ViewModel() {
                 _plans.value = fetchedPlans
                 updateTodayExercises()
                 onSuccess()
-            } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error creating or initializing plan", e)
+            } catch (e: java.io.IOException) {
+                Log.e("HomeViewModel", "Error de xarxa creant o inicialitzant el pla", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
+            } catch (e: retrofit2.HttpException) {
+                Log.e("HomeViewModel", "Error HTTP creant o inicialitzant el pla (codi: ${e.code()})", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
             } finally {
                 _isLoading.value = false
