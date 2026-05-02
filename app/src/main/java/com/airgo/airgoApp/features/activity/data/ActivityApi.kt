@@ -10,5 +10,7 @@ interface ActivityApi {
     suspend fun getActivities(): List<ActivityResponse>
 
     @DELETE("api/exercicis/{id}/")
-    suspend fun deleteActivity(@Path("id") id: Int): Response<Void>
+    suspend fun deleteActivity(
+        @Path("id") id: Int,
+    ): Response<Void>
 }

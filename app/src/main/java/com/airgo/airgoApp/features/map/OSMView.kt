@@ -126,25 +126,7 @@ fun osmView(
     // Gestió d'errors
     errorToastHandlers(context, pollutionViewModel, routeViewModel, bicingViewModel)
 
-    // Feedback visual per tracking
-    LaunchedEffect(Unit) {
-        trackingViewModel.uiEvent.collect { event ->
-            when (event) {
-                is com.airgo.airgoApp.features.tracking.domain.TrackingUiEvent.SaveSuccess -> {
-                    val message =
-                        if (event.completed) {
-                            "Entrenament completat i guardat!"
-                        } else {
-                            "Progress guardat"
-                        }
-                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                }
-                is com.airgo.airgoApp.features.tracking.domain.TrackingUiEvent.SaveError -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
+    trackingUiEventEffect(trackingViewModel, context)
 
     fetchLocationDataEffect(
         hasLocationPermission = hasLocationPermission,
@@ -485,4 +467,29 @@ private fun mapRenderer(
             map.invalidate()
         },
     )
+}
+
+@Composable
+private fun trackingUiEventEffect(
+    trackingViewModel: TrackingViewModel,
+    context: android.content.Context,
+) {
+    LaunchedEffect(Unit) {
+        trackingViewModel.uiEvent.collect { event ->
+            when (event) {
+                is com.airgo.airgoApp.features.tracking.domain.TrackingUiEvent.SaveSuccess -> {
+                    val message =
+                        if (event.completed) {
+                            "Entrenament completat i guardat!"
+                        } else {
+                            "Progress guardat"
+                        }
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                }
+                is com.airgo.airgoApp.features.tracking.domain.TrackingUiEvent.SaveError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 }

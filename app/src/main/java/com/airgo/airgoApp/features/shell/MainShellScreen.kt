@@ -1,9 +1,9 @@
 package com.airgo.airgoApp.features.shell
 
-import androidx.compose.foundation.layout.PaddingValues
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -236,11 +236,12 @@ private fun NavGraphBuilder.featuresNavGraph(
             onBack = { navController.popBackStack() },
         )
     }
-    
+
     composable("tracking_summary") {
-        val activityEntry = remember(it) {
-            navController.getBackStackEntry(MainShellScreen.ACTIVITY.route)
-        }
+        val activityEntry =
+            remember(it) {
+                navController.getBackStackEntry(MainShellScreen.ACTIVITY.route)
+            }
         val summaryViewModel: TrackingViewModel = viewModel(activityEntry)
 
         trackingSummaryScreen(
