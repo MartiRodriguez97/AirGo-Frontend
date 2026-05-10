@@ -12,7 +12,7 @@ interface OnboardingApi {
     suspend fun getUserProfile(): UserProfileResponse
 
     // Endpoint per actualitzar el perfil de l'usuari després de completar l'onboarding
-    @PATCH(ApiEndpoints.ONBOARDING_UPDATE)
+    @PATCH(ApiEndpoints.USER_PROFILE)
     suspend fun updateUserProfile(
         @Path("id") id: Int,
         @Body request: OnboardingRequest,

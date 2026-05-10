@@ -25,5 +25,14 @@ object ApiEndpoints {
     const val PLA_ENTRENAMENT = "/api/pla-entrenament/"
     const val PLA_ENTRENAMENT_INI = "/api/pla-entrenament/{id}/inicialitzar-pla-ini/"
     const val TEMPLATE_EXERCICI = "/api/template-exercici/{id}/"
-    const val ONBOARDING_UPDATE = "api/usuaris/{id}/"
+    const val USER_PROFILE = "api/usuaris/{id}/"
+
+    const val FRIENDS = "api/usuaris/me/friends/"
+
+    const val FRIEND_REQUEST = "api/usuaris/me/friends/request/"
+
+    const val FRIEND_REQUESTS = "api/usuaris/me/friends/requests/"
+    const val DELETE_FRIEND = "api/usuaris/me/friends/{amic_id}/"
+
+    fun getFriendRespondEndpoint(amistatId: Int): String = "api/usuaris/me/friends/$amistatId/respond/"
 }
