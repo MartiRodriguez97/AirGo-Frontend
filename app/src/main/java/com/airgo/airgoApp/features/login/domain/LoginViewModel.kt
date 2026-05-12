@@ -8,14 +8,25 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.NetworkErrorMapper
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.network.UserPreferencesRepository
+import com.airgo.airgoApp.core.network.dataStore
 import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.login.data.auth.GoogleTokenRequest
 import com.airgo.airgoApp.features.login.data.auth.signInWithGoogle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 // Define los estados de la UI para el proceso de inicio de sesión
@@ -70,6 +81,34 @@ class LoginViewModel : ViewModel() {
                     if (body.user != null) {
                         fetchAndSaveUserDetails(session)
                     }
+
+                    // Verificar si el backend no tiene foto, pero Google sí
+                    if (session.profilePictureUrl.isNullOrEmpty() && !body.picture.isNullOrEmpty()) {
+                        session.profilePictureUrl = body.picture // Aplicar localmente primero
+                        viewModelScope.launch {
+                            uploadGooglePictureToBackend(context, body.picture)
+                        }
+                    }
+
+                    // Guardar en datastore asíncrono
+                    val prefsRepo = UserPreferencesRepository(context.dataStore)
+                    prefsRepo.saveSession(
+                        token = body.access ?: "",
+                        refreshToken = session.refreshToken,
+                        username = session.username ?: "",
+                        email = session.email,
+                        userId = session.userId,
+                        profilePictureUrl = session.profilePictureUrl,
+                        titol = session.titol,
+                        teBici = session.teBici ?: false,
+                        pes = session.pes,
+                        altura = session.altura,
+                        punts = session.punts,
+                        ratxa = session.ratxa,
+                        idioma = session.idioma,
+                        limitRutes = session.limitRutes,
+                        insignies = session.insignies,
+                    )
 
                     _uiState.value =
                         LoginUiState.Success(
@@ -154,5 +193,63 @@ class LoginViewModel : ViewModel() {
 
     fun resetState() {
         _uiState.value = LoginUiState.Idle
+    }
+
+    private suspend fun uploadGooglePictureToBackend(
+        context: Context,
+        googlePictureUrl: String,
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                val client = OkHttpClient()
+                val request = Request.Builder().url(googlePictureUrl).build()
+                val response = client.newCall(request).execute()
+
+                if (response.isSuccessful && response.body != null) {
+                    val tempFile = File(context.cacheDir, "google_temp_profile.jpg")
+                    val fos = FileOutputStream(tempFile)
+                    fos.write(response.body!!.bytes())
+                    fos.close()
+
+                    val requestFile = tempFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    val imagePart =
+                        MultipartBody.Part.createFormData(
+                            "profile_pic",
+                            tempFile.name,
+                            requestFile,
+                        )
+
+                    val uploadResponse = RetrofitProvider.profileApi.updateProfilePicture(imagePart)
+                    if (uploadResponse.isSuccessful) {
+                        val newPicUrl = uploadResponse.body()?.newPictureUrl
+                        if (!newPicUrl.isNullOrEmpty()) {
+                            SessionManager.profilePictureUrl = newPicUrl
+                            val prefsRepo = UserPreferencesRepository(context.dataStore)
+                            prefsRepo.saveSession(
+                                token = SessionManager.accessToken ?: "",
+                                refreshToken = SessionManager.refreshToken,
+                                username = SessionManager.username ?: "",
+                                email = SessionManager.email,
+                                userId = SessionManager.userId,
+                                profilePictureUrl = newPicUrl,
+                                titol = SessionManager.titol,
+                                teBici = SessionManager.teBici ?: false,
+                                pes = SessionManager.pes,
+                                altura = SessionManager.altura,
+                                punts = SessionManager.punts,
+                                ratxa = SessionManager.ratxa,
+                                idioma = SessionManager.idioma,
+                                limitRutes = SessionManager.limitRutes,
+                                insignies = SessionManager.insignies,
+                            )
+                        }
+                    }
+
+                    tempFile.delete()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }

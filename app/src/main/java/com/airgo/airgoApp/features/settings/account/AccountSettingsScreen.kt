@@ -22,13 +22,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowForwardIos
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,6 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.network.UserPreferences
+import com.airgo.airgoApp.core.network.UserPreferencesRepository
+import com.airgo.airgoApp.core.network.dataStore
+import com.airgo.airgoApp.features.profile.components.deleteAccountSection
+import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
 import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
@@ -56,10 +66,35 @@ import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 @Composable
 fun accountSettingsScreen(
     displayName: String,
+    uiState: ProfileUiState,
     onBackClick: () -> Unit,
+    onShowDeleteDialog: () -> Unit,
+    onLogout: () -> Unit,
     teBiciViewModel: TeBiciViewModel = viewModel(),
 ) {
     var screenState by remember { mutableStateOf("MAIN") }
+    val context = LocalContext.current
+    val userPreferencesRepository = remember { UserPreferencesRepository(context.dataStore) }
+    val userPrefs by userPreferencesRepository.userPreferencesFlow.collectAsState(
+        initial =
+            UserPreferences(
+                token = null,
+                refreshToken = null,
+                username = null,
+                email = null,
+                userId = null,
+                profilePictureUrl = null,
+                titol = null,
+                teBici = false,
+                pes = null,
+                altura = null,
+                punts = null,
+                ratxa = null,
+                idioma = null,
+                limitRutes = null,
+                insignies = null,
+            ),
+    )
     val session = SessionManager
     val teBiciUiState by teBiciViewModel.uiState.collectAsState()
     var currentTitol by remember { mutableStateOf(session.titol ?: "") }
@@ -81,6 +116,8 @@ fun accountSettingsScreen(
             onBackClick()
         }
     }
+
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedContent(
@@ -110,6 +147,8 @@ fun accountSettingsScreen(
                                 isEnabled = isBikeAvailable,
                                 isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
                             ),
+                        uiState = uiState,
+                        userPrefs = userPrefs,
                         onBicycleToggle = { newValue ->
                             isBikeAvailable = newValue
                             teBiciViewModel.updateBikeAvailability(newValue)
@@ -117,6 +156,8 @@ fun accountSettingsScreen(
                         onEditUsername = { screenState = "EDIT_USERNAME" },
                         onEditTitol = { screenState = "EDIT_TITOL" },
                         onBackClick = onBackClick,
+                        onShowDeleteDialog = onShowDeleteDialog,
+                        onLogoutClick = { showLogoutDialog = true },
                     )
                 }
                 "EDIT_USERNAME" -> {
@@ -139,6 +180,34 @@ fun accountSettingsScreen(
                 }
             }
         }
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text(stringResource(R.string.settings_logout_dialog_title)) },
+            text = { Text(stringResource(R.string.settings_logout_dialog_text)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutDialog = false
+                        onLogout()
+                    },
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ),
+                ) {
+                    Text(stringResource(R.string.settings_logout_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text(stringResource(R.string.settings_logout_cancel))
+                }
+            },
+        )
     }
 }
 
@@ -179,10 +248,14 @@ private fun handleTeBiciSideEffects(
 @Composable
 private fun accountSettingsContent(
     state: AccountSettingsState,
+    uiState: ProfileUiState,
+    userPrefs: UserPreferences,
     onBicycleToggle: (Boolean) -> Unit,
     onEditUsername: () -> Unit,
     onEditTitol: () -> Unit,
     onBackClick: () -> Unit,
+    onShowDeleteDialog: () -> Unit,
+    onLogoutClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         accountSettingsHeader(onBackClick = onBackClick)
@@ -198,9 +271,9 @@ private fun accountSettingsContent(
         )
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
 
-        // Nuevo: leer directamente de SessionManager
-        val pes = SessionManager.pes?.takeIf { it > 0 }
-        val altura = SessionManager.altura?.takeIf { it > 0 }
+        // Nuevo: leer de userPrefs (DataStore asíncrono) o SessionManager por retrocompatibilidad temporal
+        val pes = userPrefs.pes?.takeIf { it > 0 } ?: SessionManager.pes?.toFloat()?.takeIf { it > 0f }
+        val altura = userPrefs.altura?.takeIf { it > 0 } ?: SessionManager.altura?.toFloat()?.takeIf { it > 0f }
 
         if (pes != null) {
             infoRow(label = stringResource(R.string.weight_on_boarding), value = "${pes.toInt()} kg")
@@ -210,6 +283,24 @@ private fun accountSettingsContent(
             infoRow(label = stringResource(R.string.height_on_boarding), value = "${altura.toInt()} cm")
             HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        OutlinedButton(
+            onClick = onLogoutClick,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            colors =
+                ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.primary,
+                ),
+        ) {
+            Text(stringResource(R.string.settings_logout))
+        }
+
+        deleteAccountSection(
+            uiState = uiState,
+            onDeleteClicked = onShowDeleteDialog,
+        )
     }
 }
 

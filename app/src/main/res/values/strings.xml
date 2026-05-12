@@ -87,6 +87,11 @@
     <!-- features/profile/settings/SettingsScreen-->
     <string name="settings_no_email">No email</string>
     <string name="acc_go_to_account_settings">Go to account settings</string>
+    <string name="settings_logout">Log out</string>
+    <string name="settings_logout_dialog_title">Log out?</string>
+    <string name="settings_logout_dialog_text">Are you sure you want to log out?</string>
+    <string name="settings_logout_confirm">Log out</string>
+    <string name="settings_logout_cancel">Cancel</string>
 
     <!-- features/profile/settings/account/username/domain/UsernameViewModel -->
     <string name="error_username_empty">Username cannot be empty.</string>

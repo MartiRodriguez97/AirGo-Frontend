@@ -86,8 +86,13 @@
     <string name="tebici_error_http_code">Error HTTP %1$d: %2$s</string>
 
     <!-- features/profile/settings/SettingsScreen-->
-    <string name="settings_no_email">Sense correu electrònic</string>
-    <string name="acc_go_to_account_settings">Anar als paràmetres del compte</string>
+    <string name="settings_no_email">Sense email</string>
+    <string name="acc_go_to_account_settings">Anar a la configuració de compte</string>
+    <string name="settings_logout">Tancar sessió</string>
+    <string name="settings_logout_dialog_title">Tancar sessió?</string>
+    <string name="settings_logout_dialog_text">Estàs segur que vols tancar la sessió?</string>
+    <string name="settings_logout_confirm">Tancar sessió</string>
+    <string name="settings_logout_cancel">Cancel·lar</string>
 
     <!-- features/profile/settings/account/username/domain/UsernameViewModel -->
     <string name="error_username_empty">El nom d\'usuari no pot estar buit.</string>

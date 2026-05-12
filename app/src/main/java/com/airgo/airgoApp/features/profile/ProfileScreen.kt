@@ -48,7 +48,6 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
-import com.airgo.airgoApp.features.profile.components.deleteAccountSection
 import com.airgo.airgoApp.features.profile.components.profileUserInfoCard
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
@@ -78,6 +77,7 @@ fun profileScreen(
     pictureUrl: String?,
     viewModel: ProfileViewModel = viewModel(),
     onAccountDeleted: () -> Unit,
+    onLogout: () -> Unit,
 ) {
     val profileNavController = rememberNavController()
     // Observe back stack to trigger recompositions on return
@@ -130,6 +130,7 @@ fun profileScreen(
             uiState = uiState,
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
             onShowDeleteDialog = { showDeleteDialog = true },
+            onLogout = onLogout,
         )
     }
 
@@ -192,7 +193,6 @@ fun showProfileInfo(
     profileInfo: ProfileScreen,
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
-    onDeleteClicked: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -200,7 +200,6 @@ fun showProfileInfo(
             profileInfo = profileInfo,
             uiState = uiState,
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
-            onDeleteClicked = onDeleteClicked,
         )
 
         showProfileInfoSettingsButton(onSettingsClick = onSettingsClick)
@@ -212,7 +211,6 @@ private fun showProfileInfoContent(
     profileInfo: ProfileScreen,
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
-    onDeleteClicked: () -> Unit,
 ) {
     Column(
         modifier =
@@ -243,11 +241,6 @@ private fun showProfileInfoContent(
         badgesAndActivitiesZone()
 
         Spacer(modifier = Modifier.height(32.dp))
-
-        deleteAccountSection(
-            uiState = uiState,
-            onDeleteClicked = onDeleteClicked,
-        )
     }
 }
 
@@ -280,6 +273,7 @@ fun profileNavGraph(
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, android.net.Uri?>,
     onShowDeleteDialog: () -> Unit,
+    onLogout: () -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -295,7 +289,6 @@ fun profileNavGraph(
                 profileInfo = profileInfo,
                 uiState = uiState,
                 singlePhotoPickerLauncher = singlePhotoPickerLauncher,
-                onDeleteClicked = onShowDeleteDialog,
                 onSettingsClick = {
                     navController.navigate(ProfileNestedRoute.SETTINGS.route)
                 },
@@ -329,7 +322,10 @@ fun profileNavGraph(
         ) {
             accountSettingsScreen(
                 displayName = profileInfo.displayName,
+                uiState = uiState,
                 onBackClick = { navController.popBackStack() }, // Go back
+                onShowDeleteDialog = onShowDeleteDialog,
+                onLogout = onLogout,
             )
         }
     }
