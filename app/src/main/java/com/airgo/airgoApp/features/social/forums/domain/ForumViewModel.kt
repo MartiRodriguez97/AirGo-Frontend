@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.social.forums.data.Forum
-import com.airgo.airgoApp.features.social.forums.data.CreateForumRequest
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,16 +16,28 @@ private const val MIN_QUERY_LENGTH = 2
 
 sealed class ForumUiState {
     data object Loading : ForumUiState()
+
     data object Empty : ForumUiState()
-    data class Success(val forums: List<Forum>) : ForumUiState()
-    data class Error(val message: String?) : ForumUiState()
+
+    data class Success(
+        val forums: List<Forum>,
+    ) : ForumUiState()
+
+    data class Error(
+        val message: String?,
+    ) : ForumUiState()
 }
 
 sealed class ForumActionState {
     data object Idle : ForumActionState()
+
     data object Loading : ForumActionState()
+
     data object Success : ForumActionState()
-    data class Error(val message: String?) : ForumActionState()
+
+    data class Error(
+        val message: String?,
+    ) : ForumActionState()
 }
 
 @OptIn(FlowPreview::class)
@@ -55,19 +66,21 @@ class ForumViewModel : ViewModel() {
     fun loadForums(search: String? = null) {
         viewModelScope.launch {
             _forumsUiState.value = ForumUiState.Loading
-            val filtered = if (search.isNullOrBlank()) {
-                mockForums.toList()
-            } else {
-                mockForums.filter {
-                    it.nom.contains(search, ignoreCase = true) ||
+            val filtered =
+                if (search.isNullOrBlank()) {
+                    mockForums.toList()
+                } else {
+                    mockForums.filter {
+                        it.nom.contains(search, ignoreCase = true) ||
                             it.descripcio.contains(search, ignoreCase = true)
+                    }
                 }
-            }
-            _forumsUiState.value = if (filtered.isEmpty()) {
-                ForumUiState.Empty
-            } else {
-                ForumUiState.Success(filtered)
-            }
+            _forumsUiState.value =
+                if (filtered.isEmpty()) {
+                    ForumUiState.Empty
+                } else {
+                    ForumUiState.Success(filtered)
+                }
         }
     }
 
@@ -95,19 +108,23 @@ class ForumViewModel : ViewModel() {
         loadForums()
     }
 
-    fun createForum(nom: String, descripcio: String) {
+    fun createForum(
+        nom: String,
+        descripcio: String,
+    ) {
         if (nom.isBlank()) {
             _actionState.value = ForumActionState.Error("El nom no pot estar buit")
             return
         }
         viewModelScope.launch {
             _actionState.value = ForumActionState.Loading
-            val newForum = Forum(
-                id = nextId++,
-                nom = nom,
-                descripcio = descripcio,
-                creatPer = SessionManager.userId ?: -1,
-            )
+            val newForum =
+                Forum(
+                    id = nextId++,
+                    nom = nom,
+                    descripcio = descripcio,
+                    creatPer = SessionManager.userId ?: -1,
+                )
             mockForums.add(newForum)
             _actionState.value = ForumActionState.Success
             loadForums()
@@ -123,17 +140,17 @@ class ForumViewModel : ViewModel() {
     }
 
     fun toggleFavorit(forumId: Int) {
-        _favoritForums.value = if (forumId in _favoritForums.value) {
-            _favoritForums.value - forumId
-        } else {
-            _favoritForums.value + forumId
-        }
+        _favoritForums.value =
+            if (forumId in _favoritForums.value) {
+                _favoritForums.value - forumId
+            } else {
+                _favoritForums.value + forumId
+            }
     }
 
     fun clearActionState() {
         _actionState.value = ForumActionState.Idle
     }
 
-    fun isCreatedByCurrentUser(forum: Forum): Boolean =
-        forum.creatPer == SessionManager.userId
+    fun isCreatedByCurrentUser(forum: Forum): Boolean = forum.creatPer == SessionManager.userId
 }

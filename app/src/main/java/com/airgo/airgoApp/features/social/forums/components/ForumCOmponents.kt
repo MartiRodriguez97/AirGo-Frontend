@@ -54,9 +54,10 @@ internal fun forumCard(
         onClick = onClick,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -79,7 +80,12 @@ internal fun forumCard(
                 Icon(
                     imageVector = if (isFavorit) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = if (isFavorit) "Treure de favorits" else "Afegir a favorits",
-                    tint = if (isFavorit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint =
+                        if (isFavorit) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                 )
             }
             if (isOwner) {

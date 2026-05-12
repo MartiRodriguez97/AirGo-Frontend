@@ -72,9 +72,6 @@ import com.airgo.airgoApp.features.social.domain.RequestsUiState
 import com.airgo.airgoApp.features.social.domain.SearchUiState
 import com.airgo.airgoApp.features.social.domain.SocialTab
 import com.airgo.airgoApp.features.social.domain.SocialViewModel
-import com.airgo.airgoApp.features.social.friends.data.FriendRequestResponse
-import com.airgo.airgoApp.features.social.friends.data.FriendResponse
-import com.airgo.airgoApp.features.social.friends.domain.FriendRequestsViewModel
 import com.airgo.airgoApp.features.social.forums.components.createForumDialog
 import com.airgo.airgoApp.features.social.forums.components.createForumFab
 import com.airgo.airgoApp.features.social.forums.components.deleteForumDialog
@@ -82,6 +79,9 @@ import com.airgo.airgoApp.features.social.forums.components.forumCard
 import com.airgo.airgoApp.features.social.forums.data.Forum
 import com.airgo.airgoApp.features.social.forums.domain.ForumUiState
 import com.airgo.airgoApp.features.social.forums.domain.ForumViewModel
+import com.airgo.airgoApp.features.social.friends.data.FriendRequestResponse
+import com.airgo.airgoApp.features.social.friends.data.FriendResponse
+import com.airgo.airgoApp.features.social.friends.domain.FriendRequestsViewModel
 
 @Composable
 fun socialScreen(
@@ -551,9 +551,7 @@ private fun userResultItem(
 }
 
 @Composable
-private fun forumsTab(
-    forumViewModel: ForumViewModel = viewModel(),
-) {
+private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
     val uiState by forumViewModel.forumsUiState.collectAsStateWithLifecycle()
     val favoritForums by forumViewModel.favoritForums.collectAsStateWithLifecycle()
     val searchQuery by forumViewModel.searchQuery.collectAsStateWithLifecycle()
@@ -585,9 +583,7 @@ private fun forumsTab(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
                 socialSearchBar(
                     query = searchQuery,
@@ -605,16 +601,15 @@ private fun forumsTab(
                 is ForumUiState.Error -> errorState(state.message)
                 is ForumUiState.Success -> {
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                            top = 12.dp,
-                            bottom = 80.dp,
-                            start = 0.dp,
-                            end = 0.dp,
-                        ),
+                        contentPadding =
+                            androidx.compose.foundation.layout.PaddingValues(
+                                top = 12.dp,
+                                bottom = 80.dp,
+                                start = 0.dp,
+                                end = 0.dp,
+                            ),
                     ) {
                         items(state.forums, key = { it.id }) { forum ->
                             forumCard(
@@ -632,9 +627,7 @@ private fun forumsTab(
         }
 
         createForumFab(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
             onClick = { showCreateDialog = true },
         )
     }

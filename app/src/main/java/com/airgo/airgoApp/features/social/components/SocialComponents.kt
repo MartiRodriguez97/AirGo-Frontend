@@ -90,7 +90,10 @@ internal fun loadingState() {
 }
 
 @Composable
-internal fun emptyState(case: String, text: String) {
+internal fun emptyState(
+    case: String,
+    text: String,
+) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             val icon = if (case == "emptyUser") Icons.Default.Person else Icons.Default.Forum
