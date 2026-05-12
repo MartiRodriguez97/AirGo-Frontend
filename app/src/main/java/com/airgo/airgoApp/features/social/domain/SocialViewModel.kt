@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.collections.filter
 
-enum class SocialTab { FRIENDS, SEARCH, REQUESTS }
+enum class SocialTab { FRIENDS, SEARCH, REQUESTS, FORUMS }
 
 sealed class FriendsUiState {
     object Loading : FriendsUiState()

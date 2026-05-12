@@ -289,6 +289,9 @@
     <string name="error_request">Error sending the request</string>
     <string name="delete_friend_title">Delete friend</string>
     <string name="delete_friend_confirm">Are you sure you want to delete %1$s from your friends list?</string>
+    <string name="forums">Forums</string>
+    <string name="search_forum">Search forums...</string>
+    <string name="no_forums_found">No forums found</string>
 
 
 </resources>

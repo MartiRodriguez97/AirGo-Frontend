@@ -75,6 +75,13 @@ import com.airgo.airgoApp.features.social.domain.SocialViewModel
 import com.airgo.airgoApp.features.social.friends.data.FriendRequestResponse
 import com.airgo.airgoApp.features.social.friends.data.FriendResponse
 import com.airgo.airgoApp.features.social.friends.domain.FriendRequestsViewModel
+import com.airgo.airgoApp.features.social.forums.components.createForumDialog
+import com.airgo.airgoApp.features.social.forums.components.createForumFab
+import com.airgo.airgoApp.features.social.forums.components.deleteForumDialog
+import com.airgo.airgoApp.features.social.forums.components.forumCard
+import com.airgo.airgoApp.features.social.forums.data.Forum
+import com.airgo.airgoApp.features.social.forums.domain.ForumUiState
+import com.airgo.airgoApp.features.social.forums.domain.ForumViewModel
 
 @Composable
 fun socialScreen(
@@ -84,7 +91,9 @@ fun socialScreen(
     val activeTab by viewModel.activeTab.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = activeTab.ordinal) {
+        val visibleTabs = listOf(SocialTab.FRIENDS, SocialTab.SEARCH, SocialTab.FORUMS)
+
+        TabRow(selectedTabIndex = visibleTabs.indexOf(activeTab).coerceAtLeast(0)) {
             Tab(
                 selected = activeTab == SocialTab.FRIENDS,
                 onClick = { viewModel.onTabChange(SocialTab.FRIENDS) },
@@ -94,6 +103,11 @@ fun socialScreen(
                 selected = activeTab == SocialTab.SEARCH,
                 onClick = { viewModel.onTabChange(SocialTab.SEARCH) },
                 text = { Text(stringResource(R.string.discover)) },
+            )
+            Tab(
+                selected = activeTab == SocialTab.FORUMS,
+                onClick = { viewModel.onTabChange(SocialTab.FORUMS) },
+                text = { Text(stringResource(R.string.forums)) },
             )
         }
 
@@ -105,6 +119,7 @@ fun socialScreen(
                 )
             SocialTab.SEARCH -> searchTab(viewModel = viewModel)
             SocialTab.REQUESTS -> Unit
+            SocialTab.FORUMS -> forumsTab()
         }
     }
 }
@@ -150,6 +165,7 @@ private fun friendsTab(
             is FriendsUiState.Loading -> loadingState()
             is FriendsUiState.Empty ->
                 emptyState(
+                    "emptyUser",
                     text =
                         if (query.isBlank()) {
                             stringResource(R.string.no_friends)
@@ -461,7 +477,7 @@ private fun searchTab(viewModel: SocialViewModel) {
         when (val state = uiState) {
             is SearchUiState.Idle -> idleSearchState()
             is SearchUiState.Loading -> loadingState()
-            is SearchUiState.Empty -> emptyState(text = stringResource(R.string.no_user_found))
+            is SearchUiState.Empty -> emptyState("emptyUser", text = stringResource(R.string.no_user_found))
             is SearchUiState.Error -> errorState(state.message)
             is SearchUiState.Success -> {
                 LazyColumn(
@@ -531,5 +547,95 @@ private fun userResultItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun forumsTab(
+    forumViewModel: ForumViewModel = viewModel(),
+) {
+    val uiState by forumViewModel.forumsUiState.collectAsStateWithLifecycle()
+    val favoritForums by forumViewModel.favoritForums.collectAsStateWithLifecycle()
+    val searchQuery by forumViewModel.searchQuery.collectAsStateWithLifecycle()
+    val focusManager = LocalFocusManager.current
+    var showCreateDialog by remember { mutableStateOf(false) }
+    var forumToDelete by remember { mutableStateOf<Forum?>(null) }
+
+    if (showCreateDialog) {
+        createForumDialog(
+            onDismiss = { showCreateDialog = false },
+            onCreate = { nom, descripcio ->
+                forumViewModel.createForum(nom, descripcio)
+                showCreateDialog = false
+            },
+        )
+    }
+
+    forumToDelete?.let { forum ->
+        deleteForumDialog(
+            forumNom = forum.nom,
+            onDismiss = { forumToDelete = null },
+            onConfirm = {
+                forumViewModel.deleteForum(forum.id)
+                forumToDelete = null
+            },
+        )
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            ) {
+                socialSearchBar(
+                    query = searchQuery,
+                    placeholder = stringResource(R.string.search_forum),
+                    onQueryChange = forumViewModel::onSearchQueryChange,
+                    onClear = forumViewModel::clearSearchQuery,
+                    onSearch = { focusManager.clearFocus() },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            HorizontalDivider()
+            when (val state = uiState) {
+                is ForumUiState.Loading -> loadingState()
+                is ForumUiState.Empty -> emptyState("emptyForum", text = stringResource(R.string.no_forums_found))
+                is ForumUiState.Error -> errorState(state.message)
+                is ForumUiState.Success -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                            top = 12.dp,
+                            bottom = 80.dp,
+                            start = 0.dp,
+                            end = 0.dp,
+                        ),
+                    ) {
+                        items(state.forums, key = { it.id }) { forum ->
+                            forumCard(
+                                forum = forum,
+                                isFavorit = forum.id in favoritForums,
+                                isOwner = forumViewModel.isCreatedByCurrentUser(forum),
+                                onToggleFavorit = { forumViewModel.toggleFavorit(forum.id) },
+                                onDelete = { forumToDelete = forum },
+                                onClick = {},
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        createForumFab(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            onClick = { showCreateDialog = true },
+        )
     }
 }

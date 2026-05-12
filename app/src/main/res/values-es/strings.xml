@@ -290,4 +290,7 @@
     <string name="error_request">Error al enviar la solicitud</string>
     <string name="delete_friend_title">Eliminar amigo</string>
     <string name="delete_friend_confirm">¿Seguro que quieres eliminar a %1$s de tu lista de amigos?</string>
+    <string name="forums">Foros</string>
+    <string name="search_forum">Buscar foros...</string>
+    <string name="no_forums_found">No se ha encontrado ningún foro</string>
 </resources>

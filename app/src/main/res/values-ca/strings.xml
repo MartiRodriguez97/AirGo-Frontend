@@ -288,4 +288,7 @@
     <string name="error_request">Error en enviar la sol·licitud</string>
     <string name="delete_friend_title">Eliminar amic</string>
     <string name="delete_friend_confirm">Segur que vols eliminar a %1$s de la teva llista d\\\'amics?</string>
+    <string name="forums">Fòrums</string>
+    <string name="search_forum">Cercar fòrums...</string>
+    <string name="no_forums_found">No s\'ha trobat cap fòrum</string>
 </resources>
