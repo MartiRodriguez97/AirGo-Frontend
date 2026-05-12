@@ -155,7 +155,11 @@ class HomeViewModel : ViewModel() {
                 val initializedRaw: TrainingPlanRawResponse = repository.initializeTrainingPlan(planRaw.id, request)
                 Log.d("HomeViewModel", "Initialized plan response: $initializedRaw")
 
-                // 5. Fetch all plans from server and reconstruct full objects
+                // 5. Inicializar el seguimiento
+                val followingRaw: TrainingPlanRawResponse = repository.initializePlanFollowing(planRaw.id, request)
+                Log.d("HomeViewModel", "Plan following initialized: $followingRaw")
+
+                // 6. Fetch all plans from server and reconstruct full objects
                 val rawPlans = repository.getTrainingPlans()
                 val fetchedPlans =
                     rawPlans.map { raw ->

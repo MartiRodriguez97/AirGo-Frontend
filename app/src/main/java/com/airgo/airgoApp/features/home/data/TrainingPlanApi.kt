@@ -2,6 +2,7 @@ package com.airgo.airgoApp.features.home.data
 
 import com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT
 import com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT_INI
+import com.airgo.airgoApp.core.network.ApiEndpoints.SEGUIMENT_PLA
 import com.airgo.airgoApp.core.network.ApiEndpoints.TEMPLATE_EXERCICI
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -25,6 +26,12 @@ interface TrainingPlanApi {
 
     @POST(PLA_ENTRENAMENT_INI)
     suspend fun initializeTrainingPlan(
+        @Path("id") id: Int,
+        @Body request: TrainingPlanRequest,
+    ): TrainingPlanRawResponse
+
+    @POST(SEGUIMENT_PLA)
+    suspend fun initializePlanFollowing(
         @Path("id") id: Int,
         @Body request: TrainingPlanRequest,
     ): TrainingPlanRawResponse

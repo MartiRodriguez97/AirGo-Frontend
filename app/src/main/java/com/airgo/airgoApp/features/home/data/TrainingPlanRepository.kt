@@ -16,6 +16,11 @@ class TrainingPlanRepository {
         request: TrainingPlanRequest,
     ): TrainingPlanRawResponse = api.initializeTrainingPlan(id, request)
 
+    suspend fun initializePlanFollowing(
+        id: Int,
+        request: TrainingPlanRequest,
+    ): TrainingPlanRawResponse = api.initializePlanFollowing(id, request)
+
     suspend fun deleteTrainingPlan(id: Int) {
         api.deleteTrainingPlan(id)
     }
