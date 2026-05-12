@@ -38,10 +38,10 @@ import com.airgo.airgoApp.features.activity.data.ActivityResponse
 import com.airgo.airgoApp.features.activity.domain.ActivityUiState
 import com.airgo.airgoApp.features.activity.domain.ActivityViewModel
 
+private const val SECONDS_PER_MINUTE = 60
+
 @Composable
-fun badgesAndActivitiesZone(
-    viewModel: ActivityViewModel = viewModel(),
-) {
+fun badgesAndActivitiesZone(viewModel: ActivityViewModel = viewModel()) {
     LaunchedEffect(Unit) {
         viewModel.loadActivities()
     }
@@ -146,7 +146,8 @@ private fun activityItem(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = formatDuration(activity.durationSeconds) +
+                    text =
+                        formatDuration(activity.durationSeconds) +
                             " · ${"%.1f".format(activity.avgSpeedKmh)} km/h",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -164,7 +165,7 @@ private fun activityItem(
 }
 
 private fun formatDuration(seconds: Int): String {
-    val minutes = seconds / 60
-    val secs = seconds % 60
+    val minutes = seconds / SECONDS_PER_MINUTE
+    val secs = seconds % SECONDS_PER_MINUTE
     return if (minutes > 0) "${minutes}min ${secs}s" else "${secs}s"
 }

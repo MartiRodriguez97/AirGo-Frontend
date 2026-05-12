@@ -54,17 +54,18 @@ class CalendarViewModelTest {
                         templates =
                             listOf(
                                 TrainingTemplate(
+                                    id = 1,
                                     nom = "Sessio de Bici",
                                     descripcio = "Ciclisme",
                                     tipusExercici = "BIC",
                                     exercicis =
                                         listOf(
                                             Exercise(
+                                                id = 1,
                                                 dataInici = "2024-05-22T18:00:00Z",
-                                                dataFi = null,
                                                 completat = false,
-                                                tipusExercici = "BIC",
-                                                detallsEspecifics = mapOf("distFetaKm" to 12.0),
+                                                distanciaObjectiu = 10.0,
+                                                distanciaFeta = 0.0,
                                             ),
                                         ),
                                 ),

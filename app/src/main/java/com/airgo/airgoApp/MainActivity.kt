@@ -54,7 +54,8 @@ class MainActivity : ComponentActivity() {
                             email = userEmail,
                             pictureUrl = userPictureUrl,
                             onLogout = {
-                                com.airgo.airgoApp.core.network.SessionManager.logout()
+                                com.airgo.airgoApp.core.network.SessionManager
+                                    .logout()
                                 isLoggedIn = false
                             },
                         )

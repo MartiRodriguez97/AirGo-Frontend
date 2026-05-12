@@ -1,8 +1,8 @@
 package com.airgo.airgoApp.features.tracking.domain
 
 import android.location.Location
-import android.util.Log
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
@@ -10,11 +10,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.airgo.airgoApp.core.network.SessionManager
-import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.airgo.airgoApp.core.AppEvents
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
@@ -29,6 +28,7 @@ import java.io.IOException
 
 private const val TIMER_INTERVAL_MS = 1000L
 private const val MS_TO_KMH = 3.6
+private const val METERS_PER_KM = 1000.0
 
 class TrackingViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
@@ -80,7 +80,7 @@ class TrackingViewModel : ViewModel() {
     fun stopTracking() {
         isTracking = false
         timerJob?.cancel()
-        
+
         if (data.distanceMeters > 0 || data.elapsedSeconds > 0) {
             hasSummary = true
         }
@@ -88,7 +88,7 @@ class TrackingViewModel : ViewModel() {
 
     private fun saveActivityPlanning() {
         val activeExercise = SessionManager.exerciciActiu ?: return
-        val distanceDoneKm = data.distanceMeters / 1000.0
+        val distanceDoneKm = data.distanceMeters / METERS_PER_KM
 
         viewModelScope.launch {
             try {
@@ -96,7 +96,12 @@ class TrackingViewModel : ViewModel() {
                 val totalDistance = activeExercise.distanciaFeta + distanceDoneKm
                 val isCompleted = totalDistance >= activeExercise.distanciaObjectiu
 
-                Log.d("TrackingViewModel", "Updating exercise ${activeExercise.id}: distance=$totalDistance, completed=$isCompleted")
+                Log.d(
+                    "TrackingViewModel",
+                    "Updating exercise ${activeExercise.id}:" +
+                        " distance=$totalDistance," +
+                        " completed=$isCompleted",
+                )
 
                 repository.updateExercise(
                     id = activeExercise.id,
@@ -121,9 +126,12 @@ class TrackingViewModel : ViewModel() {
                 }
 
                 _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
-            } catch (e: Exception) {
-                Log.e("TrackingViewModel", "Error saving exercise progress", e)
-                _uiEvent.emit(TrackingUiEvent.SaveError("Error en guardar l'activitat"))
+            } catch (e: java.io.IOException) {
+                Log.e("TrackingViewModel", "Network error saving exercise progress", e)
+                _uiEvent.emit(TrackingUiEvent.SaveError("Error de connexió en guardar l'activitat"))
+            } catch (e: retrofit2.HttpException) {
+                Log.e("TrackingViewModel", "HTTP error saving exercise progress", e)
+                _uiEvent.emit(TrackingUiEvent.SaveError("Error del servidor en guardar l'activitat"))
             }
         }
     }
@@ -133,7 +141,6 @@ class TrackingViewModel : ViewModel() {
         trackPoints = emptyList()
     }
 
-    
     /**
      * Crida cada vegada que arriba una nova posició GPS.
      */
@@ -197,7 +204,12 @@ class TrackingViewModel : ViewModel() {
                 }
             }
         val filter = android.content.IntentFilter(TrackingService.ACTION_LOCATION_UPDATE)
-        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter)
+        androidx.core.content.ContextCompat.registerReceiver(
+            context,
+            receiver,
+            filter,
+            androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
         locationReceiver = receiver
         receiverContext = context
     }
@@ -205,7 +217,7 @@ class TrackingViewModel : ViewModel() {
     fun unregisterLocationReceiver() {
         locationReceiver?.let {
             receiverContext?.let { ctx ->
-                LocalBroadcastManager.getInstance(ctx).unregisterReceiver(it)
+                ctx.unregisterReceiver(it)
             }
         }
         locationReceiver = null
