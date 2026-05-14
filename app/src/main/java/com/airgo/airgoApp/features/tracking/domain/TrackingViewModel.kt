@@ -45,6 +45,12 @@ class TrackingViewModel : ViewModel() {
     var trackPoints by mutableStateOf<List<GeoPoint>>(emptyList())
         private set
 
+    var showSensationDialog by mutableStateOf(false)
+        private set
+
+    var selectedSensation by mutableStateOf<Int?>(null)
+        private set
+
     private val _uiEvent = MutableSharedFlow<TrackingUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
@@ -74,7 +80,18 @@ class TrackingViewModel : ViewModel() {
         data = TrackingData()
         trackPoints = emptyList()
         lastLocation = null
-        startTimer()
+        showSensationDialog = false
+        selectedSensation = null
+
+        // start timer
+        timerJob?.cancel()
+        timerJob =
+            viewModelScope.launch {
+                while (isTracking) {
+                    delay(TIMER_INTERVAL_MS)
+                    data = data.copy(elapsedSeconds = data.elapsedSeconds + 1)
+                }
+            }
     }
 
     fun stopTracking() {
@@ -82,8 +99,14 @@ class TrackingViewModel : ViewModel() {
         timerJob?.cancel()
 
         if (data.distanceMeters > 0 || data.elapsedSeconds > 0) {
-            hasSummary = true
+            showSensationDialog = true
         }
+    }
+
+    fun submitSensation(sensationValue: Int?) {
+        selectedSensation = sensationValue
+        showSensationDialog = false
+        hasSummary = true // Ahora sí, navegamos al resumen
     }
 
     private fun saveActivityPlanning() {
@@ -168,17 +191,6 @@ class TrackingViewModel : ViewModel() {
                 speedKmh = location.speed * MS_TO_KMH,
                 avgSpeedKmh = avgSpeed,
             )
-    }
-
-    private fun startTimer() {
-        timerJob?.cancel()
-        timerJob =
-            viewModelScope.launch {
-                while (isTracking) {
-                    delay(TIMER_INTERVAL_MS)
-                    data = data.copy(elapsedSeconds = data.elapsedSeconds + 1)
-                }
-            }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

@@ -294,4 +294,25 @@
     <string name="no_forums_found">No forums found</string>
 
 
+    <!-- features/tracking-->
+
+    <!-- Tracking Buttons -->
+    <string name="tracking_btn_start">Start</string>
+    <string name="tracking_btn_stop">Stop</string>
+
+    <!-- Tracking Panel Labels -->
+    <string name="tracking_label_default_activity">Activity</string>
+    <string name="tracking_label_target">Target: %.2f km</string>
+    <string name="tracking_stat_distance">Distance</string>
+    <string name="tracking_stat_time">Time</string>
+    <string name="tracking_stat_speed">Speed</string>
+    <string name="tracking_unit_meters">%.0f m</string>
+    <string name="tracking_unit_speed_kmh">%.1f km/h</string>
+
+    <string name="sensation_very_bad">Very bad</string>
+    <string name="sensation_bad">Bad</string>
+    <string name="sensation_normal">Normal</string>
+    <string name="sensation_good">Good</string>
+    <string name="sensation_very_good">Very good</string>
+
 </resources>

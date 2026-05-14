@@ -293,4 +293,24 @@
     <string name="forums">Foros</string>
     <string name="search_forum">Buscar foros...</string>
     <string name="no_forums_found">No se ha encontrado ningún foro</string>
+    <string name="sensation_very_bad">Muy mal</string>
+    <string name="sensation_bad">Mal</string>
+    <string name="sensation_normal">Normal</string>
+    <string name="sensation_good">Bien</string>
+    <string name="sensation_very_good">Muy bien</string>
+
+
+
+    <!-- Tracking Buttons -->
+    <string name="tracking_btn_start">Empezar</string>
+    <string name="tracking_btn_stop">Parar</string>
+
+    <!-- Tracking Panel Labels -->
+    <string name="tracking_label_default_activity">Actividad</string>
+    <string name="tracking_label_target">Objetivo: %.2f km</string>
+    <string name="tracking_stat_distance">Distancia</string>
+    <string name="tracking_stat_time">Tiempo</string>
+    <string name="tracking_stat_speed">Velocidad</string>
+    <string name="tracking_unit_meters">%.0f m</string>
+    <string name="tracking_unit_speed_kmh">%.1f km/h</string>
 </resources>
