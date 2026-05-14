@@ -8,14 +8,25 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.NetworkErrorMapper
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.network.UserPreferencesRepository
+import com.airgo.airgoApp.core.network.dataStore
 import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.login.data.auth.GoogleTokenRequest
 import com.airgo.airgoApp.features.login.data.auth.signInWithGoogle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 // Define los estados de la UI para el proceso de inicio de sesión
@@ -62,22 +73,7 @@ class LoginViewModel : ViewModel() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    val session = SessionManager
-                    session.accessToken = body.access
-                    session.email = body.user
-                    session.refreshToken = body.refresh
-
-                    if (body.user != null) {
-                        fetchAndSaveUserDetails(session)
-                    }
-
-                    _uiState.value =
-                        LoginUiState.Success(
-                            email = body.user,
-                            picture = body.picture,
-                        )
-                    // Log para depuración
-                    println("Login exitoso: ${body.user}, ${body.picture}")
+                    handleSuccessfulLogin(context, body.access, body.refresh, body.user, body.picture)
                 } else {
                     val rawError = response.errorBody()?.string()
                     val backendMessage = extractBackendMessage(rawError)
@@ -101,6 +97,48 @@ class LoginViewModel : ViewModel() {
                 _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_invalid_server_response))
             }
         }
+    }
+
+    private suspend fun handleSuccessfulLogin(
+        context: Context,
+        access: String?,
+        refresh: String?,
+        user: String?,
+        picture: String?,
+    ) {
+        val session = SessionManager
+        session.accessToken = access
+        session.email = user
+        session.refreshToken = refresh
+
+        if (user != null) {
+            fetchAndSaveUserDetails(session)
+        }
+
+        // Verificar si se obtuvo usuario sin username, poner nombre de email para evitar nulos tontos
+        if (session.username.isNullOrBlank()) {
+            session.username = user?.substringBefore('@') ?: "Usuario"
+        }
+
+        // Verificar si el backend no tiene foto, pero Google sí
+        if (session.profilePictureUrl.isNullOrEmpty() && !picture.isNullOrEmpty()) {
+            session.profilePictureUrl = picture // Aplicar localmente primero
+            viewModelScope.launch {
+                uploadGooglePictureToBackend(context, picture)
+            }
+        }
+
+        // Guardar en datastore asíncrono
+        val prefsRepo = UserPreferencesRepository(context.dataStore)
+        prefsRepo.saveSession(session.toUserPreferences())
+
+        _uiState.value =
+            LoginUiState.Success(
+                email = user,
+                picture = picture,
+            )
+        // Log para depuración
+        println("Login exitoso: $user, $picture")
     }
 
     private suspend fun fetchAndSaveUserDetails(session: SessionManager) {
@@ -154,5 +192,49 @@ class LoginViewModel : ViewModel() {
 
     fun resetState() {
         _uiState.value = LoginUiState.Idle
+    }
+
+    private suspend fun uploadGooglePictureToBackend(
+        context: Context,
+        googlePictureUrl: String,
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                val client = OkHttpClient()
+                val request = Request.Builder().url(googlePictureUrl).build()
+                val response = client.newCall(request).execute()
+
+                if (response.isSuccessful && response.body != null) {
+                    val tempFile = File(context.cacheDir, "google_temp_profile.jpg")
+                    val fos = FileOutputStream(tempFile)
+                    fos.write(response.body!!.bytes())
+                    fos.close()
+
+                    val requestFile = tempFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    val imagePart =
+                        MultipartBody.Part.createFormData(
+                            "profile_pic",
+                            tempFile.name,
+                            requestFile,
+                        )
+
+                    val uploadResponse = RetrofitProvider.profileApi.updateProfilePicture(imagePart)
+                    if (uploadResponse.isSuccessful) {
+                        val newPicUrl = uploadResponse.body()?.newPictureUrl
+                        if (!newPicUrl.isNullOrEmpty()) {
+                            SessionManager.profilePictureUrl = newPicUrl
+                            val prefsRepo = UserPreferencesRepository(context.dataStore)
+                            prefsRepo.saveSession(SessionManager.toUserPreferences())
+                        }
+                    }
+
+                    tempFile.delete()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+            }
+        }
     }
 }

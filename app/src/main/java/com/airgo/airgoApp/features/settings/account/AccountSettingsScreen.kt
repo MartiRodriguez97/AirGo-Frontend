@@ -22,13 +22,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowForwardIos
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.profile.components.deleteAccountSection
+import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciUiState
 import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewModel
 import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
@@ -56,87 +63,142 @@ import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 @Composable
 fun accountSettingsScreen(
     displayName: String,
+    uiState: ProfileUiState,
     onBackClick: () -> Unit,
+    onShowDeleteDialog: () -> Unit,
+    onLogout: () -> Unit,
     teBiciViewModel: TeBiciViewModel = viewModel(),
 ) {
     var screenState by remember { mutableStateOf("MAIN") }
     val session = SessionManager
     val teBiciUiState by teBiciViewModel.uiState.collectAsState()
     var currentTitol by remember { mutableStateOf(session.titol ?: "") }
-    // Update local state, initialize with parameters or SessionManager
     var currentDisplayName by remember { mutableStateOf(session.username ?: displayName) }
-    var isBikeAvailable by remember {
-        mutableStateOf(session.teBici ?: false)
-    }
+    var isBikeAvailable by remember { mutableStateOf(session.teBici ?: false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     handleTeBiciSideEffects(
         uiState = teBiciUiState,
         viewModel = teBiciViewModel,
         onResetBikeAvailability = { isBikeAvailable = session.teBici ?: false },
     )
-    BackHandler {
-        if (screenState != "MAIN") {
-            screenState = "MAIN"
-        } else {
-            onBackClick()
-        }
-    }
+
+    BackHandler { if (screenState != "MAIN") screenState = "MAIN" else onBackClick() }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        AnimatedContent(
-            targetState = screenState,
-            transitionSpec = {
-                if (targetState != "MAIN") {
-                    // Profile -> Settings
-                    (slideInHorizontally { fullWidth -> fullWidth } + fadeIn()).togetherWith(
-                        slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut(),
-                    )
-                } else {
-                    // Settings -> Profile
-                    (slideInHorizontally { fullWidth -> -fullWidth } + fadeIn()).togetherWith(
-                        slideOutHorizontally { fullWidth -> fullWidth } + fadeOut(),
-                    )
-                }
+        accountSettingsNavigation(
+            screenState = screenState,
+            state =
+                AccountSettingsState(
+                    displayName = currentDisplayName,
+                    titol = currentTitol,
+                    isEnabled = isBikeAvailable,
+                    isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
+                ),
+            uiState = uiState,
+            actions =
+                AccountSettingsActions(
+                    onBicycleToggle = { newValue ->
+                        isBikeAvailable = newValue
+                        teBiciViewModel.updateBikeAvailability(newValue)
+                    },
+                    onEditUsername = { screenState = "EDIT_USERNAME" },
+                    onEditTitol = { screenState = "EDIT_TITOL" },
+                    onBackClick = onBackClick,
+                    onShowDeleteDialog = onShowDeleteDialog,
+                    onLogoutClick = { showLogoutDialog = true },
+                    onScreenStateChange = { screenState = it },
+                    onDisplayNameChange = { currentDisplayName = it },
+                    onTitolChange = { currentTitol = it },
+                ),
+        )
+    }
+
+    if (showLogoutDialog) {
+        logoutDialog(
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = {
+                showLogoutDialog = false
+                onLogout()
             },
-            label = "settings-transition",
-        ) { state ->
-            when (state) {
-                "MAIN" -> {
-                    accountSettingsContent(
-                        state =
-                            AccountSettingsState(
-                                displayName = currentDisplayName,
-                                titol = currentTitol,
-                                isEnabled = isBikeAvailable,
-                                isLoadingBike = teBiciUiState is TeBiciUiState.Loading,
-                            ),
-                        onBicycleToggle = { newValue ->
-                            isBikeAvailable = newValue
-                            teBiciViewModel.updateBikeAvailability(newValue)
-                        },
-                        onEditUsername = { screenState = "EDIT_USERNAME" },
-                        onEditTitol = { screenState = "EDIT_TITOL" },
-                        onBackClick = onBackClick,
-                    )
-                }
-                "EDIT_USERNAME" -> {
-                    editUsernameScreen(
-                        displayName = currentDisplayName,
-                        onBackClick = { screenState = "MAIN" },
-                        onSave = { newName ->
-                            currentDisplayName = newName
-                        },
-                    )
-                }
-                "EDIT_TITOL" -> {
-                    editTitolScreen(
-                        currentTitol = currentTitol,
-                        onBackClick = { screenState = "MAIN" },
-                        onSave = { newTitol ->
-                            currentTitol = newTitol
-                        },
-                    )
-                }
+        )
+    }
+}
+
+@Composable
+private fun logoutDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_logout_dialog_title)) },
+        text = { Text(stringResource(R.string.settings_logout_dialog_text)) },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
+                    ),
+            ) {
+                Text(stringResource(R.string.settings_logout_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.settings_logout_cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun accountSettingsNavigation(
+    screenState: String,
+    state: AccountSettingsState,
+    uiState: ProfileUiState,
+    actions: AccountSettingsActions,
+) {
+    AnimatedContent(
+        targetState = screenState,
+        transitionSpec = {
+            if (targetState != "MAIN") {
+                // Profile -> Settings
+                (slideInHorizontally { fullWidth -> fullWidth } + fadeIn()).togetherWith(
+                    slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut(),
+                )
+            } else {
+                // Settings -> Profile
+                (slideInHorizontally { fullWidth -> -fullWidth } + fadeIn()).togetherWith(
+                    slideOutHorizontally { fullWidth -> fullWidth } + fadeOut(),
+                )
+            }
+        },
+        label = "settings-transition",
+    ) { currentScreen ->
+        when (currentScreen) {
+            "MAIN" -> {
+                accountSettingsContent(
+                    state = state,
+                    uiState = uiState,
+                    actions = actions,
+                )
+            }
+            "EDIT_USERNAME" -> {
+                editUsernameScreen(
+                    displayName = state.displayName,
+                    onBackClick = { actions.onScreenStateChange?.invoke("MAIN") },
+                    onSave = { actions.onDisplayNameChange?.invoke(it) },
+                )
+            }
+            "EDIT_TITOL" -> {
+                editTitolScreen(
+                    currentTitol = state.titol,
+                    onBackClick = { actions.onScreenStateChange?.invoke("MAIN") },
+                    onSave = { actions.onTitolChange?.invoke(it) },
+                )
             }
         }
     }
@@ -149,7 +211,19 @@ data class AccountSettingsState(
     val isLoadingBike: Boolean,
 )
 
-// Maneja los efectos secundarios relacionados con la actualización de la disponibilidad de bicicleta,
+data class AccountSettingsActions(
+    val onBicycleToggle: (Boolean) -> Unit,
+    val onEditUsername: () -> Unit,
+    val onEditTitol: () -> Unit,
+    val onBackClick: () -> Unit,
+    val onShowDeleteDialog: () -> Unit,
+    val onLogoutClick: () -> Unit,
+    val onScreenStateChange: ((String) -> Unit)? = null,
+    val onDisplayNameChange: ((String) -> Unit)? = null,
+    val onTitolChange: ((String) -> Unit)? = null,
+)
+
+// Maneja los efectos secundarios relacionados con la actualizacin de la disponibilidad de bicicleta,
 // mostrando mensajes de éxito o error según corresponda
 @Composable
 private fun handleTeBiciSideEffects(
@@ -179,54 +253,39 @@ private fun handleTeBiciSideEffects(
 @Composable
 private fun accountSettingsContent(
     state: AccountSettingsState,
-    onBicycleToggle: (Boolean) -> Unit,
-    onEditUsername: () -> Unit,
-    onEditTitol: () -> Unit,
-    onBackClick: () -> Unit,
+    uiState: ProfileUiState,
+    actions: AccountSettingsActions,
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        accountSettingsHeader(onBackClick = onBackClick)
+        accountSettingsHeader(onBackClick = actions.onBackClick)
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
-        usernameRow(displayName = state.displayName, onEditUsername = onEditUsername)
+        usernameRow(displayName = state.displayName, onEditUsername = actions.onEditUsername)
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
-        titolRow(titol = state.titol, onEditTitol = onEditTitol)
+        titolRow(titol = state.titol, onEditTitol = actions.onEditTitol)
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         bicycleAvailableRow(
             isEnabled = state.isEnabled,
             isLoading = state.isLoadingBike,
-            onBicycleToggle = onBicycleToggle,
+            onBicycleToggle = actions.onBicycleToggle,
         )
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
 
-        // Nuevo: leer directamente de SessionManager
-        val pes = SessionManager.pes?.takeIf { it > 0 }
-        val altura = SessionManager.altura?.takeIf { it > 0 }
+        Spacer(modifier = Modifier.weight(1f))
 
-        if (pes != null) {
-            infoRow(label = stringResource(R.string.weight_on_boarding), value = "${pes.toInt()} kg")
-            HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
+        OutlinedButton(
+            onClick = actions.onLogoutClick,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            colors =
+                ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.primary,
+                ),
+        ) {
+            Text(stringResource(R.string.settings_logout))
         }
-        if (altura != null) {
-            infoRow(label = stringResource(R.string.height_on_boarding), value = "${altura.toInt()} cm")
-            HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
-        }
-    }
-}
 
-@Composable
-private fun infoRow(
-    label: String,
-    value: String,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        deleteAccountSection(
+            uiState = uiState,
+            onDeleteClicked = actions.onShowDeleteDialog,
         )
     }
 }

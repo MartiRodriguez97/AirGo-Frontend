@@ -251,6 +251,7 @@ private fun NavGraphBuilder.featuresNavGraph(
                 email = email,
                 pictureUrl = pictureUrl,
                 onAccountDeleted = onLogout,
+                onLogout = onLogout,
             )
         }
     }
