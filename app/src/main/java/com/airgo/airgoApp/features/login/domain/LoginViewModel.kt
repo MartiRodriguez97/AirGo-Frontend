@@ -73,50 +73,7 @@ class LoginViewModel : ViewModel() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    val session = SessionManager
-                    session.accessToken = body.access
-                    session.email = body.user
-                    session.refreshToken = body.refresh
-
-                    if (body.user != null) {
-                        fetchAndSaveUserDetails(session)
-                    }
-
-                    // Verificar si el backend no tiene foto, pero Google sí
-                    if (session.profilePictureUrl.isNullOrEmpty() && !body.picture.isNullOrEmpty()) {
-                        session.profilePictureUrl = body.picture // Aplicar localmente primero
-                        viewModelScope.launch {
-                            uploadGooglePictureToBackend(context, body.picture)
-                        }
-                    }
-
-                    // Guardar en datastore asíncrono
-                    val prefsRepo = UserPreferencesRepository(context.dataStore)
-                    prefsRepo.saveSession(
-                        token = body.access ?: "",
-                        refreshToken = session.refreshToken,
-                        username = session.username ?: "",
-                        email = session.email,
-                        userId = session.userId,
-                        profilePictureUrl = session.profilePictureUrl,
-                        titol = session.titol,
-                        teBici = session.teBici ?: false,
-                        pes = session.pes,
-                        altura = session.altura,
-                        punts = session.punts,
-                        ratxa = session.ratxa,
-                        idioma = session.idioma,
-                        limitRutes = session.limitRutes,
-                        insignies = session.insignies,
-                    )
-
-                    _uiState.value =
-                        LoginUiState.Success(
-                            email = body.user,
-                            picture = body.picture,
-                        )
-                    // Log para depuración
-                    println("Login exitoso: ${body.user}, ${body.picture}")
+                    handleSuccessfulLogin(context, body.access, body.refresh, body.user, body.picture)
                 } else {
                     val rawError = response.errorBody()?.string()
                     val backendMessage = extractBackendMessage(rawError)
@@ -140,6 +97,48 @@ class LoginViewModel : ViewModel() {
                 _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_invalid_server_response))
             }
         }
+    }
+
+    private suspend fun handleSuccessfulLogin(
+        context: Context,
+        access: String?,
+        refresh: String?,
+        user: String?,
+        picture: String?,
+    ) {
+        val session = SessionManager
+        session.accessToken = access
+        session.email = user
+        session.refreshToken = refresh
+
+        if (user != null) {
+            fetchAndSaveUserDetails(session)
+        }
+
+        // Verificar si se obtuvo usuario sin username, poner nombre de email para evitar nulos tontos
+        if (session.username.isNullOrBlank()) {
+            session.username = user?.substringBefore('@') ?: "Usuario"
+        }
+
+        // Verificar si el backend no tiene foto, pero Google sí
+        if (session.profilePictureUrl.isNullOrEmpty() && !picture.isNullOrEmpty()) {
+            session.profilePictureUrl = picture // Aplicar localmente primero
+            viewModelScope.launch {
+                uploadGooglePictureToBackend(context, picture)
+            }
+        }
+
+        // Guardar en datastore asíncrono
+        val prefsRepo = UserPreferencesRepository(context.dataStore)
+        prefsRepo.saveSession(session.toUserPreferences())
+
+        _uiState.value =
+            LoginUiState.Success(
+                email = user,
+                picture = picture,
+            )
+        // Log para depuración
+        println("Login exitoso: $user, $picture")
     }
 
     private suspend fun fetchAndSaveUserDetails(session: SessionManager) {
@@ -225,29 +224,15 @@ class LoginViewModel : ViewModel() {
                         if (!newPicUrl.isNullOrEmpty()) {
                             SessionManager.profilePictureUrl = newPicUrl
                             val prefsRepo = UserPreferencesRepository(context.dataStore)
-                            prefsRepo.saveSession(
-                                token = SessionManager.accessToken ?: "",
-                                refreshToken = SessionManager.refreshToken,
-                                username = SessionManager.username ?: "",
-                                email = SessionManager.email,
-                                userId = SessionManager.userId,
-                                profilePictureUrl = newPicUrl,
-                                titol = SessionManager.titol,
-                                teBici = SessionManager.teBici ?: false,
-                                pes = SessionManager.pes,
-                                altura = SessionManager.altura,
-                                punts = SessionManager.punts,
-                                ratxa = SessionManager.ratxa,
-                                idioma = SessionManager.idioma,
-                                limitRutes = SessionManager.limitRutes,
-                                insignies = SessionManager.insignies,
-                            )
+                            prefsRepo.saveSession(SessionManager.toUserPreferences())
                         }
                     }
 
                     tempFile.delete()
                 }
-            } catch (e: Exception) {
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
             }
         }

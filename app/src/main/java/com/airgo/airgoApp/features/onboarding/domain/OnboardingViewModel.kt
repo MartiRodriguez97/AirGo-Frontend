@@ -55,7 +55,7 @@ class OnboardingViewModel : ViewModel() {
                 val profile = RetrofitProvider.onboardingApi.getUserProfile()
                 userId = profile.id
                 uiState =
-                    if (profile.pes == 0.0 || profile.altura == 0.0 || profile.username.isBlank()) {
+                    if (profile.pes <= 0.0 || profile.altura <= 0.0 || profile.username.isBlank()) {
                         OnboardingUiState.NeedsOnboarding
                     } else {
                         OnboardingUiState.Success

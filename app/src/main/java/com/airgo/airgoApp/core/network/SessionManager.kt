@@ -60,4 +60,18 @@ object SessionManager {
         clear()
         _sessionExpiredEvent.tryEmit(Unit)
     }
+
+    fun toUserPreferences(): UserPreferences =
+        UserPreferences(
+            token = accessToken,
+            refreshToken = refreshToken,
+            userId = userId,
+        )
+
+    fun isProfileIncomplete(): Boolean =
+        pes == null ||
+            pes!! <= 0.0 ||
+            altura == null ||
+            altura!! <= 0.0 ||
+            username.isNullOrBlank()
 }
