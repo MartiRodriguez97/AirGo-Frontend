@@ -272,4 +272,30 @@
     <string name="distance">Distancia</string>
     <string name="center_location">Centrar a localización</string>
     <string name="profile_no_activities">Todavía no tienes actividades registradas</string>
+
+    <!-- features/social -->
+    <string name="friends">Amigos</string>
+    <string name="discover">Descubrir</string>
+    <string name="search_friend">Busca a un amigo...</string>
+    <string name="friend_requests">Solicitudes de amistad</string>
+    <string name="no_friends">Aún no tienes amigos.</string>
+    <string name="no_friends_found">No se ha encontrado ningún amigo.</string>
+    <string name="pending_requests">Solicitudes pendientes</string>
+    <string name="no_pending_requests">No tienes solicitudes pendientes.</string>
+    <string name="friend_request">Quiere ser tu amigo.</string>
+    <string name="search_users">Buscar usuarios...</string>
+    <string name="accept">Aceptar</string>
+    <string name="reject">Rechazar</string>
+    <string name="no_user_found">No se ha encontrado ningún usuario.</string>
+    <string name="photo">Foto de</string>
+    <string name="sent">Enviada</string>
+    <string name="add">Añadir</string>
+    <string name="search_username">Escribe el nombre de un usuario para buscar</string>
+    <string name="request_sent">Solicitud enviada</string>
+    <string name="error_request">Error al enviar la solicitud</string>
+    <string name="delete_friend_title">Eliminar amigo</string>
+    <string name="delete_friend_confirm">¿Seguro que quieres eliminar a %1$s de tu lista de amigos?</string>
+    <string name="forums">Foros</string>
+    <string name="search_forum">Buscar foros...</string>
+    <string name="no_forums_found">No se ha encontrado ningún foro</string>
 </resources>

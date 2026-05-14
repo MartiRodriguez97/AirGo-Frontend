@@ -42,6 +42,7 @@ import com.airgo.airgoApp.features.home.planDetailsScreen
 import com.airgo.airgoApp.features.home.questionnaireScreen
 import com.airgo.airgoApp.features.map.favoritesScreen
 import com.airgo.airgoApp.features.profile.profileScreen
+import com.airgo.airgoApp.features.social.friends.friendProfileScreen
 import com.airgo.airgoApp.features.social.socialScreen
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
 import com.airgo.airgoApp.features.tracking.trackingSummaryScreen
@@ -114,7 +115,11 @@ private fun bottomNavigationBar(
     currentRoute: String?,
     navController: NavHostController,
 ) {
-    if (currentRoute != "questionnaire" && currentRoute != "favorites") {
+    val hiddenRoutes = setOf("questionnaire", "favorites")
+    val isFriendProfile = currentRoute.orEmpty().startsWith("friend_profile")
+    val showBar = currentRoute !in hiddenRoutes && !isFriendProfile
+
+    if (showBar) {
         NavigationBar {
             MainShellScreen.entries.forEach { tab ->
                 NavigationBarItem(
@@ -203,6 +208,8 @@ private fun NavGraphBuilder.homeNavGraph(
     }
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+@RequiresApi(Build.VERSION_CODES.O)
 private fun NavGraphBuilder.featuresNavGraph(
     navController: NavHostController,
     innerPadding: PaddingValues,
@@ -211,7 +218,23 @@ private fun NavGraphBuilder.featuresNavGraph(
     onLogout: () -> Unit,
 ) {
     composable(MainShellScreen.SOCIAL.route) {
-        screenWrapper(innerPadding) { socialScreen() }
+        screenWrapper(innerPadding) {
+            socialScreen(
+                onFriendClick = { userId ->
+                    navController.navigate("friend_profile/$userId")
+                },
+            )
+        }
+    }
+
+    composable("friend_profile/{userId}") { backStackEntry ->
+        val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull() ?: return@composable
+        screenWrapper(innerPadding) {
+            friendProfileScreen(
+                userId = userId,
+                onBackClick = { navController.popBackStack() },
+            )
+        }
     }
     composable(MainShellScreen.ACTIVITY.route) {
         activityScreen(navController = navController)

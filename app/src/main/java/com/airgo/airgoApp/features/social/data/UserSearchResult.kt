@@ -1,4 +1,4 @@
-package com.airgo.airgoApp.features.social
+package com.airgo.airgoApp.features.social.data
 
 import com.google.gson.annotations.SerializedName
 

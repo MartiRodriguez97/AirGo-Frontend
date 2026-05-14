@@ -270,4 +270,30 @@
     <string name="distance">Distància</string>
     <string name="center_location">Centrar a localització</string>
     <string name="profile_no_activities">Encara no tens activitats registrades</string>
+
+    <!-- features/social -->
+    <string name="friends">Amics</string>
+    <string name="discover">Descobrir</string>
+    <string name="search_friend">Cerca un amic...</string>
+    <string name="friend_requests">Sol·licituds d\'amistat</string>
+    <string name="no_friends">Encara no tens amics.</string>
+    <string name="no_friends_found">No s\'ha trobat cap amic.</string>
+    <string name="pending_requests">Sol·licituds pendents</string>
+    <string name="no_pending_requests">No tens sol·licituds pendents.</string>
+    <string name="friend_request">Vol ser el teu amic.</string>
+    <string name="search_users">Cerca usuaris...</string>
+    <string name="accept">Acceptar</string>
+    <string name="reject">Rebutjar</string>
+    <string name="no_user_found">No s\'ha trobat cap usuari.</string>
+    <string name="photo">Foto de</string>
+    <string name="sent">Enviada</string>
+    <string name="add">Afegir</string>
+    <string name="search_username">Escriu el nom d\'un usuari per cercar</string>
+    <string name="request_sent">Sol·licitud enviada</string>
+    <string name="error_request">Error en enviar la sol·licitud</string>
+    <string name="delete_friend_title">Eliminar amic</string>
+    <string name="delete_friend_confirm">Segur que vols eliminar a %1$s de la teva llista d\\\'amics?</string>
+    <string name="forums">Fòrums</string>
+    <string name="search_forum">Cercar fòrums...</string>
+    <string name="no_forums_found">No s\'ha trobat cap fòrum</string>
 </resources>
