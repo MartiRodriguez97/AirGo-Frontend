@@ -245,4 +245,21 @@ class SocialViewModel : ViewModel() {
             )
         }
     }
+
+    fun getConversationId(
+        amicId: Int,
+        onResult: (convId: String, otherUserId: Int, username: String) -> Unit,
+    ) {
+        val friend = (_friendsUiState.value as? FriendsUiState.Success)
+            ?.friends
+            ?.find { it.amic.id == amicId } ?: return
+
+        val currentUserId = SessionManager.userId ?: return
+        val convId = if (currentUserId < amicId) {
+            "$currentUserId-$amicId"
+        } else {
+            "$amicId-$currentUserId"
+        }
+        onResult(convId, amicId, friend.amic.username)
+    }
 }

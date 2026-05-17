@@ -42,6 +42,7 @@ import com.airgo.airgoApp.features.home.planDetailsScreen
 import com.airgo.airgoApp.features.home.questionnaireScreen
 import com.airgo.airgoApp.features.map.favoritesScreen
 import com.airgo.airgoApp.features.profile.profileScreen
+import com.airgo.airgoApp.features.social.chat.chatScreen
 import com.airgo.airgoApp.features.social.friends.friendProfileScreen
 import com.airgo.airgoApp.features.social.socialScreen
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
@@ -117,7 +118,8 @@ private fun bottomNavigationBar(
 ) {
     val hiddenRoutes = setOf("questionnaire", "favorites")
     val isFriendProfile = currentRoute.orEmpty().startsWith("friend_profile")
-    val showBar = currentRoute !in hiddenRoutes && !isFriendProfile
+    val isChatScreen = currentRoute.orEmpty().startsWith("chat")
+    val showBar = currentRoute !in hiddenRoutes && !isFriendProfile && !isChatScreen
 
     if (showBar) {
         NavigationBar {
@@ -220,8 +222,9 @@ private fun NavGraphBuilder.featuresNavGraph(
     composable(MainShellScreen.SOCIAL.route) {
         screenWrapper(innerPadding) {
             socialScreen(
-                onFriendClick = { userId ->
-                    navController.navigate("friend_profile/$userId")
+                onFriendClick = { userId -> navController.navigate("friend_profile/$userId") },
+                onChatClick = { convId, otherUserId, username ->
+                    navController.navigate("chat/$convId/$otherUserId/$username")
                 },
             )
         }
@@ -271,6 +274,17 @@ private fun NavGraphBuilder.featuresNavGraph(
             onBack = { navController.popBackStack() },
             onSave = { navController.popBackStack() },
             viewModel = summaryViewModel,
+        )
+    }
+    composable("chat/{convId}/{otherUserId}/{username}") { backStackEntry ->
+        val convId = backStackEntry.arguments?.getString("convId") ?: return@composable
+        val otherUserId = backStackEntry.arguments?.getString("otherUserId")?.toIntOrNull() ?: return@composable
+        val username = backStackEntry.arguments?.getString("username") ?: ""
+        chatScreen(
+            conversationId = convId,
+            otherUserId = otherUserId,
+            otherUsername = username,
+            onBack = { navController.popBackStack() },
         )
     }
 }
