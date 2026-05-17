@@ -147,7 +147,7 @@ fun trackingSummaryScreen(
 }
 
 @Composable
-private fun trackingSummaryStatsCard(data: TrackingData) {
+fun trackingSummaryStatsCard(data: TrackingData) {
     Card(
         modifier = Modifier.fillMaxWidth(TRACKING_ROUTE_PANEL),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -170,7 +170,7 @@ private const val BORDER_SIZE = 50
  * Mostra un resum de la ruta amb un mapa i el nombre de punts GPS registrats.
  */
 @Composable
-private fun trackingSummaryRouteCard(
+fun trackingSummaryRouteCard(
     trackPoints: List<GeoPoint>,
     modifier: Modifier = Modifier,
 ) {

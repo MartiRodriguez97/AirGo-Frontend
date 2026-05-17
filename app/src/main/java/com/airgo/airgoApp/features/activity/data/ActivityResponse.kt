@@ -7,4 +7,5 @@ data class ActivityResponse(
     @SerializedName("distance_meters") val distanceMeters: Double,
     @SerializedName("duration_seconds") val durationSeconds: Int,
     @SerializedName("avg_speed_kmh") val avgSpeedKmh: Double,
+    @SerializedName("route_points") val routePoints: List<List<Double>>? = null,
 )
