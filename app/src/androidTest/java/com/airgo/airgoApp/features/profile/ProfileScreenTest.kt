@@ -47,7 +47,7 @@ class ProfileScreenTest {
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
-     fun setProfileScreen(
+    fun setProfileScreen(
         email: String? = "test@airgo.com",
         pictureUrl: String? = null,
         onAccountDeleted: () -> Unit = {},
