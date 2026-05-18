@@ -85,7 +85,8 @@ import com.airgo.airgoApp.features.social.friends.domain.FriendRequestsViewModel
 
 @Composable
 fun socialScreen(
-    onFriendClick: (String) -> Unit = {},
+    onFriendClick: (Int) -> Unit = {},
+    onChatClick: (convId: String, otherUserId: Int, username: String) -> Unit = { _, _, _ -> },
     viewModel: SocialViewModel = viewModel(),
 ) {
     val activeTab by viewModel.activeTab.collectAsStateWithLifecycle()
@@ -116,6 +117,7 @@ fun socialScreen(
                 friendsTab(
                     viewModel = viewModel,
                     onFriendClick = onFriendClick,
+                    onChatClick = onChatClick,
                 )
             SocialTab.SEARCH -> searchTab(viewModel = viewModel)
             SocialTab.REQUESTS -> Unit
@@ -128,7 +130,8 @@ fun socialScreen(
 private fun friendsTab(
     viewModel: SocialViewModel,
     requestsViewModel: FriendRequestsViewModel = viewModel(),
-    onFriendClick: (String) -> Unit,
+    onFriendClick: (Int) -> Unit,
+    onChatClick: (convId: String, otherUserId: Int, username: String) -> Unit = { _, _, _ -> },
 ) {
     val query by viewModel.friendsQuery.collectAsStateWithLifecycle()
     val uiState by viewModel.friendsUiState.collectAsStateWithLifecycle()
@@ -178,6 +181,11 @@ private fun friendsTab(
                 friendsList(
                     friends = state.friends,
                     onFriendClick = onFriendClick,
+                    onChatClick = { amicId ->
+                        viewModel.getConversationId(amicId) { convId, otherUserId, username ->
+                            onChatClick(convId, otherUserId, username)
+                        }
+                    },
                     onDelete = { amicId -> viewModel.deleteFriend(amicId) },
                 )
         }
@@ -231,8 +239,9 @@ private fun friendsHeader(
 @Composable
 private fun friendsList(
     friends: List<FriendResponse>,
-    onFriendClick: (String) -> Unit,
+    onFriendClick: (Int) -> Unit,
     onDelete: (Int) -> Unit,
+    onChatClick: (Int) -> Unit,
 ) {
     LazyColumn(
         modifier =
@@ -247,8 +256,9 @@ private fun friendsList(
         items(friends, key = { it.id }) { friend ->
             friendItem(
                 friend = friend,
-                onClick = { onFriendClick(friend.amic.id.toString()) },
+                onFriendClick = { onFriendClick(friend.amic.id) },
                 onDelete = { onDelete(friend.amic.id) },
+                onChatClick = { onChatClick(friend.amic.id) },
             )
         }
     }
@@ -361,7 +371,8 @@ private fun friendRequestItem(
 @Composable
 private fun friendItem(
     friend: FriendResponse,
-    onClick: () -> Unit,
+    onFriendClick: (Int) -> Unit,
+    onChatClick: (Int) -> Unit,
     onDelete: () -> Unit,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -395,7 +406,7 @@ private fun friendItem(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onChatClick(friend.amic.id) },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(0.dp),
         border = CardDefaults.outlinedCardBorder(),
@@ -407,14 +418,13 @@ private fun friendItem(
                     .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Solo la foto navega al perfil
             Box(
                 modifier =
                     Modifier
                         .size(44.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer)
-                        .clickable(onClick = onClick),
+                        .clickable(onClick = { onFriendClick(friend.amic.id) }),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -430,7 +440,6 @@ private fun friendItem(
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f),
             )
-            // Botón eliminar siempre visible
             IconButton(onClick = { showDeleteDialog = true }) {
                 Icon(
                     imageVector = Icons.Default.Close,
