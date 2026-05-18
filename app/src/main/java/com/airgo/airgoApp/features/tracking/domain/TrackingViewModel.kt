@@ -15,6 +15,7 @@ import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
+import com.airgo.airgoApp.features.tracking.data.UpdateUserStatsRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
 import kotlinx.coroutines.Job
@@ -60,7 +61,7 @@ class TrackingViewModel : ViewModel() {
 
         data object Saving : SaveState()
 
-        data object Success : SaveState()
+        data class Success(val response: com.airgo.airgoApp.features.tracking.data.SaveActivityResponse) : SaveState()
 
         data class Error(
             val message: String,
@@ -235,10 +236,29 @@ class TrackingViewModel : ViewModel() {
                         avgSpeedKmh = data.avgSpeedKmh,
                         routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
                     )
-                RetrofitProvider.trackingApi.saveActivity(request)
+                val response = RetrofitProvider.trackingApi.saveActivity(request)
+
+                SessionManager.ratxa = response.currentStreak
+                val newPunts = (SessionManager.punts ?: 0) + response.pointsEarned
+                SessionManager.punts = newPunts
+
+                SessionManager.userId?.let { userId ->
+                    try {
+                        RetrofitProvider.trackingApi.updateUserStats(
+                            id = userId,
+                            request = UpdateUserStatsRequest(
+                                punts = newPunts,
+                                ratxa = response.currentStreak
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Log.e("TrackingViewModel", "Failed to update user stats", e)
+                    }
+                }
+
                 saveActivityPlanning()
                 AppEvents.notifyActivitySaved()
-                saveState = SaveState.Success
+                saveState = SaveState.Success(response)
             } catch (e: IOException) {
                 saveState = SaveState.Error("Error de connexió: ${e.message}")
             } catch (e: HttpException) {

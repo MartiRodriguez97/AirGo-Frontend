@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,15 +37,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.features.map.helpers.configureMapView
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel.SaveState
@@ -52,6 +58,12 @@ import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.airgo.airgoApp.features.tracking.data.BadgeResponse
+import com.airgo.airgoApp.features.map.helpers.configureMapView
 
 private const val SEC_PER_MIN = 60
 private const val TRACKING_ROUTE_PANEL = 0.9f
@@ -79,12 +91,85 @@ fun trackingSummaryScreen(
             avgSpeedKmh = data.avgSpeedKmh,
         )
 
+    var showBadgeDialog by remember { mutableStateOf<com.airgo.airgoApp.features.profile.data.BadgeDefinition?>(null) }
+
     LaunchedEffect(saveState) {
         if (saveState is SaveState.Success) {
+            val response = saveState.response
+            if (response.newBadges != null && response.newBadges.isNotEmpty()) {
+                showBadgeDialog = com.airgo.airgoApp.features.profile.data.BadgeDefinition(response.newBadges.first().id, response.newBadges.first().nom, response.newBadges.first().descripcio, response.newBadges.first().icona, "", 0)
+            } else {
+                Toast.makeText(context, activitySavedText, Toast.LENGTH_SHORT).show()
+                viewModel.clearSummary()
+                viewModel.clearSaveState()
+                onSave()
+            }
+        }
+    }
+
+    if (showBadgeDialog != null) {
+        Dialog(onDismissRequest = {
+            showBadgeDialog = null
             Toast.makeText(context, activitySavedText, Toast.LENGTH_SHORT).show()
             viewModel.clearSummary()
             viewModel.clearSaveState()
             onSave()
+        }) {
+            Card(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = "Nova Insígnia!",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    if (showBadgeDialog?.icona != null) {
+                        coil.compose.AsyncImage(
+                            model = showBadgeDialog?.icona,
+                            contentDescription = "Icona Insignia",
+                            modifier = Modifier.size(80.dp)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Default Badge Icon",
+                            modifier = Modifier.size(80.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = showBadgeDialog?.nom ?: "",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = showBadgeDialog?.descripcio ?: "",
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(onClick = {
+                        showBadgeDialog = null
+                        Toast.makeText(context, activitySavedText, Toast.LENGTH_SHORT).show()
+                        viewModel.clearSummary()
+                        viewModel.clearSaveState()
+                        onSave()
+                    }) {
+                        Text("Acceptar")
+                    }
+                }
+            }
         }
     }
 

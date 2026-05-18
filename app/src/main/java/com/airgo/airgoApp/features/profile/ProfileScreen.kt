@@ -48,11 +48,12 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.network.UserPreferencesRepository
 import com.airgo.airgoApp.core.network.dataStore
-import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
+import com.airgo.airgoApp.features.profile.components.BadgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
 import com.airgo.airgoApp.features.profile.components.profileUserInfoCard
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
+import com.airgo.airgoApp.features.profile.components.BadgesZone
 import com.airgo.airgoApp.features.settings.account.accountSettingsScreen
 import com.airgo.airgoApp.features.settings.settingsScreen
 import kotlinx.coroutines.launch
@@ -146,6 +147,7 @@ fun profileScreen(
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
             onShowDeleteDialog = { showDeleteDialog = true },
             onLogout = onLogout,
+            badges = viewModel.badges.collectAsState().value
         )
     }
 
@@ -209,12 +211,14 @@ fun showProfileInfo(
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
     onSettingsClick: () -> Unit,
+    badges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         showProfileInfoContent(
             profileInfo = profileInfo,
             uiState = uiState,
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
+            badges = badges
         )
 
         showProfileInfoSettingsButton(onSettingsClick = onSettingsClick)
@@ -226,6 +230,7 @@ private fun showProfileInfoContent(
     profileInfo: ProfileScreen,
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
+    badges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>
 ) {
     Column(
         modifier =
@@ -253,7 +258,9 @@ private fun showProfileInfoContent(
             thickness = DividerDefaults.Thickness,
             color = DividerDefaults.color,
         )
-        badgesAndActivitiesZone()
+        BadgesZone(badges = badges)
+        Spacer(modifier = Modifier.height(16.dp))
+        BadgesAndActivitiesZone()
 
         Spacer(modifier = Modifier.height(32.dp))
     }
@@ -289,6 +296,7 @@ fun profileNavGraph(
     singlePhotoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, android.net.Uri?>,
     onShowDeleteDialog: () -> Unit,
     onLogout: () -> Unit,
+    badges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>
 ) {
     NavHost(
         navController = navController,
@@ -307,6 +315,7 @@ fun profileNavGraph(
                 onSettingsClick = {
                     navController.navigate(ProfileNestedRoute.SETTINGS.route)
                 },
+                badges = badges
             )
         }
         // Settings main menu

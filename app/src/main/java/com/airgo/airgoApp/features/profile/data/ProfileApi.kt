@@ -21,10 +21,29 @@ data class ProfilePictureResponse(
     val newPictureUrl: String,
 )
 
+data class BadgeDefinition(
+    val id: Int,
+    val nom: String,
+    val descripcio: String,
+    val icona: String?,
+    val tipus: String,
+    @SerializedName("valor_requerit")
+    val valorRequerit: Int
+)
+
+data class UserBadgeResponse(
+    val insignia: BadgeDefinition,
+    @SerializedName("data_guanyada")
+    val dataGuanyada: String
+)
+
 interface ProfileApi {
     // Define API endpoints related to user profile here
     @GET(ApiEndpoints.USER_ACCOUNT_INFO)
     suspend fun getUserProfile(): UserProfileResponse
+
+    @GET("api/usuaris/me/insignies/")
+    suspend fun getUserBadges(): List<UserBadgeResponse>
 
     @DELETE(ApiEndpoints.DELETE_ACCOUNT)
     suspend fun deleteAccount(): Response<Void>
@@ -33,5 +52,5 @@ interface ProfileApi {
     @PATCH(ApiEndpoints.CHANGE_PROFILE_PICTURE)
     suspend fun updateProfilePicture(
         @Part image: MultipartBody.Part,
-    ): Response<ProfilePictureResponse> // O la clase de respuesta que te devuelvan (ej. ProfileResponse)
+    ): Response<ProfilePictureResponse> // O la clase de resposta que te devuelvan (ej. ProfileResponse)
 }
