@@ -3,7 +3,7 @@ package com.airgo.airgoApp.features.social.chat.data
 import com.google.gson.annotations.SerializedName
 
 data class Conversation(
-    val id: String, // Format per "idUser1-idUser2" on idUser1 < idUser2
+    val id: String,
     @SerializedName("other_user")
     val otherUser: String,
     @SerializedName("last_message")

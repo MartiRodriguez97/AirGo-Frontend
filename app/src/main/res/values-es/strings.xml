@@ -298,4 +298,9 @@
     <string name="forums">Foros</string>
     <string name="search_forum">Buscar foros...</string>
     <string name="no_forums_found">No se ha encontrado ningún foro</string>
+
+    <!-- feature/chat -->
+    <string name="begin_conversation">¡Comienza la conversación!</string>
+    <string name="message">Mensaje...</string>
+    <string name="send">Enviar</string>
 </resources>

@@ -296,4 +296,9 @@
     <string name="forums">Fòrums</string>
     <string name="search_forum">Cercar fòrums...</string>
     <string name="no_forums_found">No s\'ha trobat cap fòrum</string>
+
+    <!-- feature/chat -->
+    <string name="begin_conversation">Comença la conversa!</string>
+    <string name="message">Missatge...</string>
+    <string name="send">Enviar</string>
 </resources>

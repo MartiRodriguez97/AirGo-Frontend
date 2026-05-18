@@ -35,4 +35,9 @@ object ApiEndpoints {
     const val DELETE_FRIEND = "api/usuaris/me/friends/{amic_id}/"
 
     fun getFriendRespondEndpoint(amistatId: Int): String = "api/usuaris/me/friends/$amistatId/respond/"
+
+    const val CONVERSATIONS = "api/conversations/"
+    const val CONVERSATION_MESSAGES = "api/conversations/{id}/messages/"
+    const val CONVERSATION_READ = "api/conversations/{id}/read/"
+    const val DELETE_MESSAGE = "api/conversations/messages/{missatge_id}/"
 }
