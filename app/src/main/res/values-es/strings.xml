@@ -313,4 +313,8 @@
     <string name="tracking_stat_speed">Velocidad</string>
     <string name="tracking_unit_meters">%.0f m</string>
     <string name="tracking_unit_speed_kmh">%.1f km/h</string>
+
+    <!-- Post Activity Dialog -->
+    <string name="tracking_sensation_title">¿Cómo te has sentido?</string>
+    <string name="tracking_sensation_skip">Saltar</string>
 </resources>

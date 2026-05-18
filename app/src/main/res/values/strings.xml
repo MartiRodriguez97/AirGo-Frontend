@@ -315,4 +315,8 @@
     <string name="sensation_good">Good</string>
     <string name="sensation_very_good">Very good</string>
 
+    <!-- Post Activity Dialog -->
+    <string name="tracking_sensation_title">How did you feel?</string>
+    <string name="tracking_sensation_skip">Skip</string>
+
 </resources>

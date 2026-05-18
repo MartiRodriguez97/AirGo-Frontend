@@ -196,7 +196,7 @@ fun postActivitySensationDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "¿Qué tal te has sentido?",
+                text = stringResource(R.string.tracking_sensation_title),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -236,7 +236,7 @@ fun postActivitySensationDialog(
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 // Omitir
-                Text("Saltar")
+                Text(stringResource(R.string.tracking_sensation_skip))
             }
         },
     )
