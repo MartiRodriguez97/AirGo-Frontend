@@ -27,10 +27,8 @@ data class Message(
 )
 
 data class WebSocketMessage(
-    val type: String,
-    val message: String? = null,
     val id: Int? = null,
-    @SerializedName("emissor")
+    @SerializedName("emissor_id")
     val emissor: Int? = null,
     @SerializedName("emissor_username")
     val emissorUsername: String? = null,

@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,13 +57,20 @@ import com.airgo.airgoApp.features.social.chat.data.Message
 import com.airgo.airgoApp.features.social.chat.domain.ChatUiState
 import com.airgo.airgoApp.features.social.chat.domain.ChatViewModel
 
-private const val MAX_BUBBLE_WIDTH_FRACTION = 0.75f
-private val OwnBubbleShape = RoundedCornerShape(
-    topStart = 18.dp, topEnd = 18.dp, bottomStart = 18.dp, bottomEnd = 4.dp
-)
-private val OtherBubbleShape = RoundedCornerShape(
-    topStart = 4.dp, topEnd = 18.dp, bottomStart = 18.dp, bottomEnd = 18.dp
-)
+private val OwnBubbleShape =
+    RoundedCornerShape(
+        topStart = 18.dp,
+        topEnd = 18.dp,
+        bottomStart = 18.dp,
+        bottomEnd = 4.dp,
+    )
+private val OtherBubbleShape =
+    RoundedCornerShape(
+        topStart = 4.dp,
+        topEnd = 18.dp,
+        bottomStart = 18.dp,
+        bottomEnd = 18.dp,
+    )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,9 +85,7 @@ fun chatScreen(
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(Unit) {
-        viewModel.init(conversationId, otherUserId)
-    }
+    LaunchedEffect(Unit) { viewModel.init(conversationId, otherUserId) }
 
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
@@ -90,19 +94,11 @@ fun chatScreen(
     }
 
     Scaffold(
-        topBar = {
-            chatTopBar(
-                otherUsername = otherUsername,
-                onBack = onBack,
-            )
-        },
+        topBar = { chatTopBar(otherUsername = otherUsername, onBack = onBack) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .imePadding(),
+            modifier = Modifier.fillMaxSize().padding(innerPadding).imePadding(),
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 when (uiState) {
@@ -129,13 +125,11 @@ fun chatScreen(
                     is ChatUiState.Success -> {
                         LazyColumn(
                             state = listState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 12.dp),
+                            modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp),
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                                top = 16.dp, bottom = 8.dp,
-                            ),
+                            contentPadding =
+                                androidx.compose.foundation.layout
+                                    .PaddingValues(top = 16.dp, bottom = 8.dp),
                         ) {
                             items(messages, key = { it.id }) { message ->
                                 messageBubble(
@@ -167,10 +161,11 @@ private fun chatTopBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -195,16 +190,15 @@ private fun chatTopBar(
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Tornar")
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
     )
 }
 
 @Composable
-private fun chatEmptyState(
-    modifier: Modifier = Modifier,
-) {
+private fun chatEmptyState(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -226,22 +220,28 @@ private fun messageBubble(
     var showDelete by remember { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp),
         horizontalArrangement = if (isOwn) Arrangement.End else Arrangement.Start,
         verticalAlignment = Alignment.Bottom,
     ) {
         if (!isOwn) {
             Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                modifier =
+                    Modifier
+                        .size(28.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = message.emissorUsername.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                    text =
+                        message.emissorUsername
+                            .firstOrNull()
+                            ?.uppercaseChar()
+                            ?.toString() ?: "?",
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -265,7 +265,12 @@ private fun messageBubble(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                     style = MaterialTheme.typography.bodyMedium,
                     lineHeight = 20.sp,
-                    color = if (isOwn) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    color =
+                        if (isOwn) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                 )
             }
             if (isOwn && showDelete) {
@@ -306,9 +311,10 @@ private fun chatInputBar(
         tonalElevation = 2.dp,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
@@ -323,20 +329,25 @@ private fun chatInputBar(
                 modifier = Modifier.weight(1f),
                 maxLines = 5,
                 shape = RoundedCornerShape(24.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                ),
+                colors =
+                    OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    ),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (text.isNotBlank()) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.surfaceVariant
-                    ),
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (text.isNotBlank()) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            },
+                        ),
                 contentAlignment = Alignment.Center,
             ) {
                 IconButton(
@@ -351,8 +362,12 @@ private fun chatInputBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Send,
                         contentDescription = "Enviar",
-                        tint = if (text.isNotBlank()) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint =
+                            if (text.isNotBlank()) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
                         modifier = Modifier.size(20.dp),
                     )
                 }

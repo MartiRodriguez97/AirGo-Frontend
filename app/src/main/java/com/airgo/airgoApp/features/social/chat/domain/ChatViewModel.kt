@@ -7,7 +7,10 @@ import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.social.chat.data.Message
+import com.airgo.airgoApp.features.social.chat.data.WebSocketMessage
 import com.google.gson.Gson
+import com.google.gson.JsonParseException
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -35,6 +38,10 @@ sealed class ChatUiState {
         val message: String?,
     ) : ChatUiState()
 }
+
+private const val ERROR_CODE_NOT_FOUND = 404
+
+private const val SOCKET_RESPONSE = 1000
 
 class ChatViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
@@ -64,12 +71,11 @@ class ChatViewModel : ViewModel() {
             _uiState.value = ChatUiState.Loading
             try {
                 val msgs = RetrofitProvider.chatApi.getMessages(convId)
-                _messages.value = msgs.reversed()
-                _uiState.value = if (msgs.isEmpty()) ChatUiState.Empty else ChatUiState.Success(msgs.reversed())
+                _messages.value = msgs
+                _uiState.value = if (msgs.isEmpty()) ChatUiState.Empty else ChatUiState.Success(msgs)
                 RetrofitProvider.chatApi.markAsRead(convId)
             } catch (e: HttpException) {
-                if (e.code() == 404) {
-                    // Conversa nova, sense missatges encara
+                if (e.code() == ERROR_CODE_NOT_FOUND) {
                     _messages.value = emptyList()
                     _uiState.value = ChatUiState.Empty
                 } else {
@@ -91,6 +97,8 @@ class ChatViewModel : ViewModel() {
                 .replace("https://", "wss://")
                 .trimEnd('/') + "/ws/chat/$otherUserId/?token=$token"
 
+        Log.d(LOG_TAG, "Connectant WebSocket a: $wsUrl")
+
         val client = OkHttpClient()
         val request = Request.Builder().url(wsUrl).build()
 
@@ -110,13 +118,15 @@ class ChatViewModel : ViewModel() {
                         webSocket: WebSocket,
                         text: String,
                     ) {
-                        Log.d(LOG_TAG, "WebSocket message: $text")
+                        Log.d(LOG_TAG, "Rebut raw: $text")
                         try {
-                            val wsMsg = gson.fromJson(
-                                text,
-                                com.airgo.airgoApp.features.social.chat.data.WebSocketMessage::class.java
+                            val wsMsg = gson.fromJson(text, WebSocketMessage::class.java)
+                            Log.d(
+                                LOG_TAG,
+                                "Parsed: id=${wsMsg.id}, " +
+                                    "emissor=${wsMsg.emissor}, contingut=${wsMsg.contingut}",
                             )
-                            if (wsMsg.type == "chat_message" && wsMsg.contingut != null) {
+                            if (wsMsg.contingut != null) {
                                 val newMsg =
                                     Message(
                                         id = wsMsg.id ?: 0,
@@ -126,30 +136,16 @@ class ChatViewModel : ViewModel() {
                                         enviatAt = wsMsg.enviatAt ?: "",
                                         llegit = false,
                                     )
-                                _messages.value = _messages.value + newMsg
-                                _uiState.value = ChatUiState.Success(_messages.value)
+                                viewModelScope.launch {
+                                    _messages.value = _messages.value + newMsg
+                                    _uiState.value = ChatUiState.Success(_messages.value)
+                                }
                             }
-                        } catch (e: Exception) {
-                            Log.e(LOG_TAG, "Error parsing WebSocket message", e)
+                        } catch (e: JsonSyntaxException) {
+                            Log.e(LOG_TAG, "Invalid JSON format", e)
+                        } catch (e: JsonParseException) {
+                            Log.e(LOG_TAG, "JSON parsing error", e)
                         }
-                    }
-
-                    override fun onFailure(
-                        webSocket: WebSocket,
-                        t: Throwable,
-                        response: Response?,
-                    ) {
-                        _isConnected.value = false
-                        Log.e(LOG_TAG, "WebSocket failure: ${t.message}", t)
-                    }
-
-                    override fun onClosed(
-                        webSocket: WebSocket,
-                        code: Int,
-                        reason: String,
-                    ) {
-                        _isConnected.value = false
-                        Log.d(LOG_TAG, "WebSocket closed: $reason")
                     }
                 },
             )
@@ -157,7 +153,8 @@ class ChatViewModel : ViewModel() {
 
     fun sendMessage(text: String) {
         if (text.isBlank()) return
-        val payload = gson.toJson(mapOf("type" to "chat_message", "message" to text))
+        val payload = gson.toJson(mapOf("missatge" to text))
+        Log.d(LOG_TAG, "Enviant: $payload")
         webSocket?.send(payload)
     }
 
@@ -167,14 +164,16 @@ class ChatViewModel : ViewModel() {
                 RetrofitProvider.chatApi.deleteMessage(messageId)
                 _messages.value = _messages.value.filter { it.id != messageId }
                 if (_messages.value.isEmpty()) _uiState.value = ChatUiState.Empty
-            } catch (e: Exception) {
-                Log.e(LOG_TAG, "Error deleting message: ${e.message}", e)
+            } catch (e: HttpException) {
+                Log.e(LOG_TAG, "HTTP error deleting message: ${e.code()}", e)
+            } catch (e: IOException) {
+                Log.e(LOG_TAG, "Network error deleting message: ${e.message}", e)
             }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        webSocket?.close(1000, "ViewModel cleared")
+        webSocket?.close(SOCKET_RESPONSE, "ViewModel cleared")
     }
 }
