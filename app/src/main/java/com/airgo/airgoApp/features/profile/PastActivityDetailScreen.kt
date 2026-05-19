@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,8 +35,6 @@ import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.trackingSummaryRouteCard
 import com.airgo.airgoApp.features.tracking.trackingSummaryStatsCard
 import org.osmdroid.util.GeoPoint
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,23 +87,25 @@ fun pastActivityDetailScreen(
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (activity.sensacio != null) {
-                    pastActivitySensationCard(sensacioValue = activity.sensacio,
-                        onClick = {showEditSensationDialog = true})
+                    pastActivitySensationCard(
+                        sensacioValue = activity.sensacio,
+                        onClick = { showEditSensationDialog = true },
+                    )
                 }
                 trackingSummaryStatsCard(data = trackingDataMapeado)
                 trackingSummaryRouteCard(trackPoints = geoPoints)
             }
             if (showEditSensationDialog) {
-                // Reutilizamos el mismo diálogo que para PostActivity (definido en TrackingIUComponents)
                 postActivitySensationDialog(
                     onDismiss = { showEditSensationDialog = false },
                     onSensationSelected = { nuevoValor ->
                         // Llamamos al viewModel para guardar el cambio en el backend
                         activityViewModel.updateActivitySensation(activityId, nuevoValor)
                         showEditSensationDialog = false
-                    }
+                    },
                 )
             }
         } else {

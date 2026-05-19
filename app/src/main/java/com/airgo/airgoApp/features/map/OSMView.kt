@@ -181,8 +181,8 @@ fun osmView(
 
     if (trackingViewModel.showSensationDialog) {
         postActivitySensationDialog(
-            onDismiss = { trackingViewModel.skipSensation() },
-            onSensationSelected = { valor -> trackingViewModel.selectSensation(valor) },
+            onDismiss = { trackingViewModel.submitSensation(null) },
+            onSensationSelected = { valor -> trackingViewModel.submitSensation(valor) },
         )
     }
     osmMapContainer(state = mapState, modifier = modifier)

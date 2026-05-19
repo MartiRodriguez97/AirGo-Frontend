@@ -103,19 +103,7 @@ class TrackingViewModel : ViewModel() {
         }
     }
 
-    fun selectSensation(valor: Int) {
-        selectedSensation = valor
-        showSensationDialog = false
-        hasSummary = true
-    }
-
-    fun skipSensation() {
-        selectedSensation = null
-        showSensationDialog = false
-        hasSummary = true
-    }
-
-    fun submitSensation(sensationValue: Int?) {
+    fun submitSensation(sensationValue: Int? = null) {
         selectedSensation = sensationValue
         showSensationDialog = false
         hasSummary = true // Ahora sí, navegamos al resumen

@@ -10,6 +10,7 @@ data class ActivityResponse(
     @SerializedName("route_points") val routePoints: List<List<Double>>? = null,
     @SerializedName("sensacio") val sensacio: Int? = null,
 )
+
 data class UpdateSensationRequest(
-    @SerializedName("sensacio") val sensacio: Int
+    @SerializedName("sensacio") val sensacio: Int,
 )
