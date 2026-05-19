@@ -119,7 +119,16 @@ private fun bottomNavigationBar(
     val hiddenRoutes = setOf("questionnaire", "favorites")
     val isFriendProfile = currentRoute.orEmpty().startsWith("friend_profile")
     val isChatScreen = currentRoute.orEmpty().startsWith("chat")
-    val showBar = currentRoute !in hiddenRoutes && !isFriendProfile && !isChatScreen
+    val isPlanDetails = currentRoute.orEmpty().startsWith("planDetails")
+    val isActivityDetail = currentRoute == "activityDetail"
+    val isTrackingSummary = currentRoute == "tracking_summary"
+    val showBar =
+        currentRoute !in hiddenRoutes &&
+            !isFriendProfile &&
+            !isChatScreen &&
+            !isPlanDetails &&
+            !isActivityDetail &&
+            !isTrackingSummary
 
     if (showBar) {
         NavigationBar {
