@@ -23,6 +23,7 @@
 
         <activity
             android:name="com.airgo.airgoApp.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:theme="@style/Theme.AirGo.Starting">
             <intent-filter>
