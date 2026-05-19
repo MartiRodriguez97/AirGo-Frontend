@@ -7,6 +7,8 @@ data class SaveActivityRequest(
     val distanceMeters: Double,
     @SerializedName("duration_seconds")
     val durationSeconds: Long,
+    @SerializedName("completat")
+    val completat: Boolean,
     @SerializedName("avg_speed_kmh")
     val avgSpeedKmh: Double,
     @SerializedName("route_points")

@@ -234,6 +234,7 @@ class TrackingViewModel : ViewModel() {
                         distanceMeters = data.distanceMeters,
                         durationSeconds = data.elapsedSeconds,
                         avgSpeedKmh = data.avgSpeedKmh,
+                        completat = true,
                         routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
                     )
                 val response = RetrofitProvider.trackingApi.saveActivity(request)
