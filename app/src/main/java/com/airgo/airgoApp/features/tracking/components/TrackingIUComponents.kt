@@ -3,9 +3,11 @@ package com.airgo.airgoApp.features.tracking.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.outlined.SentimentSatisfied
 import androidx.compose.material.icons.outlined.SentimentVeryDissatisfied
 import androidx.compose.material.icons.outlined.SentimentVerySatisfied
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -31,12 +34,19 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,11 +57,6 @@ import com.airgo.airgoApp.features.tracking.data.TrackingData
 private const val TRACKING_PANEL_WIDTH = 0.9f
 private const val SEC_PER_MIN = 60
 
-// private const val COLOR_RED = 0xFFD32F2F
-// private const val COLOR_ORANGE = (0xFFF57C00)
-// private const val COLOR_YELLOW = (0xFFFBC02D)
-// private const val COLOR_LIGHT_GREEN = (0xFF689F38)
-// private const val COLOR_DARK_GREEN = (0xFF2E7D32)
 private const val COLOR_DARK_BLUE = 0xFF1565C0
 private const val LEVEL_ONE = 1
 private const val LEVEL_TWO = 2
@@ -354,3 +359,62 @@ private fun getSensationDetails(sensacioValue: Int) =
                 Icons.Outlined.SentimentNeutral,
             )
     }
+
+@Composable
+fun pastActivityCommentCard(
+    initialComment: String,
+    onSaveComment: (String) -> Unit,
+) {
+    var commentText by remember { mutableStateOf(initialComment) }
+    val focusManager = LocalFocusManager.current
+    LaunchedEffect(initialComment) {
+        commentText = initialComment
+    }
+
+    val isModified = commentText != initialComment
+
+    Card(
+        modifier = Modifier.fillMaxWidth(TRACKING_PANEL_WIDTH),
+        elevation = CardDefaults.cardElevation(4.dp),
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.activity_comment_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black,
+            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            OutlinedTextField(
+                value = commentText,
+                onValueChange = { commentText = it },
+                placeholder = { Text(stringResource(R.string.activity_comment_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                maxLines = 5,
+                textStyle = MaterialTheme.typography.bodyMedium,
+            )
+
+            if (isModified) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        onSaveComment(commentText)
+                        focusManager.clearFocus()
+                    },
+                    modifier = Modifier.align(Alignment.End),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.activity_comment_btn_save),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+            }
+        }
+    }
+}

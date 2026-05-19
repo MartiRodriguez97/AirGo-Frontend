@@ -21,4 +21,10 @@ interface ActivityApi {
         @Path("id") id: Int,
         @Body request: UpdateSensationRequest,
     ): Response<Void>
+
+    @PATCH("api/exercicis/{id}/")
+    suspend fun updateActivityComment(
+        @Path("id") id: Int,
+        @Body request: UpdateCommentRequest,
+    ): Response<Void>
 }

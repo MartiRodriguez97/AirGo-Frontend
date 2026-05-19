@@ -315,4 +315,8 @@
     <string name="tracking_sensation_skip">Saltar</string>
     <string name="tracking_sensation_no_record">Sense registre</string>
 
+    <string name="activity_comment_title">Comentaris de l\'activitat</string>
+    <string name="activity_comment_placeholder">Com ha anat la ruta?</string>
+    <string name="activity_comment_btn_save">Desar nota</string>
+
 </resources>

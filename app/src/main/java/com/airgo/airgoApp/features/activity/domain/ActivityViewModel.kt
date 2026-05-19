@@ -1,10 +1,10 @@
 package com.airgo.airgoApp.features.activity.domain
-
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.features.activity.data.ActivityResponse
+import com.airgo.airgoApp.features.activity.data.UpdateCommentRequest
 import com.airgo.airgoApp.features.activity.data.UpdateSensationRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -109,6 +109,40 @@ class ActivityViewModel : ViewModel() {
                 Log.e(TAG, "Network error updating sensation", e)
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "HTTP ${e.code()} updating sensation", e)
+            }
+        }
+    }
+
+    fun updateActivityComment(
+        activityId: Int,
+        newComment: String,
+    ) {
+        viewModelScope.launch {
+            try {
+                val request = UpdateCommentRequest(comentari = newComment)
+                val response = RetrofitProvider.activityApi.updateActivityComment(activityId, request)
+
+                if (response.isSuccessful) {
+                    val currentState = _uiState.value
+                    if (currentState is ActivityUiState.Success) {
+                        val updatedActivities =
+                            currentState.activities.map { activity ->
+                                if (activity.id == activityId) {
+                                    activity.copy(comentari = newComment)
+                                } else {
+                                    activity
+                                }
+                            }
+                        _uiState.value = ActivityUiState.Success(updatedActivities)
+                    }
+                    Log.d(TAG, "Comment updated successfully for activity $activityId")
+                } else {
+                    Log.e(TAG, "Update comment failed: ${response.code()}")
+                }
+            } catch (e: IOException) {
+                Log.e(TAG, "Network error updating comment", e)
+            } catch (e: retrofit2.HttpException) {
+                Log.e(TAG, "HTTP ${e.code()} updating comment", e)
             }
         }
     }

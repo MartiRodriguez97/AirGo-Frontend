@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.activity.domain.ActivityUiState
 import com.airgo.airgoApp.features.activity.domain.ActivityViewModel
+import com.airgo.airgoApp.features.tracking.components.pastActivityCommentCard
 import com.airgo.airgoApp.features.tracking.components.pastActivitySensationCard
 import com.airgo.airgoApp.features.tracking.components.postActivitySensationDialog
 import com.airgo.airgoApp.features.tracking.data.TrackingData
@@ -95,6 +96,13 @@ fun pastActivityDetailScreen(
                         onClick = { showEditSensationDialog = true },
                     )
                 }
+
+                pastActivityCommentCard(
+                    initialComment = activity.comentari ?: "",
+                    onSaveComment = { nuevoComentario ->
+                        activityViewModel.updateActivityComment(activityId, nuevoComentario)
+                    },
+                )
                 trackingSummaryStatsCard(data = trackingDataMapeado)
                 trackingSummaryRouteCard(trackPoints = geoPoints)
             }

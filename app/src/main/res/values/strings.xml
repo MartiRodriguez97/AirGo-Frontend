@@ -320,5 +320,9 @@
     <string name="tracking_sensation_skip">Skip</string>
     <string name="tracking_sensation_no_record">No record</string>
 
+    <string name="activity_comment_title">Activity comments</string>
+    <string name="activity_comment_placeholder">How did the route go?</string>
+    <string name="activity_comment_btn_save">Save note</string>
+
 
 </resources>
