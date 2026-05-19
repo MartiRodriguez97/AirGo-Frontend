@@ -1,10 +1,11 @@
 package com.airgo.airgoApp.features.activity.domain
-
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.features.activity.data.ActivityResponse
+import com.airgo.airgoApp.features.activity.data.UpdateCommentRequest
+import com.airgo.airgoApp.features.activity.data.UpdateSensationRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -45,7 +46,8 @@ class ActivityViewModel : ViewModel() {
                     if (activities.isEmpty()) {
                         ActivityUiState.Empty
                     } else {
-                        ActivityUiState.Success(activities)
+                        val sortedActivities = activities.sortedByDescending { it.id }
+                        ActivityUiState.Success(sortedActivities)
                     }
             } catch (e: IOException) {
                 Log.e(TAG, "Network error loading activities", e)
@@ -71,6 +73,76 @@ class ActivityViewModel : ViewModel() {
                 Log.e(TAG, "Network error deleting activity", e)
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "HTTP ${e.code()} deleting activity", e)
+            }
+        }
+    }
+
+    fun updateActivitySensation(
+        activityId: Int,
+        newSensationValue: Int,
+    ) {
+        viewModelScope.launch {
+            try {
+                val request = UpdateSensationRequest(sensacio = newSensationValue)
+
+                val response = RetrofitProvider.activityApi.updateActivitySensation(activityId, request)
+
+                if (response.isSuccessful) {
+                    val currentState = _uiState.value
+                    if (currentState is ActivityUiState.Success) {
+                        val updatedActivities =
+                            currentState.activities.map { activity ->
+                                if (activity.id == activityId) {
+                                    activity.copy(sensacio = newSensationValue)
+                                } else {
+                                    activity
+                                }
+                            }
+
+                        _uiState.value = ActivityUiState.Success(updatedActivities)
+                    }
+                    Log.d(TAG, "Sensation updated successfully for activity $activityId")
+                } else {
+                    Log.e(TAG, "Update failed: ${response.code()}")
+                }
+            } catch (e: IOException) {
+                Log.e(TAG, "Network error updating sensation", e)
+            } catch (e: retrofit2.HttpException) {
+                Log.e(TAG, "HTTP ${e.code()} updating sensation", e)
+            }
+        }
+    }
+
+    fun updateActivityComment(
+        activityId: Int,
+        newComment: String,
+    ) {
+        viewModelScope.launch {
+            try {
+                val request = UpdateCommentRequest(comentari = newComment)
+                val response = RetrofitProvider.activityApi.updateActivityComment(activityId, request)
+
+                if (response.isSuccessful) {
+                    val currentState = _uiState.value
+                    if (currentState is ActivityUiState.Success) {
+                        val updatedActivities =
+                            currentState.activities.map { activity ->
+                                if (activity.id == activityId) {
+                                    activity.copy(comentari = newComment)
+                                } else {
+                                    activity
+                                }
+                            }
+                        _uiState.value = ActivityUiState.Success(updatedActivities)
+                    }
+                    Log.d(TAG, "Comment updated successfully for activity $activityId")
+                } else {
+                    Log.e(TAG, "Update comment failed: ${response.code()}")
+                }
+            } catch (e: IOException) {
+                Log.e(TAG, "Network error updating comment", e)
+            } catch (e: retrofit2.HttpException) {
+                Log.e(TAG, "HTTP ${e.code()} updating comment", e)
             }
         }
     }

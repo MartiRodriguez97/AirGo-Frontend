@@ -298,4 +298,33 @@
     <string name="forums">Foros</string>
     <string name="search_forum">Buscar foros...</string>
     <string name="no_forums_found">No se ha encontrado ningún foro</string>
+    <string name="sensation_very_bad">Muy mal</string>
+    <string name="sensation_bad">Mal</string>
+    <string name="sensation_normal">Normal</string>
+    <string name="sensation_good">Bien</string>
+    <string name="sensation_very_good">Muy bien</string>
+
+
+
+    <!-- Tracking Buttons -->
+    <string name="tracking_btn_start">Empezar</string>
+    <string name="tracking_btn_stop">Parar</string>
+
+    <!-- Tracking Panel Labels -->
+    <string name="tracking_label_default_activity">Actividad</string>
+    <string name="tracking_label_target">Objetivo: %.2f km</string>
+    <string name="tracking_stat_distance">Distancia</string>
+    <string name="tracking_stat_time">Tiempo</string>
+    <string name="tracking_stat_speed">Velocidad</string>
+    <string name="tracking_unit_meters">%.0f m</string>
+    <string name="tracking_unit_speed_kmh">%.1f km/h</string>
+
+    <!-- Post Activity Dialog -->
+    <string name="tracking_sensation_title">¿Cómo te has sentido?</string>
+    <string name="tracking_sensation_skip">Saltar</string>
+    <string name="tracking_sensation_no_record">Sin registro</string>
+
+    <string name="activity_comment_title">Comentarios de la actividad</string>
+    <string name="activity_comment_placeholder">¿Cómo ha ido la ruta?</string>
+    <string name="activity_comment_btn_save">Guardar nota</string>
 </resources>

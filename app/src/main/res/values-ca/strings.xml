@@ -296,4 +296,32 @@
     <string name="forums">Fòrums</string>
     <string name="search_forum">Cercar fòrums...</string>
     <string name="no_forums_found">No s\'ha trobat cap fòrum</string>
+    <string name="sensation_very_bad">Molt malament</string>
+    <string name="sensation_bad">Malament</string>
+    <string name="sensation_normal">Normal</string>
+    <string name="sensation_good">Bé</string>
+    <string name="sensation_very_good">Molt bé</string>
+
+    <!-- Tracking Buttons -->
+    <string name="tracking_btn_start">Començar</string>
+    <string name="tracking_btn_stop">Aturar</string>
+
+    <!-- Tracking Panel Labels -->
+    <string name="tracking_label_default_activity">Activitat</string>
+    <string name="tracking_label_target">Objectiu: %.2f km</string>
+    <string name="tracking_stat_distance">Distància</string>
+    <string name="tracking_stat_time">Temps</string>
+    <string name="tracking_stat_speed">Velocitat</string>
+    <string name="tracking_unit_meters">%.0f m</string>
+    <string name="tracking_unit_speed_kmh">%.1f km/h</string>
+
+    <!-- Post Activity Dialog -->
+    <string name="tracking_sensation_title">Com t\'has sentit?</string>
+    <string name="tracking_sensation_skip">Saltar</string>
+    <string name="tracking_sensation_no_record">Sense registre</string>
+
+    <string name="activity_comment_title">Comentaris de l\'activitat</string>
+    <string name="activity_comment_placeholder">Com ha anat la ruta?</string>
+    <string name="activity_comment_btn_save">Desar nota</string>
+
 </resources>

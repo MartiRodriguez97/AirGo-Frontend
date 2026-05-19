@@ -1,6 +1,5 @@
 package com.airgo.airgoApp.features.map
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.widget.Toast
@@ -57,6 +56,7 @@ import com.airgo.airgoApp.features.map.helpers.createMapEventsOverlay
 import com.airgo.airgoApp.features.map.helpers.rememberGpsEnabledState
 import com.airgo.airgoApp.features.map.helpers.updateRouteElements
 import com.airgo.airgoApp.features.map.helpers.updateTrackingPolyline
+import com.airgo.airgoApp.features.tracking.components.postActivitySensationDialog
 import com.airgo.airgoApp.features.tracking.components.trackingPanel
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
@@ -178,6 +178,13 @@ fun osmView(
             ),
         )
     // Funció que pinta el mapa i les capes
+
+    if (trackingViewModel.showSensationDialog) {
+        postActivitySensationDialog(
+            onDismiss = { trackingViewModel.submitSensation(null) },
+            onSensationSelected = { valor -> trackingViewModel.submitSensation(valor) },
+        )
+    }
     osmMapContainer(state = mapState, modifier = modifier)
 }
 

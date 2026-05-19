@@ -63,6 +63,7 @@ enum class ProfileNestedRoute(
     HOME("profile_home"),
     SETTINGS("settings"),
     ACCOUNT_SETTINGS("account_settings"),
+    ACTIVITY_DETAIL("activity_detail/{activityId}"),
 }
 
 data class ProfileScreen(
@@ -209,12 +210,14 @@ fun showProfileInfo(
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
     onSettingsClick: () -> Unit,
+    navController: NavHostController,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         showProfileInfoContent(
             profileInfo = profileInfo,
             uiState = uiState,
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
+            navController = navController,
         )
 
         showProfileInfoSettingsButton(onSettingsClick = onSettingsClick)
@@ -226,6 +229,7 @@ private fun showProfileInfoContent(
     profileInfo: ProfileScreen,
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
+    navController: NavHostController,
 ) {
     Column(
         modifier =
@@ -253,7 +257,11 @@ private fun showProfileInfoContent(
             thickness = DividerDefaults.Thickness,
             color = DividerDefaults.color,
         )
-        badgesAndActivitiesZone()
+        badgesAndActivitiesZone(
+            onActivityClick = { id ->
+                navController.navigate("activity_detail/$id")
+            },
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
     }
@@ -307,6 +315,7 @@ fun profileNavGraph(
                 onSettingsClick = {
                     navController.navigate(ProfileNestedRoute.SETTINGS.route)
                 },
+                navController = navController,
             )
         }
         // Settings main menu
@@ -341,6 +350,31 @@ fun profileNavGraph(
                 onBackClick = { navController.popBackStack() }, // Go back
                 onShowDeleteDialog = onShowDeleteDialog,
                 onLogout = onLogout,
+            )
+        }
+
+        // activitat detallada
+        composable(
+            route = ProfileNestedRoute.ACTIVITY_DETAIL.route,
+            arguments =
+                listOf(
+                    androidx.navigation.navArgument(
+                        "activityId",
+                    ) { type = androidx.navigation.NavType.IntType },
+                ),
+            enterTransition = { slideInHorizontally { it } + fadeIn() },
+            exitTransition = { slideOutHorizontally { -it } + fadeOut() },
+            popEnterTransition = { slideInHorizontally { -it } + fadeIn() },
+            popExitTransition = { slideOutHorizontally { it } + fadeOut() },
+        ) { backStackEntry ->
+            val activityId = backStackEntry.arguments?.getInt("activityId") ?: -1
+            // Obtenemos el viewmodel que tiene la lista cargada
+            val activityViewModel: com.airgo.airgoApp.features.activity.domain.ActivityViewModel = viewModel()
+
+            pastActivityDetailScreen(
+                activityId = activityId,
+                activityViewModel = activityViewModel,
+                onBack = { navController.popBackStack() },
             )
         }
     }

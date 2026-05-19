@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.profile.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,7 +42,10 @@ import com.airgo.airgoApp.features.activity.domain.ActivityViewModel
 private const val SECONDS_PER_MINUTE = 60
 
 @Composable
-fun badgesAndActivitiesZone(viewModel: ActivityViewModel = viewModel()) {
+fun badgesAndActivitiesZone(
+    viewModel: ActivityViewModel = viewModel(),
+    onActivityClick: (Int) -> Unit,
+) {
     LaunchedEffect(Unit) {
         viewModel.loadActivities()
     }
@@ -110,6 +114,7 @@ fun badgesAndActivitiesZone(viewModel: ActivityViewModel = viewModel()) {
                         activityItem(
                             activity = activity,
                             onDelete = { viewModel.deleteActivity(activity.id) },
+                            onClick = { onActivityClick(activity.id) },
                         )
                     }
                 }
@@ -122,9 +127,13 @@ fun badgesAndActivitiesZone(viewModel: ActivityViewModel = viewModel()) {
 private fun activityItem(
     activity: ActivityResponse,
     onDelete: () -> Unit,
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(2.dp),
     ) {
         Row(
