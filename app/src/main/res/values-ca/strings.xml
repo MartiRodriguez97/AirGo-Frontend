@@ -313,5 +313,6 @@
     <!-- Post Activity Dialog -->
     <string name="tracking_sensation_title">Com t\'has sentit?</string>
     <string name="tracking_sensation_skip">Saltar</string>
+    <string name="tracking_sensation_no_record">Sense registre</string>
 
 </resources>

@@ -11,9 +11,8 @@ data class SaveActivityRequest(
     val avgSpeedKmh: Double,
     @SerializedName("route_points")
     val routePoints: List<List<Double>>,
-    // WIP
-    // @SerializedName("sensation_level")
-    // val sensationLevel: Int? = null
+    @SerializedName("sensacio")
+    val sensacio: Int? = null,
 )
 
 data class SaveActivityResponse(

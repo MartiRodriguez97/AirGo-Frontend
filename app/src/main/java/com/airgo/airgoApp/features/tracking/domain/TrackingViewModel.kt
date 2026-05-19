@@ -103,6 +103,18 @@ class TrackingViewModel : ViewModel() {
         }
     }
 
+    fun selectSensation(valor: Int) {
+        selectedSensation = valor
+        showSensationDialog = false
+        hasSummary = true
+    }
+
+    fun skipSensation() {
+        selectedSensation = null
+        showSensationDialog = false
+        hasSummary = true
+    }
+
     fun submitSensation(sensationValue: Int?) {
         selectedSensation = sensationValue
         showSensationDialog = false
@@ -246,6 +258,7 @@ class TrackingViewModel : ViewModel() {
                         durationSeconds = data.elapsedSeconds,
                         avgSpeedKmh = data.avgSpeedKmh,
                         routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
+                        sensacio = selectedSensation,
                     )
                 RetrofitProvider.trackingApi.saveActivity(request)
                 saveActivityPlanning()

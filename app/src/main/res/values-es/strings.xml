@@ -317,4 +317,5 @@
     <!-- Post Activity Dialog -->
     <string name="tracking_sensation_title">¿Cómo te has sentido?</string>
     <string name="tracking_sensation_skip">Saltar</string>
+    <string name="tracking_sensation_no_record">Sin registro</string>
 </resources>

@@ -1,9 +1,12 @@
 package com.airgo.airgoApp.features.tracking.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -17,6 +20,7 @@ import androidx.compose.material.icons.outlined.SentimentVerySatisfied
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,16 +30,27 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
-import com.airgo.airgoApp.features.tracking.data.ActivitySensation
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 
 private const val TRACKING_PANEL_WIDTH = 0.9f
 private const val SEC_PER_MIN = 60
+
+private const val COLOR_RED = 0xFFD32F2F
+private const val COLOR_ORANGE = (0xFFF57C00)
+private const val COLOR_YELLOW = (0xFFFBC02D)
+private const val COLOR_LIGHT_GREEN = (0xFF689F38)
+private const val COLOR_DARK_GREEN = (0xFF2E7D32)
+private const val LEVEL_ONE = 1
+private const val LEVEL_TWO = 2
+private const val LEVEL_THREE = 3
+private const val LEVEL_FOUR = 4
+private const val LEVEL_FIVE = 5
 
 data class TrackingFabState(
     val isTracking: Boolean,
@@ -208,25 +223,24 @@ fun postActivitySensationDialog(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                // Iteramos sobre las 5 sensaciones que definimos en el Enum
-                ActivitySensation.values().forEach { sensation ->
-                    val icon =
-                        when (sensation) {
-                            ActivitySensation.VERY_BAD -> Icons.Outlined.SentimentVeryDissatisfied
-                            ActivitySensation.BAD -> Icons.Outlined.SentimentDissatisfied
-                            ActivitySensation.NORMAL -> Icons.Outlined.SentimentNeutral
-                            ActivitySensation.GOOD -> Icons.Outlined.SentimentSatisfied
-                            ActivitySensation.VERY_GOOD -> Icons.Outlined.SentimentVerySatisfied
-                        }
+                val opcions =
+                    listOf(
+                        Triple(LEVEL_ONE, Icons.Outlined.SentimentVeryDissatisfied, Color(COLOR_RED)),
+                        Triple(LEVEL_TWO, Icons.Outlined.SentimentDissatisfied, Color(COLOR_ORANGE)),
+                        Triple(LEVEL_THREE, Icons.Outlined.SentimentNeutral, Color(COLOR_YELLOW)),
+                        Triple(LEVEL_FOUR, Icons.Outlined.SentimentSatisfied, Color(COLOR_LIGHT_GREEN)),
+                        Triple(LEVEL_FIVE, Icons.Outlined.SentimentVerySatisfied, Color(COLOR_DARK_GREEN)),
+                    )
 
+                opcions.forEach { (valor, icono, color) ->
                     IconButton(
-                        onClick = { onSensationSelected(sensation.value) },
+                        onClick = { onSensationSelected(valor) },
                         modifier = Modifier.size(48.dp),
                     ) {
                         Icon(
-                            imageVector = icon,
-                            contentDescription = stringResource(id = sensation.labelRes),
-                            tint = sensation.color,
+                            imageVector = icono,
+                            contentDescription = "Sensación $valor",
+                            tint = color,
                             modifier = Modifier.size(40.dp),
                         )
                     }
@@ -235,9 +249,58 @@ fun postActivitySensationDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                // Omitir
                 Text(stringResource(R.string.tracking_sensation_skip))
             }
         },
     )
+}
+@Composable
+fun pastActivitySensationCard(
+    sensacioValue: Int,
+    onClick: () -> Unit) {
+    // Definimos el texto, el icono y el color según el número (1 al 5)
+    val (texto, icono, color) = when (sensacioValue) {
+        LEVEL_ONE -> Triple(stringResource(R.string.sensation_very_bad), Icons.Outlined.SentimentVeryDissatisfied, Color(COLOR_RED))
+        LEVEL_TWO -> Triple(stringResource(R.string.sensation_bad), Icons.Outlined.SentimentDissatisfied, Color(COLOR_ORANGE))
+        LEVEL_THREE -> Triple(stringResource(R.string.sensation_normal), Icons.Outlined.SentimentNeutral, Color(COLOR_YELLOW))
+        LEVEL_FOUR -> Triple(stringResource(R.string.sensation_good), Icons.Outlined.SentimentSatisfied, Color(COLOR_LIGHT_GREEN))
+        LEVEL_FIVE -> Triple(stringResource(R.string.sensation_very_good), Icons.Outlined.SentimentVerySatisfied, Color(COLOR_DARK_GREEN))
+        else -> Triple(stringResource(R.string.tracking_sensation_no_record), Icons.Outlined.SentimentNeutral, Color.Gray)
+    }
+
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.elevatedCardElevation(2.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = stringResource(R.string.tracking_sensation_title),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = texto,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black
+                )
+            }
+
+            Icon(
+                imageVector = icono,
+                contentDescription = texto,
+                tint = color,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+    }
 }

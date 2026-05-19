@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
+import com.airgo.airgoApp.features.activity.data.UpdateSensationRequest
 
 sealed class ActivityUiState {
     object Loading : ActivityUiState()
@@ -71,6 +72,42 @@ class ActivityViewModel : ViewModel() {
                 Log.e(TAG, "Network error deleting activity", e)
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "HTTP ${e.code()} deleting activity", e)
+            }
+        }
+    }
+
+    fun updateActivitySensation(activityId: Int, newSensationValue: Int) {
+        viewModelScope.launch {
+            try {
+                // 1. Preparamos el cuerpo de la petición
+                val request = UpdateSensationRequest(sensacio = newSensationValue)
+
+                // 2. Hacemos la llamada PATCH a la API
+                val response = RetrofitProvider.activityApi.updateActivitySensation(activityId, request)
+
+                if (response.isSuccessful) {
+                    // 3. Si va bien, actualizamos la lista local en la UI sin hacer otra petición GET
+                    val currentState = _uiState.value
+                    if (currentState is ActivityUiState.Success) {
+                        val updatedActivities = currentState.activities.map { activity ->
+                            if (activity.id == activityId) {
+                                // Reemplazamos la actividad vieja por una copia con la nueva sensación
+                                activity.copy(sensacio = newSensationValue)
+                            } else {
+                                activity
+                            }
+                        }
+                        // Emitimos la lista actualizada
+                        _uiState.value = ActivityUiState.Success(updatedActivities)
+                    }
+                    Log.d(TAG, "Sensation updated successfully for activity $activityId")
+                } else {
+                    Log.e(TAG, "Update failed: ${response.code()}")
+                }
+            } catch (e: IOException) {
+                Log.e(TAG, "Network error updating sensation", e)
+            } catch (e: retrofit2.HttpException) {
+                Log.e(TAG, "HTTP ${e.code()} updating sensation", e)
             }
         }
     }

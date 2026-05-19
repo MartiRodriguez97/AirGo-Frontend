@@ -318,5 +318,7 @@
     <!-- Post Activity Dialog -->
     <string name="tracking_sensation_title">How did you feel?</string>
     <string name="tracking_sensation_skip">Skip</string>
+    <string name="tracking_sensation_no_record">No record</string>
+
 
 </resources>

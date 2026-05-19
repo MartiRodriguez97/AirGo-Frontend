@@ -181,13 +181,8 @@ fun osmView(
 
     if (trackingViewModel.showSensationDialog) {
         postActivitySensationDialog(
-            onDismiss = {
-                // Si el usuario le da a "Saltar" o toca fuera
-                trackingViewModel.submitSensation(null)
-            },
-            onSensationSelected = { sensationValue ->
-                trackingViewModel.submitSensation(sensationValue)
-            },
+            onDismiss = { trackingViewModel.skipSensation() },
+            onSensationSelected = { valor -> trackingViewModel.selectSensation(valor) },
         )
     }
     osmMapContainer(state = mapState, modifier = modifier)

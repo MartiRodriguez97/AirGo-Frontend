@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,10 +27,14 @@ import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.activity.domain.ActivityUiState
 import com.airgo.airgoApp.features.activity.domain.ActivityViewModel
+import com.airgo.airgoApp.features.tracking.components.pastActivitySensationCard
+import com.airgo.airgoApp.features.tracking.components.postActivitySensationDialog
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.trackingSummaryRouteCard
 import com.airgo.airgoApp.features.tracking.trackingSummaryStatsCard
 import org.osmdroid.util.GeoPoint
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,14 +45,13 @@ fun pastActivityDetailScreen(
 ) {
     val uiState = activityViewModel.uiState.collectAsState().value
 
-    // Extraemos la actividad específica de la memoria
     val activity =
         if (uiState is ActivityUiState.Success) {
             uiState.activities.find { it.id == activityId }
         } else {
             null
         }
-
+    var showEditSensationDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -83,9 +88,23 @@ fun pastActivityDetailScreen(
                         .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                // Reutilizamos vuestras tarjetas maravillosas:
+                if (activity.sensacio != null) {
+                    pastActivitySensationCard(sensacioValue = activity.sensacio,
+                        onClick = {showEditSensationDialog = true})
+                }
                 trackingSummaryStatsCard(data = trackingDataMapeado)
                 trackingSummaryRouteCard(trackPoints = geoPoints)
+            }
+            if (showEditSensationDialog) {
+                // Reutilizamos el mismo diálogo que para PostActivity (definido en TrackingIUComponents)
+                postActivitySensationDialog(
+                    onDismiss = { showEditSensationDialog = false },
+                    onSensationSelected = { nuevoValor ->
+                        // Llamamos al viewModel para guardar el cambio en el backend
+                        activityViewModel.updateActivitySensation(activityId, nuevoValor)
+                        showEditSensationDialog = false
+                    }
+                )
             }
         } else {
             Box(
