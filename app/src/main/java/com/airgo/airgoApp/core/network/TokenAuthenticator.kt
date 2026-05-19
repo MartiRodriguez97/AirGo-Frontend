@@ -58,20 +58,31 @@ class TokenAuthenticator : Authenticator {
             return null
         }
 
-        val refreshToken = SessionManager.refreshToken
-        val tokenRefreshed =
-            refreshToken?.let { token ->
-                runBlocking { refreshAccessToken(token) }
-            } ?: false
+        synchronized(this) {
+            val previousToken = response.request.header("Authorization")?.removePrefix("Bearer ")
+            if (previousToken != null && previousToken != SessionManager.accessToken) {
+                // El token ya fue refrescado por otro hilo
+                return response.request
+                    .newBuilder()
+                    .header("Authorization", "Bearer ${SessionManager.accessToken}")
+                    .build()
+            }
 
-        return if (tokenRefreshed) {
-            response.request
-                .newBuilder()
-                .header("Authorization", "Bearer ${SessionManager.accessToken}")
-                .build()
-        } else {
-            SessionManager.logout()
-            null
+            val refreshToken = SessionManager.refreshToken
+            val tokenRefreshed =
+                refreshToken?.let { token ->
+                    runBlocking { refreshAccessToken(token) }
+                } ?: false
+
+            return if (tokenRefreshed) {
+                response.request
+                    .newBuilder()
+                    .header("Authorization", "Bearer ${SessionManager.accessToken}")
+                    .build()
+            } else {
+                SessionManager.logout()
+                null
+            }
         }
     }
 

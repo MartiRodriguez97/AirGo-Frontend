@@ -88,7 +88,7 @@ private fun appContent(repository: UserPreferencesRepository) {
 
     LaunchedEffect(userPrefs) {
         val prefs = userPrefs
-        if (prefs != null && !isLoggedIn) {
+        if (prefs != null && (!isLoggedIn || SessionManager.accessToken == null)) {
             handleAutoLogin(
                 prefs,
                 onboardingViewModel,
@@ -99,10 +99,8 @@ private fun appContent(repository: UserPreferencesRepository) {
                 isLoggedIn = logged
                 needsOnboarding = onboarding
             }
-            isDataStoreLoaded = true
-        } else if (prefs == null) {
-            isDataStoreLoaded = true
         }
+        isDataStoreLoaded = true
     }
 
     appNavigation(
@@ -185,6 +183,7 @@ private suspend fun handleAutoLogin(
                 updateUserSession(response.body()!!, onboardingViewModel, onSync)
             } else if (response.code() == HTTP_ERROR_401 || response.code() == HTTP_ERROR_403) {
                 repository.clearSession()
+                onSync(null, null, false, false)
             }
         } catch (e: IOException) {
             Log.e("MainActivity", "Error during auto login", e)
