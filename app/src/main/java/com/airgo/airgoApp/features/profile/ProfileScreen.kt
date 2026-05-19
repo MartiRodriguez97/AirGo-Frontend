@@ -217,7 +217,6 @@ fun showProfileInfo(
             profileInfo = profileInfo,
             uiState = uiState,
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
-            onDeleteClicked = onDeleteClicked,
             navController = navController,
         )
 
@@ -230,7 +229,6 @@ private fun showProfileInfoContent(
     profileInfo: ProfileScreen,
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
-    onDeleteClicked: () -> Unit,
     navController: NavHostController,
 ) {
     Column(
