@@ -47,10 +47,11 @@ class ProfileScreenTest {
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
-    private fun setProfileScreen(
+    fun setProfileScreen(
         email: String? = "test@airgo.com",
         pictureUrl: String? = null,
         onAccountDeleted: () -> Unit = {},
+        onLogout: () -> Unit = {},
     ) {
         composeTestRule.setContent {
             profileScreen(
@@ -58,6 +59,7 @@ class ProfileScreenTest {
                 pictureUrl = pictureUrl,
                 viewModel = mockViewModel,
                 onAccountDeleted = onAccountDeleted,
+                onLogout = onLogout,
             )
         }
     }
@@ -235,6 +237,7 @@ class ProfileScreenTest {
                 pictureUrl = null,
                 viewModel = mockViewModel,
                 onAccountDeleted = { accountDeleted = true },
+                onLogout = {},
             )
         }
 

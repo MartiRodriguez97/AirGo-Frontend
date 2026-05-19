@@ -117,6 +117,7 @@ tasks.register<JacocoReport>("jacocoCombinedReport") {
 }
 
 dependencies {
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation(libs.androidx.foundation)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.core.ktx)

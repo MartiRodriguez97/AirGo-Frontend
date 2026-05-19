@@ -46,14 +46,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.network.UserPreferencesRepository
+import com.airgo.airgoApp.core.network.dataStore
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
-import com.airgo.airgoApp.features.profile.components.deleteAccountSection
 import com.airgo.airgoApp.features.profile.components.profileUserInfoCard
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
 import com.airgo.airgoApp.features.settings.account.accountSettingsScreen
 import com.airgo.airgoApp.features.settings.settingsScreen
+import kotlinx.coroutines.launch
 
 enum class ProfileNestedRoute(
     val route: String,
@@ -72,6 +74,21 @@ data class ProfileScreen(
     val initial: String,
 )
 
+fun createProfileInfo(
+    email: String?,
+    pictureUrl: String?,
+): ProfileScreen {
+    val currentPictureUrl = SessionManager.profilePictureUrl ?: pictureUrl
+    val displayName = SessionManager.username ?: email?.substringBefore('@') ?: "Usuario"
+    return ProfileScreen(
+        displayName = displayName,
+        email = email,
+        titol = SessionManager.titol ?: "",
+        currentPictureUrl = currentPictureUrl,
+        initial = displayName.firstOrNull()?.toString() ?: "U",
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun profileScreen(
@@ -79,6 +96,7 @@ fun profileScreen(
     pictureUrl: String?,
     viewModel: ProfileViewModel = viewModel(),
     onAccountDeleted: () -> Unit,
+    onLogout: () -> Unit,
 ) {
     val profileNavController = rememberNavController()
     // Observe back stack to trigger recompositions on return
@@ -87,24 +105,8 @@ fun profileScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
 
-    // Dynamic values from SessionManager or arguments
-    val currentPictureUrl = SessionManager.profilePictureUrl ?: pictureUrl
     val context = LocalContext.current
-    val displayName =
-        SessionManager.username
-            ?: email?.substringBefore('@')
-            ?: "Usuario"
-    val titol = SessionManager.titol ?: ""
-    val initial = displayName.firstOrNull()?.toString() ?: "U"
-
-    val profileInfo =
-        ProfileScreen(
-            displayName = displayName,
-            email = email,
-            titol = titol,
-            currentPictureUrl = currentPictureUrl,
-            initial = initial,
-        )
+    val profileInfo = createProfileInfo(email, pictureUrl)
 
     val singlePhotoPickerLauncher =
         rememberLauncherForActivityResult(
@@ -119,9 +121,22 @@ fun profileScreen(
     profileScreenLaunchedEffect(
         uiState = uiState,
         context = context,
-        onAccountDeleted = onAccountDeleted,
+        onAccountDeleted = {
+            val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+            scope.launch {
+                val prefsRepo = UserPreferencesRepository(context.dataStore)
+                prefsRepo.clearSession()
+            }
+            onAccountDeleted()
+        },
         onResetUiState = { viewModel.resetUiState() },
-        onPictureUpdateSuccess = { /* Automatically updated via recomposition */ },
+        onPictureUpdateSuccess = {
+            val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+            scope.launch {
+                val prefsRepo = UserPreferencesRepository(context.dataStore)
+                prefsRepo.saveSession(SessionManager.toUserPreferences())
+            }
+        },
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -131,6 +146,7 @@ fun profileScreen(
             uiState = uiState,
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
             onShowDeleteDialog = { showDeleteDialog = true },
+            onLogout = onLogout,
         )
     }
 
@@ -193,7 +209,6 @@ fun showProfileInfo(
     profileInfo: ProfileScreen,
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
-    onDeleteClicked: () -> Unit,
     onSettingsClick: () -> Unit,
     navController: NavHostController,
 ) {
@@ -251,11 +266,6 @@ private fun showProfileInfoContent(
         )
 
         Spacer(modifier = Modifier.height(32.dp))
-
-        deleteAccountSection(
-            uiState = uiState,
-            onDeleteClicked = onDeleteClicked,
-        )
     }
 }
 
@@ -288,6 +298,7 @@ fun profileNavGraph(
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, android.net.Uri?>,
     onShowDeleteDialog: () -> Unit,
+    onLogout: () -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -303,7 +314,6 @@ fun profileNavGraph(
                 profileInfo = profileInfo,
                 uiState = uiState,
                 singlePhotoPickerLauncher = singlePhotoPickerLauncher,
-                onDeleteClicked = onShowDeleteDialog,
                 onSettingsClick = {
                     navController.navigate(ProfileNestedRoute.SETTINGS.route)
                 },
@@ -338,7 +348,10 @@ fun profileNavGraph(
         ) {
             accountSettingsScreen(
                 displayName = profileInfo.displayName,
+                uiState = uiState,
                 onBackClick = { navController.popBackStack() }, // Go back
+                onShowDeleteDialog = onShowDeleteDialog,
+                onLogout = onLogout,
             )
         }
 

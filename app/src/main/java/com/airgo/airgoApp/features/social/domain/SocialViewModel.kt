@@ -7,7 +7,6 @@ import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.social.SocialRepository
-import com.airgo.airgoApp.features.social.data.UserSearchResult
 import com.airgo.airgoApp.features.social.friends.data.FriendRequestResponse
 import com.airgo.airgoApp.features.social.friends.data.FriendResponse
 import kotlinx.coroutines.FlowPreview
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.collections.filter
 
 enum class SocialTab { FRIENDS, SEARCH, REQUESTS, FORUMS }
 
@@ -47,7 +45,7 @@ sealed class SearchUiState {
     object Empty : SearchUiState()
 
     data class Success(
-        val users: List<UserSearchResult>,
+        val users: List<com.airgo.airgoApp.features.social.data.UserSearchResult>,
     ) : SearchUiState()
 
     data class Error(
@@ -69,8 +67,7 @@ sealed class RequestsUiState {
     ) : RequestsUiState()
 }
 
-private const val SEARCH_DEBOUNCE_MS = 400L
-private const val MIN_QUERY_LENGTH = 2
+private const val FRIENDS_DEBOUNCE_MS = 400L
 
 @OptIn(FlowPreview::class)
 class SocialViewModel : ViewModel() {
@@ -86,15 +83,21 @@ class SocialViewModel : ViewModel() {
     private val _friendsUiState = MutableStateFlow<FriendsUiState>(FriendsUiState.Loading)
     val friendsUiState: StateFlow<FriendsUiState> = _friendsUiState
 
-    // Search
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
-
-    private val _searchUiState = MutableStateFlow<SearchUiState>(SearchUiState.Idle)
-    val searchUiState: StateFlow<SearchUiState> = _searchUiState
-
-    private val _requestSentTo = MutableStateFlow<Set<Int>>(emptySet())
-    val requestSentTo: StateFlow<Set<Int>> = _requestSentTo
+    // Search — delegat a UserSearchHandler
+    private val searchHandler =
+        UserSearchHandler(
+            repository = repository,
+            scope = viewModelScope,
+            getFriendIds = {
+                (_friendsUiState.value as? FriendsUiState.Success)
+                    ?.friends
+                    ?.map { it.amic.id }
+                    ?.toSet() ?: emptySet()
+            },
+        )
+    val searchQuery: StateFlow<String> = searchHandler.searchQuery
+    val searchUiState: StateFlow<SearchUiState> = searchHandler.searchUiState
+    val requestSentTo: StateFlow<Set<Int>> = searchHandler.requestSentTo
 
     // Requests
     private val _requestsUiState = MutableStateFlow<RequestsUiState>(RequestsUiState.Loading)
@@ -108,6 +111,7 @@ class SocialViewModel : ViewModel() {
 
     private val _showRequests = MutableStateFlow(false)
     val showRequests: StateFlow<Boolean> = _showRequests
+
     val pendingRequestsCount: StateFlow<Int> =
         _requestsUiState
             .map { state -> if (state is RequestsUiState.Success) state.requests.size else 0 }
@@ -115,14 +119,13 @@ class SocialViewModel : ViewModel() {
 
     init {
         loadFriends()
-        observeQueries()
+        observeFriendsQuery()
     }
 
     fun onTabChange(tab: SocialTab) {
         _activeTab.value = tab
     }
 
-    // Friends
     internal fun loadFriends(search: String? = null) {
         viewModelScope.launch {
             _friendsUiState.value = FriendsUiState.Loading
@@ -140,24 +143,12 @@ class SocialViewModel : ViewModel() {
         }
     }
 
-    private fun observeQueries() {
+    private fun observeFriendsQuery() {
         viewModelScope.launch {
             _friendsQuery
-                .debounce(SEARCH_DEBOUNCE_MS)
+                .debounce(FRIENDS_DEBOUNCE_MS)
                 .distinctUntilChanged()
                 .collect { query -> loadFriends(search = query.takeIf { it.isNotBlank() }) }
-        }
-        viewModelScope.launch {
-            _searchQuery
-                .debounce(SEARCH_DEBOUNCE_MS)
-                .distinctUntilChanged()
-                .collect { query ->
-                    if (query.length >= MIN_QUERY_LENGTH) {
-                        performSearch(query)
-                    } else if (query.isBlank()) {
-                        _searchUiState.value = SearchUiState.Idle
-                    }
-                }
         }
     }
 
@@ -169,52 +160,19 @@ class SocialViewModel : ViewModel() {
         _friendsQuery.value = ""
     }
 
-    // Search users
-    private suspend fun performSearch(query: String) {
-        _searchUiState.value = SearchUiState.Loading
-        repository.searchUsers(query).fold(
-            onSuccess = { users ->
-                val currentUserId = SessionManager.userId
-                val friendIds =
-                    (_friendsUiState.value as? FriendsUiState.Success)
-                        ?.friends
-                        ?.map { it.amic.id }
-                        ?.toSet()
-                        ?: emptySet()
-
-                val filtered =
-                    users.filter { user ->
-                        user.id != currentUserId && user.id !in friendIds
-                    }
-
-                _searchUiState.value =
-                    if (filtered.isEmpty()) {
-                        SearchUiState.Empty
-                    } else {
-                        SearchUiState.Success(filtered)
-                    }
-            },
-            onFailure = { e ->
-                _searchUiState.value = SearchUiState.Error(e.message)
-            },
-        )
-    }
-
     fun onSearchQueryChange(query: String) {
-        _searchQuery.value = query
-        if (query.isBlank()) _searchUiState.value = SearchUiState.Idle
+        searchHandler.onQueryChange(query)
     }
 
     fun clearSearchQuery() {
-        _searchQuery.value = ""
-        _searchUiState.value = SearchUiState.Idle
+        searchHandler.clearQuery()
     }
 
     fun sendFriendRequest(userId: Int) {
         viewModelScope.launch {
             repository.sendFriendRequest(userId).fold(
                 onSuccess = {
-                    _requestSentTo.value += userId
+                    searchHandler.markRequestSent(userId)
                     _requestFeedback.emit(UiText.StringResource(R.string.request_sent))
                 },
                 onFailure = {
@@ -223,8 +181,6 @@ class SocialViewModel : ViewModel() {
             )
         }
     }
-
-    // Friend requests
 
     fun deleteFriend(amicId: Int) {
         viewModelScope.launch {
@@ -241,8 +197,21 @@ class SocialViewModel : ViewModel() {
                             }
                     }
                 },
-                onFailure = { },
+                onFailure = {},
             )
         }
+    }
+
+    fun getConversationId(
+        amicId: Int,
+        onResult: (convId: String, otherUserId: Int, username: String) -> Unit,
+    ) {
+        val friend =
+            (_friendsUiState.value as? FriendsUiState.Success)
+                ?.friends
+                ?.find { it.amic.id == amicId } ?: return
+        val currentUserId = SessionManager.userId ?: return
+        val convId = if (currentUserId < amicId) "$currentUserId-$amicId" else "$amicId-$currentUserId"
+        onResult(convId, amicId, friend.amic.username)
     }
 }
