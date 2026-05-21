@@ -268,7 +268,11 @@ private fun showProfileInfoContent(
         )
         badgesZone(badges = badges)
         Spacer(modifier = Modifier.height(16.dp))
-        badgesAndActivitiesZone()
+        badgesAndActivitiesZone(
+            onActivityClick = { id ->
+                navController.navigate("activity_detail/$id")
+            },
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
     }

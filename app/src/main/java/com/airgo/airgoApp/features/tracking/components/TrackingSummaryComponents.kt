@@ -169,7 +169,7 @@ internal fun trackingSummaryBody(
 }
 
 @Composable
-private fun trackingSummaryStatsCard(data: TrackingData) {
+internal fun trackingSummaryStatsCard(data: TrackingData) {
     Card(
         modifier = Modifier.fillMaxWidth(TRACKING_ROUTE_PANEL),
         elevation = CardDefaults.cardElevation(ELEVATION_DEFAULT.dp),
@@ -188,7 +188,7 @@ private fun trackingSummaryStatsCard(data: TrackingData) {
 }
 
 @Composable
-private fun trackingSummaryRouteCard(
+internal fun trackingSummaryRouteCard(
     trackPoints: List<GeoPoint>,
     modifier: Modifier = Modifier,
 ) {

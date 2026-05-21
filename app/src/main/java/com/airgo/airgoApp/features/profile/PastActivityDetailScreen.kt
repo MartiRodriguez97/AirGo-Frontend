@@ -32,9 +32,9 @@ import com.airgo.airgoApp.features.activity.domain.ActivityViewModel
 import com.airgo.airgoApp.features.tracking.components.pastActivityCommentCard
 import com.airgo.airgoApp.features.tracking.components.pastActivitySensationCard
 import com.airgo.airgoApp.features.tracking.components.postActivitySensationDialog
+import com.airgo.airgoApp.features.tracking.components.trackingSummaryRouteCard
+import com.airgo.airgoApp.features.tracking.components.trackingSummaryStatsCard
 import com.airgo.airgoApp.features.tracking.data.TrackingData
-import com.airgo.airgoApp.features.tracking.trackingSummaryRouteCard
-import com.airgo.airgoApp.features.tracking.trackingSummaryStatsCard
 import org.osmdroid.util.GeoPoint
 
 @OptIn(ExperimentalMaterial3Api::class)
