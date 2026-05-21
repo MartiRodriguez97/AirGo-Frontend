@@ -31,9 +31,16 @@ private const val TYPE_MESSAGES_READ = "messages_read"
 
 sealed class ChatUiState {
     data object Loading : ChatUiState()
+
     data object Empty : ChatUiState()
-    data class Success(val messages: List<Message>) : ChatUiState()
-    data class Error(val message: String?) : ChatUiState()
+
+    data class Success(
+        val messages: List<Message>,
+    ) : ChatUiState()
+
+    data class Error(
+        val message: String?,
+    ) : ChatUiState()
 }
 
 class ChatViewModel : ViewModel() {
@@ -50,7 +57,10 @@ class ChatViewModel : ViewModel() {
     private var conversationId: String = ""
     private val gson = Gson()
 
-    fun init(convId: String, otherUserId: Int) {
+    fun init(
+        convId: String,
+        otherUserId: Int,
+    ) {
         conversationId = convId
         loadMessages(convId)
         connectWebSocket(otherUserId)
@@ -77,52 +87,73 @@ class ChatViewModel : ViewModel() {
             }
             try {
                 RetrofitProvider.chatApi.markAsRead(convId)
-            } catch (e: Exception) {
-                Log.e(LOG_TAG, "Error markAsRead: ${e.message}", e)
+            } catch (e: HttpException) {
+                Log.e(LOG_TAG, "Error markAsRead HTTP: ${e.message()}", e)
+            } catch (e: IOException) {
+                Log.e(LOG_TAG, "Error markAsRead IO: ${e.message}", e)
             }
         }
     }
 
     private fun connectWebSocket(otherUserId: Int) {
         val token = SessionManager.accessToken ?: return
-        val wsUrl = WS_BASE_URL
-            .replace("http://", "ws://")
-            .replace("https://", "wss://")
-            .trimEnd('/') + "/ws/chat/$otherUserId/?token=$token"
+        val wsUrl =
+            WS_BASE_URL
+                .replace("http://", "ws://")
+                .replace("https://", "wss://")
+                .trimEnd('/') + "/ws/chat/$otherUserId/?token=$token"
 
         val client = OkHttpClient()
         val request = Request.Builder().url(wsUrl).build()
 
-        webSocket = client.newWebSocket(request, object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                _isConnected.value = true
-            }
-
-            override fun onMessage(webSocket: WebSocket, text: String) {
-                try {
-                    val json = gson.fromJson(text, JsonObject::class.java)
-                    val type = json.get("type")?.asString
-
-                    when (type) {
-                        TYPE_MESSAGES_READ -> handleMessagesRead(json)
-                        else -> handleChatMessage(text)
+        webSocket =
+            client.newWebSocket(
+                request,
+                object : WebSocketListener() {
+                    override fun onOpen(
+                        webSocket: WebSocket,
+                        response: Response,
+                    ) {
+                        _isConnected.value = true
                     }
-                } catch (e: JsonSyntaxException) {
-                    Log.e(LOG_TAG, "Invalid JSON format", e)
-                } catch (e: JsonParseException) {
-                    Log.e(LOG_TAG, "JSON parsing error", e)
-                }
-            }
 
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                _isConnected.value = false
-                Log.e(LOG_TAG, "WebSocket failure: ${t.message}", t)
-            }
+                    override fun onMessage(
+                        webSocket: WebSocket,
+                        text: String,
+                    ) {
+                        try {
+                            val json = gson.fromJson(text, JsonObject::class.java)
+                            val type = json.get("type")?.asString
 
-            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                _isConnected.value = false
-            }
-        })
+                            when (type) {
+                                TYPE_MESSAGES_READ -> handleMessagesRead(json)
+                                else -> handleChatMessage(text)
+                            }
+                        } catch (e: JsonSyntaxException) {
+                            Log.e(LOG_TAG, "Invalid JSON format", e)
+                        } catch (e: JsonParseException) {
+                            Log.e(LOG_TAG, "JSON parsing error", e)
+                        }
+                    }
+
+                    override fun onFailure(
+                        webSocket: WebSocket,
+                        t: Throwable,
+                        response: Response?,
+                    ) {
+                        _isConnected.value = false
+                        Log.e(LOG_TAG, "WebSocket failure: ${t.message}", t)
+                    }
+
+                    override fun onClosed(
+                        webSocket: WebSocket,
+                        code: Int,
+                        reason: String,
+                    ) {
+                        _isConnected.value = false
+                    }
+                },
+            )
     }
 
     private fun handleMessagesRead(json: JsonObject) {
@@ -131,9 +162,10 @@ class ChatViewModel : ViewModel() {
 
         if (readBy != currentUserId) {
             viewModelScope.launch {
-                val updated = _messages.value
-                    .map { msg -> if (msg.emissor == currentUserId) msg.copy(llegit = true) else msg }
-                    .toMutableList()
+                val updated =
+                    _messages.value
+                        .map { msg -> if (msg.emissor == currentUserId) msg.copy(llegit = true) else msg }
+                        .toMutableList()
                 _messages.value = updated.toList()
                 _uiState.value = ChatUiState.Success(_messages.value)
             }
@@ -143,14 +175,15 @@ class ChatViewModel : ViewModel() {
     private fun handleChatMessage(text: String) {
         val wsMsg = gson.fromJson(text, WebSocketMessage::class.java)
         if (wsMsg.contingut != null) {
-            val newMsg = Message(
-                id = wsMsg.id ?: 0,
-                emissor = wsMsg.emissor ?: 0,
-                emissorUsername = wsMsg.emissorUsername ?: "",
-                contingut = wsMsg.contingut,
-                enviatAt = wsMsg.enviatAt ?: "",
-                llegit = false,
-            )
+            val newMsg =
+                Message(
+                    id = wsMsg.id ?: 0,
+                    emissor = wsMsg.emissor ?: 0,
+                    emissorUsername = wsMsg.emissorUsername ?: "",
+                    contingut = wsMsg.contingut,
+                    enviatAt = wsMsg.enviatAt ?: "",
+                    llegit = false,
+                )
             viewModelScope.launch {
                 if (_messages.value.none { it.id == newMsg.id }) {
                     _messages.value += newMsg
@@ -158,8 +191,10 @@ class ChatViewModel : ViewModel() {
                     if (newMsg.emissor != SessionManager.userId && conversationId.isNotEmpty()) {
                         try {
                             RetrofitProvider.chatApi.markAsRead(conversationId)
-                        } catch (e: Exception) {
-                            Log.e(LOG_TAG, "Error markAsRead: ${e.message}", e)
+                        } catch (e: HttpException) {
+                            Log.e(LOG_TAG, "Error markAsRead HTTP: ${e.message()}", e)
+                        } catch (e: IOException) {
+                            Log.e(LOG_TAG, "Error markAsRead IO: ${e.message}", e)
                         }
                     }
                 }

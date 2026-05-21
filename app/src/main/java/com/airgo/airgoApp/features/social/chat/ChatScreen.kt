@@ -59,16 +59,25 @@ import com.airgo.airgoApp.features.social.chat.data.Message
 import com.airgo.airgoApp.features.social.chat.domain.ChatUiState
 import com.airgo.airgoApp.features.social.chat.domain.ChatViewModel
 
-private val OwnBubbleShape = androidx.compose.foundation.shape.RoundedCornerShape(
-    topStart = 18.dp, topEnd = 18.dp, bottomStart = 18.dp, bottomEnd = 4.dp,
-)
-private val OtherBubbleShape = androidx.compose.foundation.shape.RoundedCornerShape(
-    topStart = 4.dp, topEnd = 18.dp, bottomStart = 18.dp, bottomEnd = 18.dp,
-)
-private val ReadTickColor = Color(0xFF4FC3F7)
+private val OwnBubbleShape =
+    androidx.compose.foundation.shape.RoundedCornerShape(
+        topStart = 18.dp,
+        topEnd = 18.dp,
+        bottomStart = 18.dp,
+        bottomEnd = 4.dp,
+    )
+private val OtherBubbleShape =
+    androidx.compose.foundation.shape.RoundedCornerShape(
+        topStart = 4.dp,
+        topEnd = 18.dp,
+        bottomStart = 18.dp,
+        bottomEnd = 18.dp,
+    )
+private const val READ_TICK_COLOR = 0xFF4FC3F7
+
+private val ReadTickColor = Color(READ_TICK_COLOR)
 private const val AVATAR_INITIAL_PLACEHOLDER = "?"
 private const val BUBBLE_MAX_WIDTH = 280
-private const val LAST_INDEX_OFFSET = 1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,22 +104,25 @@ fun chatScreen(
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding).imePadding()) {
             Box(modifier = Modifier.weight(1f)) {
                 when (uiState) {
-                    is ChatUiState.Loading -> CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colorScheme.primary,
-                    )
+                    is ChatUiState.Loading ->
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
                     is ChatUiState.Empty -> chatEmptyState()
-                    is ChatUiState.Error -> Text(
-                        text = (uiState as ChatUiState.Error).message ?: "",
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    is ChatUiState.Success -> chatMessageList(
-                        messages = messages,
-                        listState = listState,
-                        onDelete = { viewModel.deleteMessage(it) },
-                    )
+                    is ChatUiState.Error ->
+                        Text(
+                            text = (uiState as ChatUiState.Error).message ?: "",
+                            modifier = Modifier.align(Alignment.Center).padding(16.dp),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    is ChatUiState.Success ->
+                        chatMessageList(
+                            messages = messages,
+                            listState = listState,
+                            onDelete = { viewModel.deleteMessage(it) },
+                        )
                 }
             }
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
@@ -142,7 +154,10 @@ private fun chatMessageList(
                 isOwn = message.emissor == SessionManager.userId,
                 isSelected = selectedMessageId == message.id,
                 onSelect = { selectedMessageId = if (selectedMessageId == message.id) null else message.id },
-                onDelete = { onDelete(message.id); selectedMessageId = null },
+                onDelete = {
+                    onDelete(message.id)
+                    selectedMessageId = null
+                },
             )
         }
     }
@@ -150,13 +165,19 @@ private fun chatMessageList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun chatTopBar(otherUsername: String, onBack: () -> Unit) {
+private fun chatTopBar(
+    otherUsername: String,
+    onBack: () -> Unit,
+) {
     TopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
-                    modifier = Modifier.size(40.dp).clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -223,8 +244,11 @@ private fun messageBubble(
 @Composable
 private fun bubbleAvatar(username: String) {
     Box(
-        modifier = Modifier.size(28.dp).clip(CircleShape)
-            .background(MaterialTheme.colorScheme.secondaryContainer),
+        modifier =
+            Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.secondaryContainer),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -238,7 +262,11 @@ private fun bubbleAvatar(username: String) {
 }
 
 @Composable
-private fun bubbleContent(message: Message, isOwn: Boolean, onClick: () -> Unit) {
+private fun bubbleContent(
+    message: Message,
+    isOwn: Boolean,
+    onClick: () -> Unit,
+) {
     Surface(
         shape = if (isOwn) OwnBubbleShape else OtherBubbleShape,
         color = if (isOwn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
