@@ -191,7 +191,10 @@ private fun badgeIcon(badge: UserBadgeResponse) {
 }
 
 @Composable
-fun badgesAndActivitiesZone(viewModel: ActivityViewModel = viewModel()) {
+fun badgesAndActivitiesZone(
+    viewModel: ActivityViewModel = viewModel(),
+    onActivityClick: (Int) -> Unit,
+) {
     LaunchedEffect(Unit) {
         viewModel.loadActivities()
     }
@@ -260,6 +263,7 @@ fun badgesAndActivitiesZone(viewModel: ActivityViewModel = viewModel()) {
                         activityItem(
                             activity = activity,
                             onDelete = { viewModel.deleteActivity(activity.id) },
+                            onClick = { onActivityClick(activity.id) },
                         )
                     }
                 }
@@ -272,9 +276,13 @@ fun badgesAndActivitiesZone(viewModel: ActivityViewModel = viewModel()) {
 private fun activityItem(
     activity: ActivityResponse,
     onDelete: () -> Unit,
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(2.dp),
     ) {
         Row(

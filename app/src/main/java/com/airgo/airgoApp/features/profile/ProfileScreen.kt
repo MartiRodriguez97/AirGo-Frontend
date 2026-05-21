@@ -64,6 +64,7 @@ enum class ProfileNestedRoute(
     HOME("profile_home"),
     SETTINGS("settings"),
     ACCOUNT_SETTINGS("account_settings"),
+    ACTIVITY_DETAIL("activity_detail/{activityId}"),
 }
 
 data class ProfileScreen(
@@ -216,6 +217,7 @@ fun showProfileInfo(
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
     onSettingsClick: () -> Unit,
     badges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>,
+    navController: NavHostController,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         showProfileInfoContent(
@@ -223,6 +225,7 @@ fun showProfileInfo(
             uiState = uiState,
             singlePhotoPickerLauncher = singlePhotoPickerLauncher,
             badges = badges,
+            navController = navController,
         )
 
         showProfileInfoSettingsButton(onSettingsClick = onSettingsClick)
@@ -235,6 +238,7 @@ private fun showProfileInfoContent(
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
     badges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>,
+    navController: NavHostController,
 ) {
     Column(
         modifier =
@@ -320,6 +324,7 @@ fun profileNavGraph(
                     navController.navigate(ProfileNestedRoute.SETTINGS.route)
                 },
                 badges = badges,
+                navController = navController,
             )
         }
         // Settings main menu
@@ -354,6 +359,31 @@ fun profileNavGraph(
                 onBackClick = { navController.popBackStack() }, // Go back
                 onShowDeleteDialog = onShowDeleteDialog,
                 onLogout = onLogout,
+            )
+        }
+
+        // activitat detallada
+        composable(
+            route = ProfileNestedRoute.ACTIVITY_DETAIL.route,
+            arguments =
+                listOf(
+                    androidx.navigation.navArgument(
+                        "activityId",
+                    ) { type = androidx.navigation.NavType.IntType },
+                ),
+            enterTransition = { slideInHorizontally { it } + fadeIn() },
+            exitTransition = { slideOutHorizontally { -it } + fadeOut() },
+            popEnterTransition = { slideInHorizontally { -it } + fadeIn() },
+            popExitTransition = { slideOutHorizontally { it } + fadeOut() },
+        ) { backStackEntry ->
+            val activityId = backStackEntry.arguments?.getInt("activityId") ?: -1
+            // Obtenemos el viewmodel que tiene la lista cargada
+            val activityViewModel: com.airgo.airgoApp.features.activity.domain.ActivityViewModel = viewModel()
+
+            pastActivityDetailScreen(
+                activityId = activityId,
+                activityViewModel = activityViewModel,
+                onBack = { navController.popBackStack() },
             )
         }
     }

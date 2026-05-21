@@ -9,6 +9,7 @@ import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.social.chat.data.Message
 import com.airgo.airgoApp.features.social.chat.data.WebSocketMessage
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,9 @@ import java.io.IOException
 
 private const val LOG_TAG = "ChatViewModel"
 private const val WS_BASE_URL = BuildConfig.BACKEND_URL
+private const val ERROR_CODE_NOT_FOUND = 404
+private const val SOCKET_RESPONSE = 1000
+private const val TYPE_MESSAGES_READ = "messages_read"
 
 sealed class ChatUiState {
     data object Loading : ChatUiState()
@@ -38,10 +42,6 @@ sealed class ChatUiState {
         val message: String?,
     ) : ChatUiState()
 }
-
-private const val ERROR_CODE_NOT_FOUND = 404
-
-private const val SOCKET_RESPONSE = 1000
 
 class ChatViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
@@ -73,7 +73,6 @@ class ChatViewModel : ViewModel() {
                 val msgs = RetrofitProvider.chatApi.getMessages(convId)
                 _messages.value = msgs
                 _uiState.value = if (msgs.isEmpty()) ChatUiState.Empty else ChatUiState.Success(msgs)
-                RetrofitProvider.chatApi.markAsRead(convId)
             } catch (e: HttpException) {
                 if (e.code() == ERROR_CODE_NOT_FOUND) {
                     _messages.value = emptyList()
@@ -86,6 +85,13 @@ class ChatViewModel : ViewModel() {
                 _uiState.value = ChatUiState.Error("Error de connexió")
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             }
+            try {
+                RetrofitProvider.chatApi.markAsRead(convId)
+            } catch (e: HttpException) {
+                Log.e(LOG_TAG, "Error markAsRead HTTP: ${e.message()}", e)
+            } catch (e: IOException) {
+                Log.e(LOG_TAG, "Error markAsRead IO: ${e.message}", e)
+            }
         }
     }
 
@@ -96,8 +102,6 @@ class ChatViewModel : ViewModel() {
                 .replace("http://", "ws://")
                 .replace("https://", "wss://")
                 .trimEnd('/') + "/ws/chat/$otherUserId/?token=$token"
-
-        Log.d(LOG_TAG, "Connectant WebSocket a: $wsUrl")
 
         val client = OkHttpClient()
         val request = Request.Builder().url(wsUrl).build()
@@ -111,35 +115,19 @@ class ChatViewModel : ViewModel() {
                         response: Response,
                     ) {
                         _isConnected.value = true
-                        Log.d(LOG_TAG, "WebSocket connected")
                     }
 
                     override fun onMessage(
                         webSocket: WebSocket,
                         text: String,
                     ) {
-                        Log.d(LOG_TAG, "Rebut raw: $text")
                         try {
-                            val wsMsg = gson.fromJson(text, WebSocketMessage::class.java)
-                            Log.d(
-                                LOG_TAG,
-                                "Parsed: id=${wsMsg.id}, " +
-                                    "emissor=${wsMsg.emissor}, contingut=${wsMsg.contingut}",
-                            )
-                            if (wsMsg.contingut != null) {
-                                val newMsg =
-                                    Message(
-                                        id = wsMsg.id ?: 0,
-                                        emissor = wsMsg.emissor ?: 0,
-                                        emissorUsername = wsMsg.emissorUsername ?: "",
-                                        contingut = wsMsg.contingut,
-                                        enviatAt = wsMsg.enviatAt ?: "",
-                                        llegit = false,
-                                    )
-                                viewModelScope.launch {
-                                    _messages.value = _messages.value + newMsg
-                                    _uiState.value = ChatUiState.Success(_messages.value)
-                                }
+                            val json = gson.fromJson(text, JsonObject::class.java)
+                            val type = json.get("type")?.asString
+
+                            when (type) {
+                                TYPE_MESSAGES_READ -> handleMessagesRead(json)
+                                else -> handleChatMessage(text)
                             }
                         } catch (e: JsonSyntaxException) {
                             Log.e(LOG_TAG, "Invalid JSON format", e)
@@ -147,14 +135,76 @@ class ChatViewModel : ViewModel() {
                             Log.e(LOG_TAG, "JSON parsing error", e)
                         }
                     }
+
+                    override fun onFailure(
+                        webSocket: WebSocket,
+                        t: Throwable,
+                        response: Response?,
+                    ) {
+                        _isConnected.value = false
+                        Log.e(LOG_TAG, "WebSocket failure: ${t.message}", t)
+                    }
+
+                    override fun onClosed(
+                        webSocket: WebSocket,
+                        code: Int,
+                        reason: String,
+                    ) {
+                        _isConnected.value = false
+                    }
                 },
             )
+    }
+
+    private fun handleMessagesRead(json: JsonObject) {
+        val readBy = json.get("read_by")?.asInt ?: return
+        val currentUserId = SessionManager.userId ?: return
+
+        if (readBy != currentUserId) {
+            viewModelScope.launch {
+                val updated =
+                    _messages.value
+                        .map { msg -> if (msg.emissor == currentUserId) msg.copy(llegit = true) else msg }
+                        .toMutableList()
+                _messages.value = updated.toList()
+                _uiState.value = ChatUiState.Success(_messages.value)
+            }
+        }
+    }
+
+    private fun handleChatMessage(text: String) {
+        val wsMsg = gson.fromJson(text, WebSocketMessage::class.java)
+        if (wsMsg.contingut != null) {
+            val newMsg =
+                Message(
+                    id = wsMsg.id ?: 0,
+                    emissor = wsMsg.emissor ?: 0,
+                    emissorUsername = wsMsg.emissorUsername ?: "",
+                    contingut = wsMsg.contingut,
+                    enviatAt = wsMsg.enviatAt ?: "",
+                    llegit = false,
+                )
+            viewModelScope.launch {
+                if (_messages.value.none { it.id == newMsg.id }) {
+                    _messages.value += newMsg
+                    _uiState.value = ChatUiState.Success(_messages.value)
+                    if (newMsg.emissor != SessionManager.userId && conversationId.isNotEmpty()) {
+                        try {
+                            RetrofitProvider.chatApi.markAsRead(conversationId)
+                        } catch (e: HttpException) {
+                            Log.e(LOG_TAG, "Error markAsRead HTTP: ${e.message()}", e)
+                        } catch (e: IOException) {
+                            Log.e(LOG_TAG, "Error markAsRead IO: ${e.message}", e)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun sendMessage(text: String) {
         if (text.isBlank()) return
         val payload = gson.toJson(mapOf("missatge" to text))
-        Log.d(LOG_TAG, "Enviant: $payload")
         webSocket?.send(payload)
     }
 

@@ -91,10 +91,6 @@ fun mainShellScreen(
     }
 }
 
-/**
- * Funció auxiliar per aplicar el padding a les pantalles que el necessiten (per exemple,
- * avtivityScreen no el necessita)
- */
 @Composable
 fun screenWrapper(
     innerPadding: androidx.compose.foundation.layout.PaddingValues,
@@ -119,7 +115,16 @@ private fun bottomNavigationBar(
     val hiddenRoutes = setOf("questionnaire", "favorites")
     val isFriendProfile = currentRoute.orEmpty().startsWith("friend_profile")
     val isChatScreen = currentRoute.orEmpty().startsWith("chat")
-    val showBar = currentRoute !in hiddenRoutes && !isFriendProfile && !isChatScreen
+    val isPlanDetails = currentRoute.orEmpty().startsWith("planDetails")
+    val isActivityDetail = currentRoute == "activityDetail"
+    val isTrackingSummary = currentRoute == "tracking_summary"
+    val showBar =
+        currentRoute !in hiddenRoutes &&
+            !isFriendProfile &&
+            !isChatScreen &&
+            !isPlanDetails &&
+            !isActivityDetail &&
+            !isTrackingSummary
 
     if (showBar) {
         NavigationBar {
@@ -128,18 +133,13 @@ private fun bottomNavigationBar(
                     selected = currentRoute == tab.route,
                     onClick = {
                         navController.navigate(tab.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
                     },
                     icon = {
-                        Icon(
-                            imageVector = tab.icon,
-                            contentDescription = stringResource(tab.label),
-                        )
+                        Icon(imageVector = tab.icon, contentDescription = stringResource(tab.label))
                     },
                     label = {
                         Text(
@@ -162,34 +162,21 @@ private fun NavGraphBuilder.homeNavGraph(
     composable(MainShellScreen.HOME.route) {
         screenWrapper(innerPadding) {
             homeScreen(
-                onNavigateToQuestionnaire = {
-                    navController.navigate("questionnaire")
-                },
-                onNavigateToDetails = { planId ->
-                    navController.navigate("planDetails/$planId")
-                },
-                onNavigateToPendingActivity = {
-                    navController.navigate("activityDetail")
-                },
+                onNavigateToQuestionnaire = { navController.navigate("questionnaire") },
+                onNavigateToDetails = { planId -> navController.navigate("planDetails/$planId") },
+                onNavigateToPendingActivity = { navController.navigate("activityDetail") },
             )
         }
     }
     composable("planDetails/{planId}") { backStackEntry ->
         val planId = backStackEntry.arguments?.getString("planId")?.toIntOrNull() ?: -1
         screenWrapper(innerPadding) {
-            planDetailsScreen(
-                planId = planId,
-                onBack = { navController.popBackStack() },
-            )
+            planDetailsScreen(planId = planId, onBack = { navController.popBackStack() })
         }
     }
     composable("questionnaire") {
         screenWrapper(innerPadding) {
-            questionnaireScreen(
-                onClose = {
-                    navController.popBackStack()
-                },
-            )
+            questionnaireScreen(onClose = { navController.popBackStack() })
         }
     }
     composable("activityDetail") {
@@ -198,9 +185,7 @@ private fun NavGraphBuilder.homeNavGraph(
                 onBackClick = { navController.popBackStack() },
                 onStartActivityClick = {
                     navController.navigate(MainShellScreen.ACTIVITY.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
-                        }
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -229,14 +214,10 @@ private fun NavGraphBuilder.featuresNavGraph(
             )
         }
     }
-
     composable("friend_profile/{userId}") { backStackEntry ->
         val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull() ?: return@composable
         screenWrapper(innerPadding) {
-            friendProfileScreen(
-                userId = userId,
-                onBackClick = { navController.popBackStack() },
-            )
+            friendProfileScreen(userId = userId, onBackClick = { navController.popBackStack() })
         }
     }
     composable(MainShellScreen.ACTIVITY.route) {
@@ -259,18 +240,14 @@ private fun NavGraphBuilder.featuresNavGraph(
         }
     }
     composable("favorites") {
-        favoritesScreen(
-            onBack = { navController.popBackStack() },
-        )
+        favoritesScreen(onBack = { navController.popBackStack() })
     }
-
     composable("tracking_summary") {
         val activityEntry =
             remember(it) {
                 navController.getBackStackEntry(MainShellScreen.ACTIVITY.route)
             }
         val summaryViewModel: TrackingViewModel = viewModel(activityEntry)
-
         trackingSummaryScreen(
             onBack = { navController.popBackStack() },
             onSave = { navController.popBackStack() },
