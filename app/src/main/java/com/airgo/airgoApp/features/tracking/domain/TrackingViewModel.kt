@@ -16,6 +16,7 @@ import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
+import com.airgo.airgoApp.features.tracking.data.UpdateUserStatsRequest
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -66,7 +67,9 @@ class TrackingViewModel : ViewModel() {
 
         data object Saving : SaveState()
 
-        data object Success : SaveState()
+        data class Success(
+            val response: com.airgo.airgoApp.features.tracking.data.SaveActivityResponse,
+        ) : SaveState()
 
         data class Error(
             val message: String,
@@ -245,13 +248,58 @@ class TrackingViewModel : ViewModel() {
                         distanceMeters = data.distanceMeters,
                         durationSeconds = data.elapsedSeconds,
                         avgSpeedKmh = data.avgSpeedKmh,
+                        completat = true,
                         routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
                         sensacio = selectedSensation,
                     )
-                RetrofitProvider.trackingApi.saveActivity(request)
+                val response = RetrofitProvider.trackingApi.saveActivity(request)
+
+                SessionManager.ratxa = response.currentStreak
+                val oldPunts = SessionManager.punts ?: 0
+                val newPunts = oldPunts + response.pointsEarned
+
+                if (response.newBadges.isNotEmpty()) {
+                    try {
+                        SessionManager.userBadges = RetrofitProvider.profileApi.getUserBadges()
+                    } catch (e: retrofit2.HttpException) {
+                        Log.e("TrackingViewModel", "Failed to refresh user badges (HTTP)", e)
+                    } catch (e: IOException) {
+                        Log.e("TrackingViewModel", "Failed to refresh user badges (IO)", e)
+                    }
+                }
+
+                SessionManager.userId?.let { userId ->
+                    try {
+                        RetrofitProvider.trackingApi.updateUserStats(
+                            id = userId,
+                            request =
+                                UpdateUserStatsRequest(
+                                    punts = response.pointsEarned,
+                                    ratxa = response.currentStreak,
+                                ),
+                        )
+                    } catch (e: retrofit2.HttpException) {
+                        Log.e("TrackingViewModel", "Failed to update user stats (HTTP)", e)
+                    } catch (e: IOException) {
+                        Log.e("TrackingViewModel", "Failed to update user stats (IO)", e)
+                    }
+                }
+
+                // Actualizar punts en local DESPUÉS de hacer el POST para predecir, o recargar
+                try {
+                    val profile = RetrofitProvider.profileApi.getUserProfile()
+                    SessionManager.punts = profile.punts
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("TrackingViewModel", "Failed to refresh profile locally (HTTP)", e)
+                    SessionManager.punts = newPunts
+                } catch (e: IOException) {
+                    Log.e("TrackingViewModel", "Failed to refresh profile locally (IO)", e)
+                    SessionManager.punts = newPunts
+                }
+
                 saveActivityPlanning()
                 AppEvents.notifyActivitySaved()
-                saveState = SaveState.Success
+                saveState = SaveState.Success(response)
             } catch (e: IOException) {
                 saveState = SaveState.Error("Error de connexió: ${e.message}")
             } catch (e: HttpException) {

@@ -7,12 +7,21 @@ data class SaveActivityRequest(
     val distanceMeters: Double,
     @SerializedName("duration_seconds")
     val durationSeconds: Long,
+    @SerializedName("completat")
+    val completat: Boolean,
     @SerializedName("avg_speed_kmh")
     val avgSpeedKmh: Double,
     @SerializedName("route_points")
     val routePoints: List<List<Double>>,
     @SerializedName("sensacio")
     val sensacio: Int? = null,
+)
+
+data class BadgeResponse(
+    val id: Int,
+    val nom: String,
+    val descripcio: String,
+    val icona: String?,
 )
 
 data class SaveActivityResponse(
@@ -25,4 +34,17 @@ data class SaveActivityResponse(
     val avgSpeedKmh: Double,
     @SerializedName("route_points")
     val routePoints: List<List<Double>>,
+    @SerializedName("new_badges")
+    val newBadges: List<BadgeResponse>,
+    @SerializedName("points_earned_total")
+    val pointsEarned: Int,
+    @SerializedName("current_streak")
+    val currentStreak: Int,
+)
+
+data class UpdateUserStatsRequest(
+    @SerializedName("punts")
+    val punts: Int,
+    @SerializedName("ratxa")
+    val ratxa: Int,
 )

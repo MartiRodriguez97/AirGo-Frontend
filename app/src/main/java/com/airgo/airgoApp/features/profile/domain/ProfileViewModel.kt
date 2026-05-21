@@ -11,6 +11,7 @@ import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.FileUtils
 import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.profile.data.UserBadgeResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -43,6 +44,9 @@ class ProfileViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState: StateFlow<ProfileUiState> = _uiState
 
+    private val _badges = MutableStateFlow<List<UserBadgeResponse>>(emptyList())
+    val badges: StateFlow<List<UserBadgeResponse>> = _badges
+
     init {
         loadProfile()
     }
@@ -60,6 +64,17 @@ class ProfileViewModel : ViewModel() {
                 Log.e(TAG, "loadProfile HTTP ${e.code()}", e)
             }
         }
+        loadBadges()
+
+        viewModelScope.launch {
+            com.airgo.airgoApp.core.AppEvents.activitySaved.collect {
+                loadBadges()
+            }
+        }
+    }
+
+    fun loadBadges() {
+        _badges.value = SessionManager.userBadges ?: emptyList()
     }
 
     fun deleteAccount() {
@@ -70,13 +85,13 @@ class ProfileViewModel : ViewModel() {
                 // Fem la petició al backend
                 val response = RetrofitProvider.profileApi.deleteAccount()
 
-                println("Esperando resposta del servidor para eliminar cuenta...")
+                println("Esperando resposta del servidor per eliminar compte...")
 
                 // Revisem la resposta del servidor
                 if (response.isSuccessful) {
                     SessionManager.clear()
                     _uiState.value = ProfileUiState.DeleteSuccess
-                    println("Cuenta eliminada con éxito en el backend")
+                    println("Compte eliminat amb èxit al backend")
                 } else {
                     // Si el servidor rechaza la petición (ej. el token expiró o hay un error interno)
                     _uiState.value =
