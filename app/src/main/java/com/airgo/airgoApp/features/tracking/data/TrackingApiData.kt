@@ -19,7 +19,7 @@ data class BadgeResponse(
     val id: Int,
     val nom: String,
     val descripcio: String,
-    val icona: String?
+    val icona: String?,
 )
 
 data class SaveActivityResponse(
@@ -34,13 +34,15 @@ data class SaveActivityResponse(
     val routePoints: List<List<Double>>,
     @SerializedName("new_badges")
     val newBadges: List<BadgeResponse>,
-    @SerializedName("points_earned")
+    @SerializedName("points_earned_total")
     val pointsEarned: Int,
     @SerializedName("current_streak")
-    val currentStreak: Int
+    val currentStreak: Int,
 )
 
 data class UpdateUserStatsRequest(
+    @SerializedName("punts")
     val punts: Int,
-    val ratxa: Int
+    @SerializedName("ratxa")
+    val ratxa: Int,
 )

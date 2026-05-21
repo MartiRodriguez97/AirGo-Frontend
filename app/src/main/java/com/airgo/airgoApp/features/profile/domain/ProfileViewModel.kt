@@ -65,19 +65,16 @@ class ProfileViewModel : ViewModel() {
             }
         }
         loadBadges()
-    }
 
-    private fun loadBadges() {
         viewModelScope.launch {
-            try {
-                val response = RetrofitProvider.profileApi.getUserBadges()
-                _badges.value = response
-            } catch (e: IOException) {
-                Log.e(TAG, "loadBadges network error", e)
-            } catch (e: retrofit2.HttpException) {
-                Log.e(TAG, "loadBadges HTTP ${e.code()}", e)
+            com.airgo.airgoApp.core.AppEvents.activitySaved.collect {
+                loadBadges()
             }
         }
+    }
+
+    fun loadBadges() {
+        _badges.value = SessionManager.userBadges ?: emptyList()
     }
 
     fun deleteAccount() {
@@ -88,13 +85,13 @@ class ProfileViewModel : ViewModel() {
                 // Fem la petició al backend
                 val response = RetrofitProvider.profileApi.deleteAccount()
 
-                println("Esperando resposta del servidor para eliminar cuenta...")
+                println("Esperando resposta del servidor per eliminar compte...")
 
                 // Revisem la resposta del servidor
                 if (response.isSuccessful) {
                     SessionManager.clear()
                     _uiState.value = ProfileUiState.DeleteSuccess
-                    println("Cuenta eliminada con éxito en el backend")
+                    println("Compte eliminat amb èxit al backend")
                 } else {
                     // Si el servidor rechaza la petición (ej. el token expiró o hay un error interno)
                     _uiState.value =

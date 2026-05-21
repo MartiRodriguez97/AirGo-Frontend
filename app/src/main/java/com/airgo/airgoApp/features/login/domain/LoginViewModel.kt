@@ -160,6 +160,14 @@ class LoginViewModel : ViewModel() {
                 session.limitRutes = userDetails.limitRutes
                 session.titol = userDetails.titol
                 session.insignies = userDetails.insignies
+
+                try {
+                    session.userBadges = RetrofitProvider.profileApi.getUserBadges()
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("LoginViewModel", "Error fetching user badges (HTTP)", e)
+                } catch (e: IOException) {
+                    Log.e("LoginViewModel", "Error fetching user badges (IO)", e)
+                }
             } else {
                 val errBody = userResponse.errorBody()?.string()
                 Log.e(

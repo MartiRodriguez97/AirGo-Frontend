@@ -148,7 +148,7 @@ private fun trackingStatItem(
 /**
  * Formateja el temps transcorregut en format mm:ss.
  */
-private fun formatElapsedTime(seconds: Long): String {
+fun formatElapsedTime(seconds: Long): String {
     val mins = seconds / SEC_PER_MIN
     val secs = seconds % SEC_PER_MIN
     return "%02d:%02d".format(mins, secs)

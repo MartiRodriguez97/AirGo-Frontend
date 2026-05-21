@@ -28,13 +28,13 @@ data class BadgeDefinition(
     val icona: String?,
     val tipus: String,
     @SerializedName("valor_requerit")
-    val valorRequerit: Int
+    val valorRequerit: Int,
 )
 
 data class UserBadgeResponse(
     val insignia: BadgeDefinition,
     @SerializedName("data_guanyada")
-    val dataGuanyada: String
+    val dataGuanyada: String,
 )
 
 interface ProfileApi {

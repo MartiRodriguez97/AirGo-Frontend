@@ -23,6 +23,7 @@ object SessionManager {
     var exercicis: List<Exercise>? = null
     var exerciciActiu: Exercise? = null
     var nomTemplateActiu: String? = null
+    var userBadges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>? = null
 
     fun clear() {
         accessToken = null
@@ -45,6 +46,7 @@ object SessionManager {
         idioma = null
         limitRutes = null
         insignies = null
+        userBadges = null
     }
 
     var punts: Int? = null

@@ -2,8 +2,8 @@ package com.airgo.airgoApp.features.tracking.data
 
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import retrofit2.http.Body
-import retrofit2.http.POST
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface TrackingApi {
@@ -15,6 +15,6 @@ interface TrackingApi {
     @PATCH(ApiEndpoints.USER_PROFILE)
     suspend fun updateUserStats(
         @Path("id") id: Int,
-        @Body request: UpdateUserStatsRequest
+        @Body request: UpdateUserStatsRequest,
     )
 }

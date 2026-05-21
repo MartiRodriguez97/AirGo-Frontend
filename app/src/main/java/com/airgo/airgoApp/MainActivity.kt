@@ -39,9 +39,6 @@ import com.airgo.airgoApp.features.shell.mainShellScreen
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-const val HTTP_ERROR_401 = 401
-const val HTTP_ERROR_403 = 403
-
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -166,28 +163,42 @@ private fun appNavigation(
     }
 }
 
+private const val HTTP_ERROR_401 = 401
+private const val HTTP_ERROR_403 = 403
+
 private suspend fun handleAutoLogin(
     userPrefs: UserPreferences,
     onboardingViewModel: OnboardingViewModel,
     repository: UserPreferencesRepository,
     onSync: (String?, String?, Boolean, Boolean) -> Unit,
 ) {
-    if (!userPrefs.token.isNullOrEmpty()) {
-        SessionManager.accessToken = userPrefs.token
-        SessionManager.refreshToken = userPrefs.refreshToken
-        SessionManager.userId = userPrefs.userId
+    if (userPrefs.token.isNullOrEmpty()) return
 
-        try {
-            val response = RetrofitProvider.authApi.getCurrentUserProfile()
-            if (response.isSuccessful && response.body() != null) {
-                updateUserSession(response.body()!!, onboardingViewModel, onSync)
-            } else if (response.code() == HTTP_ERROR_401 || response.code() == HTTP_ERROR_403) {
-                repository.clearSession()
-                onSync(null, null, false, false)
-            }
-        } catch (e: IOException) {
-            Log.e("MainActivity", "Error during auto login", e)
+    SessionManager.accessToken = userPrefs.token
+    SessionManager.refreshToken = userPrefs.refreshToken
+    SessionManager.userId = userPrefs.userId
+
+    try {
+        val response = RetrofitProvider.authApi.getCurrentUserProfile()
+        if (response.isSuccessful && response.body() != null) {
+            updateUserSession(response.body()!!, onboardingViewModel, onSync)
+            fetchUserBadges()
+        } else if (response.code() == HTTP_ERROR_401 || response.code() == HTTP_ERROR_403) {
+            repository.clearSession()
+            onSync(null, null, false, false)
         }
+    } catch (e: IOException) {
+        Log.e("MainActivity", "Error during auto login", e)
+    }
+}
+
+private suspend fun fetchUserBadges() {
+    try {
+        SessionManager.userBadges = RetrofitProvider.profileApi.getUserBadges()
+    } catch (e: retrofit2.HttpException) {
+        Log.e("MainActivity", "Error fetching user badges (HTTP)", e)
+    } catch (e: IOException) {
+        Log.e("MainActivity", "Error fetching user badges (IO)", e)
     }
 }
 
