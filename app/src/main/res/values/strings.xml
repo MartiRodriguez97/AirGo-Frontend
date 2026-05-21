@@ -298,6 +298,11 @@
     <string name="search_forum">Search forums...</string>
     <string name="no_forums_found">No forums found</string>
 
+    <!-- feature/chat -->
+    <string name="begin_conversation">Start the conversation!</string>
+    <string name="message">Message...</string>
+    <string name="send">Send</string>
+
 
     <!-- features/tracking-->
 

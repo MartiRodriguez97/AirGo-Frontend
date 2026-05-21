@@ -327,4 +327,9 @@
     <string name="activity_comment_title">Comentarios de la actividad</string>
     <string name="activity_comment_placeholder">¿Cómo ha ido la ruta?</string>
     <string name="activity_comment_btn_save">Guardar nota</string>
+
+    <!-- feature/chat -->
+    <string name="begin_conversation">¡Comienza la conversación!</string>
+    <string name="message">Mensaje...</string>
+    <string name="send">Enviar</string>
 </resources>
