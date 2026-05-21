@@ -40,6 +40,33 @@ data class SaveActivityResponse(
     val pointsEarned: Int,
     @SerializedName("current_streak")
     val currentStreak: Int,
+    @SerializedName("titols_pendents")
+    val titolsPendents: Int,
+)
+
+data class TitleOption(
+    val id: Int,
+    val nom: String,
+    val descripcio: String,
+    @SerializedName("punts_minims")
+    val puntsMinims: Int,
+)
+
+data class AvailableTitlesResponse(
+    @SerializedName("titols_pendents")
+    val titolsPendents: Int,
+    val opcions: List<TitleOption>,
+)
+
+data class UnlockTitleRequest(
+    @SerializedName("titol_id")
+    val titolId: Int,
+)
+
+data class UnlockTitleResponse(
+    val status: String,
+    @SerializedName("titol_desbloquejat")
+    val titolDesbloquejat: String,
 )
 
 data class UpdateUserStatsRequest(

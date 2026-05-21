@@ -28,7 +28,10 @@ import com.airgo.airgoApp.features.login.domain.LoginUiState
 import com.airgo.airgoApp.features.login.domain.LoginViewModel
 
 @Composable
-fun loginScreen(onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit = { _, _ -> }) {
+fun loginScreen(
+    onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit = { _, _ -> },
+    isLoading: Boolean = false,
+) {
     Box(
         modifier =
             Modifier
@@ -38,6 +41,7 @@ fun loginScreen(onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit = 
         login(
             modifier = Modifier.align(Alignment.Center),
             onLoginSuccess = onLoginSuccess,
+            isLoading = isLoading,
         )
     }
 }
@@ -46,11 +50,12 @@ fun loginScreen(onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit = 
 fun login(
     modifier: Modifier,
     onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit,
+    isLoading: Boolean = false,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         headerImage()
         Spacer(modifier = Modifier.height(16.dp))
-        googleLoginButton(onLoginSuccess = onLoginSuccess)
+        googleLoginButton(onLoginSuccess = onLoginSuccess, isLoading = isLoading)
     }
 }
 
@@ -58,6 +63,7 @@ fun login(
 fun googleLoginButton(
     viewModel: LoginViewModel = viewModel(),
     onLoginSuccess: (email: String?, pictureUrl: String?) -> Unit,
+    isLoading: Boolean = false,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -72,20 +78,19 @@ fun googleLoginButton(
         }
     }
 
-    when (uiState) {
-        is LoginUiState.Loading -> CircularProgressIndicator()
-        else -> {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Button(onClick = { viewModel.onGoogleSignIn(context) }) {
-                    Text(text = stringResource(R.string.login_button_google))
-                }
-                if (currentState is LoginUiState.Error) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = currentState.message.asString(),
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
+    if (uiState is LoginUiState.Loading || isLoading) {
+        CircularProgressIndicator()
+    } else {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(onClick = { viewModel.onGoogleSignIn(context) }) {
+                Text(text = stringResource(R.string.login_button_google))
+            }
+            if (currentState is LoginUiState.Error) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = currentState.message.asString(),
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
         }
     }

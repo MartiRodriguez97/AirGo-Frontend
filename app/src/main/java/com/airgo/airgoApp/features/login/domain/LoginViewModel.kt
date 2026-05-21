@@ -168,6 +168,32 @@ class LoginViewModel : ViewModel() {
                 } catch (e: IOException) {
                     Log.e("LoginViewModel", "Error fetching user badges (IO)", e)
                 }
+
+                try {
+                    val titlesResponse = RetrofitProvider.trackingApi.getAvailableTitles()
+                    session.titolsPendents = titlesResponse.titolsPendents
+                } catch (e: IOException) {
+                    Log.e("LoginViewModel", "IO Error fetching pending titles", e)
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("LoginViewModel", "HTTP Error fetching pending titles", e)
+                }
+
+                try {
+                    fetchAvailableTitlesList(session)
+                } catch (e: IOException) {
+                    Log.e("LoginViewModel", "IO Error fetching available titles list", e)
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("LoginViewModel", "HTTP Error fetching available titles list", e)
+                }
+
+                try {
+                    val repo = com.airgo.airgoApp.features.home.data.TrainingPlanRepository()
+                    session.trainingPlans = repo.fetchFullTrainingPlans()
+                } catch (e: IOException) {
+                    Log.e("LoginViewModel", "IO Error fetching training plans", e)
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("LoginViewModel", "HTTP Error fetching training plans", e)
+                }
             } else {
                 val errBody = userResponse.errorBody()?.string()
                 Log.e(
@@ -179,6 +205,15 @@ class LoginViewModel : ViewModel() {
             Log.e("LoginViewModel", "IO Error fetching user details", e)
         } catch (e: retrofit2.HttpException) {
             Log.e("LoginViewModel", "HTTP Error fetching user details", e)
+        }
+    }
+
+    private suspend fun fetchAvailableTitlesList(session: SessionManager) {
+        val userId = session.userId ?: return
+        val url = com.airgo.airgoApp.core.network.ApiEndpoints.getAvailableTitolsEndpoint(userId)
+        val response = RetrofitProvider.titolApi.getAvailableTitols(url)
+        if (response.isSuccessful && response.body() != null) {
+            session.availableTitols = response.body()!!.map { it.titol }
         }
     }
 
