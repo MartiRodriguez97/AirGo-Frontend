@@ -1,9 +1,7 @@
 package com.airgo.airgoApp.features.tracking.components
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,12 +13,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,26 +30,15 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.window.Dialog
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.map.helpers.configureMapView
-import com.airgo.airgoApp.features.profile.data.BadgeDefinition
 import com.airgo.airgoApp.features.tracking.data.TrackingData
-import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel.SaveState
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
@@ -66,61 +51,14 @@ private const val ELEVATION_DEFAULT = 4
 private const val PADDING_SMALL = 4
 private const val PADDING_MEDIUM = 8
 private const val PADDING_LARGE = 16
-private const val PADDING_EXTRA_LARGE = 24
 private const val PADDING_ACTIONS_BOTTOM = 80
 private const val MAP_HEIGHT_RES = 200
-private const val ICON_SIZE_BADGE = 80
 private const val PROGRESS_INDICATOR_SIZE = 20
 private const val PROGRESS_INDICATOR_STROKE = 2
-private const val TEXT_SIZE_TITLE = 20
-private const val TEXT_SIZE_SUBTITLE = 18
-private const val TEXT_SIZE_BODY = 14
 private const val TRACKING_LINE_WIDTH = 8f
 private const val BORDER_SIZE = 50
 private const val MIN_TRACK_POINTS = 2
 private const val SEC_PER_MIN = 60
-
-@Composable
-internal fun trackingSummaryBadgeHandler(
-    saveState: SaveState,
-    activitySavedText: String,
-    viewModel: TrackingViewModel,
-    onFinish: () -> Unit,
-) {
-    val context = LocalContext.current
-    var showBadgeDialog by remember { mutableStateOf<BadgeDefinition?>(null) }
-
-    LaunchedEffect(saveState) {
-        if (saveState is SaveState.Success) {
-            val badges = saveState.response.newBadges
-            if (!badges.isNullOrEmpty()) {
-                val b = badges.first()
-                showBadgeDialog = BadgeDefinition(b.id, b.nom, b.descripcio, b.icona, "", 0)
-            } else {
-                finishTrackingSummary(context, activitySavedText, viewModel, onFinish)
-            }
-        }
-    }
-
-    showBadgeDialog?.let { badge ->
-        newBadgeDialog(badge) {
-            showBadgeDialog = null
-            finishTrackingSummary(context, activitySavedText, viewModel, onFinish)
-        }
-    }
-}
-
-private fun finishTrackingSummary(
-    context: Context,
-    message: String,
-    viewModel: TrackingViewModel,
-    onFinish: () -> Unit,
-) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    viewModel.clearSummary()
-    viewModel.clearSaveState()
-    onFinish()
-}
 
 @Composable
 internal fun buildShareText(
@@ -290,52 +228,6 @@ private fun trackingSummaryActions(
         }
         OutlinedButton(onClick = onDiscard, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.discard))
-        }
-    }
-}
-
-@Composable
-private fun newBadgeDialog(
-    badge: BadgeDefinition,
-    onDismiss: () -> Unit,
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.padding(PADDING_LARGE.dp).fillMaxWidth(),
-            shape = RoundedCornerShape(PADDING_LARGE.dp),
-        ) {
-            Column(
-                modifier = Modifier.padding(PADDING_EXTRA_LARGE.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(text = "Nova Insígnia!", fontWeight = FontWeight.Bold, fontSize = TEXT_SIZE_TITLE.sp)
-                Spacer(modifier = Modifier.height(PADDING_LARGE.dp))
-                if (badge.icona != null) {
-                    coil.compose.AsyncImage(
-                        model = badge.icona,
-                        contentDescription = "Icona Insignia",
-                        modifier = Modifier.size(ICON_SIZE_BADGE.dp),
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Default Badge Icon",
-                        modifier = Modifier.size(ICON_SIZE_BADGE.dp),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                }
-                Spacer(modifier = Modifier.height(PADDING_LARGE.dp))
-                Text(
-                    text = badge.nom,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = TEXT_SIZE_SUBTITLE.sp,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(modifier = Modifier.height(PADDING_MEDIUM.dp))
-                Text(text = badge.descripcio, fontSize = TEXT_SIZE_BODY.sp, textAlign = TextAlign.Center)
-                Spacer(modifier = Modifier.height(PADDING_EXTRA_LARGE.dp))
-                Button(onClick = onDismiss) { Text("Acceptar") }
-            }
         }
     }
 }

@@ -4,19 +4,15 @@ import android.location.Location
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.airgo.airgoApp.core.AppEvents
-import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
-import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
-import com.airgo.airgoApp.features.tracking.data.UpdateUserStatsRequest
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,7 +25,6 @@ import java.io.IOException
 
 private const val TIMER_INTERVAL_MS = 1000L
 private const val MS_TO_KMH = 3.6
-private const val METERS_PER_KM = 1000.0
 
 class TrackingViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
@@ -49,6 +44,14 @@ class TrackingViewModel : ViewModel() {
     var showSensationDialog by mutableStateOf(false)
         private set
 
+    var titolsPendents by mutableStateOf(0)
+        internal set
+
+    var availableTitles by mutableStateOf<List<com.airgo.airgoApp.features.tracking.data.TitleOption>>(emptyList())
+        internal set
+
+    var showTitleSelectionDialog by mutableStateOf(false)
+
     var selectedSensation by mutableStateOf<Int?>(null)
         private set
 
@@ -60,7 +63,7 @@ class TrackingViewModel : ViewModel() {
     private var locationReceiver: android.content.BroadcastReceiver? = null
     private var receiverContext: android.content.Context? = null
     var saveState by mutableStateOf<SaveState>(SaveState.Idle)
-        private set
+        internal set
 
     sealed class SaveState {
         data object Idle : SaveState()
@@ -112,59 +115,56 @@ class TrackingViewModel : ViewModel() {
         hasSummary = true // Ahora sí, navegamos al resumen
     }
 
-    private fun saveActivityPlanning() {
-        val activeExercise = SessionManager.exerciciActiu ?: return
-        val distanceDoneKm = data.distanceMeters / METERS_PER_KM
+    internal suspend fun updateExerciseProgress(
+        activeExercise: Exercise,
+        distanceDoneKm: Double,
+    ) {
+        try {
+            // Sumamos la distancia recorrida a la que ya tenía
+            val totalDistance = activeExercise.distanciaFeta + distanceDoneKm
+            val isCompleted = totalDistance >= activeExercise.distanciaObjectiu
 
-        viewModelScope.launch {
-            try {
-                // Sumamos la distancia recorrida a la que ya tenía
-                val totalDistance = activeExercise.distanciaFeta + distanceDoneKm
-                val isCompleted = totalDistance >= activeExercise.distanciaObjectiu
+            Log.d(
+                "TrackingViewModel",
+                "Updating exercise ${activeExercise.id}: distance=$totalDistance, completed=$isCompleted",
+            )
 
-                Log.d(
-                    "TrackingViewModel",
-                    "Updating exercise ${activeExercise.id}:" +
-                        " distance=$totalDistance," +
-                        " completed=$isCompleted",
-                )
+            repository.updateExercise(
+                id = activeExercise.id,
+                completat = isCompleted,
+                distanciaFeta = totalDistance,
+            )
 
-                repository.updateExercise(
-                    id = activeExercise.id,
-                    completat = isCompleted,
-                    distanciaFeta = totalDistance,
-                )
+            // Limpiar ejercicio activo tras completar/guardar
+            SessionManager.exerciciActiu = null
+            SessionManager.nomTemplateActiu = null
 
-                // Limpiar ejercicio activo tras completar/guardar
-                SessionManager.exerciciActiu = null
-                SessionManager.nomTemplateActiu = null
-
-                // Actualizar la lista de ejercicios de hoy en el SessionManager
-                // Esto forzará que desaparezca de la lista de pendientes en la Home si se completó
-                if (isCompleted) {
-                    SessionManager.exercicis = SessionManager.exercicis?.filter { it.id != activeExercise.id }
-                } else {
-                    // Si no está completado, actualizamos la distancia en el objeto de la lista
-                    SessionManager.exercicis =
-                        SessionManager.exercicis?.map {
-                            if (it.id == activeExercise.id) it.copy(distanciaFeta = totalDistance) else it
-                        }
-                }
-
-                _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
-            } catch (e: java.io.IOException) {
-                Log.e("TrackingViewModel", "Network error saving exercise progress", e)
-                _uiEvent.emit(TrackingUiEvent.SaveError("Error de connexió en guardar l'activitat"))
-            } catch (e: retrofit2.HttpException) {
-                Log.e("TrackingViewModel", "HTTP error saving exercise progress", e)
-                _uiEvent.emit(TrackingUiEvent.SaveError("Error del servidor en guardar l'activitat"))
+            // Actualizar la lista de ejercicios de hoy en el SessionManager
+            // Esto forzará que desaparezca de la lista de pendientes en la Home si se completó
+            if (isCompleted) {
+                SessionManager.exercicis = SessionManager.exercicis?.filter { it.id != activeExercise.id }
+            } else {
+                // Si no está completado, actualizamos la distancia en el objeto de la lista
+                SessionManager.exercicis =
+                    SessionManager.exercicis?.map {
+                        if (it.id == activeExercise.id) it.copy(distanciaFeta = totalDistance) else it
+                    }
             }
+
+            _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
+        } catch (e: IOException) {
+            Log.e("TrackingViewModel", "Network error saving exercise progress", e)
+            _uiEvent.emit(TrackingUiEvent.SaveError("Error de connexió en guardar l'activitat"))
+        } catch (e: HttpException) {
+            Log.e("TrackingViewModel", "HTTP error saving exercise progress", e)
+            _uiEvent.emit(TrackingUiEvent.SaveError("Error del servidor en guardar l'activitat"))
         }
     }
 
     fun clearSummary() {
         hasSummary = false
         trackPoints = emptyList()
+        saveState = SaveState.Idle
     }
 
     /**
@@ -236,76 +236,6 @@ class TrackingViewModel : ViewModel() {
             }
         }
         locationReceiver = null
-    }
-
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    fun saveActivity() {
-        viewModelScope.launch {
-            saveState = SaveState.Saving
-            try {
-                val request =
-                    SaveActivityRequest(
-                        distanceMeters = data.distanceMeters,
-                        durationSeconds = data.elapsedSeconds,
-                        avgSpeedKmh = data.avgSpeedKmh,
-                        completat = true,
-                        routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
-                        sensacio = selectedSensation,
-                    )
-                val response = RetrofitProvider.trackingApi.saveActivity(request)
-
-                SessionManager.ratxa = response.currentStreak
-                val oldPunts = SessionManager.punts ?: 0
-                val newPunts = oldPunts + response.pointsEarned
-
-                if (response.newBadges.isNotEmpty()) {
-                    try {
-                        SessionManager.userBadges = RetrofitProvider.profileApi.getUserBadges()
-                    } catch (e: retrofit2.HttpException) {
-                        Log.e("TrackingViewModel", "Failed to refresh user badges (HTTP)", e)
-                    } catch (e: IOException) {
-                        Log.e("TrackingViewModel", "Failed to refresh user badges (IO)", e)
-                    }
-                }
-
-                SessionManager.userId?.let { userId ->
-                    try {
-                        RetrofitProvider.trackingApi.updateUserStats(
-                            id = userId,
-                            request =
-                                UpdateUserStatsRequest(
-                                    punts = response.pointsEarned,
-                                    ratxa = response.currentStreak,
-                                ),
-                        )
-                    } catch (e: retrofit2.HttpException) {
-                        Log.e("TrackingViewModel", "Failed to update user stats (HTTP)", e)
-                    } catch (e: IOException) {
-                        Log.e("TrackingViewModel", "Failed to update user stats (IO)", e)
-                    }
-                }
-
-                // Actualizar punts en local DESPUÉS de hacer el POST para predecir, o recargar
-                try {
-                    val profile = RetrofitProvider.profileApi.getUserProfile()
-                    SessionManager.punts = profile.punts
-                } catch (e: retrofit2.HttpException) {
-                    Log.e("TrackingViewModel", "Failed to refresh profile locally (HTTP)", e)
-                    SessionManager.punts = newPunts
-                } catch (e: IOException) {
-                    Log.e("TrackingViewModel", "Failed to refresh profile locally (IO)", e)
-                    SessionManager.punts = newPunts
-                }
-
-                saveActivityPlanning()
-                AppEvents.notifyActivitySaved()
-                saveState = SaveState.Success(response)
-            } catch (e: IOException) {
-                saveState = SaveState.Error("Error de connexió: ${e.message}")
-            } catch (e: HttpException) {
-                saveState = SaveState.Error("Error del servidor: ${e.code()}")
-            }
-        }
     }
 
     fun clearSaveState() {

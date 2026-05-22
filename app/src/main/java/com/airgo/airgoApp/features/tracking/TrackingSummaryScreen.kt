@@ -13,6 +13,7 @@ import com.airgo.airgoApp.features.tracking.components.trackingSummaryBadgeHandl
 import com.airgo.airgoApp.features.tracking.components.trackingSummaryBody
 import com.airgo.airgoApp.features.tracking.components.trackingSummaryTopBar
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
+import com.airgo.airgoApp.features.tracking.domain.saveActivity
 
 /**
  * Pantalla de resum del seguiment de l'activitat.

@@ -11,7 +11,21 @@
     <string name="nav_profile">Perfil</string>
 
     <!-- features/profile/components/ -->
-    <string name="profile_badges_zone_title">Zona per insignies i activitats</string>
+    <string name="profile_badges_zone_title">Les meves insígnies</string>
+    <string name="profile_badges_empty">Encara no tens cap insígnia.</string>
+    <string name="profile_badges_earned_on">Aconseguida: %1$s</string>
+    <string name="profile_badges_dialog_close">Tancar</string>
+    <string name="profile_activities_recent_title">Activitats recents</string>
+    <string name="profile_activities_delete_desc">Eliminar activitat</string>
+
+    <!-- Badge Translations -->
+    <string name="badge_constancy_name">Iniciació a la constància</string>
+    <string name="badge_constancy_desc">Has completat la teva primera setmana d\'activitat!</string>
+    <string name="badge_walk_name">De passeig</string>
+    <string name="badge_walk_desc">Has caminat els teus primers 5 kilòmetres.</string>
+    <string name="badge_welcome_name">Benvingut a AirGo!</string>
+    <string name="badge_welcome_desc">Gràcies por unir-te a la comunitat d\'AirGo.</string>
+
     <string name="profile_delete_account_button">Eliminar compte</string>
     <string name="profile_delete_account_dialog_title">Eliminar compte?</string>
     <string name="profile_delete_account_dialog_text">Segur que vols eliminar el compte? Aquesta acció no es pot desfer.</string>
@@ -324,6 +338,15 @@
     <string name="activity_comment_placeholder">Com ha anat la ruta?</string>
     <string name="activity_comment_btn_save">Desar nota</string>
 
+
+    <!-- Tracking Dialogs -->
+    <string name="tracking_new_title_title">Nou Títol!</string>
+    <string name="tracking_new_title_desc">Tens un títol pendent per triar!</string>
+    <string name="tracking_set_main_title">Establir com a títol principal</string>
+    <string name="tracking_later">Més tard</string>
+    <string name="tracking_new_badge_title">Nova Insígnia!</string>
+    <string name="tracking_badge_icon_desc">Icona de la insígnia</string>
+    <string name="tracking_accept">Acceptar</string>
 
     <!-- feature/chat -->
     <string name="begin_conversation">Comença la conversa!</string>

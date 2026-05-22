@@ -48,6 +48,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.AppEvents
+import com.airgo.airgoApp.core.utils.translation.translateBadgeDescription
+import com.airgo.airgoApp.core.utils.translation.translateBadgeName
 import com.airgo.airgoApp.features.activity.data.ActivityResponse
 import com.airgo.airgoApp.features.activity.domain.ActivityUiState
 import com.airgo.airgoApp.features.activity.domain.ActivityViewModel
@@ -62,7 +64,7 @@ fun badgesZone(badges: List<UserBadgeResponse>) {
 
     Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
         Text(
-            text = "Les meves insígnies",
+            text = stringResource(R.string.profile_badges_zone_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -70,7 +72,7 @@ fun badgesZone(badges: List<UserBadgeResponse>) {
 
         if (badges.isEmpty()) {
             Text(
-                text = "Encara no tens cap insígnia.",
+                text = stringResource(R.string.profile_badges_empty),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -144,7 +146,7 @@ private fun badgeDetailDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = badge.insignia.nom,
+                    text = translateBadgeName(badge.insignia.nom),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center,
@@ -153,19 +155,19 @@ private fun badgeDetailDialog(
                 badgeIcon(badge)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = badge.insignia.descripcio,
+                    text = translateBadgeDescription(badge.insignia.nom),
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Aconseguida: ${badge.dataGuanyada.take(DATE_LENGTH)}",
+                    text = stringResource(R.string.profile_badges_earned_on, badge.dataGuanyada.take(DATE_LENGTH)),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(onClick = onDismiss) {
-                    Text("Tancar")
+                    Text(stringResource(R.string.profile_badges_dialog_close))
                 }
             }
         }
@@ -208,7 +210,7 @@ fun badgesAndActivitiesZone(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "Activitats recents",
+            text = stringResource(R.string.profile_activities_recent_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -314,7 +316,7 @@ private fun activityItem(
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar activitat",
+                    contentDescription = stringResource(R.string.profile_activities_delete_desc),
                     tint = MaterialTheme.colorScheme.error,
                 )
             }

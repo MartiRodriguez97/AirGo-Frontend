@@ -20,8 +20,11 @@ object ApiEndpoints {
     fun getAvailableTitolsEndpoint(id: Int): String = "api/usuaris/$id/titols/"
 
     const val USER_ACCOUNT_INFO = "api/usuaris/me/profile/"
+    const val TITLES_AVAILABLE = "api/usuaris/me/titols-disponibles/"
+    const val UNLOCK_TITLE = "api/usuaris/me/desbloquejar-titol/"
     const val SAVE_ACTIVITY = "api/exercicis/"
 
+    const val INSIGNIES = "api/usuaris/me/insignies/"
     const val PLA_ENTRENAMENT = "/api/pla-entrenament/"
     const val PLA_ENTRENAMENT_INI = "/api/pla-entrenament/{id}/inicialitzar-pla-ini/"
     const val TEMPLATE_EXERCICI = "/api/template-exercici/{id}/"
