@@ -355,4 +355,6 @@
     <string name="begin_conversation">¡Comienza la conversación!</string>
     <string name="message">Mensaje...</string>
     <string name="send">Enviar</string>
+
+    <string name="error_pollution_timeout">No se pudo actualizar. Mostrando los últimos datos.</string>
 </resources>

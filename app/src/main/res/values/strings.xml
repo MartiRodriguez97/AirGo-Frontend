@@ -357,5 +357,7 @@
     <string name="activity_comment_placeholder">How did the route go?</string>
     <string name="activity_comment_btn_save">Save note</string>
 
+    <string name="error_pollution_timeout">Could not update. Showing the latest data.</string>
+
 
 </resources>

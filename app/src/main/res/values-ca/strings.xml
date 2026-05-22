@@ -352,4 +352,5 @@
     <string name="begin_conversation">Comença la conversa!</string>
     <string name="message">Missatge...</string>
     <string name="send">Enviar</string>
-</resources>
+
+    <string name="error_pollution_timeout">No s\'ha pogut actualitzar. Mostrant les últimes dades.</string></resources>
