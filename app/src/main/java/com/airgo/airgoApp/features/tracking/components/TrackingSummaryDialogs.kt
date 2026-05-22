@@ -53,7 +53,7 @@ private const val TEXT_SIZE_SUBTITLE = 18
 private const val TEXT_SIZE_BODY = 14
 
 @Composable
-internal fun TrackingSummaryBadgeHandler(
+internal fun trackingSummaryBadgeHandler(
     saveState: SaveState,
     activitySavedText: String,
     viewModel: TrackingViewModel,
@@ -77,7 +77,7 @@ internal fun TrackingSummaryBadgeHandler(
     }
 
     showBadgeDialog?.let { badge ->
-        NewBadgeDialog(badge) {
+        newBadgeDialog(badge) {
             showBadgeDialog = null
             if (viewModel.titolsPendents > 0) {
                 viewModel.fetchAvailableTitles()
@@ -88,7 +88,7 @@ internal fun TrackingSummaryBadgeHandler(
     }
 
     if (viewModel.showTitleSelectionDialog) {
-        TitleSelectionDialog(
+        titleSelectionDialog(
             options = viewModel.availableTitles,
             onSelect = { title, setAsMain ->
                 viewModel.unlockTitle(title.id, setAsMain)
@@ -115,7 +115,7 @@ private fun finishTrackingSummary(
 }
 
 @Composable
-fun TitleSelectionDialog(
+fun titleSelectionDialog(
     options: List<TitleOption>,
     onSelect: (TitleOption, Boolean) -> Unit,
     onDismiss: () -> Unit,
@@ -183,7 +183,7 @@ fun TitleSelectionDialog(
 }
 
 @Composable
-private fun NewBadgeDialog(
+private fun newBadgeDialog(
     badge: BadgeDefinition,
     onDismiss: () -> Unit,
 ) {

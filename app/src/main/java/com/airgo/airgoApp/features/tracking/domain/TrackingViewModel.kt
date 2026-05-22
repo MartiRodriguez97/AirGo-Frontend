@@ -4,20 +4,15 @@ import android.location.Location
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.airgo.airgoApp.core.AppEvents
-import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
-import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
-import com.airgo.airgoApp.features.tracking.data.UpdateUserStatsRequest
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -30,7 +25,6 @@ import java.io.IOException
 
 private const val TIMER_INTERVAL_MS = 1000L
 private const val MS_TO_KMH = 3.6
-private const val METERS_PER_KM = 1000.0
 
 class TrackingViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()

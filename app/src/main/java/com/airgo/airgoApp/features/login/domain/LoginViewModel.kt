@@ -187,7 +187,9 @@ class LoginViewModel : ViewModel() {
                 }
 
                 try {
-                    val repo = com.airgo.airgoApp.features.home.data.TrainingPlanRepository()
+                    val repo =
+                        com.airgo.airgoApp.features.home.data
+                            .TrainingPlanRepository()
                     session.trainingPlans = repo.fetchFullTrainingPlans()
                 } catch (e: IOException) {
                     Log.e("LoginViewModel", "IO Error fetching training plans", e)
@@ -210,7 +212,9 @@ class LoginViewModel : ViewModel() {
 
     private suspend fun fetchAvailableTitlesList(session: SessionManager) {
         val userId = session.userId ?: return
-        val url = com.airgo.airgoApp.core.network.ApiEndpoints.getAvailableTitolsEndpoint(userId)
+        val url =
+            com.airgo.airgoApp.core.network.ApiEndpoints
+                .getAvailableTitolsEndpoint(userId)
         val response = RetrofitProvider.titolApi.getAvailableTitols(url)
         if (response.isSuccessful && response.body() != null) {
             session.availableTitols = response.body()!!.map { it.titol }

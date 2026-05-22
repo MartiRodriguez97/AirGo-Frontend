@@ -24,9 +24,10 @@ class TrainingPlanRepository {
     suspend fun fetchFullTrainingPlans(): List<TrainingPlanResponse> {
         val rawPlans = getTrainingPlans()
         return rawPlans.map { raw ->
-            val fullTemplates = raw.templates.map { templateId ->
-                getTemplate(templateId)
-            }
+            val fullTemplates =
+                raw.templates.map { templateId ->
+                    getTemplate(templateId)
+                }
             TrainingPlanResponse(
                 id = raw.id,
                 diesDurada = raw.diesDurada,

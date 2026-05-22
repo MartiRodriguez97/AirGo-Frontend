@@ -176,7 +176,9 @@ private fun appNavigation(
 @Composable
 fun loadingScreen() {
     Box(
-        modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+        modifier =
+            androidx.compose.ui.Modifier
+                .fillMaxSize(),
         contentAlignment = androidx.compose.ui.Alignment.Center,
     ) {
         androidx.compose.material3.CircularProgressIndicator()
@@ -261,7 +263,9 @@ private suspend fun fetchAvailableTitles() {
 
 private suspend fun fetchTrainingPlans() {
     try {
-        val repo = com.airgo.airgoApp.features.home.data.TrainingPlanRepository()
+        val repo =
+            com.airgo.airgoApp.features.home.data
+                .TrainingPlanRepository()
         SessionManager.trainingPlans = repo.fetchFullTrainingPlans()
     } catch (e: IOException) {
         Log.e("MainActivity", "IO Error fetching training plans", e)
@@ -270,9 +274,7 @@ private suspend fun fetchTrainingPlans() {
     }
 }
 
-private fun applyUserSession(
-    userDetails: UserDetailResponse,
-) {
+private fun applyUserSession(userDetails: UserDetailResponse) {
     with(SessionManager) {
         userId = userDetails.id
         username = userDetails.username

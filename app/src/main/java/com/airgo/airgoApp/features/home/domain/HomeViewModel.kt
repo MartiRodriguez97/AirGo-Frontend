@@ -239,7 +239,9 @@ class HomeViewModel : ViewModel() {
     fun fetchAvailableTitles() {
         viewModelScope.launch {
             try {
-                val response = com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi.getAvailableTitles()
+                val response =
+                    com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi
+                        .getAvailableTitles()
                 _availableTitles.value = response.opcions
                 showTitleSelectionDialog = true
             } catch (e: IOException) {
@@ -257,7 +259,8 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi.unlockTitle(
-                    com.airgo.airgoApp.features.tracking.data.UnlockTitleRequest(titleId),
+                    com.airgo.airgoApp.features.tracking.data
+                        .UnlockTitleRequest(titleId),
                 )
 
                 if (setAsMain) {
@@ -266,7 +269,8 @@ class HomeViewModel : ViewModel() {
                         selectedTitle?.let {
                             com.airgo.airgoApp.core.network.RetrofitProvider.profileApi.updateUser(
                                 userId,
-                                com.airgo.airgoApp.features.profile.data.UpdateUserRequest(titol = it.nom),
+                                com.airgo.airgoApp.features.profile.data
+                                    .UpdateUserRequest(titol = it.nom),
                             )
                             SessionManager.titol = it.nom
                         }

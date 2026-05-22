@@ -15,7 +15,6 @@ object ApiEndpoints {
     const val FAVORITE_ROUTES = "api/usuaris/me/routes/"
     const val DELETE_FAVORITE_ROUTE = "api/usuaris/me/routes/{route_id}/"
 
-
     fun getChangeInfoEndpoint(id: Int): String = "api/usuaris/$id/"
 
     fun getAvailableTitolsEndpoint(id: Int): String = "api/usuaris/$id/titols/"

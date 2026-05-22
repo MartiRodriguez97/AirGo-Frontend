@@ -77,7 +77,7 @@ internal fun buildShareText(
 }
 
 @Composable
-internal fun TrackingSummaryBody(
+internal fun trackingSummaryBody(
     innerPadding: androidx.compose.foundation.layout.PaddingValues,
     data: TrackingData,
     trackPoints: List<GeoPoint>,
@@ -94,11 +94,11 @@ internal fun TrackingSummaryBody(
                 .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TrackingSummaryStatsCard(data = data)
+        trackingSummaryStatsCard(data = data)
         Spacer(modifier = Modifier.height(PADDING_LARGE.dp))
-        TrackingSummaryRouteCard(trackPoints = trackPoints)
+        trackingSummaryRouteCard(trackPoints = trackPoints)
         Spacer(modifier = Modifier.weight(1f))
-        TrackingSummaryActions(
+        trackingSummaryActions(
             saveState = saveState,
             onSave = onSave,
             onDiscard = onDiscard,
@@ -107,7 +107,7 @@ internal fun TrackingSummaryBody(
 }
 
 @Composable
-internal fun TrackingSummaryStatsCard(data: TrackingData) {
+internal fun trackingSummaryStatsCard(data: TrackingData) {
     Card(
         modifier = Modifier.fillMaxWidth(TRACKING_ROUTE_PANEL),
         elevation = CardDefaults.cardElevation(ELEVATION_DEFAULT.dp),
@@ -115,18 +115,18 @@ internal fun TrackingSummaryStatsCard(data: TrackingData) {
         Column(modifier = Modifier.padding(PADDING_LARGE.dp)) {
             Text(stringResource(R.string.statistics), style = MaterialTheme.typography.titleMedium)
             HorizontalDivider(modifier = Modifier.padding(vertical = PADDING_MEDIUM.dp))
-            SummaryStatRow(label = stringResource(R.string.distance), value = "%.0f m".format(data.distanceMeters))
-            SummaryStatRow(
+            summaryStatRow(label = stringResource(R.string.distance), value = "%.0f m".format(data.distanceMeters))
+            summaryStatRow(
                 label = stringResource(R.string.time),
                 value = formatElapsedTime(data.elapsedSeconds),
             )
-            SummaryStatRow(label = stringResource(R.string.avg_speed), value = "%.1f km/h".format(data.avgSpeedKmh))
+            summaryStatRow(label = stringResource(R.string.avg_speed), value = "%.1f km/h".format(data.avgSpeedKmh))
         }
     }
 }
 
 @Composable
-internal fun TrackingSummaryRouteCard(
+internal fun trackingSummaryRouteCard(
     trackPoints: List<GeoPoint>,
     modifier: Modifier = Modifier,
 ) {
@@ -177,7 +177,7 @@ internal fun TrackingSummaryRouteCard(
 }
 
 @Composable
-private fun SummaryStatRow(
+private fun summaryStatRow(
     label: String,
     value: String,
 ) {
@@ -195,7 +195,7 @@ private fun SummaryStatRow(
 }
 
 @Composable
-private fun TrackingSummaryActions(
+private fun trackingSummaryActions(
     saveState: SaveState,
     onSave: () -> Unit,
     onDiscard: () -> Unit,
@@ -234,7 +234,7 @@ private fun TrackingSummaryActions(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TrackingSummaryTopBar(
+internal fun trackingSummaryTopBar(
     title: String,
     backDescription: String,
     shareTitle: String,

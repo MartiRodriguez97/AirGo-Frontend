@@ -7,11 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.AppEvents
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.profile.data.UpdateUserRequest
+import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.UnlockTitleRequest
 import com.airgo.airgoApp.features.tracking.data.UpdateUserStatsRequest
-import com.airgo.airgoApp.features.profile.data.UpdateUserRequest
-import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -26,14 +26,15 @@ fun TrackingViewModel.saveActivity() {
             val activeExercise = SessionManager.exerciciActiu
             val distanceDoneKm = data.distanceMeters / METERS_PER_KM
 
-            val request = SaveActivityRequest(
-                distanceMeters = data.distanceMeters,
-                durationSeconds = data.elapsedSeconds,
-                avgSpeedKmh = data.avgSpeedKmh,
-                completat = true,
-                routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
-                sensacio = selectedSensation,
-            )
+            val request =
+                SaveActivityRequest(
+                    distanceMeters = data.distanceMeters,
+                    durationSeconds = data.elapsedSeconds,
+                    avgSpeedKmh = data.avgSpeedKmh,
+                    completat = true,
+                    routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
+                    sensacio = selectedSensation,
+                )
             val response = RetrofitProvider.trackingApi.saveActivity(request)
 
             SessionManager.ratxa = response.currentStreak
@@ -54,10 +55,11 @@ fun TrackingViewModel.saveActivity() {
                 try {
                     RetrofitProvider.trackingApi.updateUserStats(
                         id = userId,
-                        request = UpdateUserStatsRequest(
-                            punts = response.pointsEarned,
-                            ratxa = response.currentStreak,
-                        ),
+                        request =
+                            UpdateUserStatsRequest(
+                                punts = response.pointsEarned,
+                                ratxa = response.currentStreak,
+                            ),
                     )
                 } catch (e: HttpException) {
                     Log.e("TrackingViewModel", "Failed to update user stats (HTTP)", e)

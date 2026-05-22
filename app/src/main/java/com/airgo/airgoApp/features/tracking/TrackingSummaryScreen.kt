@@ -8,10 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.features.tracking.components.TrackingSummaryBadgeHandler
-import com.airgo.airgoApp.features.tracking.components.TrackingSummaryBody
-import com.airgo.airgoApp.features.tracking.components.TrackingSummaryTopBar
 import com.airgo.airgoApp.features.tracking.components.buildShareText
+import com.airgo.airgoApp.features.tracking.components.trackingSummaryBadgeHandler
+import com.airgo.airgoApp.features.tracking.components.trackingSummaryBody
+import com.airgo.airgoApp.features.tracking.components.trackingSummaryTopBar
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
 import com.airgo.airgoApp.features.tracking.domain.saveActivity
 
@@ -36,7 +36,7 @@ fun trackingSummaryScreen(
     val summaryTitle = stringResource(R.string.activity_summary)
     val shareText = buildShareText(data.distanceMeters, data.elapsedSeconds, data.avgSpeedKmh)
 
-    TrackingSummaryBadgeHandler(
+    trackingSummaryBadgeHandler(
         saveState = saveState,
         activitySavedText = activitySavedText,
         viewModel = viewModel,
@@ -45,7 +45,7 @@ fun trackingSummaryScreen(
 
     Scaffold(
         topBar = {
-            TrackingSummaryTopBar(
+            trackingSummaryTopBar(
                 title = summaryTitle,
                 backDescription = backDescription,
                 shareTitle = shareTitle,
@@ -57,7 +57,7 @@ fun trackingSummaryScreen(
             )
         },
     ) { innerPadding ->
-        TrackingSummaryBody(
+        trackingSummaryBody(
             innerPadding = innerPadding,
             data = data,
             trackPoints = viewModel.trackPoints,
