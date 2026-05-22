@@ -11,7 +11,21 @@
 
 
     <!-- features/profile/components/ -->
-    <string name="profile_badges_zone_title">Zona para insignias y actividades</string>
+    <string name="profile_badges_zone_title">Mis insignias</string>
+    <string name="profile_badges_empty">Aún no tienes ninguna insignia.</string>
+    <string name="profile_badges_earned_on">Conseguida: %1$s</string>
+    <string name="profile_badges_dialog_close">Cerrar</string>
+    <string name="profile_activities_recent_title">Actividades recientes</string>
+    <string name="profile_activities_delete_desc">Eliminar actividad</string>
+
+    <!-- Badge Translations -->
+    <string name="badge_constancy_name">Iniciación a la constancia</string>
+    <string name="badge_constancy_desc">¡Has completado tu primera semana de actividad!</string>
+    <string name="badge_walk_name">De paseo</string>
+    <string name="badge_walk_desc">Has caminado tus primeros 5 kilómetros.</string>
+    <string name="badge_welcome_name">¡Bienvenido a AirGo!</string>
+    <string name="badge_welcome_desc">Gracias por unirte a la comunidad de AirGo.</string>
+
     <string name="profile_delete_account_button">Eliminar cuenta</string>
     <string name="profile_delete_account_dialog_title">¿Eliminar cuenta?</string>
     <string name="profile_delete_account_dialog_text">¿Seguro que quieres eliminar la cuenta? Esta acción no se puede deshacer.</string>
@@ -327,6 +341,15 @@
     <string name="activity_comment_title">Comentarios de la actividad</string>
     <string name="activity_comment_placeholder">¿Cómo ha ido la ruta?</string>
     <string name="activity_comment_btn_save">Guardar nota</string>
+
+    <!-- Tracking Dialogs -->
+    <string name="tracking_new_title_title">¡Nuevo Título!</string>
+    <string name="tracking_new_title_desc">¡Tienes un título pendiente para elegir!</string>
+    <string name="tracking_set_main_title">Establecer como título principal</string>
+    <string name="tracking_later">Más tarde</string>
+    <string name="tracking_new_badge_title">¡Nueva Insignia!</string>
+    <string name="tracking_badge_icon_desc">Icono de la insignia</string>
+    <string name="tracking_accept">Aceptar</string>
 
     <!-- feature/chat -->
     <string name="begin_conversation">¡Comienza la conversación!</string>

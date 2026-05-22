@@ -30,12 +30,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
+import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.utils.translation.translateBadgeDescription
+import com.airgo.airgoApp.core.utils.translation.translateBadgeName
+import com.airgo.airgoApp.core.utils.translation.translateTitolDescription
+import com.airgo.airgoApp.core.utils.translation.translateTitolName
 import com.airgo.airgoApp.features.profile.data.BadgeDefinition
 import com.airgo.airgoApp.features.tracking.data.TitleOption
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
@@ -133,10 +139,17 @@ fun titleSelectionDialog(
                 modifier = Modifier.padding(PADDING_EXTRA_LARGE.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "Nou Títol!", fontWeight = FontWeight.Bold, fontSize = TEXT_SIZE_TITLE.sp)
+                Text(
+                    text =
+                        stringResource(
+                            R.string.tracking_new_title_title,
+                        ),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = TEXT_SIZE_TITLE.sp,
+                )
                 Spacer(modifier = Modifier.height(PADDING_MEDIUM.dp))
                 Text(
-                    text = "Tens un títol pendent per triar!",
+                    text = stringResource(R.string.tracking_new_title_desc),
                     fontSize = TEXT_SIZE_BODY.sp,
                     textAlign = TextAlign.Center,
                 )
@@ -148,9 +161,9 @@ fun titleSelectionDialog(
                         modifier = Modifier.fillMaxWidth().padding(vertical = PADDING_SMALL.dp),
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = option.nom, fontWeight = FontWeight.Bold)
+                            Text(text = translateTitolName(option.nom), fontWeight = FontWeight.Bold)
                             Text(
-                                text = option.descripcio,
+                                text = translateTitolDescription(option.nom),
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.Center,
                                 lineHeight = 14.sp,
@@ -170,13 +183,13 @@ fun titleSelectionDialog(
                         onCheckedChange = { setAsMain = it },
                     )
                     Text(
-                        text = "Establir com a títol principal",
+                        text = stringResource(R.string.tracking_set_main_title),
                         fontSize = TEXT_SIZE_BODY.sp,
                     )
                 }
 
                 Spacer(modifier = Modifier.height(PADDING_LARGE.dp))
-                TextButton(onClick = onDismiss) { Text("Més tard") }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.tracking_later)) }
             }
         }
     }
@@ -196,33 +209,41 @@ private fun newBadgeDialog(
                 modifier = Modifier.padding(PADDING_EXTRA_LARGE.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "Nova Insígnia!", fontWeight = FontWeight.Bold, fontSize = TEXT_SIZE_TITLE.sp)
+                Text(
+                    text = stringResource(R.string.tracking_new_badge_title),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = TEXT_SIZE_TITLE.sp,
+                )
                 Spacer(modifier = Modifier.height(PADDING_LARGE.dp))
                 if (badge.icona != null) {
                     AsyncImage(
                         model = badge.icona,
-                        contentDescription = "Icona Insignia",
+                        contentDescription = stringResource(R.string.tracking_badge_icon_desc),
                         modifier = Modifier.size(ICON_SIZE_BADGE.dp),
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = "Default Badge Icon",
+                        contentDescription = stringResource(R.string.tracking_badge_icon_desc),
                         modifier = Modifier.size(ICON_SIZE_BADGE.dp),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 }
                 Spacer(modifier = Modifier.height(PADDING_LARGE.dp))
                 Text(
-                    text = badge.nom,
+                    text = translateBadgeName(badge.nom),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = TEXT_SIZE_SUBTITLE.sp,
                     textAlign = TextAlign.Center,
                 )
                 Spacer(modifier = Modifier.height(PADDING_MEDIUM.dp))
-                Text(text = badge.descripcio, fontSize = TEXT_SIZE_BODY.sp, textAlign = TextAlign.Center)
+                Text(
+                    text = translateBadgeDescription(badge.nom),
+                    fontSize = TEXT_SIZE_BODY.sp,
+                    textAlign = TextAlign.Center,
+                )
                 Spacer(modifier = Modifier.height(PADDING_EXTRA_LARGE.dp))
-                Button(onClick = onDismiss) { Text("Acceptar") }
+                Button(onClick = onDismiss) { Text(stringResource(R.string.tracking_accept)) }
             }
         }
     }
