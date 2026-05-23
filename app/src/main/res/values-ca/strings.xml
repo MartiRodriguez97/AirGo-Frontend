@@ -15,6 +15,7 @@
     <string name="profile_badges_empty">Encara no tens cap insígnia.</string>
     <string name="profile_badges_earned_on">Aconseguida: %1$s</string>
     <string name="profile_badges_dialog_close">Tancar</string>
+    <string name="error_fetching_badges">"No s'ha pogut obtenir les insignies "</string>
     <string name="profile_activities_recent_title">Activitats recents</string>
     <string name="profile_activities_delete_desc">Eliminar activitat</string>
 
@@ -26,6 +27,7 @@
     <string name="badge_welcome_name">Benvingut a AirGo!</string>
     <string name="badge_welcome_desc">Gràcies por unir-te a la comunitat d\'AirGo.</string>
 
+    <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar compte</string>
     <string name="profile_delete_account_dialog_title">Eliminar compte?</string>
     <string name="profile_delete_account_dialog_text">Segur que vols eliminar el compte? Aquesta acció no es pot desfer.</string>
@@ -38,12 +40,15 @@
 
     <string name="profile_no_title">Sense títol</string>
     <string name="profile_photo_linked_success">Foto enllaçada correctament</string>
+    <string name="error_fetching_user_profile">No s\'ha pogut obtenir el perfil d\'usuari</string>
+    <string name="error_updating_picture">No s\'ha pogut actualitzar la imatge de perfil</string>
 
     <!-- features/profile/ProfileScreen/ -->
     <string name="profile_picture_update_success">Foto actualitzada correctament</string>
 
+
     <!-- core/network/NetworkErrorMapper -->
-    <string name="error_delete_account_http">Error en eliminar el compte (HTTP %1$d)</string>
+    <string name="error_delete_account">"Error en eliminar el compte "</string>
     <string name="error_process_image">No s\'ha pogut processar la imatge seleccionada</string>
     <string name="error_upload_no_url">Foto pujada, però el servidor no ha retornat la URL</string>
     <string name="error_server_generic">Error del servidor: HTTP %1$d</string>
@@ -333,7 +338,6 @@
     <string name="error_deleting_friend">No s\'ha pogut eliminar a aquest amic</string>
 
     <!-- features/tracking-->
-    <string name="error_saving_activity_plan">No s\'ha pogut emmagatzemar el pla de activitats</string>
     <string name="error_saving_activity">No s\'ha pogut emmagatzemar l\'activitat</string>
 
     <!-- Tracking Buttons -->
@@ -380,7 +384,6 @@
     <!-- Titles -->
     <string name="error_fetching_titles">No s\'han pogut obtenir els títols disponibles</string>
     <string name="error_unlocking_title">No s\'ha pogut desbloquejar el titol</string>
-
 
 </resources>
 

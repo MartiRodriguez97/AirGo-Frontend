@@ -145,10 +145,10 @@ class TrackingViewModel : ViewModel() {
             _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
         } catch (e: IOException) {
             Log.e("TrackingViewModel", "Network error saving exercise progress", e)
-            saveState = SaveState.Error(UiText.StringResource(R.string.error_network_generic))
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
         } catch (e: HttpException) {
             Log.e("TrackingViewModel", "HTTP error saving exercise progress", e)
-            saveState = SaveState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
         }
     }
 

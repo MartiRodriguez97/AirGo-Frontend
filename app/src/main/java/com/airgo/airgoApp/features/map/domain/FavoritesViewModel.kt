@@ -38,10 +38,10 @@ class FavoritesViewModel : ViewModel() {
                 errorMessage = null
                 routes = RetrofitProvider.favoriteRouteApi.getFavoriteRoutes(search)
             } catch (e: IOException) {
-                errorMessage = UiText.StringResource(R.string.error_connection_generic)
+                errorMessage = UiText.StringResource(R.string.error_fetching_routes)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                errorMessage = UiText.StringResource(R.string.error_connection_generic, e.code())
+                errorMessage = UiText.StringResource(R.string.error_fetching_routes)
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             } finally {
                 isLoading = false
@@ -63,10 +63,10 @@ class FavoritesViewModel : ViewModel() {
                     Log.e(LOG_TAG, "Delete failed: ${response.code()}")
                 }
             } catch (e: IOException) {
-                errorMessage = UiText.StringResource(R.string.error_connection_generic)
+                errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                errorMessage = UiText.StringResource(R.string.error_connection_generic, e.code())
+                errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }
         }

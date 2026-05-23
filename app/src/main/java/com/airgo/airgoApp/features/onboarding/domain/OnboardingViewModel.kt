@@ -106,13 +106,13 @@ class OnboardingViewModel : ViewModel() {
                 SessionManager.teBici = teBici
                 uiState = OnboardingUiState.Success
             } catch (e: IOException) {
-                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_network_generic))
+                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_saving_info_user))
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
                 if (e.code() == HTTP_400) {
-                    uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_username_already_exists))
+                    uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_saving_info_user))
                 } else {
-                    uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+                    uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_saving_info_user))
                 }
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }

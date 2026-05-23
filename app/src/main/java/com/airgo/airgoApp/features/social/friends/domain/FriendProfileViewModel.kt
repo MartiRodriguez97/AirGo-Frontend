@@ -37,13 +37,10 @@ class FriendProfileViewModel : ViewModel() {
                 _uiState.value = FriendProfileUiState.Success(profile)
             } catch (e: IOException) {
                 Log.e(TAG, "Network error fetching routes: ${e.message}", e)
-                _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_network_generic))
+                _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_loading_profile))
             } catch (e: HttpException) {
                 Log.e(TAG, "HTTP error fetching routes: ${e.code()}", e)
-                _uiState.value =
-                    FriendProfileUiState.Error(
-                        UiText.StringResource(R.string.error_server_generic, e.code()),
-                    )
+                _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_loading_profile))
             }
         }
     }

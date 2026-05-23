@@ -14,6 +14,7 @@
     <string name="profile_badges_empty">Aún no tienes ninguna insignia.</string>
     <string name="profile_badges_earned_on">Conseguida: %1$s</string>
     <string name="profile_badges_dialog_close">Cerrar</string>
+    <string name="error_fetching_badges">No se pudo obtener las insignias</string>
     <string name="profile_activities_recent_title">Actividades recientes</string>
     <string name="profile_activities_delete_desc">Eliminar actividad</string>
 
@@ -25,6 +26,7 @@
     <string name="badge_welcome_name">¡Bienvenido a AirGo!</string>
     <string name="badge_welcome_desc">Gracias por unirte a la comunidad de AirGo.</string>
 
+    <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar cuenta</string>
     <string name="profile_delete_account_dialog_title">¿Eliminar cuenta?</string>
     <string name="profile_delete_account_dialog_text">¿Seguro que quieres eliminar la cuenta? Esta acción no se puede deshacer.</string>
@@ -37,12 +39,14 @@
 
     <string name="profile_no_title">Sin título</string>
     <string name="profile_photo_linked_success">Foto vinculada correctamente</string>
+    <string name="error_fetching_user_profile">No se pudo obtener el perfil de usuario</string>
+    <string name="error_updating_picture">No se pudo actualizar la imagen de perfil</string>
 
     <!-- features/profile/ProfileScreen/ -->
     <string name="profile_picture_update_success">Foto actualizada correctamente</string>
 
     <!-- core/network/NetworkErrorMapper -->
-    <string name="error_delete_account_http">Error al eliminar la cuenta (HTTP %1$d)</string>
+    <string name="error_delete_account">"Error al eliminar la cuenta "</string>
     <string name="error_process_image">No se ha podido procesar la imagen seleccionada</string>
     <string name="error_upload_no_url">Foto subida, pero el servidor no ha devuelto la URL</string>
     <string name="error_server_generic">Error del servidor: HTTP %1$d</string>
@@ -333,7 +337,6 @@
     <string name="error_deleting_friend">No se pudo eliminar a este amigo</string>
 
     <!-- features/tracking-->
-    <string name="error_saving_activity_plan">No se pudo almacenar el plan de actividades</string>
     <string name="error_saving_activity">No se pudo guardar la actividad</string>
 
     <!-- Tracking Buttons -->

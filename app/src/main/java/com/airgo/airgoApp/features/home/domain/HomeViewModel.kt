@@ -124,7 +124,13 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun createPlan(onSuccess: () -> Unit) {
+    @Suppress("UnusedParameter")
+    fun createPlan(
+        onSuccess: () -> Unit,
+        daysDuration: Int,
+        workoutsPerWeek: Int,
+        level: String?,
+    ) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -193,8 +199,10 @@ class HomeViewModel : ViewModel() {
                 showTitleSelectionDialog = true
             } catch (e: IOException) {
                 Log.e("HomeViewModel", "IO Error fetching titles", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_fetching_titles
             } catch (e: retrofit2.HttpException) {
                 Log.e("HomeViewModel", "HTTP Error fetching titles", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_fetching_titles
             }
         }
     }
@@ -244,13 +252,11 @@ class HomeViewModel : ViewModel() {
                 SessionManager.titolsPendents = newValue
             } catch (e: IOException) {
                 Log.e("HomeViewModel", "IO Error unlocking title", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_unlocking_title
             } catch (e: retrofit2.HttpException) {
                 Log.e("HomeViewModel", "HTTP Error unlocking title", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_unlocking_title
             }
         }
-    }
-
-    fun refreshTitolsPendents() {
-        // No-op as we use the flow from SessionManager
     }
 }

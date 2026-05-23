@@ -53,10 +53,10 @@ class PollutionViewModel : ViewModel() {
                 errorMessage = UiText.StringResource(R.string.error_pollution_timeout)
                 Log.e(LOG_TAG, "Timeout de red al cargar calidad del aire", e)
             } catch (e: IOException) {
-                errorMessage = UiText.StringResource(R.string.error_pollution_connection)
+                errorMessage = UiText.StringResource(R.string.error_fetching_pollution)
                 Log.e(LOG_TAG, "Network failure", e)
             } catch (e: HttpException) {
-                errorMessage = UiText.StringResource(R.string.error_pollution_http, e.code())
+                errorMessage = UiText.StringResource(R.string.error_fetching_pollution)
                 Log.e(LOG_TAG, "HTTP failure", e)
             }
         }

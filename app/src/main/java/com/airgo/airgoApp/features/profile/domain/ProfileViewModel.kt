@@ -60,10 +60,10 @@ class ProfileViewModel : ViewModel() {
                 SessionManager.username = profile.username
             } catch (e: IOException) {
                 Log.e(TAG, "loadProfile network error", e)
-                _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_network_generic))
+                _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_loading_profile))
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "loadProfile HTTP ${e.code()}", e)
-                _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+                _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_loading_profile))
             }
         }
         loadBadges()
@@ -91,7 +91,7 @@ class ProfileViewModel : ViewModel() {
                     _uiState.value = ProfileUiState.DeleteSuccess
                 } else {
                     _uiState.value =
-                        ProfileUiState.Error(UiText.StringResource(R.string.error_delete_account_http, response.code()))
+                        ProfileUiState.Error(UiText.StringResource(R.string.error_delete_account))
                 }
             } catch (e: IOException) {
                 _uiState.value = ProfileUiState.Error(NetworkErrorMapper.fromIOException(e))

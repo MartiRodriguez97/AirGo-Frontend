@@ -13,6 +13,7 @@
     <string name="profile_badges_empty">Encara no tens cap insígnia.</string>
     <string name="profile_badges_earned_on">Aconseguida: %1$s</string>
     <string name="profile_badges_dialog_close">Tancar</string>
+    <string name="error_fetching_badges">Unable to fetch badges</string>
     <string name="profile_activities_recent_title">Activitats recents</string>
     <string name="profile_activities_delete_desc">Eliminar activitat</string>
 
@@ -41,11 +42,13 @@
     <string name="profile_picture_update_success">Photo updated successfully</string>
 
     <!-- features/profile/domain/ProfileViewModel -->
-    <string name="error_delete_account_http">Error deleting account (HTTP %1$d)</string>
+    <string name="error_delete_account">Error deleting account</string>
     <string name="error_process_image">Could not process the selected image</string>
     <string name="error_upload_no_url">Photo uploaded, but the server did not return the URL</string>
     <string name="error_server_generic">Server error: HTTP %1$d</string>
     <string name="error_connection_upload">Connection error while uploading image</string>
+    <string name="error_fetching_user_profile">Unable to fetch user profile</string>
+    <string name="error_updating_picture">Could not update profile picture</string>
 
     <!-- core/network/NetworkErrorMapper -->
     <string name="error_network_unknown_host">Could not connect to the server. Check your internet connection.</string>
@@ -343,7 +346,6 @@
     <string name="send">Send</string>
 
     <!-- features/tracking-->
-    <string name="error_saving_activity_plan">Unable to save activity plan</string>
     <string name="error_saving_activity">Could not save activity</string>
 
     <!-- Tracking Buttons -->
@@ -384,5 +386,6 @@
     <!-- Titles -->
     <string name="error_fetching_titles">Could not fetch available titles</string>
     <string name="error_unlocking_title">Could not unlock title</string>
+
 
 </resources>

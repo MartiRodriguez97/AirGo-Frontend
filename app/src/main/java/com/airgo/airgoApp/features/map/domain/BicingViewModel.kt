@@ -36,10 +36,10 @@ class BicingViewModel : ViewModel() {
                 }
             } catch (e: IOException) {
                 Log.e(TAG, "Network error fetching routes: ${e.message}", e)
-                errorMessage = UiText.StringResource(R.string.error_connection_generic)
+                errorMessage = UiText.StringResource(R.string.error_fetching_bicing)
             } catch (e: HttpException) {
                 Log.e(TAG, "HTTP error fetching routes: ${e.code()}", e)
-                errorMessage = UiText.StringResource(R.string.error_connection_generic, e.code())
+                errorMessage = UiText.StringResource(R.string.error_fetching_bicing)
             }
         }
     }

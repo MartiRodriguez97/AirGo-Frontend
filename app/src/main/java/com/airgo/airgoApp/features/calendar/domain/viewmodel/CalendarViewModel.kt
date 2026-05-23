@@ -44,10 +44,10 @@ class CalendarViewModel(
                     _errorResId.value = R.string.error_fetching_training_plan
                 }
             } catch (e: IOException) {
-                _errorResId.value = R.string.calendar_error_network
+                _errorResId.value = R.string.error_fetching_training_plan
                 e.printStackTrace()
             } catch (e: retrofit2.HttpException) {
-                _errorResId.value = R.string.calendar_error_server
+                _errorResId.value = R.string.error_fetching_training_plan
                 e.printStackTrace()
             } finally {
                 _isLoading.value = false

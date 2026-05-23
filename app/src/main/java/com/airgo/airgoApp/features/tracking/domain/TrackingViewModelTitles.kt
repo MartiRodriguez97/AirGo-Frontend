@@ -93,10 +93,10 @@ fun TrackingViewModel.saveActivity() {
             saveState = SaveState.Success(response)
         } catch (e: IOException) {
             Log.e(TAG, "Network error fetching routes: ${e.message}", e)
-            saveState = SaveState.Error(UiText.StringResource(R.string.error_network_generic))
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
         } catch (e: HttpException) {
             Log.e(TAG, "HTTP error fetching routes: ${e.code()}", e)
-            saveState = SaveState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
         }
     }
 }
@@ -108,10 +108,10 @@ fun TrackingViewModel.fetchAvailableTitles() {
             availableTitles = response.opcions
             showTitleSelectionDialog = true
         } catch (e: IOException) {
-            saveState = SaveState.Error(UiText.StringResource(R.string.error_network_generic))
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_fetching_titles))
             Log.e("TrackingViewModel", "IO Error fetching titles", e)
         } catch (e: HttpException) {
-            saveState = SaveState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_fetching_titles))
             Log.e("TrackingViewModel", "HTTP Error fetching titles", e)
         }
     }
@@ -157,8 +157,10 @@ fun TrackingViewModel.unlockTitle(
             SessionManager.titolsPendents = newValue
             titolsPendents = newValue
         } catch (e: IOException) {
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_unlocking_title))
             Log.e("TrackingViewModel", "IO Error unlocking title", e)
         } catch (e: HttpException) {
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_unlocking_title))
             Log.e("TrackingViewModel", "HTTP Error unlocking title", e)
         }
     }
