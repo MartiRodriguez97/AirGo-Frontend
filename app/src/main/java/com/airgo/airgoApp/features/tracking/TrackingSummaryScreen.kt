@@ -272,7 +272,7 @@ private fun trackingSummaryActions(
         }
         if (saveState is SaveState.Error) {
             Text(
-                text = saveState.message,
+                text = saveState.message.asString(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
             )

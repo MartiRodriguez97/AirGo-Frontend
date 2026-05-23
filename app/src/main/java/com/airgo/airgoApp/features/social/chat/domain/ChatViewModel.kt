@@ -4,8 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.BuildConfig
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.onboarding.domain.OnboardingUiState
 import com.airgo.airgoApp.features.social.chat.data.Message
 import com.airgo.airgoApp.features.social.chat.data.WebSocketMessage
 import com.google.gson.Gson
@@ -39,7 +42,7 @@ sealed class ChatUiState {
     ) : ChatUiState()
 
     data class Error(
-        val message: String?,
+        val message: UiText.StringResource,
     ) : ChatUiState()
 }
 
@@ -78,19 +81,12 @@ class ChatViewModel : ViewModel() {
                     _messages.value = emptyList()
                     _uiState.value = ChatUiState.Empty
                 } else {
-                    _uiState.value = ChatUiState.Error("Error del servidor: ${e.code()}")
+                    _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
                     Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
                 }
             } catch (e: IOException) {
-                _uiState.value = ChatUiState.Error("Error de connexió")
+                _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_network_generic))
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
-            }
-            try {
-                RetrofitProvider.chatApi.markAsRead(convId)
-            } catch (e: HttpException) {
-                Log.e(LOG_TAG, "Error markAsRead HTTP: ${e.message()}", e)
-            } catch (e: IOException) {
-                Log.e(LOG_TAG, "Error markAsRead IO: ${e.message}", e)
             }
         }
     }
@@ -215,8 +211,10 @@ class ChatViewModel : ViewModel() {
                 _messages.value = _messages.value.filter { it.id != messageId }
                 if (_messages.value.isEmpty()) _uiState.value = ChatUiState.Empty
             } catch (e: HttpException) {
+                _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
                 Log.e(LOG_TAG, "HTTP error deleting message: ${e.code()}", e)
             } catch (e: IOException) {
+                _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_network_generic))
                 Log.e(LOG_TAG, "Network error deleting message: ${e.message}", e)
             }
         }

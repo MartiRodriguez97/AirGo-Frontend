@@ -33,7 +33,7 @@ sealed class FriendsUiState {
     ) : FriendsUiState()
 
     data class Error(
-        val message: String?,
+        val message: UiText.StringResource,
     ) : FriendsUiState()
 }
 
@@ -138,7 +138,7 @@ class SocialViewModel : ViewModel() {
                             FriendsUiState.Success(friends)
                         }
                 },
-                onFailure = { e -> _friendsUiState.value = FriendsUiState.Error(e.message) },
+                onFailure = { e -> _friendsUiState.value = FriendsUiState.Error(UiText.StringResource(R.string.error_loading_friends)) },
             )
         }
     }
@@ -197,7 +197,7 @@ class SocialViewModel : ViewModel() {
                             }
                     }
                 },
-                onFailure = {},
+                onFailure = { e -> _friendsUiState.value = FriendsUiState.Error(UiText.StringResource(R.string.error_deleting_friend)) },
             )
         }
     }

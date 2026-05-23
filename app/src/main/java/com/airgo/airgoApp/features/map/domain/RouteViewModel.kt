@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
@@ -63,11 +64,9 @@ class RouteViewModel : ViewModel() {
                     )
 
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
-                Log.d(
-                    LOG_TAG,
-                    "Ruta calculada amb perfil=${transportProfile.value}, " +
-                        "distància=${currentRoute?.summary?.distanceMeters} m",
-                )
+                if (currentRoute?.status !== "success") {
+                    errorMessage = UiText.StringResource(R.string.error_fetching_route);
+                }
             } catch (e: IOException) {
                 errorMessage = UiText.StringResource(R.string.error_connection)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
@@ -146,16 +145,16 @@ class RouteViewModel : ViewModel() {
                         isFavorite = true
                         favoriteMessage = null
                     }
-                    JA_EXISTEIX -> favoriteMessage = "La ruta ja estava guardada"
+                    JA_EXISTEIX -> errorMessage = UiText.StringResource(R.string.error_route_already_saved)
                     else -> {
-                        favoriteMessage = "Error al guardar la ruta: ${response.code()}"
+                        errorMessage = UiText.StringResource(R.string.error_saving_route)
                         Log.e(LOG_TAG, "Save favorite failed: ${response.code()}")
                     }
                 }
             } catch (e: IOException) {
-                favoriteMessage = "Error de connexió: ${e.message}"
+                errorMessage = UiText.StringResource(R.string.error_connection)
             } catch (e: HttpException) {
-                favoriteMessage = "Error del servidor: ${e.code()}"
+                errorMessage = UiText.StringResource(R.string.error_route_http, e.code())
             }
         }
     }

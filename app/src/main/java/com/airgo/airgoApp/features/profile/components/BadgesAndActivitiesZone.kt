@@ -94,7 +94,7 @@ fun badgesAndActivitiesZone(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = (uiState as ActivityUiState.Error).message,
+                        text = stringResource((uiState as ActivityUiState.Error).message),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                     )

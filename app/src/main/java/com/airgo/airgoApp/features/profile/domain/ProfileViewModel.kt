@@ -11,6 +11,7 @@ import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.FileUtils
 import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.onboarding.domain.OnboardingUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -54,10 +55,14 @@ class ProfileViewModel : ViewModel() {
                 SessionManager.pes = profile.pes
                 SessionManager.altura = profile.altura
                 SessionManager.username = profile.username
+            } catch (e: Exception) {
+                _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_loading_profile))
             } catch (e: IOException) {
                 Log.e(TAG, "loadProfile network error", e)
+                _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_network_generic))
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "loadProfile HTTP ${e.code()}", e)
+                _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
             }
         }
     }
@@ -67,25 +72,18 @@ class ProfileViewModel : ViewModel() {
             _uiState.value = ProfileUiState.Loading
 
             try {
-                // Fem la petició al backend
                 val response = RetrofitProvider.profileApi.deleteAccount()
 
-                println("Esperando resposta del servidor para eliminar cuenta...")
 
-                // Revisem la resposta del servidor
                 if (response.isSuccessful) {
                     SessionManager.clear()
                     _uiState.value = ProfileUiState.DeleteSuccess
-                    println("Cuenta eliminada con éxito en el backend")
                 } else {
-                    // Si el servidor rechaza la petición (ej. el token expiró o hay un error interno)
                     _uiState.value =
                         ProfileUiState.Error(UiText.StringResource(R.string.error_delete_account_http, response.code()))
                 }
             } catch (e: IOException) {
-                // Error de red (ej. sin internet)
                 _uiState.value = ProfileUiState.Error(NetworkErrorMapper.fromIOException(e))
-                println("Error: " + e.printStackTrace())
             }
         }
     }
@@ -117,39 +115,23 @@ class ProfileViewModel : ViewModel() {
 
                 val response = RetrofitProvider.profileApi.updateProfilePicture(imagePart)
 
-                // Comprobamos la respuesta
                 if (response.isSuccessful) {
                     _uiState.value = ProfileUiState.PictureUpdateSuccess
 
                     val newImageUrl = response.body()?.newPictureUrl
-                    Log.d(TAG, "updateProfilePicture newImageUrl(raw)=$newImageUrl")
 
                     if (newImageUrl != null) {
                         val parsedUri = runCatching { newImageUrl.toUri() }.getOrNull()
-                        Log.d(
-                            TAG,
-                            "updateProfilePicture parsed host=${parsedUri?.host} port=${parsedUri?.port}",
-                        )
 
-                        // 2. ACTUALIZAMOS EL SESSION MANAGER
-                        // (Usa la función que tengas en tu SessionManager para guardar la foto o actualizar el usuario)
                         SessionManager.profilePictureUrl = newImageUrl
 
-                        // 3. Actualizamos la interfaz
                         _uiState.value = ProfileUiState.PictureUpdateSuccess
                     } else {
-                        Log.w(TAG, "updateProfilePicture: respuesta OK pero newImageUrl es null")
-                        // Si la petición dio 200 OK pero el backend se olvidó de enviarnos la URL
                         _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_upload_no_url))
                     }
-
-                    println("¡Foto subida con éxito al servidor!")
-
-                    // Opcional: Borramos el archivo temporal para no ocupar espacio en el móvil
                     imageFile.delete()
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.w(TAG, "updateProfilePicture HTTP error code=${response.code()}, errorBody=$errorBody")
                     _uiState.value =
                         ProfileUiState.Error(
                             UiText.StringResource(
@@ -160,7 +142,6 @@ class ProfileViewModel : ViewModel() {
                 }
             } catch (e: IOException) {
                 Log.e(TAG, "updateProfilePicture: error de conexión", e)
-                e.printStackTrace()
                 _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_connection_upload))
             }
         }

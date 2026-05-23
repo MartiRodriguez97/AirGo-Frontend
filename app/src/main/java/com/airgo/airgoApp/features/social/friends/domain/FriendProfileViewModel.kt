@@ -1,7 +1,10 @@
 package com.airgo.airgoApp.features.social.friends.domain
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.social.chat.domain.ChatUiState
 import com.airgo.airgoApp.features.social.friends.data.FriendProfileData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +20,7 @@ sealed class FriendProfileUiState {
     ) : FriendProfileUiState()
 
     data class Error(
-        val message: String,
+        val message: UiText.StringResource,
     ) : FriendProfileUiState()
 }
 
@@ -31,10 +34,12 @@ class FriendProfileViewModel : ViewModel() {
             try {
                 val profile = RetrofitProvider.socialApi.getPublicProfile(userId)
                 _uiState.value = FriendProfileUiState.Success(profile)
+            } catch (e: Exception) {
+                _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_loading_profile))
             } catch (e: IOException) {
-                _uiState.value = FriendProfileUiState.Error("Error de connexió: ${e.message}")
+                _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_network_generic))
             } catch (e: HttpException) {
-                _uiState.value = FriendProfileUiState.Error("Error ${e.code()}: ${e.message()}")
+                _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
             }
         }
     }

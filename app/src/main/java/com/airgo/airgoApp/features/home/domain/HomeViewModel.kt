@@ -49,7 +49,6 @@ class HomeViewModel : ViewModel() {
             java.time.LocalDate
                 .now()
                 .toString() // "yyyy-MM-dd"
-        Log.d("HomeViewModel", "Updating today's exercises for date: $today")
 
         val todayExercises =
             _plans.value.flatMap { plan ->
@@ -59,7 +58,6 @@ class HomeViewModel : ViewModel() {
                     }
                 }
             }
-        Log.d("HomeViewModel", "Found ${todayExercises.size} pending exercises for today")
         SessionManager.exercicis = todayExercises
         _exercises.value = todayExercises
     }
@@ -88,11 +86,7 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val url = com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT
-                Log.d("HomeViewModel", "Requesting GET training plans from URL: $url")
-
                 val rawPlans = repository.getTrainingPlans()
-                Log.d("HomeViewModel", "Successfully fetched ${rawPlans.size} raw plans")
 
                 val fetchedPlans =
                     rawPlans.map { raw ->
@@ -121,7 +115,6 @@ class HomeViewModel : ViewModel() {
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
                 // Fallback to SessionManager if available
                 SessionManager.trainingPlans?.let {
-                    Log.d("HomeViewModel", "Using cached plans from SessionManager as fallback")
                     _plans.value = it
                 }
             } finally {
@@ -139,7 +132,6 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // 1. Determine template IDs based on level
                 val templateIds =
                     when (level) {
                         "Bàsic", "Básico", "Basic", "Principiant", "Principiante", "Beginner" ->
@@ -160,25 +152,12 @@ class HomeViewModel : ViewModel() {
                             listOf(TEMPLATE_ID_3, TEMPLATE_ID_4, TEMPLATE_ID_5, TEMPLATE_ID_6)
                         else -> emptyList()
                     }
-                Log.d("HomeViewModel", "Selected level: $level, identified template IDs: $templateIds")
-
                 val request =
                     TrainingPlanRequest(
                         diesDurada = daysDuration,
                         numEntrenamentsSetmanals = workoutsPerWeek,
                         templates = templateIds,
                     )
-                Log.d("HomeViewModel", "Final TrainingPlanRequest: $request")
-
-                // 3. Create plan (Server returns TrainingPlanRawResponse with IDs)
-                val planRaw: TrainingPlanRawResponse = repository.createTrainingPlan(request)
-                Log.d("HomeViewModel", "Create plan response: $planRaw")
-
-                // 4. Initialize plan (Server also returns TrainingPlanRawResponse)
-                val initializedRaw: TrainingPlanRawResponse = repository.initializeTrainingPlan(planRaw.id, request)
-                Log.d("HomeViewModel", "Initialized plan response: $initializedRaw")
-
-                // 5. Fetch all plans from server and reconstruct full objects
                 val rawPlans = repository.getTrainingPlans()
                 val fetchedPlans =
                     rawPlans.map { raw ->

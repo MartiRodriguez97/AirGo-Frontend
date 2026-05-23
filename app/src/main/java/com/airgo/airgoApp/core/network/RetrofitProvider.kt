@@ -59,7 +59,6 @@ object RetrofitProvider {
                 if (request.method == "POST") {
                     val requestBuffer = Buffer()
                     request.body?.writeTo(requestBuffer)
-                    android.util.Log.d("NetworkDebug", ">>> POST Body ($url): ${requestBuffer.readUtf8()}")
                 }
             }
 
@@ -67,7 +66,6 @@ object RetrofitProvider {
 
             if (url.contains("route-generation") || url.contains("pla-entrenament")) {
                 val responseBody = response.peekBody(MAX_LOG_SIZE_BYTES)
-                android.util.Log.d("NetworkDebug", "<<< Response ($url): ${responseBody.string()}")
             }
             response
         }

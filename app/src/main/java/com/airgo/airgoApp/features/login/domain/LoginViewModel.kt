@@ -29,7 +29,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-// Define los estados de la UI para el proceso de inicio de sesión
 sealed class LoginUiState {
     object Idle : LoginUiState()
 
@@ -44,13 +43,10 @@ sealed class LoginUiState {
         val message: UiText,
     ) : LoginUiState()
 }
-
-// ViewModel para manejar la lógica de inicio de sesión con Google
 class LoginViewModel : ViewModel() {
     private var _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState
 
-    // Función para iniciar sesión con Google y actualizar el estado de la UI
     fun onGoogleSignIn(context: Context) {
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
@@ -58,11 +54,8 @@ class LoginViewModel : ViewModel() {
                 val credential = signInWithGoogle(context)
                 val idToken = credential?.idToken
 
-                // Log token para depuración
-                println("Google ID Token: $idToken")
-
                 if (idToken.isNullOrBlank()) {
-                    _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_google_no_token))
+                    _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_google))
                     return@launch
                 }
 
@@ -115,20 +108,17 @@ class LoginViewModel : ViewModel() {
             fetchAndSaveUserDetails(session)
         }
 
-        // Verificar si se obtuvo usuario sin username, poner nombre de email para evitar nulos tontos
         if (session.username.isNullOrBlank()) {
             session.username = user?.substringBefore('@') ?: "Usuario"
         }
 
-        // Verificar si el backend no tiene foto, pero Google sí
         if (session.profilePictureUrl.isNullOrEmpty() && !picture.isNullOrEmpty()) {
-            session.profilePictureUrl = picture // Aplicar localmente primero
+            session.profilePictureUrl = picture
             viewModelScope.launch {
                 uploadGooglePictureToBackend(context, picture)
             }
         }
 
-        // Guardar en datastore asíncrono
         val prefsRepo = UserPreferencesRepository(context.dataStore)
         prefsRepo.saveSession(session.toUserPreferences())
 
@@ -137,8 +127,6 @@ class LoginViewModel : ViewModel() {
                 email = user,
                 picture = picture,
             )
-        // Log para depuración
-        println("Login exitoso: $user, $picture")
     }
 
     private suspend fun fetchAndSaveUserDetails(session: SessionManager) {
@@ -146,7 +134,6 @@ class LoginViewModel : ViewModel() {
             val userResponse = RetrofitProvider.authApi.getCurrentUserProfile()
             if (userResponse.isSuccessful && userResponse.body() != null) {
                 val userDetails = userResponse.body()!!
-                Log.d("LoginViewModel", "Usuario extraido: $userDetails")
 
                 session.userId = userDetails.id
                 session.username = userDetails.username
@@ -162,10 +149,6 @@ class LoginViewModel : ViewModel() {
                 session.insignies = userDetails.insignies
             } else {
                 val errBody = userResponse.errorBody()?.string()
-                Log.e(
-                    "LoginViewModel",
-                    "Error (HTTP ${userResponse.code()}): $errBody",
-                )
             }
         } catch (e: IOException) {
             Log.e("LoginViewModel", "IO Error fetching user details", e)
@@ -185,7 +168,6 @@ class LoginViewModel : ViewModel() {
                 .ifBlank { obj.optString("error") }
                 .ifBlank { errorText }
         } catch (e: JSONException) {
-            Log.w("LoginViewModel", "No se pudo parsear el error del backend: $errorText", e)
             errorText
         }
     }

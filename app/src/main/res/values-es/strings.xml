@@ -9,7 +9,6 @@
     <string name="nav_calendar">Calendario</string>
     <string name="nav_profile">Perfil</string>
 
-
     <!-- features/profile/components/ -->
     <string name="profile_badges_zone_title">Zona para insignias y actividades</string>
     <string name="profile_delete_account_button">Eliminar cuenta</string>
@@ -46,7 +45,7 @@
     <string name="login_header_description">Logotipo de Airgo</string>
 
     <!-- features/login/domain/LoginViewModel -->
-    <string name="error_google_no_token">No se pudo obtener el ID Token de Google</string>
+    <string name="error_google">No se pudo iniciar sesión. Por favor, revisa que tengas servicios de Google, e inténtalo de nuevo</string>
     <string name="error_backend_token_rejected">El servidor ha rechazado el token (HTTP %1$d)</string>
     <string name="error_backend_token_rejected_details">El servidor ha rechazado el token (HTTP %1$d): %2$s</string>
     <string name="error_security_permissions">Permisos de red no disponibles</string>
@@ -125,10 +124,15 @@
     <string name="error_route_connection">Error de conexión con el servidor</string>
     <string name="error_route_http">El servidor ha devuelto un error: %1$d</string>
     <string name="error_route_selection_missing">Selecciona un punto de inicio y un destino para calcular la ruta.</string>
+    <string name="error_fetching_route">No se pudo cargar la ruta</string>
 
     <!-- features/map/PollutionViewModel-->
     <string name="error_pollution_connection">Error de conexión al cargar los datos de calidad del aire</string>
     <string name="error_pollution_http">Error del servicio de calidad del aire: %1$d</string>
+    <string name="error_fetching_pollution">No se han podido obtener las zonas según la calidad del aire. Por favor, inténtalo en unos minutos.</string>
+
+    <!-- features/map/BicingViewModel-->
+    <string name="error_fetching_bicing">No se pudo cargar las estaciones Bicing. Por favor, inténtalo de nuevo en unos minutos</string>
 
     <!-- features/map/BicingHelper-->
     <string name="bicing_marker_snippet">
@@ -218,6 +222,10 @@
     <string name="map_route_add_waypoint">Añadir parada intermedia</string>
     <string name="map_route_selecting_waypoint">Seleccione la parada en el mapa...</string>
     <string name="map_mode_run">Modo correr</string>
+    <string name="error_deleting_favourite_route">No se pudo eliminar la ruta como favorita</string>
+    <string name="error_route_already_saved">Esta ruta ya está guardada como favoritos</string>
+    <string name="error_saving_route">No se pudo almacenar la ruta como favoritos</string>
+    <string name="error_fetching_routes">No se han podido obtener las rutas como favoritas</string>
 
     <!-- calendar -->
     <string name="calendar_unknown_error">Error desconocido</string>
@@ -241,6 +249,7 @@
     <string name="calendar_day_fri">Vi</string>
     <string name="calendar_day_sat">Sa</string>
     <string name="calendar_back_desc">Atrás</string>
+    <string name="error_fetching_training_plan">Error al obtener el plan de entrenamiento</string>
 
     <!-- features/onboarding/OnboardingScreen-->
     <string name="continue_on_boarding">Continua</string>
@@ -303,8 +312,14 @@
     <string name="sensation_normal">Normal</string>
     <string name="sensation_good">Bien</string>
     <string name="sensation_very_good">Muy bien</string>
+    <string name="error_saving_info_user">No se han podido almacenar los datos personales del usuario. Por favor, intente en unos minutos</string>
+    <string name="error_loading_profile">No se pudo cargar el perfil</string>
+    <string name="error_loading_friends">No se pudo cargar a los amigos</string>
+    <string name="error_deleting_friend">No se pudo eliminar a este amigo</string>
 
-
+    <!-- features/tracking-->
+    <string name="error_saving_activity_plan">No se pudo almacenar el plan de actividades</string>
+    <string name="error_saving_activity">No se pudo guardar la actividad</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Empezar</string>
@@ -332,4 +347,11 @@
     <string name="begin_conversation">¡Comienza la conversación!</string>
     <string name="message">Mensaje...</string>
     <string name="send">Enviar</string>
+
+    <!-- feature/activity-->
+    <string name="error_loading_activities">No se han podido cargar las actividades</string>
+    <string name="error_deleting_activity">No se pudo borrar la actividad</string>
+    <string name="error_updating_activity_sensation">No se pudo actualizar la sensación de la actividad</string>
+    <string name="error_updating_activity_comment">No se pudo actualizar el comentario de la actividad</string>
+
 </resources>

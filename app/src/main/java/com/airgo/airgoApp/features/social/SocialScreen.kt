@@ -176,7 +176,7 @@ private fun friendsTab(
                             stringResource(R.string.no_friends_found)
                         },
                 )
-            is FriendsUiState.Error -> errorState(state.message)
+            is FriendsUiState.Error -> errorState(state.message.asString())
             is FriendsUiState.Success ->
                 friendsList(
                     friends = state.friends,

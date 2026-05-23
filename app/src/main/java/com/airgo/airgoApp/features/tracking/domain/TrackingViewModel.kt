@@ -10,9 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.AppEvents
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
@@ -69,7 +71,7 @@ class TrackingViewModel : ViewModel() {
         data object Success : SaveState()
 
         data class Error(
-            val message: String,
+            val message: UiText.StringResource,
         ) : SaveState()
     }
 
@@ -83,7 +85,6 @@ class TrackingViewModel : ViewModel() {
         showSensationDialog = false
         selectedSensation = null
 
-        // start timer
         timerJob?.cancel()
         timerJob =
             viewModelScope.launch {
@@ -106,7 +107,7 @@ class TrackingViewModel : ViewModel() {
     fun submitSensation(sensationValue: Int? = null) {
         selectedSensation = sensationValue
         showSensationDialog = false
-        hasSummary = true // Ahora sí, navegamos al resumen
+        hasSummary = true
     }
 
     private fun saveActivityPlanning() {
@@ -115,16 +116,8 @@ class TrackingViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // Sumamos la distancia recorrida a la que ya tenía
                 val totalDistance = activeExercise.distanciaFeta + distanceDoneKm
                 val isCompleted = totalDistance >= activeExercise.distanciaObjectiu
-
-                Log.d(
-                    "TrackingViewModel",
-                    "Updating exercise ${activeExercise.id}:" +
-                        " distance=$totalDistance," +
-                        " completed=$isCompleted",
-                )
 
                 repository.updateExercise(
                     id = activeExercise.id,
@@ -132,29 +125,27 @@ class TrackingViewModel : ViewModel() {
                     distanciaFeta = totalDistance,
                 )
 
-                // Limpiar ejercicio activo tras completar/guardar
                 SessionManager.exerciciActiu = null
                 SessionManager.nomTemplateActiu = null
 
-                // Actualizar la lista de ejercicios de hoy en el SessionManager
-                // Esto forzará que desaparezca de la lista de pendientes en la Home si se completó
+
                 if (isCompleted) {
                     SessionManager.exercicis = SessionManager.exercicis?.filter { it.id != activeExercise.id }
                 } else {
-                    // Si no está completado, actualizamos la distancia en el objeto de la lista
                     SessionManager.exercicis =
                         SessionManager.exercicis?.map {
                             if (it.id == activeExercise.id) it.copy(distanciaFeta = totalDistance) else it
                         }
                 }
-
                 _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
-            } catch (e: java.io.IOException) {
+            } catch (e: Exception) {
+                saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity_plan))
+            } catch (e: IOException) {
                 Log.e("TrackingViewModel", "Network error saving exercise progress", e)
-                _uiEvent.emit(TrackingUiEvent.SaveError("Error de connexió en guardar l'activitat"))
-            } catch (e: retrofit2.HttpException) {
+                saveState = SaveState.Error(UiText.StringResource(R.string.error_network_generic))
+            } catch (e: HttpException) {
                 Log.e("TrackingViewModel", "HTTP error saving exercise progress", e)
-                _uiEvent.emit(TrackingUiEvent.SaveError("Error del servidor en guardar l'activitat"))
+                saveState = SaveState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
             }
         }
     }
@@ -201,13 +192,12 @@ class TrackingViewModel : ViewModel() {
                     ctx: android.content.Context?,
                     intent: android.content.Intent?,
                 ) {
-                    Log.d("TrackingViewModel", "Rebut broadcast: ${intent?.action}")
                     if (intent?.action != TrackingService.ACTION_LOCATION_UPDATE) return
                     val lat = intent.getDoubleExtra(TrackingService.EXTRA_LATITUDE, 0.0)
                     val lon = intent.getDoubleExtra(TrackingService.EXTRA_LONGITUDE, 0.0)
                     val speed = intent.getFloatExtra(TrackingService.EXTRA_SPEED, 0f)
                     val location =
-                        android.location.Location("").apply {
+                        Location("").apply {
                             latitude = lat
                             longitude = lon
                             this.speed = speed
@@ -252,10 +242,12 @@ class TrackingViewModel : ViewModel() {
                 saveActivityPlanning()
                 AppEvents.notifyActivitySaved()
                 saveState = SaveState.Success
+            } catch (e: Exception) {
+                saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
             } catch (e: IOException) {
-                saveState = SaveState.Error("Error de connexió: ${e.message}")
+                saveState = SaveState.Error(UiText.StringResource(R.string.error_network_generic))
             } catch (e: HttpException) {
-                saveState = SaveState.Error("Error del servidor: ${e.code()}")
+                saveState = SaveState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
             }
         }
     }

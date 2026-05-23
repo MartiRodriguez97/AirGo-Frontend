@@ -30,16 +30,12 @@ class BicingViewModel : ViewModel() {
             try {
                 errorMessage = null
                 stations = RetrofitProvider.bicingApi.getBicingStations(lat, lon, radio)
-                Log.d("BicingViewModel", "Conexió exitosa, stations rebuts: ${stations.size}")
-                if (stations.isNotEmpty()) {
-                    Log.d("BicingViewModel", "Primera estació rebuda: ${stations.first()}")
-                }
+            } catch (e: Exception) {
+                errorMessage = UiText.StringResource(R.string.error_fetching_bicing)
             } catch (e: IOException) {
                 errorMessage = UiText.StringResource(R.string.error_connection_generic)
-                e.printStackTrace()
             } catch (e: HttpException) {
                 errorMessage = UiText.StringResource(R.string.error_connection_generic, e.code())
-                e.printStackTrace()
             }
         }
     }

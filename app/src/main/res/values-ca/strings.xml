@@ -46,7 +46,7 @@
     <string name="login_header_description">Logotip d\'Airgo</string>
 
     <!-- features/login/domain/LoginViewModel -->
-    <string name="error_google_no_token">No s\'ha pogut obtenir l\'ID Token de Google</string>
+    <string name="error_google">No s\'ha pogut iniciar sessió. Si us plau, revisa que tinguis serveis de Google, i  intenta-ho de nou</string>
     <string name="error_backend_token_rejected">El servidor ha rebutjat el token (HTTP %1$d)</string>
     <string name="error_backend_token_rejected_details">El servidor ha rebutjat el token (HTTP %1$d): %2$s</string>
     <string name="error_security_permissions">Permisos de xarxa no disponibles</string>
@@ -125,10 +125,15 @@
     <string name="error_route_connection">Error de connexió amb el servidor</string>
     <string name="error_route_http">El servidor ha retornat un error: %1$d</string>
     <string name="error_route_selection_missing">Selecciona un punt d\'inici i una destinació per calcular la ruta.</string>
+    <string name="error_fetching_route">"No s'ha pogut carregar la ruta "</string>
 
     <!-- features/map/PollutionViewModel-->
     <string name="error_pollution_connection">Error de connexió en carregar les dades de qualitat de l\'aire</string>
     <string name="error_pollution_http">Error del servei de qualitat de l\'aire: %1$d</string>
+    <string name="error_fetching_pollution">No s\'ha pogut obtenir les zones segons la qualitat de l\'aire. Si us plau, intenta-ho en uns minuts.</string>
+
+    <!--features/map/BicingViewModel-->
+    <string name="error_fetching_bicing">No s\'ha pogut carregar les estacions Bicing. Si us plau, intenta-ho de nou en uns minuts.</string>
 
     <!-- features/map/BicingHelper-->
     <string name="bicing_marker_snippet">
@@ -201,6 +206,10 @@
     <string name="no_favorite_routes">No tens cap ruta preferida</string>
     <string name="back_to_map">Enrere</string>
     <string name="favorite_routes_screen_title">Rutes preferides</string>
+    <string name="error_deleting_favourite_route">No s\'ha pogut eliminar la ruta com a preferida</string>
+    <string name="error_route_already_saved">Aquesta ruta ja està emmagatzemada com a preferits</string>
+    <string name="error_saving_route">No s\'ha pogut emmagatzemar la ruta com a preferits</string>
+    <string name="error_fetching_routes">No s\'ha pogut obtenir les rutes com a preferides</string>
 
     <string name="home_today_task_title">Avui tens:</string>
     <string name="home_pending_activity_card">Activitat pendent</string>
@@ -239,6 +248,7 @@
     <string name="calendar_day_fri">Dv</string>
     <string name="calendar_day_sat">Ds</string>
     <string name="calendar_back_desc">Enrere</string>
+    <string name="error_fetching_training_plan">Error en obtenir el pla d\'entrenament</string>
 
     <!-- features/onboarding/OnboardingScreen-->
     <string name="continue_on_boarding">Continua</string>
@@ -301,6 +311,14 @@
     <string name="sensation_normal">Normal</string>
     <string name="sensation_good">Bé</string>
     <string name="sensation_very_good">Molt bé</string>
+    <string name="error_saving_info_user">No s\'ha pogut emmagatzemar les dades personals de l\'usuari. Si us plau, intenta-ho en uns minuts</string>
+    <string name="error_loading_profile">No s\'ha pogut carregar el perfil</string>
+    <string name="error_loading_friends">No s\'ha pogut carregar els amics</string>
+    <string name="error_deleting_friend">No s\'ha pogut eliminar a aquest amic</string>
+
+    <!-- features/tracking-->
+    <string name="error_saving_activity_plan">No s\'ha pogut emmagatzemar el pla de activitats</string>
+    <string name="error_saving_activity">No s\'ha pogut emmagatzemar l\'activitat</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Començar</string>
@@ -329,4 +347,9 @@
     <string name="begin_conversation">Comença la conversa!</string>
     <string name="message">Missatge...</string>
     <string name="send">Enviar</string>
+    <string name="error_loading_activities">No s\'ha pogut carregar les activitats</string>
+    <string name="error_deleting_activity">No s\'ha pogut esborrar l\'activitat</string>
+    <string name="error_updating_activity_sensation">No s\'ha pogut actualitzar la sensació de l\'activitat</string>
+    <string name="error_updating_activity_comment">No s\'ha pogut actualitzar el comentari de l\'activitat</string>
+
 </resources>

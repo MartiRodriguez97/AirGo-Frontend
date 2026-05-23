@@ -38,11 +38,10 @@ class CalendarViewModel(
                 val response = apiService.getPlaEntrenament()
                 if (response.isSuccessful) {
                     val body = response.body() ?: emptyList()
-                    android.util.Log.d("CalendarViewModel", "Successfully fetched training plans: $body")
                     _plaEntrenamentList.value = body
                     SessionManager.trainingPlans = body
                 } else {
-                    _errorResId.value = R.string.calendar_error_server
+                    _errorResId.value = R.string.error_fetching_training_plan
                 }
             } catch (e: IOException) {
                 _errorResId.value = R.string.calendar_error_network

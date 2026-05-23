@@ -42,14 +42,12 @@ class TrackingService : Service() {
     private fun startTrackingService() {
         startForeground(NOTIFICATION_ID, TrackingNotificationHelper.buildNotification(this))
         startLocationUpdates()
-        Log.d(LOG_TAG, "Tracking service started")
     }
 
     private fun stopTrackingService() {
         stopLocationUpdates()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        Log.d(LOG_TAG, "Tracking service stopped")
     }
 
     private fun startLocationUpdates() {
@@ -77,7 +75,6 @@ class TrackingService : Service() {
     }
 
     private fun sendLocationBroadcast(location: Location) {
-        Log.d(LOG_TAG, "Enviant ubicació: ${location.latitude}, ${location.longitude}")
         val intent =
             Intent(ACTION_LOCATION_UPDATE).apply {
                 putExtra(EXTRA_LATITUDE, location.latitude)
