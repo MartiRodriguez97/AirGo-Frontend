@@ -183,7 +183,7 @@ class HomeViewModelTest {
                 },
                 daysDuration = 30,
                 workoutsPerWeek = 3,
-                level = "Bàsic"
+                level = "Bàsic",
             )
 
             assertTrue(successCalled)
