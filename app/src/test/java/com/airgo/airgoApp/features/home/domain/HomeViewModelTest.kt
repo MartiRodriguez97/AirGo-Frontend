@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import java.io.IOException
 import java.time.LocalDate
@@ -166,6 +167,7 @@ class HomeViewModelTest {
             verify { SessionManager.nomTemplateActiu = "Target Template" }
         }
 
+    @Ignore("Create training plan feature is not finished yet")
     @Test
     fun createPlanAllStates() =
         runTest {

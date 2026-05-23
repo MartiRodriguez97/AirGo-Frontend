@@ -41,13 +41,13 @@ class CalendarViewModel(
                     _plaEntrenamentList.value = body
                     SessionManager.trainingPlans = body
                 } else {
-                    _errorResId.value = R.string.error_fetching_training_plan
+                    _errorResId.value = R.string.calendar_error_server
                 }
             } catch (e: IOException) {
-                _errorResId.value = R.string.error_fetching_training_plan
+                _errorResId.value = R.string.calendar_error_network
                 e.printStackTrace()
             } catch (e: retrofit2.HttpException) {
-                _errorResId.value = R.string.error_fetching_training_plan
+                _errorResId.value = R.string.calendar_error_server
                 e.printStackTrace()
             } finally {
                 _isLoading.value = false
