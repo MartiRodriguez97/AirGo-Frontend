@@ -191,6 +191,8 @@ class LoginViewModel : ViewModel() {
                 } catch (e: retrofit2.HttpException) {
                     _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_training_plan))
                     Log.e("LoginViewModel", "HTTP Error fetching training plans", e)
+                } catch (e: Exception) {
+                    Log.e("LoginViewModel", "Error inesperado en planes de entrenamiento", e)
                 }
             }
         } catch (e: IOException) {

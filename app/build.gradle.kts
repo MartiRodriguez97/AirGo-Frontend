@@ -6,6 +6,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
     id("org.jlleitschuh.gradle.ktlint")
     id("jacoco")
+    id("com.google.gms.google-services")
 }
 
 val localProps =
@@ -141,6 +142,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.foundation.layout)
+    implementation("com.google.firebase:firebase-messaging-ktx:23.4.0")
 
     testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")

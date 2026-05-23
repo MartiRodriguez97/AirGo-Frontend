@@ -63,29 +63,56 @@ class ChatViewModel : ViewModel() {
         convId: String,
         otherUserId: Int,
     ) {
-        conversationId = convId
-        loadMessages(convId)
-        connectWebSocket(otherUserId)
+        viewModelScope.launch {
+            // Esperar a que SessionManager.userId esté disponible si es un cold start
+            var attempts = 0
+            while (SessionManager.userId == null && attempts < 10) {
+                kotlinx.coroutines.delay(500)
+                attempts++
+            }
+
+            val currentUserId = SessionManager.userId
+            // Si recibimos un ID simple (como "7"), lo convertimos al formato compuesto "X-Y"
+            // que es lo que espera el endpoint de mensajes.
+            val finalConvId = if (!convId.contains("-") && currentUserId != null) {
+                if (currentUserId < otherUserId) "$currentUserId-$otherUserId" else "$otherUserId-$currentUserId"
+            } else {
+                convId
+            }
+
+            if (conversationId == finalConvId && _messages.value.isNotEmpty()) {
+                Log.d(LOG_TAG, "init: Ya estamos en esta conversación ($finalConvId), saltando carga.")
+                return@launch
+            }
+
+            Log.e(LOG_TAG, "🚀 INIT: Cargando chat normalizado $finalConvId (Original: $convId, User: $currentUserId)")
+            conversationId = finalConvId
+            _messages.value = emptyList()
+            loadMessages(finalConvId)
+            connectWebSocket(otherUserId)
+        }
     }
 
     private fun loadMessages(convId: String) {
+        Log.e(LOG_TAG, "🔄 Cargando mensajes para conversación: $convId")
         viewModelScope.launch {
             _uiState.value = ChatUiState.Loading
             try {
                 val msgs = RetrofitProvider.chatApi.getMessages(convId)
+                Log.e(LOG_TAG, "✅ Mensajes cargados: ${msgs.size}")
                 _messages.value = msgs
                 _uiState.value = if (msgs.isEmpty()) ChatUiState.Empty else ChatUiState.Success(msgs)
             } catch (e: HttpException) {
+                Log.e(LOG_TAG, "❌ Error HTTP cargando mensajes (ID: $convId, Código: ${e.code()})")
                 if (e.code() == ERROR_CODE_NOT_FOUND) {
                     _messages.value = emptyList()
                     _uiState.value = ChatUiState.Empty
                 } else {
                     _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
-                    Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
                 }
             } catch (e: IOException) {
+                Log.e(LOG_TAG, "❌ Error de red cargando mensajes (ID: $convId)", e)
                 _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_network_generic))
-                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             }
         }
     }
@@ -116,6 +143,8 @@ class ChatViewModel : ViewModel() {
                         webSocket: WebSocket,
                         text: String,
                     ) {
+                        Log.e("CHATS_WS", "⬇️ RECIBIDO POR WEBSOCKET: $text")
+
                         try {
                             val json = gson.fromJson(text, JsonObject::class.java)
                             val type = json.get("type")?.asString

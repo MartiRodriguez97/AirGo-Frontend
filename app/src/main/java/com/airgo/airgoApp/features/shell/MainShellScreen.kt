@@ -67,10 +67,35 @@ fun mainShellScreen(
     email: String?,
     pictureUrl: String?,
     onLogout: () -> Unit,
+    pendingNavData: android.os.Bundle? = null,
+    onNavigated: () -> Unit = {}
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    // Manejar la navegación pendiente de la notificación
+    androidx.compose.runtime.LaunchedEffect(pendingNavData) {
+        if (pendingNavData != null) {
+            val convId = pendingNavData.getString("convId")
+            val otherUserId = pendingNavData.getString("otherUserId")
+            val username = pendingNavData.getString("username")
+            
+            if (convId != null && otherUserId != null) {
+                // Primero navegamos a SOCIAL para que quede en el backstack
+                navController.navigate(MainShellScreen.SOCIAL.route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+                // Luego navegamos al chat concreto
+                navController.navigate("chat/$convId/$otherUserId/$username") {
+                    launchSingleTop = true
+                }
+                onNavigated() // Limpiamos el estado en MainActivity
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {

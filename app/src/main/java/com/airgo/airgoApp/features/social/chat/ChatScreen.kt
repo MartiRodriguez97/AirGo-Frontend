@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,7 +93,16 @@ fun chatScreen(
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(Unit) { viewModel.init(conversationId, otherUserId) }
+    DisposableEffect(conversationId) {
+        SessionManager.currentChatId = conversationId
+        onDispose {
+            SessionManager.currentChatId = null
+        }
+    }
+
+    LaunchedEffect(conversationId) {
+        viewModel.init(conversationId, otherUserId)
+    }
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) listState.animateScrollToItem(0)
     }
