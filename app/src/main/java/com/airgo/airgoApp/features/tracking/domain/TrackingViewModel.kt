@@ -4,19 +4,16 @@ import android.location.Location
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.core.AppEvents
-import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
-import com.airgo.airgoApp.features.tracking.data.SaveActivityRequest
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import com.airgo.airgoApp.features.tracking.helpers.TrackingService
 import kotlinx.coroutines.Job
@@ -30,7 +27,6 @@ import java.io.IOException
 
 private const val TIMER_INTERVAL_MS = 1000L
 private const val MS_TO_KMH = 3.6
-private const val METERS_PER_KM = 1000.0
 
 class TrackingViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
@@ -50,6 +46,14 @@ class TrackingViewModel : ViewModel() {
     var showSensationDialog by mutableStateOf(false)
         private set
 
+    var titolsPendents by mutableStateOf(0)
+        internal set
+
+    var availableTitles by mutableStateOf<List<com.airgo.airgoApp.features.tracking.data.TitleOption>>(emptyList())
+        internal set
+
+    var showTitleSelectionDialog by mutableStateOf(false)
+
     var selectedSensation by mutableStateOf<Int?>(null)
         private set
 
@@ -61,14 +65,16 @@ class TrackingViewModel : ViewModel() {
     private var locationReceiver: android.content.BroadcastReceiver? = null
     private var receiverContext: android.content.Context? = null
     var saveState by mutableStateOf<SaveState>(SaveState.Idle)
-        private set
+        internal set
 
     sealed class SaveState {
         data object Idle : SaveState()
 
         data object Saving : SaveState()
 
-        data object Success : SaveState()
+        data class Success(
+            val response: com.airgo.airgoApp.features.tracking.data.SaveActivityResponse,
+        ) : SaveState()
 
         data class Error(
             val message: UiText.StringResource,
@@ -110,49 +116,46 @@ class TrackingViewModel : ViewModel() {
         hasSummary = true
     }
 
-    private fun saveActivityPlanning() {
-        val activeExercise = SessionManager.exerciciActiu ?: return
-        val distanceDoneKm = data.distanceMeters / METERS_PER_KM
+    internal suspend fun updateExerciseProgress(
+        activeExercise: Exercise,
+        distanceDoneKm: Double,
+    ) {
+        try {
+            val totalDistance = activeExercise.distanciaFeta + distanceDoneKm
+            val isCompleted = totalDistance >= activeExercise.distanciaObjectiu
 
-        viewModelScope.launch {
-            try {
-                val totalDistance = activeExercise.distanciaFeta + distanceDoneKm
-                val isCompleted = totalDistance >= activeExercise.distanciaObjectiu
+            repository.updateExercise(
+                id = activeExercise.id,
+                completat = isCompleted,
+                distanciaFeta = totalDistance,
+            )
 
-                repository.updateExercise(
-                    id = activeExercise.id,
-                    completat = isCompleted,
-                    distanciaFeta = totalDistance,
-                )
+            SessionManager.exerciciActiu = null
+            SessionManager.nomTemplateActiu = null
 
-                SessionManager.exerciciActiu = null
-                SessionManager.nomTemplateActiu = null
-
-
-                if (isCompleted) {
-                    SessionManager.exercicis = SessionManager.exercicis?.filter { it.id != activeExercise.id }
-                } else {
-                    SessionManager.exercicis =
-                        SessionManager.exercicis?.map {
-                            if (it.id == activeExercise.id) it.copy(distanciaFeta = totalDistance) else it
-                        }
-                }
-                _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
-            } catch (e: Exception) {
-                saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity_plan))
-            } catch (e: IOException) {
-                Log.e("TrackingViewModel", "Network error saving exercise progress", e)
-                saveState = SaveState.Error(UiText.StringResource(R.string.error_network_generic))
-            } catch (e: HttpException) {
-                Log.e("TrackingViewModel", "HTTP error saving exercise progress", e)
-                saveState = SaveState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+            if (isCompleted) {
+                SessionManager.exercicis = SessionManager.exercicis?.filter { it.id != activeExercise.id }
+            } else {
+                SessionManager.exercicis =
+                    SessionManager.exercicis?.map {
+                        if (it.id == activeExercise.id) it.copy(distanciaFeta = totalDistance) else it
+                    }
             }
+
+            _uiEvent.emit(TrackingUiEvent.SaveSuccess(isCompleted))
+        } catch (e: IOException) {
+            Log.e("TrackingViewModel", "Network error saving exercise progress", e)
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_network_generic))
+        } catch (e: HttpException) {
+            Log.e("TrackingViewModel", "HTTP error saving exercise progress", e)
+            saveState = SaveState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
         }
     }
 
     fun clearSummary() {
         hasSummary = false
         trackPoints = emptyList()
+        saveState = SaveState.Idle
     }
 
     /**
@@ -223,33 +226,6 @@ class TrackingViewModel : ViewModel() {
             }
         }
         locationReceiver = null
-    }
-
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    fun saveActivity() {
-        viewModelScope.launch {
-            saveState = SaveState.Saving
-            try {
-                val request =
-                    SaveActivityRequest(
-                        distanceMeters = data.distanceMeters,
-                        durationSeconds = data.elapsedSeconds,
-                        avgSpeedKmh = data.avgSpeedKmh,
-                        routePoints = trackPoints.map { listOf(it.latitude, it.longitude) },
-                        sensacio = selectedSensation,
-                    )
-                RetrofitProvider.trackingApi.saveActivity(request)
-                saveActivityPlanning()
-                AppEvents.notifyActivitySaved()
-                saveState = SaveState.Success
-            } catch (e: Exception) {
-                saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
-            } catch (e: IOException) {
-                saveState = SaveState.Error(UiText.StringResource(R.string.error_network_generic))
-            } catch (e: HttpException) {
-                saveState = SaveState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
-            }
-        }
     }
 
     fun clearSaveState() {

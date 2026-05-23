@@ -9,7 +9,21 @@
     <string name="nav_profile">Profile</string>
 
     <!-- features/profile/components/ -->
-    <string name="profile_badges_zone_title">Badges and activities area</string>
+    <string name="profile_badges_zone_title">Les meves insígnies</string>
+    <string name="profile_badges_empty">Encara no tens cap insígnia.</string>
+    <string name="profile_badges_earned_on">Aconseguida: %1$s</string>
+    <string name="profile_badges_dialog_close">Tancar</string>
+    <string name="profile_activities_recent_title">Activitats recents</string>
+    <string name="profile_activities_delete_desc">Eliminar activitat</string>
+
+    <!-- Badge Translations -->
+    <string name="badge_constancy_name">Iniciació a la constància</string>
+    <string name="badge_constancy_desc">Has completat la teva primera setmana d\'activitat!</string>
+    <string name="badge_walk_name">De passeig</string>
+    <string name="badge_walk_desc">Has caminat els teus primers 5 kilòmetres.</string>
+    <string name="badge_welcome_name">Benvingut a AirGo!</string>
+    <string name="badge_welcome_desc">Gràcies por unir-te a la comunitat d\'AirGo.</string>
+
     <string name="profile_delete_account_button">Delete account</string>
     <string name="profile_delete_account_dialog_title">Delete account?</string>
     <string name="profile_delete_account_dialog_text">Are you sure you want to delete your account? This action cannot be undone.</string>
@@ -136,6 +150,7 @@
     <string name="error_pollution_connection">Connection error while loading air quality data</string>
     <string name="error_pollution_http">Air quality service error: %1$d</string>
     <string name="error_fetching_pollution">Unable to fetch air quality zones. Please try again in a few minutes.</string>
+    <string name="error_pollution_timeout">Could not update. Showing the latest data.</string>
 
     <!-- features/map/BicingViewModel-->
     <string name="error_fetching_bicing">Unable to fetch Bicing stations. Please try again in a few minutes.</string>
@@ -313,6 +328,15 @@
     <string name="error_loading_friends">Could not load friends</string>
     <string name="error_deleting_friend">Couldn\'t delete this friend</string>
 
+    <!-- Tracking Dialogs -->
+    <string name="tracking_new_title_title">New Title!</string>
+    <string name="tracking_new_title_desc">You have a pending title to choose!</string>
+    <string name="tracking_set_main_title">Set as main title</string>
+    <string name="tracking_later">Later</string>
+    <string name="tracking_new_badge_title">New Badge!</string>
+    <string name="tracking_badge_icon_desc">Badge icon</string>
+    <string name="tracking_accept">Accept</string>
+
     <!-- feature/chat -->
     <string name="begin_conversation">Start the conversation!</string>
     <string name="message">Message...</string>
@@ -350,10 +374,15 @@
     <string name="activity_comment_placeholder">How did the route go?</string>
     <string name="activity_comment_btn_save">Save note</string>
 
+
     <!-- feature/activity -->
     <string name="error_loading_activities">Unable to load activities</string>
     <string name="error_deleting_activity">Could not delete activity</string>
     <string name="error_updating_activity_sensation">Could not update activity sentiment</string>
     <string name="error_updating_activity_comment">Could not update activity comment</string>
+
+    <!-- Titles -->
+    <string name="error_fetching_titles">Could not fetch available titles</string>
+    <string name="error_unlocking_title">Could not unlock title</string>
 
 </resources>

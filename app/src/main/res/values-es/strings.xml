@@ -10,7 +10,21 @@
     <string name="nav_profile">Perfil</string>
 
     <!-- features/profile/components/ -->
-    <string name="profile_badges_zone_title">Zona para insignias y actividades</string>
+    <string name="profile_badges_zone_title">Mis insignias</string>
+    <string name="profile_badges_empty">Aún no tienes ninguna insignia.</string>
+    <string name="profile_badges_earned_on">Conseguida: %1$s</string>
+    <string name="profile_badges_dialog_close">Cerrar</string>
+    <string name="profile_activities_recent_title">Actividades recientes</string>
+    <string name="profile_activities_delete_desc">Eliminar actividad</string>
+
+    <!-- Badge Translations -->
+    <string name="badge_constancy_name">Iniciación a la constancia</string>
+    <string name="badge_constancy_desc">¡Has completado tu primera semana de actividad!</string>
+    <string name="badge_walk_name">De paseo</string>
+    <string name="badge_walk_desc">Has caminado tus primeros 5 kilómetros.</string>
+    <string name="badge_welcome_name">¡Bienvenido a AirGo!</string>
+    <string name="badge_welcome_desc">Gracias por unirte a la comunidad de AirGo.</string>
+
     <string name="profile_delete_account_button">Eliminar cuenta</string>
     <string name="profile_delete_account_dialog_title">¿Eliminar cuenta?</string>
     <string name="profile_delete_account_dialog_text">¿Seguro que quieres eliminar la cuenta? Esta acción no se puede deshacer.</string>
@@ -130,6 +144,7 @@
     <string name="error_pollution_connection">Error de conexión al cargar los datos de calidad del aire</string>
     <string name="error_pollution_http">Error del servicio de calidad del aire: %1$d</string>
     <string name="error_fetching_pollution">No se han podido obtener las zonas según la calidad del aire. Por favor, inténtalo en unos minutos.</string>
+    <string name="error_pollution_timeout">No se pudo actualizar. Mostrando los últimos datos.</string>
 
     <!-- features/map/BicingViewModel-->
     <string name="error_fetching_bicing">No se pudo cargar las estaciones Bicing. Por favor, inténtalo de nuevo en unos minutos</string>
@@ -343,6 +358,15 @@
     <string name="activity_comment_placeholder">¿Cómo ha ido la ruta?</string>
     <string name="activity_comment_btn_save">Guardar nota</string>
 
+    <!-- Tracking Dialogs -->
+    <string name="tracking_new_title_title">¡Nuevo Título!</string>
+    <string name="tracking_new_title_desc">¡Tienes un título pendiente para elegir!</string>
+    <string name="tracking_set_main_title">Establecer como título principal</string>
+    <string name="tracking_later">Más tarde</string>
+    <string name="tracking_new_badge_title">¡Nueva Insignia!</string>
+    <string name="tracking_badge_icon_desc">Icono de la insignia</string>
+    <string name="tracking_accept">Aceptar</string>
+
     <!-- feature/chat -->
     <string name="begin_conversation">¡Comienza la conversación!</string>
     <string name="message">Mensaje...</string>
@@ -353,5 +377,9 @@
     <string name="error_deleting_activity">No se pudo borrar la actividad</string>
     <string name="error_updating_activity_sensation">No se pudo actualizar la sensación de la actividad</string>
     <string name="error_updating_activity_comment">No se pudo actualizar el comentario de la actividad</string>
+
+    <!-- Titles -->
+    <string name="error_fetching_titles">No se pudieron obtener los títulos disponibles</string>
+    <string name="error_unlocking_title">No se pudo desbloquear el título</string>
 
 </resources>

@@ -1,10 +1,11 @@
 package com.airgo.airgoApp.features.social.friends.domain
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.utils.UiText
-import com.airgo.airgoApp.features.social.chat.domain.ChatUiState
 import com.airgo.airgoApp.features.social.friends.data.FriendProfileData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,12 +35,15 @@ class FriendProfileViewModel : ViewModel() {
             try {
                 val profile = RetrofitProvider.socialApi.getPublicProfile(userId)
                 _uiState.value = FriendProfileUiState.Success(profile)
-            } catch (e: Exception) {
-                _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_loading_profile))
             } catch (e: IOException) {
+                Log.e(TAG, "Network error fetching routes: ${e.message}", e)
                 _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_network_generic))
             } catch (e: HttpException) {
-                _uiState.value = FriendProfileUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
+                Log.e(TAG, "HTTP error fetching routes: ${e.code()}", e)
+                _uiState.value =
+                    FriendProfileUiState.Error(
+                        UiText.StringResource(R.string.error_server_generic, e.code()),
+                    )
             }
         }
     }

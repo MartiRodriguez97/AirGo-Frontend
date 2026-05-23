@@ -1,13 +1,14 @@
 package com.airgo.airgoApp.features.home.domain
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
-import com.airgo.airgoApp.features.home.data.TrainingPlanRawResponse
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
-import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,16 +28,16 @@ class HomeViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _errorMessage = MutableStateFlow<Int?>(null)
+    val titolsPendents: StateFlow<Int> = SessionManager.titolsPendentsFlow
 
-    companion object {
-        private const val TEMPLATE_ID_1 = 1
-        private const val TEMPLATE_ID_2 = 2
-        private const val TEMPLATE_ID_3 = 3
-        private const val TEMPLATE_ID_4 = 4
-        private const val TEMPLATE_ID_5 = 5
-        private const val TEMPLATE_ID_6 = 6
-    }
+    private val _availableTitles =
+        MutableStateFlow<List<com.airgo.airgoApp.features.tracking.data.TitleOption>>(emptyList())
+    val availableTitles: StateFlow<List<com.airgo.airgoApp.features.tracking.data.TitleOption>> =
+        _availableTitles.asStateFlow()
+
+    var showTitleSelectionDialog by mutableStateOf(false)
+
+    private val _errorMessage = MutableStateFlow<Int?>(null)
 
     val errorMessage: StateFlow<Int?> = _errorMessage.asStateFlow()
 
@@ -123,41 +124,10 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun createPlan(
-        daysDuration: Int,
-        workoutsPerWeek: Int,
-        level: String?,
-        onSuccess: () -> Unit,
-    ) {
+    fun createPlan(onSuccess: () -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val templateIds =
-                    when (level) {
-                        "Bàsic", "Básico", "Basic", "Principiant", "Principiante", "Beginner" ->
-                            listOf(
-                                TEMPLATE_ID_1,
-                                TEMPLATE_ID_2,
-                                TEMPLATE_ID_3,
-                                TEMPLATE_ID_4,
-                            )
-                        "Mitjà", "Medio", "Medium", "Intermedi", "Intermedio", "Intermediate" ->
-                            listOf(
-                                TEMPLATE_ID_2,
-                                TEMPLATE_ID_3,
-                                TEMPLATE_ID_4,
-                                TEMPLATE_ID_5,
-                            )
-                        "Avançat", "Avanzado", "Advanced" ->
-                            listOf(TEMPLATE_ID_3, TEMPLATE_ID_4, TEMPLATE_ID_5, TEMPLATE_ID_6)
-                        else -> emptyList()
-                    }
-                val request =
-                    TrainingPlanRequest(
-                        diesDurada = daysDuration,
-                        numEntrenamentsSetmanals = workoutsPerWeek,
-                        templates = templateIds,
-                    )
                 val rawPlans = repository.getTrainingPlans()
                 val fetchedPlans =
                     rawPlans.map { raw ->
@@ -211,5 +181,76 @@ class HomeViewModel : ViewModel() {
                 _isLoading.value = false
             }
         }
+    }
+
+    fun fetchAvailableTitles() {
+        viewModelScope.launch {
+            try {
+                val response =
+                    com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi
+                        .getAvailableTitles()
+                _availableTitles.value = response.opcions
+                showTitleSelectionDialog = true
+            } catch (e: IOException) {
+                Log.e("HomeViewModel", "IO Error fetching titles", e)
+            } catch (e: retrofit2.HttpException) {
+                Log.e("HomeViewModel", "HTTP Error fetching titles", e)
+            }
+        }
+    }
+
+    fun unlockTitle(
+        titleId: Int,
+        setAsMain: Boolean,
+    ) {
+        viewModelScope.launch {
+            try {
+                com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi.unlockTitle(
+                    com.airgo.airgoApp.features.tracking.data
+                        .UnlockTitleRequest(titleId),
+                )
+
+                if (setAsMain) {
+                    SessionManager.userId?.let { userId ->
+                        val selectedTitle = _availableTitles.value.find { it.id == titleId }
+                        selectedTitle?.let {
+                            com.airgo.airgoApp.core.network.RetrofitProvider.profileApi.updateUser(
+                                userId,
+                                com.airgo.airgoApp.features.profile.data
+                                    .UpdateUserRequest(titol = it.nom),
+                            )
+                            SessionManager.titol = it.nom
+                        }
+                    }
+                }
+
+                // Actualizar la lista de títulos disponibles en el SessionManager
+                _availableTitles.value.find { it.id == titleId }?.let { title ->
+                    val currentList = SessionManager.availableTitols?.toMutableList() ?: mutableListOf()
+                    if (currentList.none { it.id == title.id }) {
+                        currentList.add(
+                            com.airgo.airgoApp.features.settings.account.titols.data.UserTitol(
+                                id = title.id,
+                                nom = title.nom,
+                                descripcio = title.descripcio,
+                            ),
+                        )
+                        SessionManager.availableTitols = currentList
+                    }
+                }
+
+                showTitleSelectionDialog = false
+                val newValue = (SessionManager.titolsPendents - 1).coerceAtLeast(0)
+                SessionManager.titolsPendents = newValue
+            } catch (e: IOException) {
+                Log.e("HomeViewModel", "IO Error unlocking title", e)
+            } catch (e: retrofit2.HttpException) {
+                Log.e("HomeViewModel", "HTTP Error unlocking title", e)
+            }
+        }
+    }
+
+    fun refreshTitolsPendents() {
+        // No-op as we use the flow from SessionManager
     }
 }

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
@@ -65,7 +64,7 @@ class RouteViewModel : ViewModel() {
 
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
                 if (currentRoute?.status !== "success") {
-                    errorMessage = UiText.StringResource(R.string.error_fetching_route);
+                    errorMessage = UiText.StringResource(R.string.error_fetching_route)
                 }
             } catch (e: IOException) {
                 errorMessage = UiText.StringResource(R.string.error_connection)
@@ -152,8 +151,10 @@ class RouteViewModel : ViewModel() {
                     }
                 }
             } catch (e: IOException) {
+                Log.e(LOG_TAG, "Network error fetching routes: ${e.message}", e)
                 errorMessage = UiText.StringResource(R.string.error_connection)
             } catch (e: HttpException) {
+                Log.e(LOG_TAG, "HTTP error fetching routes: ${e.code()}", e)
                 errorMessage = UiText.StringResource(R.string.error_route_http, e.code())
             }
         }

@@ -8,7 +8,6 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.UiText
-import com.airgo.airgoApp.features.onboarding.domain.OnboardingUiState
 import com.airgo.airgoApp.features.social.chat.data.Message
 import com.airgo.airgoApp.features.social.chat.data.WebSocketMessage
 import com.google.gson.Gson

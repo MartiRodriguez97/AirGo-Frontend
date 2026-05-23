@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitProvider {
     private const val BACKEND_URL = BuildConfig.BACKEND_URL
-    private const val MAX_LOG_SIZE_BYTES = 1024L * 1024L
     private val authInterceptor =
         Interceptor { chain ->
             val originalRequest = chain.request()
@@ -63,10 +62,6 @@ object RetrofitProvider {
             }
 
             val response = chain.proceed(request)
-
-            if (url.contains("route-generation") || url.contains("pla-entrenament")) {
-                val responseBody = response.peekBody(MAX_LOG_SIZE_BYTES)
-            }
             response
         }
 

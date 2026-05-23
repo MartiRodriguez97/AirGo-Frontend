@@ -37,8 +37,6 @@ class FavoritesViewModel : ViewModel() {
             try {
                 errorMessage = null
                 routes = RetrofitProvider.favoriteRouteApi.getFavoriteRoutes(search)
-            } catch (e: Exception) {
-                errorMessage = UiText.StringResource(R.string.error_fetching_routes)
             } catch (e: IOException) {
                 errorMessage = UiText.StringResource(R.string.error_connection_generic)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)

@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.login.domain
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -43,6 +44,7 @@ sealed class LoginUiState {
         val message: UiText,
     ) : LoginUiState()
 }
+
 class LoginViewModel : ViewModel() {
     private var _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState
@@ -147,13 +149,58 @@ class LoginViewModel : ViewModel() {
                 session.limitRutes = userDetails.limitRutes
                 session.titol = userDetails.titol
                 session.insignies = userDetails.insignies
-            } else {
-                val errBody = userResponse.errorBody()?.string()
+
+                try {
+                    session.userBadges = RetrofitProvider.profileApi.getUserBadges()
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("LoginViewModel", "Error fetching user badges (HTTP)", e)
+                } catch (e: IOException) {
+                    Log.e("LoginViewModel", "Error fetching user badges (IO)", e)
+                }
+
+                try {
+                    val titlesResponse = RetrofitProvider.trackingApi.getAvailableTitles()
+                    session.titolsPendents = titlesResponse.titolsPendents
+                } catch (e: IOException) {
+                    Log.e("LoginViewModel", "IO Error fetching pending titles", e)
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("LoginViewModel", "HTTP Error fetching pending titles", e)
+                }
+
+                try {
+                    fetchAvailableTitlesList(session)
+                } catch (e: IOException) {
+                    Log.e("LoginViewModel", "IO Error fetching available titles list", e)
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("LoginViewModel", "HTTP Error fetching available titles list", e)
+                }
+
+                try {
+                    val repo =
+                        com.airgo.airgoApp.features.home.data
+                            .TrainingPlanRepository()
+                    session.trainingPlans = repo.fetchFullTrainingPlans()
+                } catch (e: IOException) {
+                    Log.e("LoginViewModel", "IO Error fetching training plans", e)
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("LoginViewModel", "HTTP Error fetching training plans", e)
+                }
             }
         } catch (e: IOException) {
             Log.e("LoginViewModel", "IO Error fetching user details", e)
         } catch (e: retrofit2.HttpException) {
             Log.e("LoginViewModel", "HTTP Error fetching user details", e)
+        }
+    }
+
+    private suspend fun fetchAvailableTitlesList(session: SessionManager) {
+        val userId = session.userId ?: return
+        val url =
+            com.airgo.airgoApp.core.network.ApiEndpoints
+                .getAvailableTitolsEndpoint(userId)
+        val response = RetrofitProvider.titolApi.getAvailableTitols(url)
+        if (response.isSuccessful && response.body() != null) {
+            session.availableTitols = response.body()!!.map { it.titol }
         }
     }
 
@@ -168,6 +215,7 @@ class LoginViewModel : ViewModel() {
                 .ifBlank { obj.optString("error") }
                 .ifBlank { errorText }
         } catch (e: JSONException) {
+            Log.e(TAG, "JSON error: ${e.message}", e)
             errorText
         }
     }

@@ -105,8 +105,6 @@ class OnboardingViewModel : ViewModel() {
                 SessionManager.altura = altura
                 SessionManager.teBici = teBici
                 uiState = OnboardingUiState.Success
-            } catch (e: Exception) {
-                uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_saving_info_user))
             } catch (e: IOException) {
                 uiState = OnboardingUiState.Error(UiText.StringResource(R.string.error_network_generic))
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)

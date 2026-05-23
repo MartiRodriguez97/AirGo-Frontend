@@ -138,7 +138,10 @@ class SocialViewModel : ViewModel() {
                             FriendsUiState.Success(friends)
                         }
                 },
-                onFailure = { e -> _friendsUiState.value = FriendsUiState.Error(UiText.StringResource(R.string.error_loading_friends)) },
+                onFailure = { e ->
+                    _friendsUiState.value =
+                        FriendsUiState.Error(UiText.StringResource(R.string.error_loading_friends))
+                },
             )
         }
     }
@@ -197,7 +200,10 @@ class SocialViewModel : ViewModel() {
                             }
                     }
                 },
-                onFailure = { e -> _friendsUiState.value = FriendsUiState.Error(UiText.StringResource(R.string.error_deleting_friend)) },
+                onFailure = { e ->
+                    _friendsUiState.value =
+                        FriendsUiState.Error(UiText.StringResource(R.string.error_deleting_friend))
+                },
             )
         }
     }
