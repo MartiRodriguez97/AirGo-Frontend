@@ -137,14 +137,14 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-
-                val request = TrainingPlanRequest(
-                    diesDurada = daysDuration,
-                    numEntrenamentsSetmanals = workoutsPerWeek,
-                    esport = sport ?: 1,
-                    nivell = level ?: 1,
-                    diesSetmana = daysOfWeek
-                )
+                val request =
+                    TrainingPlanRequest(
+                        diesDurada = daysDuration,
+                        numEntrenamentsSetmanals = workoutsPerWeek,
+                        esport = sport ?: 1,
+                        nivell = level ?: 1,
+                        diesSetmana = daysOfWeek,
+                    )
                 repository.createTrainingPlan(request)
                 SessionManager.trainingPlans = null
 
