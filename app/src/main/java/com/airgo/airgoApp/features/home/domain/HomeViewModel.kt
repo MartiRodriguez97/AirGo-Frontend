@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
+import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -129,11 +130,24 @@ class HomeViewModel : ViewModel() {
         onSuccess: () -> Unit,
         daysDuration: Int,
         workoutsPerWeek: Int,
-        level: String?,
+        sport: Int?,
+        level: Int?,
+        daysOfWeek: List<Int>,
     ) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
+
+                val request = TrainingPlanRequest(
+                    diesDurada = daysDuration,
+                    numEntrenamentsSetmanals = workoutsPerWeek,
+                    esport = sport ?: 1,
+                    nivell = level ?: 1,
+                    diesSetmana = daysOfWeek
+                )
+                repository.createTrainingPlan(request)
+                SessionManager.trainingPlans = null
+
                 val rawPlans = repository.getTrainingPlans()
                 val fetchedPlans =
                     rawPlans.map { raw ->
