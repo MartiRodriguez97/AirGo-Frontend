@@ -40,4 +40,8 @@ object ApiEndpoints {
     const val CONVERSATION_MESSAGES = "api/conversations/{id}/messages/"
     const val CONVERSATION_READ = "api/conversations/{id}/read/"
     const val DELETE_MESSAGE = "api/conversations/messages/{missatge_id}/"
+    const val FORUMS = "api/forums/"
+    const val FORUM_DETAIL = "api/forums/{id}/"
+    const val FAVORIT_FORUMS = "api/usuaris/me/forums/"
+    const val DELETE_FAVORIT_FORUM = "api/usuaris/me/forums/{forum_id}/"
 }

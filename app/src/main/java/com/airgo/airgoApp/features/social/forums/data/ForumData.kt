@@ -9,12 +9,17 @@ data class Forum(
     val descripcio: String,
     @SerializedName("creat_per")
     val creatPer: Int,
-    @SerializedName("es_favorit")
-    val esFavorit: Boolean = false,
+    @SerializedName("creat_at")
+    val creatAt: String = "",
 )
 
 data class CreateForumRequest(
     val nom: String,
     @SerializedName("descripcio")
     val descripcio: String,
+)
+
+data class AddFavoritForumRequest(
+    @SerializedName("forum_id")
+    val forumId: Int,
 )

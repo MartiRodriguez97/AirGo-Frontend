@@ -1,8 +1,12 @@
 package com.airgo.airgoApp.features.social.forums.domain
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.social.forums.data.AddFavoritForumRequest
+import com.airgo.airgoApp.features.social.forums.data.CreateForumRequest
 import com.airgo.airgoApp.features.social.forums.data.Forum
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,34 +14,25 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
+private const val LOG_TAG = "ForumViewModel"
 private const val SEARCH_DEBOUNCE_MS = 400L
 private const val MIN_QUERY_LENGTH = 2
 
 sealed class ForumUiState {
     data object Loading : ForumUiState()
-
     data object Empty : ForumUiState()
-
-    data class Success(
-        val forums: List<Forum>,
-    ) : ForumUiState()
-
-    data class Error(
-        val message: String?,
-    ) : ForumUiState()
+    data class Success(val forums: List<Forum>) : ForumUiState()
+    data class Error(val message: String?) : ForumUiState()
 }
 
 sealed class ForumActionState {
     data object Idle : ForumActionState()
-
     data object Loading : ForumActionState()
-
     data object Success : ForumActionState()
-
-    data class Error(
-        val message: String?,
-    ) : ForumActionState()
+    data class Error(val message: String?) : ForumActionState()
 }
 
 @OptIn(FlowPreview::class)
@@ -54,33 +49,41 @@ class ForumViewModel : ViewModel() {
     private val _actionState = MutableStateFlow<ForumActionState>(ForumActionState.Idle)
     val actionState: StateFlow<ForumActionState> = _actionState
 
-    // Llista local de fòrums mentre no hi ha backend
-    private val mockForums = mutableListOf<Forum>()
-    private var nextId = 1
+    // Llista de tots els fòrums carregats (favorits + creats per l'usuari)
+    private var allMyForums: List<Forum> = emptyList()
 
     init {
-        loadForums()
+        loadMyForums()
         observeSearchQuery()
     }
 
-    fun loadForums(search: String? = null) {
+    /**
+     * Carrega els fòrums rellevants per a l'usuari:
+     * favorits + creats per ell.
+     */
+    fun loadMyForums() {
         viewModelScope.launch {
             _forumsUiState.value = ForumUiState.Loading
-            val filtered =
-                if (search.isNullOrBlank()) {
-                    mockForums.toList()
-                } else {
-                    mockForums.filter {
-                        it.nom.contains(search, ignoreCase = true) ||
-                            it.descripcio.contains(search, ignoreCase = true)
-                    }
-                }
-            _forumsUiState.value =
-                if (filtered.isEmpty()) {
-                    ForumUiState.Empty
-                } else {
-                    ForumUiState.Success(filtered)
-                }
+            try {
+                val currentUserId = SessionManager.userId
+                val favorits = RetrofitProvider.forumApi.getFavoritForums()
+                val allForums = RetrofitProvider.forumApi.getForums()
+                val createdByUser = allForums.filter { it.creatPer == currentUserId }
+
+                // Combinar sense duplicats
+                val combined = (favorits + createdByUser).distinctBy { it.id }
+                allMyForums = combined
+                _favoritForums.value = favorits.map { it.id }.toSet()
+
+                _forumsUiState.value = if (combined.isEmpty()) ForumUiState.Empty
+                else ForumUiState.Success(combined)
+            } catch (e: IOException) {
+                _forumsUiState.value = ForumUiState.Error("Error de connexió")
+                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
+            } catch (e: HttpException) {
+                _forumsUiState.value = ForumUiState.Error("Error del servidor: ${e.code()}")
+                Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
+            }
         }
     }
 
@@ -90,67 +93,88 @@ class ForumViewModel : ViewModel() {
                 .debounce(SEARCH_DEBOUNCE_MS)
                 .distinctUntilChanged()
                 .collect { query ->
-                    if (query.length >= MIN_QUERY_LENGTH) {
-                        loadForums(query)
-                    } else if (query.isBlank()) {
-                        loadForums()
+                    if (query.length >= MIN_QUERY_LENGTH) filterMyForums(query)
+                    else if (query.isBlank()) {
+                        _forumsUiState.value = if (allMyForums.isEmpty()) ForumUiState.Empty
+                        else ForumUiState.Success(allMyForums)
                     }
                 }
         }
     }
 
-    fun onSearchQueryChange(query: String) {
-        _searchQuery.value = query
+    private fun filterMyForums(query: String) {
+        val filtered = allMyForums.filter {
+            it.nom.contains(query, ignoreCase = true) ||
+                    it.descripcio.contains(query, ignoreCase = true)
+        }
+        _forumsUiState.value = if (filtered.isEmpty()) ForumUiState.Empty
+        else ForumUiState.Success(filtered)
     }
+
+    fun onSearchQueryChange(query: String) { _searchQuery.value = query }
 
     fun clearSearchQuery() {
         _searchQuery.value = ""
-        loadForums()
+        _forumsUiState.value = if (allMyForums.isEmpty()) ForumUiState.Empty
+        else ForumUiState.Success(allMyForums)
     }
 
-    fun createForum(
-        nom: String,
-        descripcio: String,
-    ) {
+    fun createForum(nom: String, descripcio: String) {
         if (nom.isBlank()) {
             _actionState.value = ForumActionState.Error("El nom no pot estar buit")
             return
         }
         viewModelScope.launch {
             _actionState.value = ForumActionState.Loading
-            val newForum =
-                Forum(
-                    id = nextId++,
-                    nom = nom,
-                    descripcio = descripcio,
-                    creatPer = SessionManager.userId ?: -1,
-                )
-            mockForums.add(newForum)
-            _actionState.value = ForumActionState.Success
-            loadForums()
+            try {
+                RetrofitProvider.forumApi.createForum(CreateForumRequest(nom, descripcio))
+                _actionState.value = ForumActionState.Success
+                loadMyForums()
+            } catch (e: IOException) {
+                _actionState.value = ForumActionState.Error("Error de connexió")
+                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
+            } catch (e: HttpException) {
+                _actionState.value = ForumActionState.Error("Error del servidor: ${e.code()}")
+                Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
+            }
         }
     }
 
     fun deleteForum(forumId: Int) {
         viewModelScope.launch {
-            mockForums.removeAll { it.id == forumId }
-            _favoritForums.value -= forumId
-            loadForums()
+            try {
+                RetrofitProvider.forumApi.deleteForum(forumId)
+                _favoritForums.value -= forumId
+                loadMyForums()
+            } catch (e: IOException) {
+                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
+            } catch (e: HttpException) {
+                Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
+            }
         }
     }
 
     fun toggleFavorit(forumId: Int) {
-        _favoritForums.value =
-            if (forumId in _favoritForums.value) {
-                _favoritForums.value - forumId
-            } else {
-                _favoritForums.value + forumId
+        viewModelScope.launch {
+            try {
+                if (forumId in _favoritForums.value) {
+                    RetrofitProvider.forumApi.removeFavoritForum(forumId)
+                    _favoritForums.value -= forumId
+                } else {
+                    RetrofitProvider.forumApi.addFavoritForum(AddFavoritForumRequest(forumId))
+                    _favoritForums.value += forumId
+                }
+                loadMyForums()
+            } catch (e: IOException) {
+                Log.e(LOG_TAG, "Network failure toggle favorit: ${e.message}", e)
+            } catch (e: HttpException) {
+                Log.e(LOG_TAG, "HTTP failure toggle favorit: ${e.message()}", e)
             }
+        }
     }
 
-    fun clearActionState() {
-        _actionState.value = ForumActionState.Idle
-    }
+    fun clearActionState() { _actionState.value = ForumActionState.Idle }
 
-    fun isCreatedByCurrentUser(forum: Forum): Boolean = forum.creatPer == SessionManager.userId
+    fun isCreatedByCurrentUser(forum: Forum): Boolean =
+        forum.creatPer == SessionManager.userId
 }

@@ -22,6 +22,7 @@ import okio.Buffer
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import com.airgo.airgoApp.features.social.forums.data.ForumApi
 
 object RetrofitProvider {
     private const val BACKEND_URL = BuildConfig.BACKEND_URL
@@ -109,7 +110,6 @@ object RetrofitProvider {
     val trackingApi: TrackingApi = retrofit.create(TrackingApi::class.java)
     val onboardingApi: OnboardingApi = retrofit.create(OnboardingApi::class.java)
     val chatApi: ChatApi = retrofit.create(ChatApi::class.java)
-    val activityApi: ActivityApi by lazy {
-        retrofit.create(ActivityApi::class.java)
-    }
+    val activityApi: ActivityApi by lazy { retrofit.create(ActivityApi::class.java) }
+    val forumApi: ForumApi = retrofit.create(ForumApi::class.java)
 }
