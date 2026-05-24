@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.home
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -59,11 +60,11 @@ private const val TARGET_MAX_STEP = 3
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal data class QuestionnaireFormState(
-    val selectedSport: String?,
-    val onSportSelected: (String) -> Unit,
-    val selectedLevel: String?,
-    val onLevelSelected: (String) -> Unit,
-    val selectedDays: SnapshotStateList<String>,
+    val selectedSport: Int?,
+    val onSportSelected: (Int) -> Unit,
+    val selectedLevel: Int?,
+    val onLevelSelected: (Int) -> Unit,
+    val selectedDays: SnapshotStateList<Int>,
     val datePickerState: DatePickerState,
 )
 
@@ -73,9 +74,9 @@ fun questionnaireScreen(
     onClose: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
 ) {
-    var selectedSport by remember { mutableStateOf<String?>(null) }
-    var selectedLevel by remember { mutableStateOf<String?>(null) }
-    val selectedDays = remember { mutableStateListOf<String>() }
+    var selectedSport by remember { mutableStateOf<Int?>(null) }
+    var selectedLevel by remember { mutableStateOf<Int?>(null) }
+    val selectedDays = remember { mutableStateListOf<Int>() }
     var currentStep by remember { mutableStateOf(0) }
     val datePickerState = rememberDateState()
 
@@ -126,6 +127,7 @@ fun questionnaireScreen(
                 isNextEnabled = isNextEnabled,
                 onNextStep = { currentStep++ },
                 onFinish = {
+                    Log.d("AirGo_Debug", "1. Botón finalizar pulsado")
                     val endDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
                     val diffMillis = endDateMillis - System.currentTimeMillis()
                     val daysDuration = (diffMillis / MILLIS_IN_DAY).toInt().coerceAtLeast(0)
@@ -134,7 +136,9 @@ fun questionnaireScreen(
                     viewModel.createPlan(
                         daysDuration = daysDuration,
                         workoutsPerWeek = workoutsPerWeek,
+                        sport = selectedSport,
                         level = selectedLevel,
+                        daysOfWeek = selectedDays,
                         onSuccess = {
                             onClose()
                         },
@@ -239,7 +243,6 @@ private fun questionnaireBottomButton(
         enabled = isNextEnabled,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        // Los textos de las etiquetas SÍ pueden usar stringResource porque están en el mundo UI
         Text(
             text =
                 if (currentStep == TARGET_MAX_STEP) {
@@ -276,9 +279,9 @@ private fun rememberDateState(): DatePickerState {
 @OptIn(ExperimentalMaterial3Api::class)
 private fun checkNextEnabled(
     currentStep: Int,
-    selectedSport: String?,
-    selectedLevel: String?,
-    selectedDays: SnapshotStateList<String>,
+    selectedSport: Int?,
+    selectedLevel: Int?,
+    selectedDays: SnapshotStateList<Int>,
     datePickerState: DatePickerState,
 ): Boolean =
     when (currentStep) {
