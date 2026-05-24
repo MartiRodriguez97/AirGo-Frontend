@@ -290,9 +290,10 @@ private fun accountSettingsContent(
 @Composable
 private fun accountSettingsHeader(onBackClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -312,16 +313,20 @@ private fun accountSettingsHeader(onBackClick: () -> Unit) {
 }
 
 @Composable
-private fun usernameRow(displayName: String, onEditUsername: () -> Unit) {
+private fun usernameRow(
+    displayName: String,
+    onEditUsername: () -> Unit,
+) {
     androidx.compose.material3.Surface(
         onClick = onEditUsername,
         tonalElevation = 0.dp,
         shadowElevation = 0.dp,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(

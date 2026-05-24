@@ -615,9 +615,7 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-            ) {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
                 socialSearchBar(
                     query = searchQuery,
                     placeholder = stringResource(R.string.search_forum),
@@ -652,7 +650,11 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
             }
             when (val state = uiState) {
                 is ForumUiState.Loading -> loadingState()
-                is ForumUiState.Empty -> emptyState("emptyForum", text = stringResource(R.string.no_favorite_created_forums_found))
+                is ForumUiState.Empty ->
+                    emptyState(
+                        "emptyForum",
+                        text = stringResource(R.string.no_favorite_created_forums_found),
+                    )
                 is ForumUiState.Error -> errorState(state.message)
                 is ForumUiState.Success -> {
                     val filteredForums = when (activeFilter) {
