@@ -30,7 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
+import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.features.social.friends.data.FriendProfileData
 import com.airgo.airgoApp.features.social.friends.domain.FriendProfileUiState
 import com.airgo.airgoApp.features.social.friends.domain.FriendProfileViewModel
@@ -90,10 +92,17 @@ private fun friendProfileContent(profile: FriendProfileData) {
     ) {
         // Avatar
         if (!profile.profilePic.isNullOrBlank()) {
+            val fullUrl =
+                if (profile.profilePic.startsWith("http")) {
+                    profile.profilePic
+                } else {
+                    BuildConfig.BACKEND_URL.trimEnd('/') + "/" + profile.profilePic.trimStart('/')
+                }
             AsyncImage(
-                model = profile.profilePic,
+                model = fullUrl,
                 contentDescription = null,
                 modifier = Modifier.size(88.dp).clip(CircleShape),
+                contentScale = ContentScale.Crop,
             )
         } else {
             Box(

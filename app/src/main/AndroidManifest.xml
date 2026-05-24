@@ -45,6 +45,9 @@
             </intent-filter>
         </service>
 
+        <receiver android:name="com.airgo.airgoApp.features.notifications.service.NotificationActionReceiver"
+            android:exported="false" />
+
     </application>
 
 </manifest>

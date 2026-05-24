@@ -79,17 +79,22 @@ fun mainShellScreen(
         if (pendingNavData != null) {
             val convId = pendingNavData.getString("convId")
             val otherUserId = pendingNavData.getString("otherUserId")
-            val username = pendingNavData.getString("username")
+            val username = pendingNavData.getString("username") ?: "Usuari"
+            val otherProfilePic = pendingNavData.getString("otherProfilePic")
             
             if (convId != null && otherUserId != null) {
+                val encodedPic = if (!otherProfilePic.isNullOrEmpty()) {
+                    java.net.URLEncoder.encode(otherProfilePic, "UTF-8")
+                } else "none"
+
                 // Primero navegamos a SOCIAL para que quede en el backstack
                 navController.navigate(MainShellScreen.SOCIAL.route) {
                     popUpTo(navController.graph.startDestinationId) { saveState = true }
                     launchSingleTop = true
                     restoreState = true
                 }
-                // Luego navegamos al chat concreto
-                navController.navigate("chat/$convId/$otherUserId/$username") {
+                // Luego navegamos al chat concreto con todos los parámetros
+                navController.navigate("chat/$convId/$otherUserId/$username/$encodedPic") {
                     launchSingleTop = true
                 }
                 onNavigated() // Limpiamos el estado en MainActivity
@@ -233,8 +238,11 @@ private fun NavGraphBuilder.featuresNavGraph(
         screenWrapper(innerPadding) {
             socialScreen(
                 onFriendClick = { userId -> navController.navigate("friend_profile/$userId") },
-                onChatClick = { convId, otherUserId, username ->
-                    navController.navigate("chat/$convId/$otherUserId/$username")
+                onChatClick = { convId, otherUserId, username, profilePic ->
+                    val encodedPic = if (!profilePic.isNullOrEmpty()) {
+                        java.net.URLEncoder.encode(profilePic, "UTF-8")
+                    } else "none"
+                    navController.navigate("chat/$convId/$otherUserId/$username/$encodedPic")
                 },
             )
         }
@@ -279,14 +287,18 @@ private fun NavGraphBuilder.featuresNavGraph(
             viewModel = summaryViewModel,
         )
     }
-    composable("chat/{convId}/{otherUserId}/{username}") { backStackEntry ->
+    composable("chat/{convId}/{otherUserId}/{username}/{otherProfilePic}") { backStackEntry ->
         val convId = backStackEntry.arguments?.getString("convId") ?: return@composable
         val otherUserId = backStackEntry.arguments?.getString("otherUserId")?.toIntOrNull() ?: return@composable
         val username = backStackEntry.arguments?.getString("username") ?: ""
+        val rawPic = backStackEntry.arguments?.getString("otherProfilePic")
+        val otherProfilePic = if (rawPic == "none") null else rawPic
+
         chatScreen(
             conversationId = convId,
             otherUserId = otherUserId,
             otherUsername = username,
+            otherProfilePic = otherProfilePic,
             onBack = { navController.popBackStack() },
         )
     }

@@ -204,6 +204,7 @@ class ChatViewModel : ViewModel() {
                     id = wsMsg.id ?: 0,
                     emissor = wsMsg.emissor ?: 0,
                     emissorUsername = wsMsg.emissorUsername ?: "",
+                    emissorProfilePic = wsMsg.emissorProfilePic,
                     contingut = wsMsg.contingut,
                     enviatAt = wsMsg.enviatAt ?: "",
                     llegit = false,

@@ -9,6 +9,8 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.NetworkErrorMapper
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.network.UserPreferencesRepository
+import com.airgo.airgoApp.core.network.dataStore
 import com.airgo.airgoApp.core.utils.FileUtils
 import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.profile.data.UserBadgeResponse
@@ -132,9 +134,11 @@ class ProfileViewModel : ViewModel() {
                     val newImageUrl = response.body()?.newPictureUrl
 
                     if (newImageUrl != null) {
-                        runCatching { newImageUrl.toUri() }.getOrNull()
-
                         SessionManager.profilePictureUrl = newImageUrl
+                        
+                        // Guardamos en persistencia para que las notificaciones la encuentren
+                        val prefsRepo = UserPreferencesRepository(context.dataStore)
+                        prefsRepo.saveSession(SessionManager.toUserPreferences())
 
                         _uiState.value = ProfileUiState.PictureUpdateSuccess
                     } else {

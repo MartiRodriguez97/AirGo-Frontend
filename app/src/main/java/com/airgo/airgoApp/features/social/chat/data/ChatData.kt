@@ -19,6 +19,8 @@ data class Message(
     val emissor: Int,
     @SerializedName("emissor_username")
     val emissorUsername: String,
+    @SerializedName("emissor_profile_pic")
+    val emissorProfilePic: String?,
     @SerializedName("contingut")
     val contingut: String,
     @SerializedName("enviat_at")
@@ -32,6 +34,8 @@ data class WebSocketMessage(
     val emissor: Int? = null,
     @SerializedName("emissor_username")
     val emissorUsername: String? = null,
+    @SerializedName("emissor_profile_pic")
+    val emissorProfilePic: String? = null,
     @SerializedName("contingut")
     val contingut: String? = null,
     @SerializedName("enviat_at")

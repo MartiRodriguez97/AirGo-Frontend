@@ -82,6 +82,7 @@ object SessionManager {
             token = accessToken,
             refreshToken = refreshToken,
             userId = userId,
+            profilePictureUrl = profilePictureUrl,
         )
 
     fun isProfileIncomplete(): Boolean =

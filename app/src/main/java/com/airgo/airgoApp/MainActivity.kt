@@ -130,6 +130,7 @@ class MainActivity : ComponentActivity() {
                 putString("convId", intent.getStringExtra("CONV_ID"))
                 putString("otherUserId", intent.getStringExtra("OTHER_USER_ID"))
                 putString("username", intent.getStringExtra("OTHER_USERNAME"))
+                putString("otherProfilePic", intent.getStringExtra("OTHER_PROFILE_PIC"))
             }
         }
     }
@@ -297,6 +298,8 @@ private suspend fun handleAutoLogin(
     SessionManager.accessToken = userPrefs.token
     SessionManager.refreshToken = userPrefs.refreshToken
     SessionManager.userId = userPrefs.userId
+
+    Log.d("MainActivity", "Intentando auto-login con token almacenado en SessionManager ACCESS: ${SessionManager.accessToken}, REFESH: ${SessionManager.refreshToken}")
 
     try {
         val response = RetrofitProvider.authApi.getCurrentUserProfile()
