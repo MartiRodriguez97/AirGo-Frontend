@@ -67,7 +67,7 @@ import com.airgo.airgoApp.features.social.components.loadingState
 import com.airgo.airgoApp.features.social.components.socialSearchBar
 import com.airgo.airgoApp.features.social.components.userAvatarPlaceholder
 import com.airgo.airgoApp.features.social.data.UserSearchResult
-import com.airgo.airgoApp.features.social.domain.DiscoverSearchResult
+import com.airgo.airgoApp.features.social.forums.domain.DiscoverSearchResult
 import com.airgo.airgoApp.features.social.domain.FriendsUiState
 import com.airgo.airgoApp.features.social.domain.RequestsUiState
 import com.airgo.airgoApp.features.social.domain.SearchUiState
@@ -495,7 +495,9 @@ private fun searchTab(viewModel: SocialViewModel) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 12.dp),
+                    contentPadding =
+                        androidx.compose.foundation.layout
+                            .PaddingValues(vertical = 12.dp),
                 ) {
                     items(state.results, key = {
                         when (it) {
@@ -504,19 +506,21 @@ private fun searchTab(viewModel: SocialViewModel) {
                         }
                     }) { result ->
                         when (result) {
-                            is DiscoverSearchResult.UserResult -> userResultItem(
-                                user = result.user,
-                                requestSent = result.user.id in requestSentTo,
-                                onSendRequest = { viewModel.sendFriendRequest(result.user.id) },
-                            )
-                            is DiscoverSearchResult.ForumResult -> forumCard(
-                                forum = result.forum,
-                                isFavorit = result.forum.id in favoritForums,
-                                isOwner = forumViewModel.isCreatedByCurrentUser(result.forum),
-                                onToggleFavorit = { forumViewModel.toggleFavorit(result.forum.id) },
-                                onDelete = { forumViewModel.deleteForum(result.forum.id) },
-                                onClick = {},
-                            )
+                            is DiscoverSearchResult.UserResult ->
+                                userResultItem(
+                                    user = result.user,
+                                    requestSent = result.user.id in requestSentTo,
+                                    onSendRequest = { viewModel.sendFriendRequest(result.user.id) },
+                                )
+                            is DiscoverSearchResult.ForumResult ->
+                                forumCard(
+                                    forum = result.forum,
+                                    isFavorit = result.forum.id in favoritForums,
+                                    isOwner = forumViewModel.isCreatedByCurrentUser(result.forum),
+                                    onToggleFavorit = { forumViewModel.toggleFavorit(result.forum.id) },
+                                    onDelete = { forumViewModel.deleteForum(result.forum.id) },
+                                    onClick = {},
+                                )
                         }
                     }
                 }
@@ -596,7 +600,7 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
 
     forumToDelete?.let { forum ->
         deleteForumDialog(
-            forumNom = forum.nom,
+            forumNom = forum.nom?: "",
             onDismiss = { forumToDelete = null },
             onConfirm = {
                 forumViewModel.deleteForum(forum.id)

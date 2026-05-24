@@ -15,6 +15,7 @@ import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
 import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
 import com.airgo.airgoApp.features.social.chat.data.ChatApi
 import com.airgo.airgoApp.features.social.data.SocialApi
+import com.airgo.airgoApp.features.social.forums.data.ForumApi
 import com.airgo.airgoApp.features.tracking.data.TrackingApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -22,7 +23,6 @@ import okio.Buffer
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import com.airgo.airgoApp.features.social.forums.data.ForumApi
 
 object RetrofitProvider {
     private const val BACKEND_URL = BuildConfig.BACKEND_URL

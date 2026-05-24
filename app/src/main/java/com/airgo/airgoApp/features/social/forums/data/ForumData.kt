@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class Forum(
     val id: Int,
-    val nom: String,
+    val nom: String?,
     @SerializedName("descripcio")
-    val descripcio: String,
+    val descripcio: String?,
     @SerializedName("creat_per")
     val creatPer: Int,
     @SerializedName("creat_at")

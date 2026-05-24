@@ -4,7 +4,6 @@ import com.airgo.airgoApp.core.network.ApiEndpoints.DELETE_FAVORIT_FORUM
 import com.airgo.airgoApp.core.network.ApiEndpoints.FAVORIT_FORUMS
 import com.airgo.airgoApp.core.network.ApiEndpoints.FORUMS
 import com.airgo.airgoApp.core.network.ApiEndpoints.FORUM_DETAIL
-
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

@@ -3,6 +3,7 @@ package com.airgo.airgoApp.features.social.domain
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.social.SocialRepository
+import com.airgo.airgoApp.features.social.forums.domain.DiscoverSearchResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
@@ -43,8 +44,11 @@ class UserSearchHandler(
                 .debounce(SEARCH_DEBOUNCE_MS)
                 .distinctUntilChanged()
                 .collect { query ->
-                    if (query.length >= MIN_QUERY_LENGTH) performSearch(query)
-                    else if (query.isBlank()) _searchUiState.value = SearchUiState.Idle
+                    if (query.length >= MIN_QUERY_LENGTH) {
+                        performSearch(query)
+                    } else if (query.isBlank()) {
+                        _searchUiState.value = SearchUiState.Idle
+                    }
                 }
         }
     }
@@ -55,27 +59,40 @@ class UserSearchHandler(
             val currentUserId = SessionManager.userId
             val friendIds = getFriendIds()
 
-            val usersDeferred = async {
-                try { repository.searchUsers(query).getOrNull() ?: emptyList() }
-                catch (e: Exception) { emptyList() }
-            }
-            val forumsDeferred = async {
-                try { RetrofitProvider.forumApi.getForums(query) }
-                catch (e: Exception) { emptyList() }
-            }
+            val usersDeferred =
+                async {
+                    try {
+                        repository.searchUsers(query).getOrNull() ?: emptyList()
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                }
+            val forumsDeferred =
+                async {
+                    try {
+                        RetrofitProvider.forumApi.getForums(query)
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                }
 
             val users = usersDeferred.await()
             val forums = forumsDeferred.await()
 
-            val filteredUsers = users
-                .filter { user -> user.id != currentUserId && user.id !in friendIds }
-                .map { DiscoverSearchResult.UserResult(it) }
+            val filteredUsers =
+                users
+                    .filter { user -> user.id != currentUserId && user.id !in friendIds }
+                    .map { DiscoverSearchResult.UserResult(it) }
 
             val filteredForums = forums.map { DiscoverSearchResult.ForumResult(it) }
 
             val combined = filteredUsers + filteredForums
-            _searchUiState.value = if (combined.isEmpty()) SearchUiState.Empty
-            else SearchUiState.Success(combined)
+            _searchUiState.value =
+                if (combined.isEmpty()) {
+                    SearchUiState.Empty
+                } else {
+                    SearchUiState.Success(combined)
+                }
         }
     }
 

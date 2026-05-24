@@ -23,16 +23,28 @@ private const val MIN_QUERY_LENGTH = 2
 
 sealed class ForumUiState {
     data object Loading : ForumUiState()
+
     data object Empty : ForumUiState()
-    data class Success(val forums: List<Forum>) : ForumUiState()
-    data class Error(val message: String?) : ForumUiState()
+
+    data class Success(
+        val forums: List<Forum>,
+    ) : ForumUiState()
+
+    data class Error(
+        val message: String?,
+    ) : ForumUiState()
 }
 
 sealed class ForumActionState {
     data object Idle : ForumActionState()
+
     data object Loading : ForumActionState()
+
     data object Success : ForumActionState()
-    data class Error(val message: String?) : ForumActionState()
+
+    data class Error(
+        val message: String?,
+    ) : ForumActionState()
 }
 
 @OptIn(FlowPreview::class)
@@ -67,6 +79,10 @@ class ForumViewModel : ViewModel() {
             try {
                 val currentUserId = SessionManager.userId
                 val favorits = RetrofitProvider.forumApi.getFavoritForums()
+                android.util.Log.d("ForumViewModel", "Favorits raw: $favorits")
+                favorits.forEach {
+                    android.util.Log.d("ForumViewModel", "Favorit: id=${it.id}, nom=${it.nom}, creatPer=${it.creatPer}")
+                }
                 val allForums = RetrofitProvider.forumApi.getForums()
                 val createdByUser = allForums.filter { it.creatPer == currentUserId }
 
@@ -75,8 +91,12 @@ class ForumViewModel : ViewModel() {
                 allMyForums = combined
                 _favoritForums.value = favorits.map { it.id }.toSet()
 
-                _forumsUiState.value = if (combined.isEmpty()) ForumUiState.Empty
-                else ForumUiState.Success(combined)
+                _forumsUiState.value =
+                    if (combined.isEmpty()) {
+                        ForumUiState.Empty
+                    } else {
+                        ForumUiState.Success(combined)
+                    }
             } catch (e: IOException) {
                 _forumsUiState.value = ForumUiState.Error("Error de connexió")
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
@@ -93,33 +113,52 @@ class ForumViewModel : ViewModel() {
                 .debounce(SEARCH_DEBOUNCE_MS)
                 .distinctUntilChanged()
                 .collect { query ->
-                    if (query.length >= MIN_QUERY_LENGTH) filterMyForums(query)
-                    else if (query.isBlank()) {
-                        _forumsUiState.value = if (allMyForums.isEmpty()) ForumUiState.Empty
-                        else ForumUiState.Success(allMyForums)
+                    if (query.length >= MIN_QUERY_LENGTH) {
+                        filterMyForums(query)
+                    } else if (query.isBlank()) {
+                        _forumsUiState.value =
+                            if (allMyForums.isEmpty()) {
+                                ForumUiState.Empty
+                            } else {
+                                ForumUiState.Success(allMyForums)
+                            }
                     }
                 }
         }
     }
 
     private fun filterMyForums(query: String) {
-        val filtered = allMyForums.filter {
-            it.nom.contains(query, ignoreCase = true) ||
-                    it.descripcio.contains(query, ignoreCase = true)
-        }
-        _forumsUiState.value = if (filtered.isEmpty()) ForumUiState.Empty
-        else ForumUiState.Success(filtered)
+        val filtered =
+            allMyForums.filter {
+                it.nom?.contains(query, ignoreCase = true) == true ||
+                        it.descripcio?.contains(query, ignoreCase = true) == true
+            }
+        _forumsUiState.value =
+            if (filtered.isEmpty()) {
+                ForumUiState.Empty
+            } else {
+                ForumUiState.Success(filtered)
+            }
     }
 
-    fun onSearchQueryChange(query: String) { _searchQuery.value = query }
+    fun onSearchQueryChange(query: String) {
+        _searchQuery.value = query
+    }
 
     fun clearSearchQuery() {
         _searchQuery.value = ""
-        _forumsUiState.value = if (allMyForums.isEmpty()) ForumUiState.Empty
-        else ForumUiState.Success(allMyForums)
+        _forumsUiState.value =
+            if (allMyForums.isEmpty()) {
+                ForumUiState.Empty
+            } else {
+                ForumUiState.Success(allMyForums)
+            }
     }
 
-    fun createForum(nom: String, descripcio: String) {
+    fun createForum(
+        nom: String,
+        descripcio: String,
+    ) {
         if (nom.isBlank()) {
             _actionState.value = ForumActionState.Error("El nom no pot estar buit")
             return
@@ -173,8 +212,9 @@ class ForumViewModel : ViewModel() {
         }
     }
 
-    fun clearActionState() { _actionState.value = ForumActionState.Idle }
+    fun clearActionState() {
+        _actionState.value = ForumActionState.Idle
+    }
 
-    fun isCreatedByCurrentUser(forum: Forum): Boolean =
-        forum.creatPer == SessionManager.userId
+    fun isCreatedByCurrentUser(forum: Forum): Boolean = forum.creatPer == SessionManager.userId
 }
