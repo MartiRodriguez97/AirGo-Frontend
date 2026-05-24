@@ -149,13 +149,14 @@ private fun favoriteRouteCard(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = item.route.name,
-                        style = MaterialTheme.typography.bodyLarge,
+                        text = "Origen: \n${item.route.startAddress ?: item.route.startLocation ?: "-"}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "${item.route.startLocation} → ${item.route.endLocation}",
-                        style = MaterialTheme.typography.bodySmall,
+                        text = "Destí: \n${item.route.endAddress ?: item.route.endLocation ?: "-"}",
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
