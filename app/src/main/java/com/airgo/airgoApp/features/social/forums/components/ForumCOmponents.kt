@@ -63,10 +63,10 @@ internal fun forumCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = forum.nom,
+                    text = forum.nom ?: "",
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                if (forum.descripcio.isNotBlank()) {
+                if (forum.descripcio?.isNotBlank() == true) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = forum.descripcio,
@@ -176,7 +176,7 @@ internal fun deleteForumDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Eliminar fòrum") },
-        text = { Text("Segur que vols eliminar \"$forumNom\"? Aquesta acció no es pot desfer.") },
+        text = { Text("Segur que vols eliminar \"${forumNom ?: ""}\"? Aquesta acció no es pot desfer.") },
         confirmButton = {
             Button(
                 onClick = onConfirm,

@@ -25,7 +25,7 @@ fun profileUserInfoCard(
     onEditProfilePictureClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = 28.dp, vertical = 32.dp),
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         profileAvatar(

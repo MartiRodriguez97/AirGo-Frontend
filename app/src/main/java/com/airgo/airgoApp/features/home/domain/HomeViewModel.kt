@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
+import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,8 +88,8 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val rawPlans = repository.getTrainingPlans()
-
+                /*
+                 * val rawPlans = repository.getTrainingPlans()
                 val fetchedPlans =
                     rawPlans.map { raw ->
                         val fullTemplates =
@@ -100,8 +101,10 @@ class HomeViewModel : ViewModel() {
                             diesDurada = raw.diesDurada,
                             numEntrenamentsSetmanals = raw.numEntrenamentsSetmanals,
                             templates = fullTemplates,
-                        )
-                    }
+                            )
+                        }
+                 * */
+                val fetchedPlans = repository.getTrainingPlans()
 
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
@@ -124,25 +127,28 @@ class HomeViewModel : ViewModel() {
         onSuccess: () -> Unit,
         daysDuration: Int,
         workoutsPerWeek: Int,
-        level: String?,
+        sport: Int?,
+        level: Int?,
+        daysOfWeek: List<Int>,
     ) {
         viewModelScope.launch {
             _isLoading.value = true
+            Log.d("AirGo_Debug", "2. Entrando al ViewModelScope")
             try {
-                val rawPlans = repository.getTrainingPlans()
-                val fetchedPlans =
-                    rawPlans.map { raw ->
-                        val fullTemplates =
-                            raw.templates.map { templateId ->
-                                repository.getTemplate(templateId)
-                            }
-                        TrainingPlanResponse(
-                            id = raw.id,
-                            diesDurada = raw.diesDurada,
-                            numEntrenamentsSetmanals = raw.numEntrenamentsSetmanals,
-                            templates = fullTemplates,
-                        )
-                    }
+                val request =
+                    TrainingPlanRequest(
+                        diesDurada = daysDuration,
+                        numEntrenamentsSetmanals = workoutsPerWeek,
+                        esport = sport ?: 1,
+                        nivell = level ?: 1,
+                        diesSetmana = daysOfWeek,
+                    )
+                Log.d("AirGo_Debug", "3. Petición construida, a punto de hacer el POST: $request")
+                repository.createTrainingPlan(request)
+                Log.d("AirGo_Debug", "4. POST realizado con éxito (el backend ha respondido bien)")
+                SessionManager.trainingPlans = null
+
+                val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
                 updateTodayExercises()

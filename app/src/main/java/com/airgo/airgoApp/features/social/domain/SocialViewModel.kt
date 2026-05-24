@@ -7,6 +7,7 @@ import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.social.SocialRepository
+import com.airgo.airgoApp.features.social.forums.domain.DiscoverSearchResult
 import com.airgo.airgoApp.features.social.friends.data.FriendRequestResponse
 import com.airgo.airgoApp.features.social.friends.data.FriendResponse
 import kotlinx.coroutines.FlowPreview
@@ -45,7 +46,7 @@ sealed class SearchUiState {
     object Empty : SearchUiState()
 
     data class Success(
-        val users: List<com.airgo.airgoApp.features.social.data.UserSearchResult>,
+        val results: List<DiscoverSearchResult>,
     ) : SearchUiState()
 
     data class Error(

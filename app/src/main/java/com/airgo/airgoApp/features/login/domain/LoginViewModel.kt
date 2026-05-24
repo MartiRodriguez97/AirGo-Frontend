@@ -55,7 +55,7 @@ class LoginViewModel : ViewModel() {
             try {
                 val credential = signInWithGoogle(context)
                 val idToken = credential?.idToken
-
+                Log.d("TOKEN_K6", "Google ID Token: $idToken")
                 if (idToken.isNullOrBlank()) {
                     _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_google))
                     return@launch
@@ -69,6 +69,9 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     handleSuccessfulLogin(context, body.access, body.refresh, body.user, body.picture)
+
+                    Log.d("TOKEN_K6", "Backend Access Token: ${body.access}")
+                    Log.d("TOKEN_K6", "Backend Refresh Token: ${body.refresh}")
                 } else {
                     val rawError = response.errorBody()?.string()
                     val backendMessage = extractBackendMessage(rawError)
