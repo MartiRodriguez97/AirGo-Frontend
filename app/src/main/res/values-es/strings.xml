@@ -388,5 +388,8 @@
     <string name="selection_panel_title">Selecciona los puntos de la ruta</string>
     <string name="forums_filter_saved">Seguidos</string>
     <string name="forums_filter_mine">Creados</string>
+    <string name="tracking_elevated_speed">Ha llegado a una velocidad extrema, por favor, haga buen uso de la aplicación</string>
 
+    <string name="tracking_save_completed">Workout completed and saved!</string>
+    <string name="tracking_save_progress">Progress saved</string>
 </resources>

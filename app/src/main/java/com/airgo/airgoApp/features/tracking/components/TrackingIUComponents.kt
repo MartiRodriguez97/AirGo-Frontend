@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.SentimentSatisfied
 import androidx.compose.material.icons.filled.SentimentVeryDissatisfied
 import androidx.compose.material.icons.filled.SentimentVerySatisfied
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.SentimentDissatisfied
 import androidx.compose.material.icons.outlined.SentimentNeutral
 import androidx.compose.material.icons.outlined.SentimentSatisfied
@@ -126,11 +127,38 @@ internal fun trackingFab(
 @Composable
 internal fun trackingPanel(
     data: TrackingData,
+    isActivityValid: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val activeExerciseName = SessionManager.nomTemplateActiu ?: stringResource(R.string.nav_activity)
     val targetDistance = SessionManager.exerciciActiu?.distanciaObjectiu ?: 0.0
-
+    if (!isActivityValid) {
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                ),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.size(20.dp),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.tracking_elevated_speed),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                )
+            }
+        }
+    }
     Column(
         modifier = modifier.fillMaxWidth(TRACKING_PANEL_WIDTH),
         horizontalAlignment = Alignment.CenterHorizontally,

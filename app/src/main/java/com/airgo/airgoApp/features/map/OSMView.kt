@@ -513,14 +513,17 @@ private fun trackingUiEventEffect(
                 is com.airgo.airgoApp.features.tracking.domain.TrackingUiEvent.SaveSuccess -> {
                     val message =
                         if (event.completed) {
-                            "Entrenament completat i guardat!"
+                            context.getString(R.string.tracking_save_completed)
                         } else {
-                            "Progress guardat"
+                            context.getString(R.string.tracking_save_progress)
                         }
                     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                 }
                 is com.airgo.airgoApp.features.tracking.domain.TrackingUiEvent.SaveError -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                }
+                else -> {
+                    // Do nothing
                 }
             }
         }
