@@ -1,7 +1,6 @@
 package com.airgo.airgoApp.features.home
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.automirrored.rounded.DirectionsRun
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -47,9 +47,10 @@ fun pendingTitlesCard(
     onClick: () -> Unit,
 ) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
         colors =
-            androidx.compose.material3.CardDefaults.elevatedCardColors(
+            CardDefaults.elevatedCardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
             ),
     ) {
@@ -181,7 +182,8 @@ fun activePlanSection(
     onClick: () -> Unit,
 ) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
             modifier =
@@ -204,9 +206,9 @@ fun activePlanSection(
             Text(text = stringResource(R.string.home_plan_duration, plan.diesDurada))
             Text(text = stringResource(R.string.home_plan_workouts_per_week, plan.numEntrenamentsSetmanals))
 
-            val nextExercise = plan.templates.flatMap { it.exercicis }.firstOrNull { !it.completat }
+            val nextExercise = plan.templates.flatMap { it.exercicis.orEmpty() }.firstOrNull { !it.completat }
             val nextTitle =
-                plan.templates.firstOrNull { template -> template.exercicis.any { it == nextExercise } }?.nom
+                plan.templates.firstOrNull { template -> template.exercicis.orEmpty().any { it == nextExercise } }?.nom
                     ?: stringResource(R.string.home_plan_no_next_workout)
 
             Text(text = stringResource(R.string.home_plan_next_workout, nextTitle))
@@ -278,18 +280,18 @@ fun pendingActivitySection(
                 val template =
                     SessionManager.trainingPlans
                         ?.flatMap { it.templates }
-                        ?.find { it.exercicis.any { ex -> ex.id == exercise.id } }
+                        ?.find { it.exercicis.orEmpty().any { ex -> ex.id == exercise.id } }
                 val templateName = template?.nom ?: stringResource(R.string.home_pending_activity_card)
 
                 ElevatedCard(
+                    onClick = {
+                        viewModel.startExercise(exercise)
+                        onNavigateToPendingActivity()
+                    },
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                            .clickable {
-                                viewModel.startExercise(exercise)
-                                onNavigateToPendingActivity()
-                            },
+                            .padding(bottom = 8.dp),
                 ) {
                     Column(
                         modifier =

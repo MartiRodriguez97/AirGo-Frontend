@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -210,7 +209,7 @@ fun calendarGrid(
     val allExercises =
         plaList.flatMap { pla ->
             pla.templates.flatMap { template ->
-                template.exercicis
+                template.exercicis.orEmpty()
             }
         }
 
@@ -289,33 +288,34 @@ fun dayCell(
     val padding4 = 4.dp
     val fontSize16 = 16.sp
 
-    Column(
+    androidx.compose.material3.Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp),
         modifier =
             Modifier
                 .aspectRatio(ASPECT_RATIO_SQUARE)
-                .padding(padding4)
-                .background(
-                    Color.LightGray.copy(alpha = ALPHA_BG),
-                    shape = RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp),
-                ).clickable(onClick = onClick)
                 .padding(padding4),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        color = Color.LightGray.copy(alpha = ALPHA_BG),
+        tonalElevation = 0.dp,
     ) {
-        Text(text = date.dayOfMonth.toString(), fontSize = fontSize16)
-
-        Spacer(modifier = Modifier.height(padding4))
-
-        exercises.forEach { ex ->
-            val color = if (ex.completat) COLOR_LIGHT_GREEN else COLOR_LIGHT_RED
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(HEIGHT_4.dp)
-                        .background(Color(color))
-                        .padding(vertical = PADDING_VERTICAL_CELL.dp),
-            )
-            Spacer(modifier = Modifier.height(HEIGHT_2.dp))
+        Column(
+            modifier = Modifier.padding(padding4),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(text = date.dayOfMonth.toString(), fontSize = fontSize16)
+            Spacer(modifier = Modifier.height(padding4))
+            exercises.forEach { ex ->
+                val color = if (ex.completat) COLOR_LIGHT_GREEN else COLOR_LIGHT_RED
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(HEIGHT_4.dp)
+                            .background(Color(color))
+                            .padding(vertical = PADDING_VERTICAL_CELL.dp),
+                )
+                Spacer(modifier = Modifier.height(HEIGHT_2.dp))
+            }
         }
     }
 }

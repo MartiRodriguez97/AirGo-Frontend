@@ -57,9 +57,6 @@ import com.airgo.airgoApp.features.settings.account.tebici.domain.TeBiciViewMode
 import com.airgo.airgoApp.features.settings.account.titols.editTitolScreen
 import com.airgo.airgoApp.features.settings.account.username.editUsernameScreen
 
-// Pantalla principal de configuración de cuenta,
-// que muestra el nombre de usuario, títulos y estado de bicicleta disponible,
-// y permite navegar a las pantallas de edición correspondientes
 @Composable
 fun accountSettingsScreen(
     displayName: String,
@@ -290,15 +287,13 @@ private fun accountSettingsContent(
     }
 }
 
-// Composable para el encabezado de la pantalla de configuración de cuenta,
-// con un botón de retroceso y el título de la sección centrado
 @Composable
 private fun accountSettingsHeader(onBackClick: () -> Unit) {
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .padding(bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -317,39 +312,41 @@ private fun accountSettingsHeader(onBackClick: () -> Unit) {
     }
 }
 
-// Composable para mostrar una fila con el nombre de usuario,
-// que es clickeable para navegar a la pantalla de edición de nombre de usuario,
-// y que muestra un ícono de flecha para indicar que es una opción navegable
 @Composable
 private fun usernameRow(
     displayName: String,
     onEditUsername: () -> Unit,
 ) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable { onEditUsername() }
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    androidx.compose.material3.Surface(
+        onClick = onEditUsername,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
     ) {
-        Text(
-            text = stringResource(R.string.account_settings_username_label),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
-        )
-        Text(
-            text = displayName,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.ArrowForwardIos,
-            contentDescription = stringResource(R.string.acc_edit_icon),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp),
-        )
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.account_settings_username_label),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                text = displayName,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowForwardIos,
+                contentDescription = stringResource(R.string.acc_edit_icon),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp),
+            )
+        }
     }
 }
 
@@ -362,31 +359,37 @@ private fun titolRow(
     titol: String,
     onEditTitol: () -> Unit,
 ) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable { onEditTitol() }
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    androidx.compose.material3.Surface(
+        onClick = onEditTitol,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
     ) {
-        Text(
-            text = stringResource(R.string.account_settings_titles_label),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
-        )
-        Text(
-            text = titol,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.ArrowForwardIos,
-            contentDescription = stringResource(R.string.acc_edit_icon),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp),
-        )
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { onEditTitol() }
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.account_settings_titles_label),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                text = titol,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowForwardIos,
+                contentDescription = stringResource(R.string.acc_edit_icon),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp),
+            )
+        }
     }
 }
 

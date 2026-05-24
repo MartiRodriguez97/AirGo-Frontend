@@ -15,6 +15,7 @@ import com.airgo.airgoApp.features.settings.account.titols.data.TitolApi
 import com.airgo.airgoApp.features.settings.account.username.data.UsernameApi
 import com.airgo.airgoApp.features.social.chat.data.ChatApi
 import com.airgo.airgoApp.features.social.data.SocialApi
+import com.airgo.airgoApp.features.social.forums.data.ForumApi
 import com.airgo.airgoApp.features.tracking.data.TrackingApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -102,7 +103,6 @@ object RetrofitProvider {
     val trackingApi: TrackingApi = retrofit.create(TrackingApi::class.java)
     val onboardingApi: OnboardingApi = retrofit.create(OnboardingApi::class.java)
     val chatApi: ChatApi = retrofit.create(ChatApi::class.java)
-    val activityApi: ActivityApi by lazy {
-        retrofit.create(ActivityApi::class.java)
-    }
+    val activityApi: ActivityApi by lazy { retrofit.create(ActivityApi::class.java) }
+    val forumApi: ForumApi = retrofit.create(ForumApi::class.java)
 }

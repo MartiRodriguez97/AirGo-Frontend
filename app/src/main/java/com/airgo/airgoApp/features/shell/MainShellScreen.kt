@@ -93,7 +93,7 @@ fun mainShellScreen(
 
 @Composable
 fun screenWrapper(
-    innerPadding: androidx.compose.foundation.layout.PaddingValues,
+    innerPadding: PaddingValues,
     content: @Composable () -> Unit,
 ) {
     androidx.compose.foundation.layout.Box(
@@ -101,7 +101,7 @@ fun screenWrapper(
             Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
         content()
     }

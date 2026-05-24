@@ -1,6 +1,5 @@
 package com.airgo.airgoApp.features.profile.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -96,29 +96,25 @@ private fun badgesList(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(badges) { userBadge ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable { onBadgeClick(userBadge) },
+            Surface(
+                onClick = { onBadgeClick(userBadge) },
+                shape = CircleShape,
             ) {
-                if (userBadge.insignia.icona != null) {
-                    AsyncImage(
-                        model = userBadge.insignia.icona,
-                        contentDescription = userBadge.insignia.nom,
-                        modifier =
-                            Modifier
-                                .size(64.dp)
-                                .clip(CircleShape),
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = userBadge.insignia.nom,
-                        modifier =
-                            Modifier
-                                .size(64.dp)
-                                .clip(CircleShape),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (userBadge.insignia.icona != null) {
+                        AsyncImage(
+                            model = userBadge.insignia.icona,
+                            contentDescription = userBadge.insignia.nom,
+                            modifier = Modifier.size(64.dp).clip(CircleShape),
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = userBadge.insignia.nom,
+                            modifier = Modifier.size(64.dp).clip(CircleShape),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                 }
             }
         }
@@ -281,10 +277,8 @@ private fun activityItem(
     onClick: () -> Unit,
 ) {
     Card(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick),
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(2.dp),
     ) {
         Row(

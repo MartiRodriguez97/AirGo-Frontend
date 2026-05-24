@@ -312,7 +312,7 @@
     <string name="pending_requests">Sol·licituds pendents</string>
     <string name="no_pending_requests">No tens sol·licituds pendents.</string>
     <string name="friend_request">Vol ser el teu amic.</string>
-    <string name="search_users">Cerca usuaris...</string>
+    <string name="search_users_forums">Cerca usuaris i fòrums...</string>
     <string name="accept">Acceptar</string>
     <string name="reject">Rebutjar</string>
     <string name="no_user_found">No s\'ha trobat cap usuari.</string>
@@ -384,6 +384,10 @@
     <!-- Titles -->
     <string name="error_fetching_titles">No s\'han pogut obtenir els títols disponibles</string>
     <string name="error_unlocking_title">No s\'ha pogut desbloquejar el titol</string>
+    <string name="no_favorite_created_forums_found">No tens fòrums preferits ni creats per tu.</string>
+    <string name="forums_filter_saved">Seguits</string>
+    <string name="forums_filter_mine">Creats</string>
+    <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu bon ús de l\'aplicació</string>
 
 </resources>
 

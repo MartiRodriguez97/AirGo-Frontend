@@ -68,6 +68,9 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     handleSuccessfulLogin(context, body.access, body.refresh, body.user, body.picture)
+
+                    Log.d("TOKEN_K6", "Backend Access Token: ${body.access}")
+                    Log.d("TOKEN_K6", "Backend Refresh Token: ${body.refresh}")
                 } else {
                     val rawError = response.errorBody()?.string()
                     val backendMessage = extractBackendMessage(rawError)
