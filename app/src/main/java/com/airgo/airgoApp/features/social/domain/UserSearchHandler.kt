@@ -1,21 +1,25 @@
 package com.airgo.airgoApp.features.social.domain
 
+import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.social.SocialRepository
+import com.airgo.airgoApp.features.social.forums.domain.DiscoverSearchResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 private const val SEARCH_DEBOUNCE_MS = 400L
 private const val MIN_QUERY_LENGTH = 2
 
 /**
- * Gestiona la lògica de cerca d'usuaris.
- * S'usa des del SocialViewModel per separar responsabilitats.
+ * Gestiona la cerca combinada d'usuaris i fòrums.
  */
 @OptIn(FlowPreview::class)
 class UserSearchHandler(
@@ -51,27 +55,55 @@ class UserSearchHandler(
         }
     }
 
-    private suspend fun performSearch(query: String) {
-        _searchUiState.value = SearchUiState.Loading
-        repository.searchUsers(query).fold(
-            onSuccess = { users ->
-                val currentUserId = SessionManager.userId
-                val friendIds = getFriendIds()
-                val filtered =
-                    users.filter { user ->
-                        user.id != currentUserId && user.id !in friendIds
+    private fun performSearch(query: String) {
+        scope.launch {
+            _searchUiState.value = SearchUiState.Loading
+            val currentUserId = SessionManager.userId
+            val friendIds = getFriendIds()
+
+            val usersDeferred =
+                async {
+                    try {
+                        repository.searchUsers(query).getOrNull() ?: emptyList()
+                    } catch (e: IOException) {
+                        android.util.Log.e("UserSearchHandler", "Network error searching users: ${e.message}", e)
+                        emptyList()
+                    } catch (e: HttpException) {
+                        android.util.Log.e("UserSearchHandler", "HTTP error searching users: ${e.code()}", e)
+                        emptyList()
                     }
-                _searchUiState.value =
-                    if (filtered.isEmpty()) {
-                        SearchUiState.Empty
-                    } else {
-                        SearchUiState.Success(filtered)
+                }
+            val forumsDeferred =
+                async {
+                    try {
+                        RetrofitProvider.forumApi.getForums(query)
+                    } catch (e: IOException) {
+                        android.util.Log.e("ForumSearchHandler", "Network error searching forums: ${e.message}", e)
+                        emptyList()
+                    } catch (e: HttpException) {
+                        android.util.Log.e("ForumSearchHandler", "HTTP error searching forums: ${e.code()}", e)
+                        emptyList()
                     }
-            },
-            onFailure = { e ->
-                _searchUiState.value = SearchUiState.Error(e.message)
-            },
-        )
+                }
+
+            val users = usersDeferred.await()
+            val forums = forumsDeferred.await()
+
+            val filteredUsers =
+                users
+                    .filter { user -> user.id != currentUserId && user.id !in friendIds }
+                    .map { DiscoverSearchResult.UserResult(it) }
+
+            val filteredForums = forums.map { DiscoverSearchResult.ForumResult(it) }
+
+            val combined = filteredUsers + filteredForums
+            _searchUiState.value =
+                if (combined.isEmpty()) {
+                    SearchUiState.Empty
+                } else {
+                    SearchUiState.Success(combined)
+                }
+        }
     }
 
     fun onQueryChange(query: String) {

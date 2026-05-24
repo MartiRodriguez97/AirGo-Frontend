@@ -77,6 +77,7 @@ import com.airgo.airgoApp.features.social.forums.components.createForumFab
 import com.airgo.airgoApp.features.social.forums.components.deleteForumDialog
 import com.airgo.airgoApp.features.social.forums.components.forumCard
 import com.airgo.airgoApp.features.social.forums.data.Forum
+import com.airgo.airgoApp.features.social.forums.domain.DiscoverSearchResult
 import com.airgo.airgoApp.features.social.forums.domain.ForumUiState
 import com.airgo.airgoApp.features.social.forums.domain.ForumViewModel
 import com.airgo.airgoApp.features.social.friends.data.FriendRequestResponse
@@ -460,6 +461,8 @@ private fun searchTab(viewModel: SocialViewModel) {
     val requestSentTo by viewModel.requestSentTo.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+    val forumViewModel: ForumViewModel = viewModel()
+    val favoritForums by forumViewModel.favoritForums.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.requestFeedback.collect { uiText ->
@@ -497,12 +500,29 @@ private fun searchTab(viewModel: SocialViewModel) {
                         androidx.compose.foundation.layout
                             .PaddingValues(vertical = 12.dp),
                 ) {
-                    items(state.users, key = { it.id }) { user ->
-                        userResultItem(
-                            user = user,
-                            requestSent = user.id in requestSentTo,
-                            onSendRequest = { viewModel.sendFriendRequest(user.id) },
-                        )
+                    items(state.results, key = {
+                        when (it) {
+                            is DiscoverSearchResult.UserResult -> "user_${it.user.id}"
+                            is DiscoverSearchResult.ForumResult -> "forum_${it.forum.id}"
+                        }
+                    }) { result ->
+                        when (result) {
+                            is DiscoverSearchResult.UserResult ->
+                                userResultItem(
+                                    user = result.user,
+                                    requestSent = result.user.id in requestSentTo,
+                                    onSendRequest = { viewModel.sendFriendRequest(result.user.id) },
+                                )
+                            is DiscoverSearchResult.ForumResult ->
+                                forumCard(
+                                    forum = result.forum,
+                                    isFavorit = result.forum.id in favoritForums,
+                                    isOwner = forumViewModel.isCreatedByCurrentUser(result.forum),
+                                    onToggleFavorit = { forumViewModel.toggleFavorit(result.forum.id) },
+                                    onDelete = { forumViewModel.deleteForum(result.forum.id) },
+                                    onClick = {},
+                                )
+                        }
                     }
                 }
             }
@@ -581,7 +601,7 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
 
     forumToDelete?.let { forum ->
         deleteForumDialog(
-            forumNom = forum.nom,
+            forumNom = forum.nom ?: "",
             onDismiss = { forumToDelete = null },
             onConfirm = {
                 forumViewModel.deleteForum(forum.id)
@@ -607,7 +627,7 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
             HorizontalDivider()
             when (val state = uiState) {
                 is ForumUiState.Loading -> loadingState()
-                is ForumUiState.Empty -> emptyState("emptyForum", text = stringResource(R.string.no_forums_found))
+                is ForumUiState.Empty -> emptyState("emptyForum", text = stringResource(R.string.no_favorite_created_forums_found))
                 is ForumUiState.Error -> errorState(state.message)
                 is ForumUiState.Success -> {
                     LazyColumn(

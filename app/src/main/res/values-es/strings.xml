@@ -384,5 +384,6 @@
     <!-- Titles -->
     <string name="error_fetching_titles">No se pudieron obtener los títulos disponibles</string>
     <string name="error_unlocking_title">No se pudo desbloquear el título</string>
+    <string name="no_favorite_created_forums_found">No tienes ningún foro favorito ni creado por ti.</string>
 
 </resources>
