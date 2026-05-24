@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.IOException
 
 private const val LOG_TAG = "NominatimService"
 private const val NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
@@ -20,37 +21,54 @@ object NominatimService {
     suspend fun searchAddress(query: String): List<NominatimResult> =
         withContext(Dispatchers.IO) {
             try {
-                val url = "$NOMINATIM_URL?q=${query.trim().replace(" ", "+")}" +
+                val url =
+                    "$NOMINATIM_URL?q=${query.trim().replace(" ", "+")}" +
                         "&format=json&limit=$MAX_RESULTS&addressdetails=0" +
                         "&viewbox=2.0694,41.2971,2.2267,41.4695&bounded=1"
-                val request = Request.Builder()
-                    .url(url)
-                    .header("User-Agent", USER_AGENT)
-                    .build()
+                val request =
+                    Request
+                        .Builder()
+                        .url(url)
+                        .header("User-Agent", USER_AGENT)
+                        .build()
                 val response = client.newCall(request).execute()
                 val body = response.body?.string() ?: return@withContext emptyList()
                 val type = object : TypeToken<List<NominatimResult>>() {}.type
                 gson.fromJson(body, type)
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(LOG_TAG, "Error searching address: ${e.message}", e)
+                emptyList()
+            } catch (e: IllegalStateException) {
+                Log.e(LOG_TAG, "Error parsing address response: ${e.message}", e)
                 emptyList()
             }
         }
 
-    suspend fun reverseGeocode(lat: Double, lon: Double): String? =
+    suspend fun reverseGeocode(
+        lat: Double,
+        lon: Double,
+    ): String? =
         withContext(Dispatchers.IO) {
             try {
                 val url = "https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lon&format=json"
-                val request = Request.Builder()
-                    .url(url)
-                    .header("User-Agent", USER_AGENT)
-                    .build()
+                val request =
+                    Request
+                        .Builder()
+                        .url(url)
+                        .header("User-Agent", USER_AGENT)
+                        .build()
                 val response = client.newCall(request).execute()
                 val body = response.body?.string() ?: return@withContext null
-                val json = com.google.gson.JsonParser.parseString(body).asJsonObject
+                val json =
+                    com.google.gson.JsonParser
+                        .parseString(body)
+                        .asJsonObject
                 json.get("display_name")?.asString
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 Log.e(LOG_TAG, "Error reverse geocoding: ${e.message}", e)
+                null
+            } catch (e: IllegalStateException) {
+                Log.e(LOG_TAG, "Error parsing reverse geocoding response: ${e.message}", e)
                 null
             }
         }

@@ -49,9 +49,11 @@ fun pendingTitlesCard(
     ElevatedCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-        ),) {
+        colors =
+            CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
+    ) {
         Row(
             modifier =
                 Modifier
@@ -286,9 +288,10 @@ fun pendingActivitySection(
                         viewModel.startExercise(exercise)
                         onNavigateToPendingActivity()
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
                 ) {
                     Column(
                         modifier =

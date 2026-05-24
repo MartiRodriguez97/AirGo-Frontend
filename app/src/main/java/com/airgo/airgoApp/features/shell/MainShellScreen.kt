@@ -100,10 +100,11 @@ fun screenWrapper(
     content: @Composable () -> Unit,
 ) {
     androidx.compose.foundation.layout.Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
         content()
     }
@@ -222,9 +223,7 @@ private fun NavGraphBuilder.featuresNavGraph(
             friendProfileScreen(userId = userId, onBackClick = { navController.popBackStack() })
         }
     }
-    composable(MainShellScreen.ACTIVITY.route) {
-        activityScreen(navController = navController)
-    }
+    composable(MainShellScreen.ACTIVITY.route) { activityScreen(navController = navController) }
     composable(MainShellScreen.CALENDAR.route) {
         screenWrapper(innerPadding) {
             val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
@@ -233,22 +232,13 @@ private fun NavGraphBuilder.featuresNavGraph(
     }
     composable(MainShellScreen.PROFILE.route) {
         screenWrapper(innerPadding) {
-            profileScreen(
-                email = email,
-                pictureUrl = pictureUrl,
-                onAccountDeleted = onLogout,
-                onLogout = onLogout,
-            )
+            profileScreen(email = email, pictureUrl = pictureUrl, onAccountDeleted = onLogout, onLogout = onLogout)
         }
     }
-    composable("favorites") {
-        favoritesScreen(onBack = { navController.popBackStack() })
-    }
+    composable("favorites") { favoritesScreen(onBack = { navController.popBackStack() }) }
     composable("tracking_summary") {
         val activityEntry =
-            remember(it) {
-                navController.getBackStackEntry(MainShellScreen.ACTIVITY.route)
-            }
+            remember(it) { navController.getBackStackEntry(MainShellScreen.ACTIVITY.route) }
         val summaryViewModel: TrackingViewModel = viewModel(activityEntry)
         trackingSummaryScreen(
             onBack = { navController.popBackStack() },
@@ -269,17 +259,23 @@ private fun NavGraphBuilder.featuresNavGraph(
     }
     composable("address_search/{mode}") { backStackEntry ->
         val mode = backStackEntry.arguments?.getString("mode") ?: "start"
-        val activityEntry = remember(backStackEntry) {
-            navController.getBackStackEntry(MainShellScreen.ACTIVITY.route)
-        }
+        val activityEntry =
+            remember(backStackEntry) { navController.getBackStackEntry(MainShellScreen.ACTIVITY.route) }
         val routeViewModel: RouteViewModel = viewModel(activityEntry)
-        val searchMode = when {
-            mode == "start" -> AddressSearchMode.START
-            mode == "end" -> AddressSearchMode.END
-            mode.startsWith("waypoint/") -> AddressSearchMode.WAYPOINT
-            else -> AddressSearchMode.START
-        }
-        val waypointIndex = if (mode.startsWith("waypoint/")) mode.substringAfter("waypoint/").toIntOrNull() ?: 0 else -1
+        val searchMode =
+            when {
+                mode == "start" -> AddressSearchMode.START
+                mode == "end" -> AddressSearchMode.END
+                mode.startsWith("waypoint/") -> AddressSearchMode.WAYPOINT
+                else -> AddressSearchMode.START
+            }
+        val waypointIndex = (
+            if (mode.startsWith("waypoint/")) {
+                mode.substringAfter("waypoint/").toIntOrNull() ?: 0
+            } else {
+                -1
+            }
+        )
         addressSearchScreen(
             mode = searchMode,
             waypointIndex = waypointIndex,

@@ -387,6 +387,7 @@
     <string name="error_fetching_titles">Could not fetch available titles</string>
     <string name="error_unlocking_title">Could not unlock title</string>
     <string name="no_favorite_created_forums_found">You don\'t have any favorite form or created by you.</string>
+    <string name="selection_panel_title">Select route points</string>
 
 
 </resources>

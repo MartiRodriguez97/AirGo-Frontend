@@ -385,6 +385,7 @@
     <string name="error_fetching_titles">No s\'han pogut obtenir els títols disponibles</string>
     <string name="error_unlocking_title">No s\'ha pogut desbloquejar el titol</string>
     <string name="no_favorite_created_forums_found">No tens fòrums preferits ni creats per tu.</string>
+    <string name="selection_panel_title">Selecciona els punts de la ruta</string>
 
 </resources>
 

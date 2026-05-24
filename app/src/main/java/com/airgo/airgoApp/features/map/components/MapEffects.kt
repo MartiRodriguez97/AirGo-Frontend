@@ -37,13 +37,12 @@ internal fun errorToastHandlers(
     LaunchedEffect(routeViewModel.errorMessage) {
         routeViewModel.errorMessage?.let { uiText ->
             Toast.makeText(context, uiText.asString(context), Toast.LENGTH_LONG).show()
-            routeViewModel.clearError()
         }
     }
     LaunchedEffect(routeViewModel.favoriteMessage) {
         routeViewModel.favoriteMessage?.let { msg ->
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-            routeViewModel.clearFavoriteMessage()
+            routeViewModel.favoriteHandler.clearMessage()
         }
     }
 }

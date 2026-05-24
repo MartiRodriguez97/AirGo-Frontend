@@ -1,6 +1,5 @@
 package com.airgo.airgoApp.features.tracking.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -278,7 +277,7 @@ fun pastActivitySensationCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(TRACKING_PANEL_WIDTH),
         elevation = CardDefaults.cardElevation(4.dp),
-    )  {
+    ) {
         Column(
             modifier =
                 Modifier

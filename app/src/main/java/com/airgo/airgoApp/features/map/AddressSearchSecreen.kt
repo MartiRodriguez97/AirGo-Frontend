@@ -64,11 +64,12 @@ fun addressSearchScreen(
     val scope = rememberCoroutineScope()
     var searchJob by remember { mutableStateOf<Job?>(null) }
 
-    val title = when (mode) {
-        AddressSearchMode.START -> "Punt d'inici"
-        AddressSearchMode.END -> "Punt de destí"
-        AddressSearchMode.WAYPOINT -> "Punt intermig ${waypointIndex + 2}"
-    }
+    val title =
+        when (mode) {
+            AddressSearchMode.START -> "Punt d'inici"
+            AddressSearchMode.END -> "Punt de destí"
+            AddressSearchMode.WAYPOINT -> "Punt intermig ${waypointIndex + 2}"
+        }
 
     Scaffold(
         topBar = {
@@ -83,10 +84,7 @@ fun addressSearchScreen(
         },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             OutlinedTextField(
                 value = query,
@@ -94,12 +92,13 @@ fun addressSearchScreen(
                     query = newQuery
                     searchJob?.cancel()
                     if (newQuery.length >= MIN_QUERY_LENGTH) {
-                        searchJob = scope.launch {
-                            delay(SEARCH_DEBOUNCE_MS)
-                            isSearching = true
-                            results = NominatimService.searchAddress(newQuery)
-                            isSearching = false
-                        }
+                        searchJob =
+                            scope.launch {
+                                delay(SEARCH_DEBOUNCE_MS)
+                                isSearching = true
+                                results = NominatimService.searchAddress(newQuery)
+                                isSearching = false
+                            }
                     } else {
                         results = emptyList()
                     }
@@ -123,7 +122,12 @@ fun addressSearchScreen(
                             when (mode) {
                                 AddressSearchMode.START -> routeViewModel.selectStartAddress(result)
                                 AddressSearchMode.END -> routeViewModel.selectEndAddress(result)
-                                AddressSearchMode.WAYPOINT -> routeViewModel.selectWaypointAddress(result, waypointIndex)
+                                AddressSearchMode.WAYPOINT ->
+                                    routeViewModel.selectWaypointAddress(result, waypointIndex)
+                                AddressSearchMode.WAYPOINT ->
+                                    {
+                                        routeViewModel.selectWaypointAddress(result, waypointIndex)
+                                    }
                             }
                             onBack()
                         },
@@ -141,10 +145,11 @@ private fun addressResultItem(
     onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp, horizontal = 4.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(vertical = 12.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(

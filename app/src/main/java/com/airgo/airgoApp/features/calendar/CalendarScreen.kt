@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,7 +52,6 @@ import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeParseException
-import androidx.compose.ui.platform.LocalLocale
 
 private const val DAYS_IN_WEEK = 7
 private const val DATE_SUBSTRING_END = 10
@@ -275,9 +274,10 @@ fun dayCell(
     androidx.compose.material3.Surface(
         onClick = onClick,
         shape = RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp),
-        modifier = Modifier
-            .aspectRatio(ASPECT_RATIO_SQUARE)
-            .padding(padding4),
+        modifier =
+            Modifier
+                .aspectRatio(ASPECT_RATIO_SQUARE)
+                .padding(padding4),
         color = Color.LightGray.copy(alpha = ALPHA_BG),
         tonalElevation = 0.dp,
     ) {
@@ -290,11 +290,12 @@ fun dayCell(
             exercises.forEach { ex ->
                 val color = if (ex.completat) COLOR_LIGHT_GREEN else COLOR_LIGHT_RED
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(HEIGHT_4.dp)
-                        .background(Color(color))
-                        .padding(vertical = PADDING_VERTICAL_CELL.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(HEIGHT_4.dp)
+                            .background(Color(color))
+                            .padding(vertical = PADDING_VERTICAL_CELL.dp),
                 )
                 Spacer(modifier = Modifier.height(HEIGHT_2.dp))
             }

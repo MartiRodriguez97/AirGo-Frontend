@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,29 +15,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.DirectionsWalk
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.LocationOff
 import androidx.compose.material.icons.filled.MyLocation
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,22 +43,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.features.map.data.RouteSummary
 import com.airgo.airgoApp.features.map.data.TransportProfile
-import com.airgo.airgoApp.features.map.domain.MapSelectionMode
 import com.airgo.airgoApp.features.map.domain.MapState
 import com.airgo.airgoApp.features.tracking.components.TrackingFabState
 import com.airgo.airgoApp.features.tracking.components.trackingFab
-import org.osmdroid.util.GeoPoint
 
 /**
  * Aquest fitxer conté tots els elements que es mostren al mapa
  */
 
-private const val N_DECIMALS = 6
 private const val SELECTION_PANEL_WIDTH = 0.9f
-
-private const val ROUTE_PANEL_WIDTH = SELECTION_PANEL_WIDTH
 
 /**
  * Missatge de GPS desactivat.

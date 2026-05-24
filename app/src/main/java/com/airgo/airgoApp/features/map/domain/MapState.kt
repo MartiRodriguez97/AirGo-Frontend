@@ -3,11 +3,12 @@ package com.airgo.airgoApp.features.map.domain
 import com.airgo.airgoApp.features.map.data.PollutionPoint
 import com.airgo.airgoApp.features.map.data.RouteResponse
 import com.airgo.airgoApp.features.map.data.TransportProfile
+import com.airgo.airgoApp.features.map.helpers.NominatimResult
 import com.airgo.airgoApp.features.tracking.data.TrackingData
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import com.airgo.airgoApp.features.map.helpers.NominatimResult
 
 /**
  * Classe que encapsula tot l'estat necessari per renderitzar el mapa i les seves capes.
@@ -20,19 +21,18 @@ data class MapState(
     val hasLocationPermission: Boolean,
     val stations: List<PollutionPoint>,
     val selectionMode: MapSelectionMode,
-    val startPoint: org.osmdroid.util.GeoPoint?,
-    val endPoint: org.osmdroid.util.GeoPoint?,
-    val waypoints: List<org.osmdroid.util.GeoPoint> = emptyList(),
+    val startPoint: GeoPoint?,
+    val endPoint: GeoPoint?,
+    val waypoints: List<GeoPoint> = emptyList(),
     val waypointAddresses: List<String> = emptyList(),
     val currentRoute: RouteResponse?,
     val isCalculatingRoute: Boolean,
     val transportProfile: TransportProfile = TransportProfile.BIKE,
-    val onPointSelected: (org.osmdroid.util.GeoPoint) -> Unit,
+    val onPointSelected: (GeoPoint) -> Unit,
     val onCalculateRoute: () -> Unit,
     val onClearRoute: () -> Unit,
     val onSetSelectionMode: (MapSelectionMode) -> Unit,
     val onToggleFavorite: () -> Unit,
-    val onAddWaypoint: () -> Unit = {},
     val onRemoveWaypoint: (Int) -> Unit = {},
     val onTransportProfileChange: (TransportProfile) -> Unit = {},
     val isFavorite: Boolean = false,
@@ -40,7 +40,7 @@ data class MapState(
     val onNavigateToFavorites: () -> Unit,
     val isTracking: Boolean = false,
     val trackingData: TrackingData = TrackingData(),
-    val trackPoints: List<org.osmdroid.util.GeoPoint> = emptyList(),
+    val trackPoints: List<GeoPoint> = emptyList(),
     val onStartTracking: () -> Unit = {},
     val onStopTracking: () -> Unit = {},
     val onNavigateToTrackingSummary: () -> Unit = {},
