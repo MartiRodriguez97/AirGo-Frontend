@@ -131,7 +131,7 @@ class HomeViewModel : ViewModel() {
         onSuccess: () -> Unit,
         daysDuration: Int,
         workoutsPerWeek: Int,
-        sport: Int?,
+        sport: String?,
         level: Int?,
         daysOfWeek: List<Int>,
         endDate: String,
@@ -143,7 +143,7 @@ class HomeViewModel : ViewModel() {
                     TrainingPlanRequest(
                         diesDurada = daysDuration,
                         numEntrenamentsSetmanals = workoutsPerWeek,
-                        esport = sport ?: 1,
+                        esport = sport ?: "CAM",
                         nivell = level ?: 1,
                         diesSetmana = daysOfWeek,
                         dataFi = endDate,

@@ -51,7 +51,7 @@ data class UpdateExerciseRequest(
 data class TrainingPlanRequest(
     val diesDurada: Int,
     val numEntrenamentsSetmanals: Int,
-    val esport: Int,
+    val esport: String,
     val nivell: Int,
     val diesSetmana: List<Int>,
     val dataFi: String,

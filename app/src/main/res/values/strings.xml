@@ -391,5 +391,8 @@
     <string name="forums_filter_mine">Created</string>
     <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
 
+    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
+    <string name="tracking_save_progress">Progreso guardado</string>
+
 
 </resources>

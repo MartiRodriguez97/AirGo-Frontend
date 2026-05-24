@@ -61,8 +61,8 @@ private const val TARGET_MAX_STEP = 3
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal data class QuestionnaireFormState(
-    val selectedSport: Int?,
-    val onSportSelected: (Int) -> Unit,
+    val selectedSport: String?,
+    val onSportSelected: (String) -> Unit,
     val selectedLevel: Int?,
     val onLevelSelected: (Int) -> Unit,
     val selectedDays: SnapshotStateList<Int>,
@@ -75,7 +75,7 @@ fun questionnaireScreen(
     onClose: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
 ) {
-    var selectedSport by remember { mutableStateOf<Int?>(null) }
+    var selectedSport by remember { mutableStateOf<String?>(null) }
     var selectedLevel by remember { mutableStateOf<Int?>(null) }
     val selectedDays = remember { mutableStateListOf<Int>() }
     var currentStep by remember { mutableStateOf(0) }
@@ -287,7 +287,7 @@ private fun rememberDateState(): DatePickerState {
 @OptIn(ExperimentalMaterial3Api::class)
 private fun checkNextEnabled(
     currentStep: Int,
-    selectedSport: Int?,
+    selectedSport: String?,
     selectedLevel: Int?,
     selectedDays: SnapshotStateList<Int>,
     datePickerState: DatePickerState,

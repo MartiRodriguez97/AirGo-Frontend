@@ -40,9 +40,6 @@ import com.airgo.airgoApp.R
 
 private const val HALF_WIDTH = 0.5f
 
-private const val SPORT_RUN_ID = 1
-private const val SPORT_BIKE_ID = 2
-
 // Level IDs
 private const val LEVEL_EASY_ID = 1
 private const val LEVEL_MEDIUM_ID = 2
@@ -59,8 +56,8 @@ private const val DAY_SUNDAY = 7
 
 @Composable
 internal fun stepSportSelection(
-    selectedSport: Int?,
-    onSportSelected: (Int) -> Unit,
+    selectedSport: String?,
+    onSportSelected: (String) -> Unit,
 ) {
     Text(stringResource(R.string.quest_title_sport), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
@@ -72,16 +69,16 @@ internal fun stepSportSelection(
         selectionButton(
             text = sportRun,
             icon = Icons.Default.DirectionsRun,
-            selected = selectedSport == SPORT_RUN_ID,
-            onClick = { onSportSelected(SPORT_RUN_ID) },
+            selected = selectedSport == "CAM",
+            onClick = { onSportSelected("CAM") },
             modifier = Modifier.weight(1f),
         )
         val sportBike = stringResource(R.string.sport_bike)
         selectionButton(
             text = sportBike,
             icon = Icons.Default.DirectionsBike,
-            selected = selectedSport == SPORT_BIKE_ID,
-            onClick = { onSportSelected(SPORT_BIKE_ID) },
+            selected = selectedSport == "BIC",
+            onClick = { onSportSelected("BIC") },
             modifier = Modifier.weight(1f),
         )
     }
