@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.network.SessionManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +31,7 @@ fun activityDetailScreen(
     onBackClick: () -> Unit,
     onStartActivityClick: () -> Unit,
 ) {
+    val exercici = SessionManager.exerciciActiu
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,12 +61,20 @@ fun activityDetailScreen(
                 style = MaterialTheme.typography.headlineMedium,
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Aquí aniran els detalls de les activitats.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
+            if (exercici != null) {
+                Text(
+                    text = "Objetivo de hoy: ${exercici.distanciaObjectiu} km",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Progreso actual: ${exercici.distanciaFeta} km",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            } else {
+                Text("No hay datos de la actividad.")
+            }
             Spacer(modifier = Modifier.weight(1f))
 
             Button(

@@ -25,6 +25,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,8 +36,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
@@ -52,6 +56,7 @@ import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeParseException
+import androidx.compose.ui.platform.LocalLocale
 
 private const val DAYS_IN_WEEK = 7
 private const val DATE_SUBSTRING_END = 10
@@ -177,7 +182,7 @@ fun calendarHeader(
         Button(onClick = onPreviousMonth) { Text(stringResource(R.string.calendar_btn_prev)) }
 
         val formatTextStyle = java.time.format.TextStyle.FULL
-        val monthName = currentMonth.month.getDisplayName(formatTextStyle, java.util.Locale.getDefault())
+        val monthName = currentMonth.month.getDisplayName(formatTextStyle, LocalLocale.current.platformLocale)
         val formattedMonth = monthName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
         Text(
@@ -188,6 +193,8 @@ fun calendarHeader(
         Button(onClick = onNextMonth) { Text(stringResource(R.string.calendar_btn_next)) }
     }
 }
+
+private const val MAX_DENSITY = 1.1f
 
 @Composable
 fun calendarGrid(
@@ -207,57 +214,68 @@ fun calendarGrid(
             }
         }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(DAYS_IN_WEEK),
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        val daysOfWeek =
-            listOf(
-                R.string.calendar_day_sun,
-                R.string.calendar_day_mon,
-                R.string.calendar_day_tue,
-                R.string.calendar_day_wed,
-                R.string.calendar_day_thu,
-                R.string.calendar_day_fri,
-                R.string.calendar_day_sat,
-            )
-        items(DAYS_IN_WEEK) { index ->
-            Text(
-                text = stringResource(daysOfWeek[index]),
-                modifier = Modifier.padding(padding8),
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray,
-            )
-        }
+    val currentDensity = LocalDensity.current
+    val customDensity =
+        Density(
+            density = currentDensity.density,
+            fontScale = currentDensity.fontScale.coerceAtMost(MAX_DENSITY),
+        )
 
-        items(firstDayOfMonth) {
-            Box(modifier = Modifier.aspectRatio(ASPECT_RATIO_SQUARE))
-        }
+    // 2. Envolvemos el grid
+    CompositionLocalProvider(LocalDensity provides customDensity) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(DAYS_IN_WEEK),
+            modifier = modifier.fillMaxWidth(),
+        ) {
+            val daysOfWeek =
+                listOf(
+                    R.string.calendar_day_sun,
+                    R.string.calendar_day_mon,
+                    R.string.calendar_day_tue,
+                    R.string.calendar_day_wed,
+                    R.string.calendar_day_thu,
+                    R.string.calendar_day_fri,
+                    R.string.calendar_day_sat,
+                )
+            items(DAYS_IN_WEEK) { index ->
+                Text(
+                    text = stringResource(daysOfWeek[index]),
+                    modifier = Modifier.padding(padding8),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    maxLines = 1, // 3. Obligamos a que se quede en una sola línea
+                    overflow = TextOverflow.Ellipsis, // Por si acaso sigue sin caber
+                )
+            }
 
-        items(daysInMonth) { day ->
-            val date = currentMonth.atDay(day + 1)
-            val exercisesToday =
-                allExercises.filter { exer ->
-                    val exerDate =
-                        if (exer.dataInici != null && exer.dataInici.length >= DATE_SUBSTRING_END) {
-                            try {
-                                val dateStr = exer.dataInici.substring(0, DATE_SUBSTRING_END)
-                                LocalDate.parse(dateStr)
-                            } catch (_: DateTimeParseException) {
+            items(firstDayOfMonth) {
+                Box(modifier = Modifier.aspectRatio(ASPECT_RATIO_SQUARE))
+            }
+
+            items(daysInMonth) { day ->
+                val date = currentMonth.atDay(day + 1)
+                val exercisesToday =
+                    allExercises.filter { exer ->
+                        val exerDate =
+                            if (exer.dataInici != null && exer.dataInici.length >= DATE_SUBSTRING_END) {
+                                try {
+                                    val dateStr = exer.dataInici.substring(0, DATE_SUBSTRING_END)
+                                    LocalDate.parse(dateStr)
+                                } catch (_: DateTimeParseException) {
+                                    null
+                                }
+                            } else {
                                 null
                             }
-                        } else {
-                            null
-                        }
 
-                    exerDate == date
-                }
-
-            dayCell(
-                date = date,
-                exercises = exercisesToday,
-                onClick = { onDateSelected(date) },
-            )
+                        exerDate == date
+                    }
+                dayCell(
+                    date = date,
+                    exercises = exercisesToday,
+                    onClick = { onDateSelected(date) },
+                )
+            }
         }
     }
 }

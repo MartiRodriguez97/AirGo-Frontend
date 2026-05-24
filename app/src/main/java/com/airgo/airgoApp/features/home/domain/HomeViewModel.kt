@@ -89,7 +89,7 @@ class HomeViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 /*
-                * val rawPlans = repository.getTrainingPlans()
+                 * val rawPlans = repository.getTrainingPlans()
                 val fetchedPlans =
                     rawPlans.map { raw ->
                         val fullTemplates =
@@ -103,7 +103,7 @@ class HomeViewModel : ViewModel() {
                             templates = fullTemplates,
                             )
                         }
-                * */
+                 * */
                 val fetchedPlans = repository.getTrainingPlans()
 
                 SessionManager.trainingPlans = fetchedPlans

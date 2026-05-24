@@ -55,7 +55,6 @@ class LoginViewModel : ViewModel() {
             try {
                 val credential = signInWithGoogle(context)
                 val idToken = credential?.idToken
-
                 if (idToken.isNullOrBlank()) {
                     _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_google))
                     return@launch
