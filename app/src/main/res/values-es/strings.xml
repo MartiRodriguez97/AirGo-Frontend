@@ -387,5 +387,6 @@
     <string name="no_favorite_created_forums_found">No tienes ningún foro favorito ni creado por ti.</string>
     <string name="forums_filter_saved">Seguidos</string>
     <string name="forums_filter_mine">Creados</string>
+    <string name="tracking_elevated_speed">Ha llegado a una velocidad extrema, por favor, haga buen uso de la aplicación</string>
 
 </resources>

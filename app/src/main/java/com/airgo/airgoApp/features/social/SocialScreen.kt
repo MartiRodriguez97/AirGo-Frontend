@@ -87,6 +87,7 @@ import com.airgo.airgoApp.features.social.friends.data.FriendResponse
 import com.airgo.airgoApp.features.social.friends.domain.FriendRequestsViewModel
 
 private enum class ForumFilter { FAVORITS, MEUS }
+
 @Composable
 fun socialScreen(
     onFriendClick: (Int) -> Unit = {},
@@ -631,9 +632,10 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
 
             var activeFilter by remember { mutableStateOf(ForumFilter.FAVORITS) }
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 FilterChip(
@@ -655,14 +657,17 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
                 is ForumUiState.Empty -> emptyState("emptyForum", text = stringResource(R.string.no_favorite_created_forums_found))
                 is ForumUiState.Error -> errorState(state.message)
                 is ForumUiState.Success -> {
-                    val filteredForums = when (activeFilter) {
-                        ForumFilter.FAVORITS -> state.forums.filter {
-                            it.id in favoritForums
+                    val filteredForums =
+                        when (activeFilter) {
+                            ForumFilter.FAVORITS ->
+                                state.forums.filter {
+                                    it.id in favoritForums
+                                }
+                            ForumFilter.MEUS ->
+                                state.forums.filter {
+                                    forumViewModel.isCreatedByCurrentUser(it)
+                                }
                         }
-                        ForumFilter.MEUS -> state.forums.filter {
-                            forumViewModel.isCreatedByCurrentUser(it)
-                        }
-                    }
                     LazyColumn(
                         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),

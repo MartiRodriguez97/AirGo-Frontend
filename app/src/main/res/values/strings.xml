@@ -389,6 +389,7 @@
     <string name="no_favorite_created_forums_found">You don\'t have any favorite form or created by you.</string>
     <string name="forums_filter_saved">Followed</string>
     <string name="forums_filter_mine">Created</string>
+    <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
 
 
 </resources>

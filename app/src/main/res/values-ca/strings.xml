@@ -387,6 +387,7 @@
     <string name="no_favorite_created_forums_found">No tens fòrums preferits ni creats per tu.</string>
     <string name="forums_filter_saved">Seguits</string>
     <string name="forums_filter_mine">Creats</string>
+    <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu bon ús de l\'aplicació</string>
 
 </resources>
 

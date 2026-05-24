@@ -97,10 +97,11 @@ fun screenWrapper(
     content: @Composable () -> Unit,
 ) {
     androidx.compose.foundation.layout.Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
         content()
     }
