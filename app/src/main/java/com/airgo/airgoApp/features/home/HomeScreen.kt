@@ -204,9 +204,9 @@ fun activePlanSection(
             Text(text = stringResource(R.string.home_plan_duration, plan.diesDurada))
             Text(text = stringResource(R.string.home_plan_workouts_per_week, plan.numEntrenamentsSetmanals))
 
-            val nextExercise = plan.templates.flatMap { it.exercicis }.firstOrNull { !it.completat }
+            val nextExercise = plan.templates.flatMap { it.exercicis.orEmpty() }.firstOrNull { !it.completat }
             val nextTitle =
-                plan.templates.firstOrNull { template -> template.exercicis.any { it == nextExercise } }?.nom
+                plan.templates.firstOrNull { template -> template.exercicis.orEmpty().any { it == nextExercise } }?.nom
                     ?: stringResource(R.string.home_plan_no_next_workout)
 
             Text(text = stringResource(R.string.home_plan_next_workout, nextTitle))
@@ -278,7 +278,7 @@ fun pendingActivitySection(
                 val template =
                     SessionManager.trainingPlans
                         ?.flatMap { it.templates }
-                        ?.find { it.exercicis.any { ex -> ex.id == exercise.id } }
+                        ?.find { it.exercicis.orEmpty().any { ex -> ex.id == exercise.id } }
                 val templateName = template?.nom ?: stringResource(R.string.home_pending_activity_card)
 
                 ElevatedCard(

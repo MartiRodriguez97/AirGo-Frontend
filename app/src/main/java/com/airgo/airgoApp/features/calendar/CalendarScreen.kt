@@ -203,7 +203,7 @@ fun calendarGrid(
     val allExercises =
         plaList.flatMap { pla ->
             pla.templates.flatMap { template ->
-                template.exercicis
+                template.exercicis.orEmpty()
             }
         }
 
