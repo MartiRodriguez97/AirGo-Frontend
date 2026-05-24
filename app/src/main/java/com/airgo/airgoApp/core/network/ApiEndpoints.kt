@@ -46,7 +46,7 @@ object ApiEndpoints {
     const val TEMPLATE_EXERCICI = "/api/template-exercici/{id}/"
 
     // Endpoints de pla d'entrenament
-    const val PLA_ENTRENAMENT = "/api/pla-entrenament/"
+        const val PLA_ENTRENAMENT = "/api/pla-entrenament/"
     const val PLA_ENTRENAMENT_ID = "/api/pla-entrenament/{id}/"
     const val PLA_ENTRENAMENT_INI = "/api/pla-entrenament/{id}/inicialitzar-pla-ini/"
 

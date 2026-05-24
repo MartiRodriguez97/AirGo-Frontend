@@ -1,5 +1,5 @@
 package com.airgo.airgoApp.features.home.data
-
+import com.google.gson.annotations.SerializedName
 import androidx.compose.runtime.mutableStateListOf
 
 data class TrainingPlanResponse(
@@ -21,8 +21,14 @@ data class TrainingTemplate(
     val nom: String,
     val descripcio: String,
     val tipusExercici: String,
-    val exercicis: List<Exercise>,
+    @SerializedName("exercicis")
+    private val _exercicis: List<Exercise>? = emptyList()
 )
+{
+    // Si viene nulo del backend, devolvemos una lista vacía para evitar crashes
+    val exercicis: List<Exercise>
+        get() = _exercicis ?: emptyList()
+}
 
 data class Exercise(
     val id: Int,

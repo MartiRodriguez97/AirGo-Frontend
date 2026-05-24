@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.home
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -126,6 +127,7 @@ fun questionnaireScreen(
                 isNextEnabled = isNextEnabled,
                 onNextStep = { currentStep++ },
                 onFinish = {
+                    Log.d("AirGo_Debug", "1. Botón finalizar pulsado")
                     val endDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
                     val diffMillis = endDateMillis - System.currentTimeMillis()
                     val daysDuration = (diffMillis / MILLIS_IN_DAY).toInt().coerceAtLeast(0)

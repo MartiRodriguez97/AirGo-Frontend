@@ -88,8 +88,8 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val rawPlans = repository.getTrainingPlans()
-
+                /*
+                * val rawPlans = repository.getTrainingPlans()
                 val fetchedPlans =
                     rawPlans.map { raw ->
                         val fullTemplates =
@@ -101,8 +101,10 @@ class HomeViewModel : ViewModel() {
                             diesDurada = raw.diesDurada,
                             numEntrenamentsSetmanals = raw.numEntrenamentsSetmanals,
                             templates = fullTemplates,
-                        )
-                    }
+                            )
+                        }
+                * */
+                val fetchedPlans = repository.getTrainingPlans()
 
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
@@ -136,6 +138,7 @@ class HomeViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             _isLoading.value = true
+            Log.d("AirGo_Debug", "2. Entrando al ViewModelScope")
             try {
                 val request =
                     TrainingPlanRequest(
@@ -145,23 +148,12 @@ class HomeViewModel : ViewModel() {
                         nivell = level ?: 1,
                         diesSetmana = daysOfWeek,
                     )
+                Log.d("AirGo_Debug", "3. Petición construida, a punto de hacer el POST: $request")
                 repository.createTrainingPlan(request)
+                Log.d("AirGo_Debug", "4. POST realizado con éxito (el backend ha respondido bien)")
                 SessionManager.trainingPlans = null
 
-                val rawPlans = repository.getTrainingPlans()
-                val fetchedPlans =
-                    rawPlans.map { raw ->
-                        val fullTemplates =
-                            raw.templates.map { templateId ->
-                                repository.getTemplate(templateId)
-                            }
-                        TrainingPlanResponse(
-                            id = raw.id,
-                            diesDurada = raw.diesDurada,
-                            numEntrenamentsSetmanals = raw.numEntrenamentsSetmanals,
-                            templates = fullTemplates,
-                        )
-                    }
+                val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
                 updateTodayExercises()

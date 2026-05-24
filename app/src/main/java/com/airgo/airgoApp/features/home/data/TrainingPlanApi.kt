@@ -13,7 +13,7 @@ import retrofit2.http.Path
 
 interface TrainingPlanApi {
     @GET(PLA_ENTRENAMENT)
-    suspend fun getTrainingPlans(): List<TrainingPlanRawResponse>
+    suspend fun getTrainingPlans(): List<TrainingPlanResponse>
 
     @GET(TEMPLATE_EXERCICI)
     suspend fun getTemplate(
