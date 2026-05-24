@@ -127,7 +127,6 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    @Suppress("UnusedParameter")
     fun createPlan(
         onSuccess: () -> Unit,
         daysDuration: Int,
@@ -135,10 +134,10 @@ class HomeViewModel : ViewModel() {
         sport: Int?,
         level: Int?,
         daysOfWeek: List<Int>,
+        endDate: String,
     ) {
         viewModelScope.launch {
             _isLoading.value = true
-            Log.d("AirGo_Debug", "2. Entrando al ViewModelScope")
             try {
                 val request =
                     TrainingPlanRequest(
@@ -147,10 +146,9 @@ class HomeViewModel : ViewModel() {
                         esport = sport ?: 1,
                         nivell = level ?: 1,
                         diesSetmana = daysOfWeek,
+                        dataFi = endDate,
                     )
-                Log.d("AirGo_Debug", "3. Petición construida, a punto de hacer el POST: $request")
                 repository.createTrainingPlan(request)
-                Log.d("AirGo_Debug", "4. POST realizado con éxito (el backend ha respondido bien)")
                 SessionManager.trainingPlans = null
 
                 val fetchedPlans = repository.getTrainingPlans()

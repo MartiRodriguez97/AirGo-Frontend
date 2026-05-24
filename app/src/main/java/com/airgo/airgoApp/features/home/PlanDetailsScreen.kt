@@ -128,6 +128,17 @@ fun planDetailsContent(
                 text = template.descripcio,
                 style = MaterialTheme.typography.bodyMedium,
             )
+            if (template.exercicis.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                template.exercicis.forEachIndexed { index, exercici ->
+                    val status = if (exercici.completat) "✅ Completado" else "⏳ Pendiente"
+                    Text(
+                        text = "Día ${index + 1}: ${exercici.distanciaObjectiu} km - $status",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
