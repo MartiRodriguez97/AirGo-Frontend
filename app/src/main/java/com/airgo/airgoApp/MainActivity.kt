@@ -11,9 +11,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
-import androidx.lifecycle.lifecycleScope
-import com.airgo.airgoApp.features.login.data.auth.UpdateFcmTokenRequest
-import com.airgo.airgoApp.features.notifications.FcmTokenManager
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -25,11 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.core.network.RetrofitProvider
@@ -38,8 +35,10 @@ import com.airgo.airgoApp.core.network.UserPreferences
 import com.airgo.airgoApp.core.network.UserPreferencesRepository
 import com.airgo.airgoApp.core.network.dataStore
 import com.airgo.airgoApp.core.theme.airGoTheme
+import com.airgo.airgoApp.features.login.data.auth.UpdateFcmTokenRequest
 import com.airgo.airgoApp.features.login.data.auth.UserDetailResponse
 import com.airgo.airgoApp.features.login.ui.loginScreen
+import com.airgo.airgoApp.features.notifications.FcmTokenManager
 import com.airgo.airgoApp.features.onboarding.domain.OnboardingViewModel
 import com.airgo.airgoApp.features.onboarding.onboardingScreen
 import com.airgo.airgoApp.features.shell.mainShellScreen
@@ -49,16 +48,17 @@ import java.io.IOException
 class MainActivity : ComponentActivity() {
     private var pendingNavigation by mutableStateOf<Bundle?>(null)
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            Log.d("MainActivity", "Permiso de notificaciones concedido")
-            fetchAndSendFcmToken()
-        } else {
-            Log.d("MainActivity", "Permiso de notificaciones denegado")
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.d("MainActivity", "Permiso de notificaciones concedido")
+                fetchAndSendFcmToken()
+            } else {
+                Log.d("MainActivity", "Permiso de notificaciones denegado")
+            }
         }
-    }
 
     fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -95,7 +95,11 @@ class MainActivity : ComponentActivity() {
                         Log.e("AIRGO_FCM_DEBUG", "❌ ERROR SERVIDOR: ${response.code()}")
                     }
                 } else {
-                    Log.e("AIRGO_FCM_DEBUG", "⚠️ ABORTANDO ENVÍO: token=${if (token != null) "SÍ" else "NULL"}, tieneSesion=${accessToken != null}")
+                    Log.e(
+                        "AIRGO_FCM_DEBUG",
+                        "ABORTANDO ENVÍO: token=${if (token != null) "SÍ" else "NULL"}," +
+                            " tieneSesion=${accessToken != null}",
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("AIRGO_FCM_DEBUG", "💥 EXCEPCIÓN: ${e.message}", e)
@@ -106,11 +110,12 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
-        com.google.firebase.FirebaseApp.initializeApp(this)
+        com.google.firebase.FirebaseApp
+            .initializeApp(this)
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
         handleIntent(intent)
 
         setContent {
@@ -126,12 +131,13 @@ class MainActivity : ComponentActivity() {
 
     private fun handleIntent(intent: android.content.Intent) {
         if (intent.getBooleanExtra("FROM_NOTIFICATION", false)) {
-            pendingNavigation = Bundle().apply {
-                putString("convId", intent.getStringExtra("CONV_ID"))
-                putString("otherUserId", intent.getStringExtra("OTHER_USER_ID"))
-                putString("username", intent.getStringExtra("OTHER_USERNAME"))
-                putString("otherProfilePic", intent.getStringExtra("OTHER_PROFILE_PIC"))
-            }
+            pendingNavigation =
+                Bundle().apply {
+                    putString("convId", intent.getStringExtra("CONV_ID"))
+                    putString("otherUserId", intent.getStringExtra("OTHER_USER_ID"))
+                    putString("username", intent.getStringExtra("OTHER_USERNAME"))
+                    putString("otherProfilePic", intent.getStringExtra("OTHER_PROFILE_PIC"))
+                }
         }
     }
 }
@@ -139,7 +145,10 @@ class MainActivity : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.O)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
-fun airGoApp(pendingNavData: Bundle? = null, onNavigated: () -> Unit = {}) {
+fun airGoApp(
+    pendingNavData: Bundle? = null,
+    onNavigated: () -> Unit = {},
+) {
     val context = LocalContext.current
     val repository = remember { UserPreferencesRepository(context.dataStore) }
 
@@ -157,9 +166,9 @@ fun airGoApp(pendingNavData: Bundle? = null, onNavigated: () -> Unit = {}) {
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 private fun appContent(
-    repository: UserPreferencesRepository, 
+    repository: UserPreferencesRepository,
     pendingNavData: Bundle? = null,
-    onNavigated: () -> Unit = {}
+    onNavigated: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val userPrefs by repository.userPreferencesFlow.collectAsState(initial = null)
@@ -267,7 +276,7 @@ private fun appNavigation(
                 pictureUrl = state.userPictureUrl,
                 onLogout = onLogout,
                 pendingNavData = pendingNavData,
-                onNavigated = onNavigated
+                onNavigated = onNavigated,
             )
     }
 }
@@ -298,8 +307,6 @@ private suspend fun handleAutoLogin(
     SessionManager.accessToken = userPrefs.token
     SessionManager.refreshToken = userPrefs.refreshToken
     SessionManager.userId = userPrefs.userId
-
-    Log.d("MainActivity", "Intentando auto-login con token almacenado en SessionManager ACCESS: ${SessionManager.accessToken}, REFESH: ${SessionManager.refreshToken}")
 
     try {
         val response = RetrofitProvider.authApi.getCurrentUserProfile()

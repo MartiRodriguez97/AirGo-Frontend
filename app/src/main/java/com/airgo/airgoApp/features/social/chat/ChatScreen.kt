@@ -50,13 +50,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,7 +65,7 @@ import coil.compose.AsyncImage
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
-import com.airgo.airgoApp.features.notifications.service.AirgoFirebaseService
+import com.airgo.airgoApp.features.notifications.service.FirebaseMessagingService
 import com.airgo.airgoApp.features.social.chat.data.Message
 import com.airgo.airgoApp.features.social.chat.domain.ChatUiState
 import com.airgo.airgoApp.features.social.chat.domain.ChatViewModel
@@ -107,28 +107,30 @@ fun chatScreen(
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(conversationId, lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                SessionManager.currentChatId = conversationId
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    SessionManager.currentChatId = conversationId
 
-                // Limpiar notificaciones de este chat al entrar o volver
-                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.cancel(conversationId.hashCode())
+                    // Limpiar notificaciones de este chat al entrar o volver
+                    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    notificationManager.cancel(conversationId.hashCode())
 
-                // Limpiar resumen si no quedan más chats activos
-                val activeNotifications = notificationManager.activeNotifications
-                val hasMoreChats = activeNotifications.any {
-                    it.id != AirgoFirebaseService.SUMMARY_ID &&
-                        it.id != conversationId.hashCode() &&
-                        it.notification.group == AirgoFirebaseService.CHAT_GROUP_KEY
+                    // Limpiar resumen si no quedan más chats activos
+                    val activeNotifications = notificationManager.activeNotifications
+                    val hasMoreChats =
+                        activeNotifications.any {
+                            it.id != FirebaseMessagingService.SUMMARY_ID &&
+                                it.id != conversationId.hashCode() &&
+                                it.notification.group == FirebaseMessagingService.CHAT_GROUP_KEY
+                        }
+                    if (!hasMoreChats) {
+                        notificationManager.cancel(FirebaseMessagingService.SUMMARY_ID)
+                    }
+                } else if (event == Lifecycle.Event.ON_PAUSE) {
+                    SessionManager.currentChatId = null
                 }
-                if (!hasMoreChats) {
-                    notificationManager.cancel(AirgoFirebaseService.SUMMARY_ID)
-                }
-            } else if (event == Lifecycle.Event.ON_PAUSE) {
-                SessionManager.currentChatId = null
             }
-        }
         lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
@@ -227,16 +229,17 @@ private fun chatTopBar(
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primaryContainer)
                             .then(
-                                if (otherProfilePic != null) Modifier else Modifier.padding(8.dp)
+                                if (otherProfilePic != null) Modifier else Modifier.padding(8.dp),
                             ),
                     contentAlignment = Alignment.Center,
                 ) {
                     if (!otherProfilePic.isNullOrEmpty()) {
-                        val fullUrl = if (otherProfilePic.startsWith("http")) {
-                            otherProfilePic
-                        } else {
-                            BuildConfig.BACKEND_URL.trimEnd('/') + "/" + otherProfilePic.trimStart('/')
-                        }
+                        val fullUrl =
+                            if (otherProfilePic.startsWith("http")) {
+                                otherProfilePic
+                            } else {
+                                BuildConfig.BACKEND_URL.trimEnd('/') + "/" + otherProfilePic.trimStart('/')
+                            }
                         AsyncImage(
                             model = fullUrl,
                             contentDescription = null,

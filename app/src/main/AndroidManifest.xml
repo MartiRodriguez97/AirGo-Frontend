@@ -38,7 +38,7 @@
             android:exported="false" />
 
         <service
-            android:name="com.airgo.airgoApp.features.notifications.service.AirgoFirebaseService"
+            android:name="com.airgo.airgoApp.features.notifications.service.FirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

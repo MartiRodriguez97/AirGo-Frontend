@@ -5,10 +5,9 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
 
 object FcmTokenManager {
-
     // Función suspendida para obtener el token
-    suspend fun getToken(): String? {
-        return try {
+    suspend fun getToken(): String? =
+        try {
             Log.e("AIRGO_FCM_DEBUG", "--- SOLICITANDO TOKEN A FIREBASE ---")
             val token = FirebaseMessaging.getInstance().token.await()
             Log.e("AIRGO_FCM_DEBUG", "✅ TOKEN OBTENIDO: $token")
@@ -17,5 +16,4 @@ object FcmTokenManager {
             Log.e("AIRGO_FCM_DEBUG", "❌ ERROR FATAL OBTENIENDO TOKEN: ${e.message}", e)
             null
         }
-    }
 }

@@ -14,10 +14,9 @@ import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.network.UserPreferencesRepository
 import com.airgo.airgoApp.core.network.dataStore
-import com.google.gson.Gson
 import com.airgo.airgoApp.features.notifications.NotificationUtils.getBitmapFromUrl
 import com.airgo.airgoApp.features.notifications.NotificationUtils.getCircularBitmap
-import com.airgo.airgoApp.features.notifications.service.AirgoFirebaseService
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -34,11 +33,16 @@ import kotlin.coroutines.resume
 
 class NotificationActionReceiver : BroadcastReceiver() {
     private val gson = Gson()
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .build()
+    private val client =
+        OkHttpClient
+            .Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .build()
 
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         val pendingResult = goAsync()
         val action = intent.action
         val chatId = intent.getStringExtra("CHAT_ID") ?: ""
@@ -49,19 +53,22 @@ class NotificationActionReceiver : BroadcastReceiver() {
             try {
                 Log.d("AirGo_Receiver", "Acció rebuda: $action per a chatId: $chatId")
                 val token = ensureToken(context)
-                
+
                 if (token != null && chatId.isNotEmpty()) {
                     when (action) {
                         "com.airgo.airgoApp.ACTION_MARK_AS_READ" -> {
                             markAsRead(chatId)
                         }
                         "com.airgo.airgoApp.ACTION_REPLY" -> {
-                            val replyText = RemoteInput.getResultsFromIntent(intent)
-                                ?.getCharSequence("KEY_TEXT_REPLY")?.toString()
-                            
+                            val replyText =
+                                RemoteInput
+                                    .getResultsFromIntent(intent)
+                                    ?.getCharSequence("KEY_TEXT_REPLY")
+                                    ?.toString()
+
                             Log.d("AirGo_Receiver", "Text de resposta: $replyText")
                             if (!replyText.isNullOrBlank()) {
-                                updateNotificationWithReply(context, chatId, notificationId, replyText)
+                                updateNotificationWithReply(context, notificationId, replyText)
                                 withTimeoutOrNull(10000) {
                                     sendReply(otherUserId, chatId, replyText, token)
                                 }
@@ -75,19 +82,23 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 Log.e("AirGo_Receiver", "Error processant acció: ${e.message}", e)
             } finally {
                 if (action == "com.airgo.airgoApp.ACTION_MARK_AS_READ") {
-                    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    val notificationManager =
+                        context.getSystemService(
+                            Context.NOTIFICATION_SERVICE,
+                        ) as NotificationManager
                     notificationManager.cancel(notificationId)
-                    
+
                     // Si ya no quedan notificaciones de chat, cancelamos también el resumen
                     val activeNotifications = notificationManager.activeNotifications
-                    val hasMoreChats = activeNotifications.any { 
-                        it.id != AirgoFirebaseService.SUMMARY_ID && 
-                        it.id != notificationId &&
-                        it.notification.group == AirgoFirebaseService.CHAT_GROUP_KEY 
-                    }
-                    
+                    val hasMoreChats =
+                        activeNotifications.any {
+                            it.id != FirebaseMessagingService.SUMMARY_ID &&
+                                it.id != notificationId &&
+                                it.notification.group == FirebaseMessagingService.CHAT_GROUP_KEY
+                        }
+
                     if (!hasMoreChats) {
-                        notificationManager.cancel(AirgoFirebaseService.SUMMARY_ID)
+                        notificationManager.cancel(FirebaseMessagingService.SUMMARY_ID)
                     }
                 }
 
@@ -96,31 +107,41 @@ class NotificationActionReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun updateNotificationWithReply(context: Context, chatId: String, notificationId: Int, replyText: String) {
+    private fun updateNotificationWithReply(
+        context: Context,
+        notificationId: Int,
+        replyText: String,
+    ) {
         try {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val activeNotif = notificationManager.activeNotifications.find { it.id == notificationId } ?: return
             val oldNotification = activeNotif.notification
-            
-            val style = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(oldNotification) ?: return
-            
+
+            val style =
+                NotificationCompat.MessagingStyle
+                    .extractMessagingStyleFromNotification(oldNotification) ?: return
+
             // Cargamos nuestra propia foto para que la burbuja de respuesta tenga nuestro avatar
             val myProfilePicUrl = SessionManager.profilePictureUrl
             val myBitmap = getBitmapFromUrl(myProfilePicUrl)?.let { getCircularBitmap(it) }
             val myIcon = myBitmap?.let { IconCompat.createWithBitmap(it) }
 
-            val userPerson = Person.Builder()
-                .setName("Jo")
-                .apply { if (myIcon != null) setIcon(myIcon) }
-                .build()
-            
+            val userPerson =
+                Person
+                    .Builder()
+                    .setName("Jo")
+                    .apply { if (myIcon != null) setIcon(myIcon) }
+                    .build()
+
             style.addMessage(replyText, System.currentTimeMillis(), userPerson)
-            
-            val updatedNotification = NotificationCompat.Builder(context, oldNotification)
-                .setStyle(style)
-                .setOnlyAlertOnce(true)
-                .build()
-                
+
+            val updatedNotification =
+                NotificationCompat
+                    .Builder(context, oldNotification)
+                    .setStyle(style)
+                    .setOnlyAlertOnce(true)
+                    .build()
+
             notificationManager.notify(notificationId, updatedNotification)
             Log.d("AirGo_Receiver", "Notificació actualitzada amb la resposta")
         } catch (e: Exception) {
@@ -150,54 +171,76 @@ class NotificationActionReceiver : BroadcastReceiver() {
             Log.d("AirGo_Receiver", "Sessió restaurada: ID=${prefs.userId}, Pic=${prefs.profilePictureUrl != null}")
             prefs.token
         } catch (e: Exception) {
+            Log.e("AirGo_Receiver", "Error restaurando session", e)
             null
         }
     }
 
-    private suspend fun sendReply(otherUserId: Int, chatId: String, text: String, token: String) {
+    private suspend fun sendReply(
+        otherUserId: Int,
+        chatId: String,
+        text: String,
+        token: String,
+    ) {
         val baseUrl = BuildConfig.BACKEND_URL
-        val wsUrl = baseUrl
-            .replace("http://", "ws://")
-            .replace("https://", "wss://")
-            .trimEnd('/') + "/ws/chat/$otherUserId/?token=$token"
+        val wsUrl =
+            baseUrl
+                .replace("http://", "ws://")
+                .replace("https://", "wss://")
+                .trimEnd('/') + "/ws/chat/$otherUserId/?token=$token"
 
         Log.d("AirGo_Receiver", "Connectant a WS per respondre: $wsUrl")
         val request = Request.Builder().url(wsUrl).build()
 
         kotlinx.coroutines.suspendCancellableCoroutine<Unit> { continuation ->
             var isFinished = false
-            val webSocket = client.newWebSocket(request, object : WebSocketListener() {
-                override fun onOpen(webSocket: WebSocket, response: Response) {
-                    Log.d("AirGo_Receiver", "WS Obert, enviant missatge...")
-                    val payload = gson.toJson(mapOf("missatge" to text))
-                    webSocket.send(payload)
-                    webSocket.close(1000, "Reply sent")
-                    
-                    CoroutineScope(Dispatchers.IO).launch {
-                        markAsRead(chatId)
-                        if (!isFinished) {
-                            isFinished = true
-                            continuation.resume(Unit)
+            val webSocket =
+                client.newWebSocket(
+                    request,
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            Log.d("AirGo_Receiver", "WS Obert, enviant missatge...")
+                            val payload = gson.toJson(mapOf("missatge" to text))
+                            webSocket.send(payload)
+                            webSocket.close(1000, "Reply sent")
+
+                            CoroutineScope(Dispatchers.IO).launch {
+                                markAsRead(chatId)
+                                if (!isFinished) {
+                                    isFinished = true
+                                    continuation.resume(Unit)
+                                }
+                            }
                         }
-                    }
-                }
 
-                override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                    Log.e("AirGo_Receiver", "WS Error enviant resposta: ${t.message}", t)
-                    if (!isFinished) {
-                        isFinished = true
-                        continuation.resume(Unit)
-                    }
-                }
+                        override fun onFailure(
+                            webSocket: WebSocket,
+                            t: Throwable,
+                            response: Response?,
+                        ) {
+                            Log.e("AirGo_Receiver", "WS Error enviant resposta: ${t.message}", t)
+                            if (!isFinished) {
+                                isFinished = true
+                                continuation.resume(Unit)
+                            }
+                        }
 
-                override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                    Log.d("AirGo_Receiver", "WS Tancat: $reason")
-                    if (!isFinished) {
-                        isFinished = true
-                        continuation.resume(Unit)
-                    }
-                }
-            })
+                        override fun onClosed(
+                            webSocket: WebSocket,
+                            code: Int,
+                            reason: String,
+                        ) {
+                            Log.d("AirGo_Receiver", "WS Tancat: $reason")
+                            if (!isFinished) {
+                                isFinished = true
+                                continuation.resume(Unit)
+                            }
+                        }
+                    },
+                )
             continuation.invokeOnCancellation { webSocket.cancel() }
         }
     }

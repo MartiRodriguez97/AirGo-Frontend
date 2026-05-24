@@ -74,11 +74,12 @@ class ChatViewModel : ViewModel() {
             val currentUserId = SessionManager.userId
             // Si recibimos un ID simple (como "7"), lo convertimos al formato compuesto "X-Y"
             // que es lo que espera el endpoint de mensajes.
-            val finalConvId = if (!convId.contains("-") && currentUserId != null) {
-                if (currentUserId < otherUserId) "$currentUserId-$otherUserId" else "$otherUserId-$currentUserId"
-            } else {
-                convId
-            }
+            val finalConvId =
+                if (!convId.contains("-") && currentUserId != null) {
+                    if (currentUserId < otherUserId) "$currentUserId-$otherUserId" else "$otherUserId-$currentUserId"
+                } else {
+                    convId
+                }
 
             if (conversationId == finalConvId && _messages.value.isNotEmpty()) {
                 Log.d(LOG_TAG, "init: Ya estamos en esta conversación ($finalConvId), saltando carga.")

@@ -22,11 +22,11 @@ data class TrainingTemplate(
     val descripcio: String,
     val tipusExercici: String,
     @SerializedName("exercicis")
-    private val _exercicis: List<Exercise>? = emptyList(),
+    private val exercicisList: List<Exercise>? = emptyList(),
 ) {
     // Si viene nulo del backend, devolvemos una lista vacía para evitar crashes
     val exercicis: List<Exercise>
-        get() = _exercicis ?: emptyList()
+        get() = exercicisList ?: emptyList()
 }
 
 data class Exercise(
