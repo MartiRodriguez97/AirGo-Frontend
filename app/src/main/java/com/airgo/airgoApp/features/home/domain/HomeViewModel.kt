@@ -127,7 +127,6 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    @Suppress("UnusedParameter")
     fun createPlan(
         onSuccess: () -> Unit,
         daysDuration: Int,

@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,7 +57,6 @@ import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeParseException
-import androidx.compose.ui.platform.LocalLocale
 
 private const val DAYS_IN_WEEK = 7
 private const val DATE_SUBSTRING_END = 10
