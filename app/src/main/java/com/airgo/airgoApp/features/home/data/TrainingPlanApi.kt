@@ -54,5 +54,6 @@ data class TrainingPlanRequest(
     val esport: Int,
     val nivell: Int,
     val diesSetmana: List<Int>,
+    val dataFi: String,
     val templates: List<Int> = emptyList(),
 )

@@ -134,12 +134,15 @@ fun questionnaireScreen(
                     val daysDuration = (diffMillis / MILLIS_IN_DAY).toInt().coerceAtLeast(0)
                     val workoutsPerWeek = selectedDays.size
 
+                    val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                    val dateString = formatter.format(java.util.Date(endDateMillis))
                     viewModel.createPlan(
                         daysDuration = daysDuration,
                         workoutsPerWeek = workoutsPerWeek,
                         sport = selectedSport,
                         level = selectedLevel,
                         daysOfWeek = selectedDays,
+                        endDate = dateString,
                         onSuccess = {
                             onClose()
                         },
