@@ -20,6 +20,7 @@ class TrainingPlanRepository {
     suspend fun deleteTrainingPlan(id: Int) {
         api.deleteTrainingPlan(id)
     }
+
 /*
     suspend fun fetchFullTrainingPlans(): List<TrainingPlanResponse> {
         val rawPlans = getTrainingPlans()
@@ -37,11 +38,12 @@ class TrainingPlanRepository {
         }
     }
 */
-suspend fun fetchFullTrainingPlans(): List<TrainingPlanResponse> {
-    // Como getTrainingPlans() ahora ya devuelve la lista completa de TrainingPlanResponse,
-    // solo tienes que devolver su resultado directamente.
-    return getTrainingPlans()
-}
+    suspend fun fetchFullTrainingPlans(): List<TrainingPlanResponse> {
+        // Como getTrainingPlans() ahora ya devuelve la lista completa de TrainingPlanResponse,
+        // solo tienes que devolver su resultado directamente.
+        return getTrainingPlans()
+    }
+
     suspend fun updateExercise(
         id: Int,
         completat: Boolean,

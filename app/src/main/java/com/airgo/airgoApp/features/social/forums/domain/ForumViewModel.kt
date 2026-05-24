@@ -132,7 +132,7 @@ class ForumViewModel : ViewModel() {
         val filtered =
             allMyForums.filter {
                 it.nom?.contains(query, ignoreCase = true) == true ||
-                        it.descripcio?.contains(query, ignoreCase = true) == true
+                    it.descripcio?.contains(query, ignoreCase = true) == true
             }
         _forumsUiState.value =
             if (filtered.isEmpty()) {

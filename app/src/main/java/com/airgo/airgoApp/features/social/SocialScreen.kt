@@ -67,7 +67,6 @@ import com.airgo.airgoApp.features.social.components.loadingState
 import com.airgo.airgoApp.features.social.components.socialSearchBar
 import com.airgo.airgoApp.features.social.components.userAvatarPlaceholder
 import com.airgo.airgoApp.features.social.data.UserSearchResult
-import com.airgo.airgoApp.features.social.forums.domain.DiscoverSearchResult
 import com.airgo.airgoApp.features.social.domain.FriendsUiState
 import com.airgo.airgoApp.features.social.domain.RequestsUiState
 import com.airgo.airgoApp.features.social.domain.SearchUiState
@@ -78,6 +77,7 @@ import com.airgo.airgoApp.features.social.forums.components.createForumFab
 import com.airgo.airgoApp.features.social.forums.components.deleteForumDialog
 import com.airgo.airgoApp.features.social.forums.components.forumCard
 import com.airgo.airgoApp.features.social.forums.data.Forum
+import com.airgo.airgoApp.features.social.forums.domain.DiscoverSearchResult
 import com.airgo.airgoApp.features.social.forums.domain.ForumUiState
 import com.airgo.airgoApp.features.social.forums.domain.ForumViewModel
 import com.airgo.airgoApp.features.social.friends.data.FriendRequestResponse
@@ -600,7 +600,7 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
 
     forumToDelete?.let { forum ->
         deleteForumDialog(
-            forumNom = forum.nom?: "",
+            forumNom = forum.nom ?: "",
             onDismiss = { forumToDelete = null },
             onConfirm = {
                 forumViewModel.deleteForum(forum.id)
@@ -626,7 +626,7 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
             HorizontalDivider()
             when (val state = uiState) {
                 is ForumUiState.Loading -> loadingState()
-                is ForumUiState.Empty -> emptyState("emptyForum", text = "No tens fòrums seguits ni creats per tu.")
+                is ForumUiState.Empty -> emptyState("emptyForum", text = stringResource(R.string.no_favorite_created_forums_found))
                 is ForumUiState.Error -> errorState(state.message)
                 is ForumUiState.Success -> {
                     LazyColumn(

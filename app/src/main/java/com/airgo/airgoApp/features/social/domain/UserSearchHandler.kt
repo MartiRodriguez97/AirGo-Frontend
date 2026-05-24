@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 private const val SEARCH_DEBOUNCE_MS = 400L
 private const val MIN_QUERY_LENGTH = 2
@@ -63,7 +65,11 @@ class UserSearchHandler(
                 async {
                     try {
                         repository.searchUsers(query).getOrNull() ?: emptyList()
-                    } catch (e: Exception) {
+                    } catch (e: IOException) {
+                        android.util.Log.e("UserSearchHandler", "Network error searching users: ${e.message}", e)
+                        emptyList()
+                    } catch (e: HttpException) {
+                        android.util.Log.e("UserSearchHandler", "HTTP error searching users: ${e.code()}", e)
                         emptyList()
                     }
                 }
@@ -71,7 +77,11 @@ class UserSearchHandler(
                 async {
                     try {
                         RetrofitProvider.forumApi.getForums(query)
-                    } catch (e: Exception) {
+                    } catch (e: IOException) {
+                        android.util.Log.e("ForumSearchHandler", "Network error searching forums: ${e.message}", e)
+                        emptyList()
+                    } catch (e: HttpException) {
+                        android.util.Log.e("ForumSearchHandler", "HTTP error searching forums: ${e.code()}", e)
                         emptyList()
                     }
                 }
