@@ -176,7 +176,9 @@ fun titleSelectionDialog(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable { setAsMain = !setAsMain }.padding(PADDING_SMALL.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(PADDING_SMALL.dp),
                 ) {
                     androidx.compose.material3.Checkbox(
                         checked = setAsMain,
@@ -187,7 +189,6 @@ fun titleSelectionDialog(
                         fontSize = TEXT_SIZE_BODY.sp,
                     )
                 }
-
                 Spacer(modifier = Modifier.height(PADDING_LARGE.dp))
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.tracking_later)) }
             }

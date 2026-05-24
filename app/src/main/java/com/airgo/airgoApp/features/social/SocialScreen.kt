@@ -406,7 +406,8 @@ private fun friendItem(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onChatClick(friend.amic.id) },
+        onClick = { onChatClick(friend.amic.id) },
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(0.dp),
         border = CardDefaults.outlinedCardBorder(),
