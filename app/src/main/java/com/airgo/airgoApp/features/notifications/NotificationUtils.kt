@@ -9,6 +9,9 @@ import java.net.URL
 import kotlin.math.min
 
 object NotificationUtils {
+    private const val DST_WIDTH = 256
+    private const val DST_HEIGHT = 256
+    private const val TIMEOUT_MS = 5000
     fun getBitmapFromUrl(urlString: String?): Bitmap? {
         if (urlString.isNullOrEmpty()) return null
         val finalUrl =
@@ -21,8 +24,8 @@ object NotificationUtils {
         return try {
             val url = URL(finalUrl)
             val connection = url.openConnection() as HttpURLConnection
-            connection.connectTimeout = 5000
-            connection.readTimeout = 5000
+            connection.connectTimeout = TIMEOUT_MS
+            connection.readTimeout = TIMEOUT_MS
             connection.doInput = true
             connection.connect()
             val bitmap =
@@ -57,6 +60,6 @@ object NotificationUtils {
         paint.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN)
         canvas.drawBitmap(bitmap, rect, outputRect, paint)
 
-        return Bitmap.createScaledBitmap(output, 256, 256, true)
+        return Bitmap.createScaledBitmap(output, DST_WIDTH, DST_HEIGHT, true)
     }
 }

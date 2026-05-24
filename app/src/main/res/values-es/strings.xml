@@ -374,6 +374,10 @@
     <string name="begin_conversation">¡Comienza la conversación!</string>
     <string name="message">Mensaje...</string>
     <string name="send">Enviar</string>
+    <string name="chat_user_me">Yo</string>
+    <string name="chat_reply">Responder</string>
+    <string name="chat_reply_label">Escribe una respuesta...</string>
+    <string name="chat_mark_as_read">Marcar como visto</string>
 
     <!-- feature/activity-->
     <string name="error_loading_activities">No se han podido cargar las actividades</string>

@@ -376,6 +376,10 @@
     <string name="begin_conversation">Comença la conversa!</string>
     <string name="message">Missatge...</string>
     <string name="send">Enviar</string>
+    <string name="chat_user_me">Jo</string>
+    <string name="chat_reply">Respondre</string>
+    <string name="chat_reply_label">Escriu una resposta...</string>
+    <string name="chat_mark_as_read">Marcar com a vist</string>
     <string name="error_loading_activities">No s\'ha pogut carregar les activitats</string>
     <string name="error_deleting_activity">No s\'ha pogut esborrar l\'activitat</string>
     <string name="error_updating_activity_sensation">No s\'ha pogut actualitzar la sensació de l\'activitat</string>

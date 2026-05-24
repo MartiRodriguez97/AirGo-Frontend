@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.events.ChatEventBus
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.UiText
@@ -45,6 +46,10 @@ sealed class ChatUiState {
     ) : ChatUiState()
 }
 
+private const val DELAY_500MS = 500L
+private const val ATTEMPTS_ZERO = 0
+private const val ATTEMPTS_MAX = 10
+
 class ChatViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
     val uiState: StateFlow<ChatUiState> = _uiState
@@ -65,9 +70,9 @@ class ChatViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             // Esperar a que SessionManager.userId esté disponible si es un cold start
-            var attempts = 0
-            while (SessionManager.userId == null && attempts < 10) {
-                kotlinx.coroutines.delay(500)
+            var attempts = ATTEMPTS_ZERO
+            while (SessionManager.userId == null && attempts < ATTEMPTS_MAX) {
+                kotlinx.coroutines.delay(DELAY_500MS)
                 attempts++
             }
 
@@ -86,11 +91,19 @@ class ChatViewModel : ViewModel() {
                 return@launch
             }
 
-            Log.e(LOG_TAG, "🚀 INIT: Cargando chat normalizado $finalConvId (Original: $convId, User: $currentUserId)")
             conversationId = finalConvId
             _messages.value = emptyList()
             loadMessages(finalConvId)
             connectWebSocket(otherUserId)
+
+            viewModelScope.launch {
+                ChatEventBus.messageReceived.collect { updatedChatId ->
+                    if (updatedChatId == conversationId) {
+                        Log.e(LOG_TAG, "🔔 Evento recibido: recargando chat $conversationId")
+                        loadMessages(conversationId)
+                    }
+                }
+            }
         }
     }
 

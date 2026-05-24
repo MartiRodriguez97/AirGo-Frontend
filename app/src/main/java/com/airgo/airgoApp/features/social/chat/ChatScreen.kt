@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -105,7 +106,12 @@ fun chatScreen(
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
-    val lifecycleOwner = LocalLifecycleOwner.current
+    // Añadimos un log para ver qué nos llega
+    LaunchedEffect(otherProfilePic) {
+        android.util.Log.d("CHAT_DEBUG", "Imagen global: $otherProfilePic")
+    }
+
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(conversationId, lifecycleOwner) {
         val observer =
             LifecycleEventObserver { _, event ->
@@ -113,7 +119,9 @@ fun chatScreen(
                     SessionManager.currentChatId = conversationId
 
                     // Limpiar notificaciones de este chat al entrar o volver
-                    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    val notificationManager = context.getSystemService(
+                        Context.NOTIFICATION_SERVICE)
+                            as NotificationManager
                     notificationManager.cancel(conversationId.hashCode())
 
                     // Limpiar resumen si no quedan más chats activos
@@ -171,6 +179,7 @@ fun chatScreen(
                             messages = messages,
                             listState = listState,
                             onDelete = { viewModel.deleteMessage(it) },
+                            otherProfilePic = otherProfilePic
                         )
                 }
             }
@@ -188,6 +197,7 @@ private fun chatMessageList(
     messages: List<Message>,
     listState: androidx.compose.foundation.lazy.LazyListState,
     onDelete: (Int) -> Unit,
+    otherProfilePic: String? = null,
 ) {
     var selectedMessageId by remember { mutableStateOf<Int?>(null) }
     LazyColumn(
@@ -207,6 +217,7 @@ private fun chatMessageList(
                     onDelete(message.id)
                     selectedMessageId = null
                 },
+                otherProfilePic = otherProfilePic
             )
         }
     }
@@ -290,13 +301,14 @@ private fun messageBubble(
     isSelected: Boolean,
     onSelect: () -> Unit,
     onDelete: () -> Unit,
+    otherProfilePic: String? = null,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
         horizontalArrangement = if (isOwn) Arrangement.End else Arrangement.Start,
         verticalAlignment = Alignment.Bottom,
     ) {
-        if (!isOwn) bubbleAvatar(message.emissorUsername, message.emissorProfilePic)
+        if (!isOwn) bubbleAvatar(message.emissorUsername, message.emissorProfilePic ?: otherProfilePic)
         Column(
             horizontalAlignment = if (isOwn) Alignment.End else Alignment.Start,
             modifier = Modifier.widthIn(max = BUBBLE_MAX_WIDTH.dp),
@@ -322,7 +334,9 @@ private fun bubbleAvatar(
                 .background(MaterialTheme.colorScheme.secondaryContainer),
         contentAlignment = Alignment.Center,
     ) {
-        if (!profilePicUrl.isNullOrEmpty()) {
+        val showImage = !profilePicUrl.isNullOrEmpty() && profilePicUrl != "null" && profilePicUrl != "undefined"
+        android.util.Log.d("CHAT_AVATAR_DEBUG", "Emisor: $username, URL: $profilePicUrl, showImage: $showImage")
+        if (showImage) {
             val fullUrl =
                 if (profilePicUrl.startsWith("http")) {
                     profilePicUrl

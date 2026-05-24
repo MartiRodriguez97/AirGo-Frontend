@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.graphics.drawable.IconCompat
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
@@ -31,12 +32,16 @@ import okhttp3.WebSocketListener
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 
+private const val CODE_1000 = 1000
+
+private const val MAX_TIME_MS = 10000L
+private const val MAX_TIMEOUT = 10L
 class NotificationActionReceiver : BroadcastReceiver() {
     private val gson = Gson()
     private val client =
         OkHttpClient
             .Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
+            .connectTimeout(MAX_TIMEOUT, TimeUnit.SECONDS)
             .build()
 
     override fun onReceive(
@@ -69,7 +74,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
                             Log.d("AirGo_Receiver", "Text de resposta: $replyText")
                             if (!replyText.isNullOrBlank()) {
                                 updateNotificationWithReply(context, notificationId, replyText)
-                                withTimeoutOrNull(10000) {
+                                withTimeoutOrNull(MAX_TIME_MS) {
                                     sendReply(otherUserId, chatId, replyText, token)
                                 }
                             }
@@ -129,7 +134,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
             val userPerson =
                 Person
                     .Builder()
-                    .setName("Jo")
+                    .setName(context.getString(R.string.chat_user_me))
                     .apply { if (myIcon != null) setIcon(myIcon) }
                     .build()
 
@@ -205,7 +210,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
                             Log.d("AirGo_Receiver", "WS Obert, enviant missatge...")
                             val payload = gson.toJson(mapOf("missatge" to text))
                             webSocket.send(payload)
-                            webSocket.close(1000, "Reply sent")
+                            webSocket.close(CODE_1000, "Reply sent")
 
                             CoroutineScope(Dispatchers.IO).launch {
                                 markAsRead(chatId)
