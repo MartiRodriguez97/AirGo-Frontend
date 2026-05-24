@@ -28,6 +28,8 @@ import java.io.IOException
 private const val TIMER_INTERVAL_MS = 1000L
 private const val MS_TO_KMH = 3.6
 
+private const val MAX_VALID_SPEED = 50.0
+
 class TrackingViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
 
@@ -60,7 +62,7 @@ class TrackingViewModel : ViewModel() {
     private val _uiEvent = MutableSharedFlow<TrackingUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
-    private val maxSpeedKmh = 30.0
+    private val maxSpeedKmh = MAX_VALID_SPEED
 
     var isActivityValid by mutableStateOf(true)
         private set

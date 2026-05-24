@@ -34,7 +34,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -74,19 +73,12 @@ import com.airgo.airgoApp.features.social.domain.RequestsUiState
 import com.airgo.airgoApp.features.social.domain.SearchUiState
 import com.airgo.airgoApp.features.social.domain.SocialTab
 import com.airgo.airgoApp.features.social.domain.SocialViewModel
-import com.airgo.airgoApp.features.social.forums.components.createForumDialog
-import com.airgo.airgoApp.features.social.forums.components.createForumFab
-import com.airgo.airgoApp.features.social.forums.components.deleteForumDialog
 import com.airgo.airgoApp.features.social.forums.components.forumCard
-import com.airgo.airgoApp.features.social.forums.data.Forum
 import com.airgo.airgoApp.features.social.forums.domain.DiscoverSearchResult
-import com.airgo.airgoApp.features.social.forums.domain.ForumUiState
 import com.airgo.airgoApp.features.social.forums.domain.ForumViewModel
 import com.airgo.airgoApp.features.social.friends.data.FriendRequestResponse
 import com.airgo.airgoApp.features.social.friends.data.FriendResponse
 import com.airgo.airgoApp.features.social.friends.domain.FriendRequestsViewModel
-
-private enum class ForumFilter { FAVORITS, MEUS }
 
 @Composable
 fun socialScreen(
@@ -581,118 +573,5 @@ private fun userResultItem(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
-    val uiState by forumViewModel.forumsUiState.collectAsStateWithLifecycle()
-    val favoritForums by forumViewModel.favoritForums.collectAsStateWithLifecycle()
-    val searchQuery by forumViewModel.searchQuery.collectAsStateWithLifecycle()
-    val focusManager = LocalFocusManager.current
-    var showCreateDialog by remember { mutableStateOf(false) }
-    var forumToDelete by remember { mutableStateOf<Forum?>(null) }
-
-    if (showCreateDialog) {
-        createForumDialog(
-            onDismiss = { showCreateDialog = false },
-            onCreate = { nom, descripcio ->
-                forumViewModel.createForum(nom, descripcio)
-                showCreateDialog = false
-            },
-        )
-    }
-
-    forumToDelete?.let { forum ->
-        deleteForumDialog(
-            forumNom = forum.nom ?: "",
-            onDismiss = { forumToDelete = null },
-            onConfirm = {
-                forumViewModel.deleteForum(forum.id)
-                forumToDelete = null
-            },
-        )
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
-                socialSearchBar(
-                    query = searchQuery,
-                    placeholder = stringResource(R.string.search_forum),
-                    onQueryChange = forumViewModel::onSearchQueryChange,
-                    onClear = forumViewModel::clearSearchQuery,
-                    onSearch = { focusManager.clearFocus() },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-            HorizontalDivider()
-
-            var activeFilter by remember { mutableStateOf(ForumFilter.FAVORITS) }
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                FilterChip(
-                    selected = activeFilter == ForumFilter.FAVORITS,
-                    onClick = { activeFilter = ForumFilter.FAVORITS },
-                    label = { Text(stringResource(R.string.forums_filter_saved)) },
-                    leadingIcon = {
-                        Icon(Icons.Default.Favorite, contentDescription = null, modifier = Modifier.size(16.dp))
-                    },
-                )
-                FilterChip(
-                    selected = activeFilter == ForumFilter.MEUS,
-                    onClick = { activeFilter = ForumFilter.MEUS },
-                    label = { Text(stringResource(R.string.forums_filter_mine)) },
-                )
-            }
-            when (val state = uiState) {
-                is ForumUiState.Loading -> loadingState()
-                is ForumUiState.Empty ->
-                    emptyState(
-                        "emptyForum",
-                        text = stringResource(R.string.no_favorite_created_forums_found),
-                    )
-                is ForumUiState.Error -> errorState(state.message)
-                is ForumUiState.Success -> {
-                    val filteredForums =
-                        when (activeFilter) {
-                            ForumFilter.FAVORITS ->
-                                state.forums.filter {
-                                    it.id in favoritForums
-                                }
-                            ForumFilter.MEUS ->
-                                state.forums.filter {
-                                    forumViewModel.isCreatedByCurrentUser(it)
-                                }
-                        }
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(top = 12.dp, bottom = 80.dp, start = 0.dp, end = 0.dp),
-                    ) {
-                        items(filteredForums, key = { it.id }) { forum ->
-                            forumCard(
-                                forum = forum,
-                                isFavorit = forum.id in favoritForums,
-                                isOwner = forumViewModel.isCreatedByCurrentUser(forum),
-                                onToggleFavorit = { forumViewModel.toggleFavorit(forum.id) },
-                                onDelete = { forumToDelete = forum },
-                                onClick = {},
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        createForumFab(
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-            onClick = { showCreateDialog = true },
-        )
     }
 }
