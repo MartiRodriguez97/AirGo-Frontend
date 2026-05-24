@@ -65,6 +65,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
+import com.airgo.airgoApp.features.map.helpers.NominatimResult
 
 private const val BCN_LATITUDE = 41.3851 // Latitud inicial
 private const val BCN_LONGITUDE = 2.1734 // Longitud inicial
@@ -90,6 +91,7 @@ fun osmView(
     bicingViewModel: BicingViewModel = viewModel(),
     onNavigateToFavorites: () -> Unit = {},
     onNavigateToTrackingSummary: () -> Unit = {},
+    onNavigateToAddressSearch: (String) -> Unit = {},
     trackingViewModel: TrackingViewModel = viewModel(),
 ) {
     val context = LocalContext.current
@@ -174,6 +176,7 @@ fun osmView(
                         trackingViewModel = trackingViewModel,
                         onNavigateToFavorites = onNavigateToFavorites,
                         onNavigateToTrackingSummary = onNavigateToTrackingSummary,
+                        onNavigateToAddressSearch = onNavigateToAddressSearch,
                     ),
             ),
         )
@@ -264,6 +267,12 @@ private fun rememberMapState(params: MapStateParams): MapState {
         vm.trackingViewModel.trackPoints,
         vm.routeViewModel.waypoints,
         vm.routeViewModel.transportProfile,
+        vm.routeViewModel.startAddressQuery,
+        vm.routeViewModel.endAddressQuery,
+        vm.routeViewModel.startSuggestions,
+        vm.routeViewModel.endSuggestions,
+        vm.routeViewModel.waypointAddresses,
+        vm.routeViewModel.editingWaypointIndex,
     ) {
         MapState(
             mapView = l.mapView,
@@ -281,7 +290,6 @@ private fun rememberMapState(params: MapStateParams): MapState {
             onCalculateRoute = { vm.routeViewModel.calculateRoute() },
             onClearRoute = { vm.routeViewModel.clearRoute() },
             onSetSelectionMode = { vm.routeViewModel.selectionMode = it },
-            onAddToFavorites = { vm.routeViewModel.addToFavorites() },
             isFavorite = vm.routeViewModel.isFavorite,
             favoriteMessage = vm.routeViewModel.favoriteMessage,
             onNavigateToFavorites = vm.onNavigateToFavorites,
@@ -296,6 +304,18 @@ private fun rememberMapState(params: MapStateParams): MapState {
             onRemoveWaypoint = { vm.routeViewModel.removeWaypoint(it) },
             transportProfile = vm.routeViewModel.transportProfile,
             onTransportProfileChange = { vm.routeViewModel.transportProfile = it },
+            startAddressQuery = vm.routeViewModel.startAddressQuery,
+            endAddressQuery = vm.routeViewModel.endAddressQuery,
+            startSuggestions = vm.routeViewModel.startSuggestions,
+            endSuggestions = vm.routeViewModel.endSuggestions,
+            isSearchingAddress = vm.routeViewModel.isSearchingAddress,
+            onSearchStartAddress = { vm.routeViewModel.searchStartAddress(it) },
+            onSearchEndAddress = { vm.routeViewModel.searchEndAddress(it) },
+            onNavigateToAddressSearch = vm.onNavigateToAddressSearch,
+            waypointAddresses = vm.routeViewModel.waypointAddresses,
+            onSetWaypointEditMode = { vm.routeViewModel.setWaypointEditMode(it) },
+            editingWaypointIndex = vm.routeViewModel.editingWaypointIndex,
+            onToggleFavorite = { vm.routeViewModel.toggleFavorite() },
         )
     }
 }
@@ -399,7 +419,7 @@ private fun BoxScope.mapNormalModeUi(state: MapState) {
     // Panell de selecció de ruta
     routeSelectionPanel(
         state = state,
-        modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
+        modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp, start = 16.dp, end = 16.dp),
     )
 
     // Botó per canviar entre mode bici i mode a peu

@@ -7,6 +7,7 @@ import com.airgo.airgoApp.features.tracking.data.TrackingData
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import com.airgo.airgoApp.features.map.helpers.NominatimResult
 
 /**
  * Classe que encapsula tot l'estat necessari per renderitzar el mapa i les seves capes.
@@ -22,17 +23,18 @@ data class MapState(
     val startPoint: org.osmdroid.util.GeoPoint?,
     val endPoint: org.osmdroid.util.GeoPoint?,
     val waypoints: List<org.osmdroid.util.GeoPoint> = emptyList(),
+    val waypointAddresses: List<String> = emptyList(),
     val currentRoute: RouteResponse?,
     val isCalculatingRoute: Boolean,
-    val transportProfile: TransportProfile = TransportProfile.BIKE, // nuevo
+    val transportProfile: TransportProfile = TransportProfile.BIKE,
     val onPointSelected: (org.osmdroid.util.GeoPoint) -> Unit,
     val onCalculateRoute: () -> Unit,
     val onClearRoute: () -> Unit,
     val onSetSelectionMode: (MapSelectionMode) -> Unit,
-    val onAddToFavorites: () -> Unit,
+    val onToggleFavorite: () -> Unit,
     val onAddWaypoint: () -> Unit = {},
     val onRemoveWaypoint: (Int) -> Unit = {},
-    val onTransportProfileChange: (TransportProfile) -> Unit = {}, // nuevo
+    val onTransportProfileChange: (TransportProfile) -> Unit = {},
     val isFavorite: Boolean = false,
     val favoriteMessage: String? = null,
     val onNavigateToFavorites: () -> Unit,
@@ -42,4 +44,16 @@ data class MapState(
     val onStartTracking: () -> Unit = {},
     val onStopTracking: () -> Unit = {},
     val onNavigateToTrackingSummary: () -> Unit = {},
+    val startAddressQuery: String = "",
+    val endAddressQuery: String = "",
+    val startSuggestions: List<NominatimResult> = emptyList(),
+    val endSuggestions: List<NominatimResult> = emptyList(),
+    val isSearchingAddress: Boolean = false,
+    val onSearchStartAddress: (String) -> Unit = {},
+    val onSearchEndAddress: (String) -> Unit = {},
+    val onSelectStartAddress: (NominatimResult) -> Unit = {},
+    val onSelectEndAddress: (NominatimResult) -> Unit = {},
+    val onNavigateToAddressSearch: (String) -> Unit = {},
+    val onSetWaypointEditMode: (Int) -> Unit = {},
+    val editingWaypointIndex: Int = -1,
 )

@@ -15,6 +15,7 @@ fun activityScreen(navController: NavController) {
     osmView(
         onNavigateToFavorites = { navController.navigate("favorites") },
         onNavigateToTrackingSummary = { navController.navigate("tracking_summary") },
+        onNavigateToAddressSearch = { mode -> navController.navigate("address_search/$mode") },
         trackingViewModel = trackingViewModel,
     )
 }
