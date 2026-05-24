@@ -3,6 +3,7 @@ package com.airgo.airgoApp.features.home
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.DirectionsRun
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
@@ -20,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,6 +39,50 @@ import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
+import com.airgo.airgoApp.features.tracking.components.titleSelectionDialog
+
+@Composable
+fun pendingTitlesCard(
+    count: Int,
+    onClick: () -> Unit,
+) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        colors =
+            androidx.compose.material3.CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(end = 16.dp),
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Títols Pendents!",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = if (count == 1) "Tens 1 títol per triar" else "Tens $count títols per triar",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            TextButton(onClick = onClick) {
+                Text("TRIAR")
+            }
+        }
+    }
+}
 
 @Composable
 fun homeScreen(
@@ -47,6 +94,8 @@ fun homeScreen(
     val plans by viewModel.plans.collectAsState()
     val exercises by viewModel.exercises.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val titolsPendents by viewModel.titolsPendents.collectAsState()
+    val availableTitles by viewModel.availableTitles.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -58,6 +107,18 @@ fun homeScreen(
             Toast.makeText(context, resId, Toast.LENGTH_SHORT).show()
             viewModel.clearErrorMessage()
         }
+    }
+
+    if (viewModel.showTitleSelectionDialog) {
+        titleSelectionDialog(
+            options = availableTitles,
+            onSelect = { title, setAsMain ->
+                viewModel.unlockTitle(title.id, setAsMain)
+            },
+            onDismiss = {
+                viewModel.showTitleSelectionDialog = false
+            },
+        )
     }
 
     Scaffold(
@@ -79,6 +140,16 @@ fun homeScreen(
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            if (titolsPendents > 0) {
+                item {
+                    pendingTitlesCard(
+                        count = titolsPendents,
+                        onClick = { viewModel.fetchAvailableTitles() },
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
             item {

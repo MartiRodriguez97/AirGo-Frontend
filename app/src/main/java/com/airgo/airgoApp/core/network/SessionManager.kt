@@ -4,7 +4,9 @@ import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 object SessionManager {
     private val _sessionExpiredEvent = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -23,6 +25,15 @@ object SessionManager {
     var exercicis: List<Exercise>? = null
     var exerciciActiu: Exercise? = null
     var nomTemplateActiu: String? = null
+    var userBadges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>? = null
+
+    private val _titolsPendents = MutableStateFlow(0)
+    val titolsPendentsFlow = _titolsPendents.asStateFlow()
+    var titolsPendents: Int
+        get() = _titolsPendents.value
+        set(value) {
+            _titolsPendents.value = value
+        }
 
     fun clear() {
         accessToken = null
@@ -45,6 +56,8 @@ object SessionManager {
         idioma = null
         limitRutes = null
         insignies = null
+        userBadges = null
+        titolsPendents = 0
     }
 
     var punts: Int? = null

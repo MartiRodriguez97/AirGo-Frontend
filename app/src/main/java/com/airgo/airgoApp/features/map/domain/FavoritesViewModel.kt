@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.map.data.FavoriteRouteItem
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -23,7 +25,7 @@ class FavoritesViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
         private set
 
-    var errorMessage by mutableStateOf<String?>(null)
+    var errorMessage by mutableStateOf<UiText?>(null)
         private set
 
     /**
@@ -35,12 +37,11 @@ class FavoritesViewModel : ViewModel() {
             try {
                 errorMessage = null
                 routes = RetrofitProvider.favoriteRouteApi.getFavoriteRoutes(search)
-                Log.d(LOG_TAG, "Rutes preferides rebudes: ${routes.size}")
             } catch (e: IOException) {
-                errorMessage = "Error de connexió al carregar les rutes preferides"
+                errorMessage = UiText.StringResource(R.string.error_fetching_routes)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                errorMessage = "Error del servidor: ${e.code()}"
+                errorMessage = UiText.StringResource(R.string.error_fetching_routes)
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             } finally {
                 isLoading = false
@@ -57,16 +58,15 @@ class FavoritesViewModel : ViewModel() {
                 val response = RetrofitProvider.favoriteRouteApi.deleteFavoriteRoute(routeId)
                 if (response.code() == OK) {
                     routes = routes.filter { it.route.id != routeId }
-                    Log.d(LOG_TAG, "Ruta $routeId eliminada de preferits")
                 } else {
-                    errorMessage = "Error al eliminar la ruta"
+                    errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)
                     Log.e(LOG_TAG, "Delete failed: ${response.code()}")
                 }
             } catch (e: IOException) {
-                errorMessage = "Error de connexió al eliminar la ruta"
+                errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                errorMessage = "Error del servidor: ${e.code()}"
+                errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             }
         }

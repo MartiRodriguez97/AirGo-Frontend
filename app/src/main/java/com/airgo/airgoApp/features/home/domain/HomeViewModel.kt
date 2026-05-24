@@ -1,11 +1,13 @@
 package com.airgo.airgoApp.features.home.domain
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
-import com.airgo.airgoApp.features.home.data.TrainingPlanRawResponse
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
@@ -27,16 +29,16 @@ class HomeViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _errorMessage = MutableStateFlow<Int?>(null)
+    val titolsPendents: StateFlow<Int> = SessionManager.titolsPendentsFlow
 
-    companion object {
-        private const val TEMPLATE_ID_1 = 1
-        private const val TEMPLATE_ID_2 = 2
-        private const val TEMPLATE_ID_3 = 3
-        private const val TEMPLATE_ID_4 = 4
-        private const val TEMPLATE_ID_5 = 5
-        private const val TEMPLATE_ID_6 = 6
-    }
+    private val _availableTitles =
+        MutableStateFlow<List<com.airgo.airgoApp.features.tracking.data.TitleOption>>(emptyList())
+    val availableTitles: StateFlow<List<com.airgo.airgoApp.features.tracking.data.TitleOption>> =
+        _availableTitles.asStateFlow()
+
+    var showTitleSelectionDialog by mutableStateOf(false)
+
+    private val _errorMessage = MutableStateFlow<Int?>(null)
 
     val errorMessage: StateFlow<Int?> = _errorMessage.asStateFlow()
 
@@ -49,7 +51,6 @@ class HomeViewModel : ViewModel() {
             java.time.LocalDate
                 .now()
                 .toString() // "yyyy-MM-dd"
-        Log.d("HomeViewModel", "Updating today's exercises for date: $today")
 
         val todayExercises =
             _plans.value.flatMap { plan ->
@@ -59,7 +60,6 @@ class HomeViewModel : ViewModel() {
                     }
                 }
             }
-        Log.d("HomeViewModel", "Found ${todayExercises.size} pending exercises for today")
         SessionManager.exercicis = todayExercises
         _exercises.value = todayExercises
     }
@@ -88,12 +88,8 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val url = com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT
-                Log.d("HomeViewModel", "Requesting GET training plans from URL: $url")
-
-                val rawPlans = repository.getTrainingPlans()
-                Log.d("HomeViewModel", "Successfully fetched ${rawPlans.size} raw plans")
-
+                /*
+                * val rawPlans = repository.getTrainingPlans()
                 val fetchedPlans =
                     rawPlans.map { raw ->
                         val fullTemplates =
@@ -105,8 +101,10 @@ class HomeViewModel : ViewModel() {
                             diesDurada = raw.diesDurada,
                             numEntrenamentsSetmanals = raw.numEntrenamentsSetmanals,
                             templates = fullTemplates,
-                        )
-                    }
+                            )
+                        }
+                * */
+                val fetchedPlans = repository.getTrainingPlans()
 
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
@@ -121,7 +119,6 @@ class HomeViewModel : ViewModel() {
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
                 // Fallback to SessionManager if available
                 SessionManager.trainingPlans?.let {
-                    Log.d("HomeViewModel", "Using cached plans from SessionManager as fallback")
                     _plans.value = it
                 }
             } finally {
@@ -130,69 +127,33 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    @Suppress("UnusedParameter")
     fun createPlan(
+        onSuccess: () -> Unit,
         daysDuration: Int,
         workoutsPerWeek: Int,
-        level: String?,
-        onSuccess: () -> Unit,
+        sport: Int?,
+        level: Int?,
+        daysOfWeek: List<Int>,
     ) {
         viewModelScope.launch {
             _isLoading.value = true
+            Log.d("AirGo_Debug", "2. Entrando al ViewModelScope")
             try {
-                // 1. Determine template IDs based on level
-                val templateIds =
-                    when (level) {
-                        "Bàsic", "Básico", "Basic", "Principiant", "Principiante", "Beginner" ->
-                            listOf(
-                                TEMPLATE_ID_1,
-                                TEMPLATE_ID_2,
-                                TEMPLATE_ID_3,
-                                TEMPLATE_ID_4,
-                            )
-                        "Mitjà", "Medio", "Medium", "Intermedi", "Intermedio", "Intermediate" ->
-                            listOf(
-                                TEMPLATE_ID_2,
-                                TEMPLATE_ID_3,
-                                TEMPLATE_ID_4,
-                                TEMPLATE_ID_5,
-                            )
-                        "Avançat", "Avanzado", "Advanced" ->
-                            listOf(TEMPLATE_ID_3, TEMPLATE_ID_4, TEMPLATE_ID_5, TEMPLATE_ID_6)
-                        else -> emptyList()
-                    }
-                Log.d("HomeViewModel", "Selected level: $level, identified template IDs: $templateIds")
-
                 val request =
                     TrainingPlanRequest(
                         diesDurada = daysDuration,
                         numEntrenamentsSetmanals = workoutsPerWeek,
-                        templates = templateIds,
+                        esport = sport ?: 1,
+                        nivell = level ?: 1,
+                        diesSetmana = daysOfWeek,
                     )
-                Log.d("HomeViewModel", "Final TrainingPlanRequest: $request")
+                Log.d("AirGo_Debug", "3. Petición construida, a punto de hacer el POST: $request")
+                repository.createTrainingPlan(request)
+                Log.d("AirGo_Debug", "4. POST realizado con éxito (el backend ha respondido bien)")
+                SessionManager.trainingPlans = null
 
-                // 3. Create plan (Server returns TrainingPlanRawResponse with IDs)
-                val planRaw: TrainingPlanRawResponse = repository.createTrainingPlan(request)
-                Log.d("HomeViewModel", "Create plan response: $planRaw")
-
-                // 4. Initialize plan (Server also returns TrainingPlanRawResponse)
-                val initializedRaw: TrainingPlanRawResponse = repository.initializeTrainingPlan(planRaw.id, request)
-                Log.d("HomeViewModel", "Initialized plan response: $initializedRaw")
-
-                // 5. Fetch all plans from server and reconstruct full objects
-                val rawPlans = repository.getTrainingPlans()
-                val fetchedPlans =
-                    rawPlans.map { raw ->
-                        val fullTemplates =
-                            raw.templates.map { templateId ->
-                                repository.getTemplate(templateId)
-                            }
-                        TrainingPlanResponse(
-                            id = raw.id,
-                            diesDurada = raw.diesDurada,
-                            numEntrenamentsSetmanals = raw.numEntrenamentsSetmanals,
-                            templates = fullTemplates,
-                        )
-                    }
+                val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
                 updateTodayExercises()
@@ -230,6 +191,77 @@ class HomeViewModel : ViewModel() {
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_delete_plan
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun fetchAvailableTitles() {
+        viewModelScope.launch {
+            try {
+                val response =
+                    com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi
+                        .getAvailableTitles()
+                _availableTitles.value = response.opcions
+                showTitleSelectionDialog = true
+            } catch (e: IOException) {
+                Log.e("HomeViewModel", "IO Error fetching titles", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_fetching_titles
+            } catch (e: retrofit2.HttpException) {
+                Log.e("HomeViewModel", "HTTP Error fetching titles", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_fetching_titles
+            }
+        }
+    }
+
+    fun unlockTitle(
+        titleId: Int,
+        setAsMain: Boolean,
+    ) {
+        viewModelScope.launch {
+            try {
+                com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi.unlockTitle(
+                    com.airgo.airgoApp.features.tracking.data
+                        .UnlockTitleRequest(titleId),
+                )
+
+                if (setAsMain) {
+                    SessionManager.userId?.let { userId ->
+                        val selectedTitle = _availableTitles.value.find { it.id == titleId }
+                        selectedTitle?.let {
+                            com.airgo.airgoApp.core.network.RetrofitProvider.profileApi.updateUser(
+                                userId,
+                                com.airgo.airgoApp.features.profile.data
+                                    .UpdateUserRequest(titol = it.nom),
+                            )
+                            SessionManager.titol = it.nom
+                        }
+                    }
+                }
+
+                // Actualizar la lista de títulos disponibles en el SessionManager
+                _availableTitles.value.find { it.id == titleId }?.let { title ->
+                    val currentList = SessionManager.availableTitols?.toMutableList() ?: mutableListOf()
+                    if (currentList.none { it.id == title.id }) {
+                        currentList.add(
+                            com.airgo.airgoApp.features.settings.account.titols.data.UserTitol(
+                                id = title.id,
+                                nom = title.nom,
+                                descripcio = title.descripcio,
+                            ),
+                        )
+                        SessionManager.availableTitols = currentList
+                    }
+                }
+
+                showTitleSelectionDialog = false
+                val newValue = (SessionManager.titolsPendents - 1).coerceAtLeast(0)
+                SessionManager.titolsPendents = newValue
+            } catch (e: IOException) {
+                Log.e("HomeViewModel", "IO Error unlocking title", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_unlocking_title
+            } catch (e: retrofit2.HttpException) {
+                Log.e("HomeViewModel", "HTTP Error unlocking title", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_unlocking_title
             }
         }
     }

@@ -41,8 +41,6 @@ class UsernameViewModelTest {
         mockkStatic(Log::class)
         every { Log.e(any(), any()) } returns 0
         every { Log.e(any(), any(), any()) } returns 0
-        // Opcional: si usas Log.d o Log.i, añádelos también:
-        every { Log.d(any(), any()) } returns 0
 
         // "Mockeamos" los Objects globales que usas en tu app
         mockkObject(SessionManager)

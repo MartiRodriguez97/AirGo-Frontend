@@ -112,7 +112,7 @@ fun chatScreen(
                     is ChatUiState.Empty -> chatEmptyState()
                     is ChatUiState.Error ->
                         Text(
-                            text = (uiState as ChatUiState.Error).message ?: "",
+                            text = (uiState as ChatUiState.Error).message.asString(),
                             modifier = Modifier.align(Alignment.Center).padding(16.dp),
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyMedium,

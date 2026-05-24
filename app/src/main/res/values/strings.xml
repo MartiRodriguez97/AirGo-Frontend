@@ -9,7 +9,22 @@
     <string name="nav_profile">Profile</string>
 
     <!-- features/profile/components/ -->
-    <string name="profile_badges_zone_title">Badges and activities area</string>
+    <string name="profile_badges_zone_title">Les meves insígnies</string>
+    <string name="profile_badges_empty">Encara no tens cap insígnia.</string>
+    <string name="profile_badges_earned_on">Aconseguida: %1$s</string>
+    <string name="profile_badges_dialog_close">Tancar</string>
+    <string name="error_fetching_badges">Unable to fetch badges</string>
+    <string name="profile_activities_recent_title">Activitats recents</string>
+    <string name="profile_activities_delete_desc">Eliminar activitat</string>
+
+    <!-- Badge Translations -->
+    <string name="badge_constancy_name">Iniciació a la constància</string>
+    <string name="badge_constancy_desc">Has completat la teva primera setmana d\'activitat!</string>
+    <string name="badge_walk_name">De passeig</string>
+    <string name="badge_walk_desc">Has caminat els teus primers 5 kilòmetres.</string>
+    <string name="badge_welcome_name">Benvingut a AirGo!</string>
+    <string name="badge_welcome_desc">Gràcies por unir-te a la comunitat d\'AirGo.</string>
+
     <string name="profile_delete_account_button">Delete account</string>
     <string name="profile_delete_account_dialog_title">Delete account?</string>
     <string name="profile_delete_account_dialog_text">Are you sure you want to delete your account? This action cannot be undone.</string>
@@ -27,11 +42,13 @@
     <string name="profile_picture_update_success">Photo updated successfully</string>
 
     <!-- features/profile/domain/ProfileViewModel -->
-    <string name="error_delete_account_http">Error deleting account (HTTP %1$d)</string>
+    <string name="error_delete_account">Error deleting account</string>
     <string name="error_process_image">Could not process the selected image</string>
     <string name="error_upload_no_url">Photo uploaded, but the server did not return the URL</string>
     <string name="error_server_generic">Server error: HTTP %1$d</string>
     <string name="error_connection_upload">Connection error while uploading image</string>
+    <string name="error_fetching_user_profile">Unable to fetch user profile</string>
+    <string name="error_updating_picture">Could not update profile picture</string>
 
     <!-- core/network/NetworkErrorMapper -->
     <string name="error_network_unknown_host">Could not connect to the server. Check your internet connection.</string>
@@ -44,7 +61,7 @@
     <string name="login_header_description">Airgo logo</string>
 
     <!-- features/login/domain/LoginViewModel -->
-    <string name="error_google_no_token">Google ID Token could not be obtained</string>
+    <string name="error_google">Could not sign in. Please check that you have Google services, and try again.</string>
     <string name="error_backend_token_rejected">Backend rejected the token (HTTP %1$d)</string>
     <string name="error_backend_token_rejected_details">Backend rejected the token (HTTP %1$d): %2$s</string>
     <string name="error_security_permissions">Network permissions not available</string>
@@ -120,14 +137,26 @@
     <string name="map_layer_bicing">Bicing stations</string>
     <string name="map_layer_pollution">Air quality</string>
 
+    <!-- features/map/FavoritesViewModel-->
+    <string name="error_deleting_favourite_route">The route could not be removed as a favorite</string>
+    <string name="error_fetching_routes">Could not fetch routes as favorites</string>
+
     <!-- features/map/RouteViewModel-->
     <string name="error_route_connection">Connection error to server</string>
     <string name="error_route_http">The server returned an error: %1$d</string>
     <string name="error_route_selection_missing">Select a start and destination point to calculate the route.</string>
+    <string name="error_fetching_route">Could not fetch route</string>
+    <string name="error_route_already_saved">This route is already saved as a favorites</string>
+    <string name="error_saving_route">Could not save route as favorites</string>
 
     <!-- features/map/PollutionViewModel-->
     <string name="error_pollution_connection">Connection error while loading air quality data</string>
     <string name="error_pollution_http">Air quality service error: %1$d</string>
+    <string name="error_fetching_pollution">Unable to fetch air quality zones. Please try again in a few minutes.</string>
+    <string name="error_pollution_timeout">Could not update. Showing the latest data.</string>
+
+    <!-- features/map/BicingViewModel-->
+    <string name="error_fetching_bicing">Unable to fetch Bicing stations. Please try again in a few minutes.</string>
 
     <!-- features/map/BicingHelper-->
     <string name="bicing_marker_snippet">
@@ -239,21 +268,22 @@
     <string name="calendar_day_fri">Fr</string>
     <string name="calendar_day_sat">Sa</string>
     <string name="calendar_back_desc">Back</string>
+    <string name="error_fetching_training_plan">Error fetching training plan</string>
 
-    <!-- features/onboarding/OnboardingScreen-->
+    <!-- features/onboarding-->
     <string name="continue_on_boarding">Continue</string>
     <string name="welcome_on_boarding">Welcome to AirGo!</string>
     <string name="complete_profile_on_boarding">Complete your profile to continue</string>
     <string name="weight_on_boarding">Weight (kg)</string>
     <string name="height_on_boarding">Height (cm)</string>
     <string name="own_bike_on_boarding">Do you have own bicycle?</string>
-
     <string name="error_not_fill_files">Fill in all fields correctly</string>
     <string name="error_incorrect_on_boarding_implementation">Unable to store attributes. Please, try again</string>
     <string name="error_username_already_exists">The username already exists. Please, change it</string>
     <string name="error_username_too_short">The username must be at least 4 characters long.</string>
     <string name="error_invalid_weight">The weight is not valid. Please, change it</string>
     <string name="error_invalid_height">The height is not valid. Please, change it</string>
+    <string name="error_saving_info_user">Unable to save user personal data. Please try again in a few minutes</string>
 
     <string name="location_permission_required">Location permission required</string>
     <string name="activity_saved">Activity successfully saved</string>
@@ -297,14 +327,26 @@
     <string name="forums">Forums</string>
     <string name="search_forum">Search forums...</string>
     <string name="no_forums_found">No forums found</string>
+    <string name="error_loading_profile">Could not load profile</string>
+    <string name="error_loading_friends">Could not load friends</string>
+    <string name="error_deleting_friend">Couldn\'t delete this friend</string>
+
+    <!-- Tracking Dialogs -->
+    <string name="tracking_new_title_title">New Title!</string>
+    <string name="tracking_new_title_desc">You have a pending title to choose!</string>
+    <string name="tracking_set_main_title">Set as main title</string>
+    <string name="tracking_later">Later</string>
+    <string name="tracking_new_badge_title">New Badge!</string>
+    <string name="tracking_badge_icon_desc">Badge icon</string>
+    <string name="tracking_accept">Accept</string>
 
     <!-- feature/chat -->
     <string name="begin_conversation">Start the conversation!</string>
     <string name="message">Message...</string>
     <string name="send">Send</string>
 
-
     <!-- features/tracking-->
+    <string name="error_saving_activity">Could not save activity</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Start</string>
@@ -333,6 +375,17 @@
     <string name="activity_comment_title">Activity comments</string>
     <string name="activity_comment_placeholder">How did the route go?</string>
     <string name="activity_comment_btn_save">Save note</string>
+
+
+    <!-- feature/activity -->
+    <string name="error_loading_activities">Unable to load activities</string>
+    <string name="error_deleting_activity">Could not delete activity</string>
+    <string name="error_updating_activity_sensation">Could not update activity sentiment</string>
+    <string name="error_updating_activity_comment">Could not update activity comment</string>
+
+    <!-- Titles -->
+    <string name="error_fetching_titles">Could not fetch available titles</string>
+    <string name="error_unlocking_title">Could not unlock title</string>
 
 
 </resources>

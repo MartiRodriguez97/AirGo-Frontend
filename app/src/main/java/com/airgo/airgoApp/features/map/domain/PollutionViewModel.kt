@@ -13,6 +13,7 @@ import com.airgo.airgoApp.features.map.data.PollutionPoint
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import java.net.SocketTimeoutException
 
 private const val BCN_LAT = 41.3851
 private const val BCN_LON = 2.1734
@@ -48,12 +49,14 @@ class PollutionViewModel : ViewModel() {
             try {
                 errorMessage = null // Netegem errors previs
                 stations = RetrofitProvider.airQualityApi.getPollutionData(BCN_LAT, BCN_LON, RADI_BARCELONA)
-                Log.d("Conexió exitosa", "Nombre d'estacions de qualitat d'aire: ${stations.size} estacions")
+            } catch (e: SocketTimeoutException) {
+                errorMessage = UiText.StringResource(R.string.error_pollution_timeout)
+                Log.e(LOG_TAG, "Timeout de red al cargar calidad del aire", e)
             } catch (e: IOException) {
-                errorMessage = UiText.StringResource(R.string.error_pollution_connection)
+                errorMessage = UiText.StringResource(R.string.error_fetching_pollution)
                 Log.e(LOG_TAG, "Network failure", e)
             } catch (e: HttpException) {
-                errorMessage = UiText.StringResource(R.string.error_pollution_http, e.code())
+                errorMessage = UiText.StringResource(R.string.error_fetching_pollution)
                 Log.e(LOG_TAG, "HTTP failure", e)
             }
         }

@@ -2,6 +2,7 @@ package com.airgo.airgoApp.features.activity.domain
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.features.activity.data.ActivityResponse
 import com.airgo.airgoApp.features.activity.data.UpdateCommentRequest
@@ -21,7 +22,7 @@ sealed class ActivityUiState {
     ) : ActivityUiState()
 
     data class Error(
-        val message: String,
+        val message: Int,
     ) : ActivityUiState()
 }
 
@@ -51,10 +52,10 @@ class ActivityViewModel : ViewModel() {
                     }
             } catch (e: IOException) {
                 Log.e(TAG, "Network error loading activities", e)
-                _uiState.value = ActivityUiState.Error("Error de connexió")
+                _uiState.value = ActivityUiState.Error(R.string.error_loading_activities)
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "HTTP ${e.code()} loading activities", e)
-                _uiState.value = ActivityUiState.Error("Error del servidor: ${e.code()}")
+                _uiState.value = ActivityUiState.Error(R.string.error_loading_activities)
             }
         }
     }
@@ -64,15 +65,17 @@ class ActivityViewModel : ViewModel() {
             try {
                 val response = RetrofitProvider.activityApi.deleteActivity(id)
                 if (response.isSuccessful) {
-                    // Recargar la lista tras eliminar
                     loadActivities()
                 } else {
                     Log.e(TAG, "Delete failed: ${response.code()}")
+                    _uiState.value = ActivityUiState.Error(R.string.error_deleting_activity)
                 }
             } catch (e: IOException) {
                 Log.e(TAG, "Network error deleting activity", e)
+                _uiState.value = ActivityUiState.Error(R.string.error_deleting_activity)
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "HTTP ${e.code()} deleting activity", e)
+                _uiState.value = ActivityUiState.Error(R.string.error_deleting_activity)
             }
         }
     }
@@ -98,17 +101,18 @@ class ActivityViewModel : ViewModel() {
                                     activity
                                 }
                             }
-
                         _uiState.value = ActivityUiState.Success(updatedActivities)
                     }
-                    Log.d(TAG, "Sensation updated successfully for activity $activityId")
                 } else {
                     Log.e(TAG, "Update failed: ${response.code()}")
+                    _uiState.value = ActivityUiState.Error(R.string.error_updating_activity_sensation)
                 }
             } catch (e: IOException) {
                 Log.e(TAG, "Network error updating sensation", e)
+                _uiState.value = ActivityUiState.Error(R.string.error_updating_activity_sensation)
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "HTTP ${e.code()} updating sensation", e)
+                _uiState.value = ActivityUiState.Error(R.string.error_updating_activity_sensation)
             }
         }
     }
@@ -135,14 +139,16 @@ class ActivityViewModel : ViewModel() {
                             }
                         _uiState.value = ActivityUiState.Success(updatedActivities)
                     }
-                    Log.d(TAG, "Comment updated successfully for activity $activityId")
                 } else {
                     Log.e(TAG, "Update comment failed: ${response.code()}")
+                    _uiState.value = ActivityUiState.Error(R.string.error_updating_activity_comment)
                 }
             } catch (e: IOException) {
                 Log.e(TAG, "Network error updating comment", e)
+                _uiState.value = ActivityUiState.Error(R.string.error_updating_activity_comment)
             } catch (e: retrofit2.HttpException) {
                 Log.e(TAG, "HTTP ${e.code()} updating comment", e)
+                _uiState.value = ActivityUiState.Error(R.string.error_updating_activity_comment)
             }
         }
     }

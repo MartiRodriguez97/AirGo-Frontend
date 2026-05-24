@@ -57,7 +57,7 @@ fun favoritesScreen(
 
     LaunchedEffect(viewModel.errorMessage) {
         viewModel.errorMessage?.let { msg ->
-            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, msg.asString(context), Toast.LENGTH_LONG).show()
             viewModel.clearError()
         }
     }

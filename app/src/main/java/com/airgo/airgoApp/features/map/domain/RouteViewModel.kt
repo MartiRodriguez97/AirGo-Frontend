@@ -63,16 +63,14 @@ class RouteViewModel : ViewModel() {
                     )
 
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
-                Log.d(
-                    LOG_TAG,
-                    "Ruta calculada amb perfil=${transportProfile.value}, " +
-                        "distància=${currentRoute?.summary?.distanceMeters} m",
-                )
+                if (currentRoute?.status !== "success") {
+                    errorMessage = UiText.StringResource(R.string.error_fetching_route)
+                }
             } catch (e: IOException) {
-                errorMessage = UiText.StringResource(R.string.error_connection)
+                errorMessage = UiText.StringResource(R.string.error_fetching_route)
                 Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             } catch (e: HttpException) {
-                errorMessage = UiText.StringResource(R.string.error_route_http, e.code())
+                errorMessage = UiText.StringResource(R.string.error_fetching_route)
                 Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
             } finally {
                 isLoading = false
@@ -146,16 +144,18 @@ class RouteViewModel : ViewModel() {
                         isFavorite = true
                         favoriteMessage = null
                     }
-                    JA_EXISTEIX -> favoriteMessage = "La ruta ja estava guardada"
+                    JA_EXISTEIX -> errorMessage = UiText.StringResource(R.string.error_route_already_saved)
                     else -> {
-                        favoriteMessage = "Error al guardar la ruta: ${response.code()}"
+                        errorMessage = UiText.StringResource(R.string.error_saving_route)
                         Log.e(LOG_TAG, "Save favorite failed: ${response.code()}")
                     }
                 }
             } catch (e: IOException) {
-                favoriteMessage = "Error de connexió: ${e.message}"
+                Log.e(LOG_TAG, "Network error fetching routes: ${e.message}", e)
+                errorMessage = UiText.StringResource(R.string.error_saving_route)
             } catch (e: HttpException) {
-                favoriteMessage = "Error del servidor: ${e.code()}"
+                Log.e(LOG_TAG, "HTTP error fetching routes: ${e.code()}", e)
+                errorMessage = UiText.StringResource(R.string.error_saving_route)
             }
         }
     }

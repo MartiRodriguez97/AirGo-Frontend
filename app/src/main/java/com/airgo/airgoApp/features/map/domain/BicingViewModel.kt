@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.map.domain
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,16 +31,15 @@ class BicingViewModel : ViewModel() {
             try {
                 errorMessage = null
                 stations = RetrofitProvider.bicingApi.getBicingStations(lat, lon, radio)
-                Log.d("BicingViewModel", "Conexió exitosa, stations rebuts: ${stations.size}")
-                if (stations.isNotEmpty()) {
-                    Log.d("BicingViewModel", "Primera estació rebuda: ${stations.first()}")
+                if (stations.isEmpty()) {
+                    errorMessage = UiText.StringResource(R.string.error_fetching_bicing)
                 }
             } catch (e: IOException) {
-                errorMessage = UiText.StringResource(R.string.error_connection_generic)
-                e.printStackTrace()
+                Log.e(TAG, "Network error fetching routes: ${e.message}", e)
+                errorMessage = UiText.StringResource(R.string.error_fetching_bicing)
             } catch (e: HttpException) {
-                errorMessage = UiText.StringResource(R.string.error_connection_generic, e.code())
-                e.printStackTrace()
+                Log.e(TAG, "HTTP error fetching routes: ${e.code()}", e)
+                errorMessage = UiText.StringResource(R.string.error_fetching_bicing)
             }
         }
     }

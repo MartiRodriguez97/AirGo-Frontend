@@ -1,8 +1,8 @@
-package com.airgo.airgoApp.features.calendar.presentation.viewmodel
+package com.airgo.airgoApp.features.calendar.domain.viewmodel
 
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
-import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.data.TrainingTemplate
@@ -16,12 +16,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CalendarViewModelTest {
@@ -77,32 +76,39 @@ class CalendarViewModelTest {
 
             viewModel.fetchPlaEntrenament()
 
-            assertFalse(viewModel.isLoading.value)
-            assertNull(viewModel.errorResId.value)
-            assertEquals(mockData, viewModel.plaEntrenamentList.value)
+            Assert.assertFalse(viewModel.isLoading.value)
+            Assert.assertNull(viewModel.errorResId.value)
+            Assert.assertEquals(mockData, viewModel.plaEntrenamentList.value)
         }
 
     @Test
     fun `fetchPlaEntrenament should handle API error`() =
         runTest {
-            coEvery { apiService.getPlaEntrenament() } returns Response.error(500, mockk(relaxed = true))
+            coEvery { apiService.getPlaEntrenament() } returns
+                Response.error(
+                    500,
+                    mockk(relaxed = true),
+                )
 
             viewModel.fetchPlaEntrenament()
 
-            assertFalse(viewModel.isLoading.value)
-            assertEquals(com.airgo.airgoApp.R.string.calendar_error_server, viewModel.errorResId.value)
-            assertEquals(emptyList<TrainingPlanResponse>(), viewModel.plaEntrenamentList.value)
+            Assert.assertFalse(viewModel.isLoading.value)
+            Assert.assertEquals(R.string.calendar_error_server, viewModel.errorResId.value)
+            Assert.assertEquals(
+                emptyList<TrainingPlanResponse>(),
+                viewModel.plaEntrenamentList.value,
+            )
         }
 
     @Test
     fun `fetchPlaEntrenament should handle network error`() =
         runTest {
-            coEvery { apiService.getPlaEntrenament() } throws java.io.IOException()
+            coEvery { apiService.getPlaEntrenament() } throws IOException()
 
             viewModel.fetchPlaEntrenament()
 
-            assertFalse(viewModel.isLoading.value)
-            assertEquals(com.airgo.airgoApp.R.string.calendar_error_network, viewModel.errorResId.value)
+            Assert.assertFalse(viewModel.isLoading.value)
+            Assert.assertEquals(R.string.calendar_error_network, viewModel.errorResId.value)
         }
 
     @Test
@@ -112,9 +118,12 @@ class CalendarViewModelTest {
 
             viewModel.fetchPlaEntrenament()
 
-            assertFalse(viewModel.isLoading.value)
-            assertNull(viewModel.errorResId.value)
-            assertEquals(emptyList<TrainingPlanResponse>(), viewModel.plaEntrenamentList.value)
+            Assert.assertFalse(viewModel.isLoading.value)
+            Assert.assertNull(viewModel.errorResId.value)
+            Assert.assertEquals(
+                emptyList<TrainingPlanResponse>(),
+                viewModel.plaEntrenamentList.value,
+            )
         }
 
     @Test
@@ -133,8 +142,8 @@ class CalendarViewModelTest {
 
             viewModel.fetchPlaEntrenament()
 
-            assertFalse(viewModel.isLoading.value)
-            assertEquals(cachedData, viewModel.plaEntrenamentList.value)
+            Assert.assertFalse(viewModel.isLoading.value)
+            Assert.assertEquals(cachedData, viewModel.plaEntrenamentList.value)
             // verify no API call was made
             coVerify(exactly = 0) { apiService.getPlaEntrenament() }
         }
@@ -142,12 +151,16 @@ class CalendarViewModelTest {
     @Test
     fun `clearError should set errorResId to null`() =
         runTest {
-            coEvery { apiService.getPlaEntrenament() } returns Response.error(500, mockk(relaxed = true))
+            coEvery { apiService.getPlaEntrenament() } returns
+                Response.error(
+                    500,
+                    mockk(relaxed = true),
+                )
             viewModel.fetchPlaEntrenament()
-            assertEquals(com.airgo.airgoApp.R.string.calendar_error_server, viewModel.errorResId.value)
+            Assert.assertEquals(R.string.calendar_error_server, viewModel.errorResId.value)
 
             viewModel.clearError()
 
-            assertNull(viewModel.errorResId.value)
+            Assert.assertNull(viewModel.errorResId.value)
         }
 }

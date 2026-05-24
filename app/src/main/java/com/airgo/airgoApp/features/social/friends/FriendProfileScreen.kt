@@ -70,7 +70,7 @@ fun friendProfileScreen(
             is FriendProfileUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = state.message,
+                        text = state.message.asString(),
                         color = MaterialTheme.colorScheme.error,
                     )
                 }

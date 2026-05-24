@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.network.UserPreferences
@@ -38,9 +39,6 @@ import com.airgo.airgoApp.features.onboarding.onboardingScreen
 import com.airgo.airgoApp.features.shell.mainShellScreen
 import kotlinx.coroutines.launch
 import java.io.IOException
-
-const val HTTP_ERROR_401 = 401
-const val HTTP_ERROR_403 = 403
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -85,23 +83,28 @@ private fun appContent(repository: UserPreferencesRepository) {
     var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
     var needsOnboarding by rememberSaveable { mutableStateOf(false) }
     var isDataStoreLoaded by rememberSaveable { mutableStateOf(false) }
+    var isAutoLoggingIn by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(userPrefs) {
         val prefs = userPrefs
-        if (prefs != null && !isLoggedIn) {
-            handleAutoLogin(
-                prefs,
-                onboardingViewModel,
-                repository,
-            ) { email, pic, logged, onboarding ->
-                userEmail = email
-                userPictureUrl = pic
-                isLoggedIn = logged
-                needsOnboarding = onboarding
+        if (prefs != null) {
+            isDataStoreLoaded = true
+            if (!isLoggedIn || SessionManager.accessToken == null) {
+                if (!prefs.token.isNullOrEmpty()) {
+                    isAutoLoggingIn = true
+                }
+                handleAutoLogin(
+                    prefs,
+                    onboardingViewModel,
+                    repository,
+                ) { email, pic, logged, onboarding ->
+                    userEmail = email
+                    userPictureUrl = pic
+                    isLoggedIn = logged
+                    needsOnboarding = onboarding
+                    isAutoLoggingIn = false
+                }
             }
-            isDataStoreLoaded = true
-        } else if (prefs == null) {
-            isDataStoreLoaded = true
         }
     }
 
@@ -110,6 +113,7 @@ private fun appContent(repository: UserPreferencesRepository) {
             AppNavigationState(
                 isDataStoreLoaded = isDataStoreLoaded,
                 isLoggedIn = isLoggedIn,
+                isAutoLoggingIn = isAutoLoggingIn,
                 needsOnboarding = needsOnboarding,
                 userEmail = userEmail,
                 userPictureUrl = userPictureUrl,
@@ -138,6 +142,7 @@ private fun appContent(repository: UserPreferencesRepository) {
 private data class AppNavigationState(
     val isDataStoreLoaded: Boolean,
     val isLoggedIn: Boolean,
+    val isAutoLoggingIn: Boolean,
     val needsOnboarding: Boolean,
     val userEmail: String?,
     val userPictureUrl: String?,
@@ -154,8 +159,8 @@ private fun appNavigation(
     onLogout: () -> Unit,
 ) {
     when {
-        !state.isDataStoreLoaded -> Box(modifier = Modifier.fillMaxSize())
-        !state.isLoggedIn -> loginScreen(onLoginSuccess)
+        !state.isDataStoreLoaded -> loadingScreen()
+        !state.isLoggedIn -> loginScreen(onLoginSuccess, isLoading = state.isAutoLoggingIn)
         state.needsOnboarding || onboardingViewModel.uiState.isHandledByOnboarding -> {
             onboardingScreen(onCompleted = onOnboardingComplete)
         }
@@ -168,35 +173,108 @@ private fun appNavigation(
     }
 }
 
+@Composable
+fun loadingScreen() {
+    Box(
+        modifier =
+            androidx.compose.ui.Modifier
+                .fillMaxSize(),
+        contentAlignment = androidx.compose.ui.Alignment.Center,
+    ) {
+        androidx.compose.material3.CircularProgressIndicator()
+    }
+}
+
+private const val HTTP_ERROR_401 = 401
+private const val HTTP_ERROR_403 = 403
+
 private suspend fun handleAutoLogin(
     userPrefs: UserPreferences,
     onboardingViewModel: OnboardingViewModel,
     repository: UserPreferencesRepository,
     onSync: (String?, String?, Boolean, Boolean) -> Unit,
 ) {
-    if (!userPrefs.token.isNullOrEmpty()) {
-        SessionManager.accessToken = userPrefs.token
-        SessionManager.refreshToken = userPrefs.refreshToken
-        SessionManager.userId = userPrefs.userId
+    if (userPrefs.token.isNullOrEmpty()) return
 
-        try {
-            val response = RetrofitProvider.authApi.getCurrentUserProfile()
-            if (response.isSuccessful && response.body() != null) {
-                updateUserSession(response.body()!!, onboardingViewModel, onSync)
-            } else if (response.code() == HTTP_ERROR_401 || response.code() == HTTP_ERROR_403) {
-                repository.clearSession()
-            }
-        } catch (e: IOException) {
-            Log.e("MainActivity", "Error during auto login", e)
+    SessionManager.accessToken = userPrefs.token
+    SessionManager.refreshToken = userPrefs.refreshToken
+    SessionManager.userId = userPrefs.userId
+
+    try {
+        val response = RetrofitProvider.authApi.getCurrentUserProfile()
+        if (response.isSuccessful && response.body() != null) {
+            val userDetails = response.body()!!
+            applyUserSession(userDetails)
+
+            // Fetch everything before signaling login is complete
+            fetchUserBadges()
+            fetchPendingTitles()
+            fetchAvailableTitles()
+            fetchTrainingPlans()
+
+            val needsOnboarding = SessionManager.isProfileIncomplete()
+            if (needsOnboarding) onboardingViewModel.checkOnboardingNeeded()
+
+            onSync(SessionManager.username, userDetails.profilePic, true, needsOnboarding)
+        } else if (response.code() == HTTP_ERROR_401 || response.code() == HTTP_ERROR_403) {
+            repository.clearSession()
+            onSync(null, null, false, false)
         }
+    } catch (e: IOException) {
+        Log.e("MainActivity", "Error during auto login", e)
     }
 }
 
-private fun updateUserSession(
-    userDetails: UserDetailResponse,
-    onboardingViewModel: OnboardingViewModel,
-    onSyncComplete: (String?, String?, Boolean, Boolean) -> Unit,
-) {
+private suspend fun fetchUserBadges() {
+    try {
+        SessionManager.userBadges = RetrofitProvider.profileApi.getUserBadges()
+    } catch (e: retrofit2.HttpException) {
+        Log.e("MainActivity", "Error fetching user badges (HTTP)", e)
+    } catch (e: IOException) {
+        Log.e("MainActivity", "Error fetching user badges (IO)", e)
+    }
+}
+
+private suspend fun fetchPendingTitles() {
+    try {
+        val titlesResponse = RetrofitProvider.trackingApi.getAvailableTitles()
+        SessionManager.titolsPendents = titlesResponse.titolsPendents
+    } catch (e: IOException) {
+        Log.e("MainActivity", "IO Error fetching pending titles", e)
+    } catch (e: retrofit2.HttpException) {
+        Log.e("MainActivity", "HTTP Error fetching pending titles", e)
+    }
+}
+
+private suspend fun fetchAvailableTitles() {
+    val userId = SessionManager.userId ?: return
+    try {
+        val url = ApiEndpoints.getAvailableTitolsEndpoint(userId)
+        val response = RetrofitProvider.titolApi.getAvailableTitols(url)
+        if (response.isSuccessful && response.body() != null) {
+            SessionManager.availableTitols = response.body()!!.map { it.titol }
+        }
+    } catch (e: IOException) {
+        Log.e("MainActivity", "IO Error fetching available titles", e)
+    } catch (e: retrofit2.HttpException) {
+        Log.e("MainActivity", "HTTP Error fetching available titles", e)
+    }
+}
+
+private suspend fun fetchTrainingPlans() {
+    try {
+        val repo =
+            com.airgo.airgoApp.features.home.data
+                .TrainingPlanRepository()
+        SessionManager.trainingPlans = repo.fetchFullTrainingPlans()
+    } catch (e: IOException) {
+        Log.e("MainActivity", "IO Error fetching training plans", e)
+    } catch (e: retrofit2.HttpException) {
+        Log.e("MainActivity", "HTTP Error fetching training plans", e)
+    }
+}
+
+private fun applyUserSession(userDetails: UserDetailResponse) {
     with(SessionManager) {
         userId = userDetails.id
         username = userDetails.username
@@ -211,9 +289,4 @@ private fun updateUserSession(
         titol = userDetails.titol
         insignies = userDetails.insignies
     }
-
-    val needsOnboarding = SessionManager.isProfileIncomplete()
-    if (needsOnboarding) onboardingViewModel.checkOnboardingNeeded()
-
-    onSyncComplete(SessionManager.username, userDetails.profilePic, true, needsOnboarding)
 }

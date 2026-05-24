@@ -17,18 +17,20 @@ class BadgesAndActivitiesZoneTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    private lateinit var context: android.content.Context
+
     @Before
     fun setUp() {
         // Esta es la forma correcta de obtener el contexto en androidTest
         context = InstrumentationRegistry.getInstrumentation().targetContext
     }
 
-    private lateinit var context: android.content.Context
-
     @Test
     fun badgesAndActivitiesZone_isDisplayed() {
         composeTestRule.setContent {
-            badgesAndActivitiesZone()
+            badgesAndActivitiesZone(
+                onActivityClick = {},
+            )
         }
         composeTestRule.onRoot().assertIsDisplayed()
     }
@@ -36,10 +38,22 @@ class BadgesAndActivitiesZoneTest {
     @Test
     fun badgesAndActivitiesZone_titleTextIsDisplayed() {
         composeTestRule.setContent {
-            badgesAndActivitiesZone()
+            badgesAndActivitiesZone(
+                onActivityClick = {},
+            )
         }
         composeTestRule
-            .onNodeWithText(context.getString(R.string.profile_badges_title), substring = true, ignoreCase = true)
+            .onNodeWithText(context.getString(R.string.profile_activities_recent_title), substring = true, ignoreCase = true)
+            .assertExists()
+    }
+
+    @Test
+    fun badgesZone_titleTextIsDisplayed() {
+        composeTestRule.setContent {
+            badgesZone(badges = emptyList())
+        }
+        composeTestRule
+            .onNodeWithText(context.getString(R.string.profile_badges_zone_title), substring = true, ignoreCase = true)
             .assertExists()
     }
 }

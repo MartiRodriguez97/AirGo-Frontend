@@ -34,35 +34,54 @@ import com.airgo.airgoApp.R
 
 private const val HALF_WIDTH = 0.5f
 
+private const val SPORT_RUN_ID = 1
+private const val SPORT_BIKE_ID = 2
+
+// Level IDs
+private const val LEVEL_EASY_ID = 1
+private const val LEVEL_MEDIUM_ID = 2
+private const val LEVEL_ADVANCED_ID = 3
+
+// Day IDs
+private const val DAY_MONDAY = 1
+private const val DAY_TUESDAY = 2
+private const val DAY_WEDNESDAY = 3
+private const val DAY_THURSDAY = 4
+private const val DAY_FRIDAY = 5
+private const val DAY_SATURDAY = 6
+private const val DAY_SUNDAY = 7
+
 @Composable
 internal fun stepSportSelection(
-    selectedSport: String?,
-    onSportSelected: (String) -> Unit,
+    selectedSport: Int?,
+    onSportSelected: (Int) -> Unit,
 ) {
     Text(stringResource(R.string.quest_title_sport), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        // correr opcio 1
         val sportRun = stringResource(R.string.sport_run)
         selectionButton(
             text = sportRun,
             icon = Icons.Default.DirectionsRun,
-            selected = selectedSport == sportRun,
-            onClick = { onSportSelected(sportRun) },
+            selected = selectedSport == SPORT_RUN_ID,
+            onClick = { onSportSelected(SPORT_RUN_ID) },
         )
+        // bici opcio 2
         val sportBike = stringResource(R.string.sport_bike)
         selectionButton(
             text = sportBike,
             icon = Icons.Default.DirectionsBike,
-            selected = selectedSport == sportBike,
-            onClick = { onSportSelected(sportBike) },
+            selected = selectedSport == SPORT_BIKE_ID,
+            onClick = { onSportSelected(SPORT_BIKE_ID) },
         )
     }
 }
 
 @Composable
 internal fun stepLevelSelection(
-    selectedLevel: String?,
-    onLevelSelected: (String) -> Unit,
+    selectedLevel: Int?,
+    onLevelSelected: (Int) -> Unit,
 ) {
     Text(stringResource(R.string.quest_title_level), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
@@ -71,37 +90,37 @@ internal fun stepLevelSelection(
         selectionButton(
             text = easy,
             icon = Icons.Default.SignalCellularAlt1Bar,
-            selected = selectedLevel == easy,
-            onClick = { onLevelSelected(easy) },
+            selected = selectedLevel == LEVEL_EASY_ID,
+            onClick = { onLevelSelected(LEVEL_EASY_ID) },
         )
         val medium = stringResource(R.string.level_medium)
         selectionButton(
             text = medium,
             icon = Icons.Default.SignalCellularAlt2Bar,
-            selected = selectedLevel == medium,
-            onClick = { onLevelSelected(medium) },
+            selected = selectedLevel == LEVEL_MEDIUM_ID,
+            onClick = { onLevelSelected(LEVEL_MEDIUM_ID) },
         )
         val advanced = stringResource(R.string.level_advanced)
         selectionButton(
             text = advanced,
             icon = Icons.Default.SignalCellularAlt,
-            selected = selectedLevel == advanced,
-            onClick = { onLevelSelected(advanced) },
+            selected = selectedLevel == LEVEL_ADVANCED_ID,
+            onClick = { onLevelSelected(LEVEL_ADVANCED_ID) },
         )
     }
 }
 
 @Composable
-internal fun stepDaysSelection(selectedDays: SnapshotStateList<String>) {
+internal fun stepDaysSelection(selectedDays: SnapshotStateList<Int>) {
     val daysOfWeek =
         listOf(
-            R.string.day_monday,
-            R.string.day_tuesday,
-            R.string.day_wednesday,
-            R.string.day_thursday,
-            R.string.day_friday,
-            R.string.day_saturday,
-            R.string.day_sunday,
+            DAY_MONDAY to (R.string.day_monday),
+            DAY_TUESDAY to (R.string.day_tuesday),
+            DAY_WEDNESDAY to (R.string.day_wednesday),
+            DAY_THURSDAY to (R.string.day_thursday),
+            DAY_FRIDAY to (R.string.day_friday),
+            DAY_SATURDAY to (R.string.day_saturday),
+            DAY_SUNDAY to (R.string.day_sunday),
         )
     Text(stringResource(R.string.quest_title_days), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
@@ -110,21 +129,22 @@ internal fun stepDaysSelection(selectedDays: SnapshotStateList<String>) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        daysOfWeek.forEach { dayRes ->
-            val day = stringResource(dayRes)
-            val isSelected = selectedDays.contains(day)
+        daysOfWeek.forEach { (dayId, dayRes) ->
+            val dayName = stringResource(dayRes)
+            val isSelected = selectedDays.contains(dayId)
+
             FilterChip(
                 selected = isSelected,
                 onClick = {
                     if (isSelected) {
-                        selectedDays.remove(day)
+                        selectedDays.remove(dayId)
                     } else {
-                        selectedDays.add(day)
+                        selectedDays.add(dayId)
                     }
                 },
                 label = {
                     Text(
-                        text = day,
+                        text = dayName,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                     )
