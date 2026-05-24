@@ -311,7 +311,7 @@
     <string name="pending_requests">Solicitudes pendientes</string>
     <string name="no_pending_requests">No tienes solicitudes pendientes.</string>
     <string name="friend_request">Quiere ser tu amigo.</string>
-    <string name="search_users">Buscar usuarios...</string>
+    <string name="search_users_forums">Buscar usuarios y fórums...</string>
     <string name="accept">Aceptar</string>
     <string name="reject">Rechazar</string>
     <string name="no_user_found">No se ha encontrado ningún usuario.</string>
@@ -385,5 +385,7 @@
     <string name="error_fetching_titles">No se pudieron obtener los títulos disponibles</string>
     <string name="error_unlocking_title">No se pudo desbloquear el título</string>
     <string name="no_favorite_created_forums_found">No tienes ningún foro favorito ni creado por ti.</string>
+    <string name="forums_filter_saved">Seguidos</string>
+    <string name="forums_filter_mine">Creados</string>
 
 </resources>
