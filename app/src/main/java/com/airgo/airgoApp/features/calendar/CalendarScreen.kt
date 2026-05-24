@@ -52,6 +52,7 @@ import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeParseException
+import androidx.compose.ui.platform.LocalLocale
 
 private const val DAYS_IN_WEEK = 7
 private const val DATE_SUBSTRING_END = 10
@@ -177,7 +178,7 @@ fun calendarHeader(
         Button(onClick = onPreviousMonth) { Text(stringResource(R.string.calendar_btn_prev)) }
 
         val formatTextStyle = java.time.format.TextStyle.FULL
-        val monthName = currentMonth.month.getDisplayName(formatTextStyle, java.util.Locale.getDefault())
+        val monthName = currentMonth.month.getDisplayName(formatTextStyle, LocalLocale.current.platformLocale)
         val formattedMonth = monthName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
         Text(
@@ -271,33 +272,32 @@ fun dayCell(
     val padding4 = 4.dp
     val fontSize16 = 16.sp
 
-    Column(
-        modifier =
-            Modifier
-                .aspectRatio(ASPECT_RATIO_SQUARE)
-                .padding(padding4)
-                .background(
-                    Color.LightGray.copy(alpha = ALPHA_BG),
-                    shape = RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp),
-                ).clickable(onClick = onClick)
-                .padding(padding4),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    androidx.compose.material3.Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp),
+        modifier = Modifier
+            .aspectRatio(ASPECT_RATIO_SQUARE)
+            .padding(padding4),
+        color = Color.LightGray.copy(alpha = ALPHA_BG),
+        tonalElevation = 0.dp,
     ) {
-        Text(text = date.dayOfMonth.toString(), fontSize = fontSize16)
-
-        Spacer(modifier = Modifier.height(padding4))
-
-        exercises.forEach { ex ->
-            val color = if (ex.completat) COLOR_LIGHT_GREEN else COLOR_LIGHT_RED
-            Box(
-                modifier =
-                    Modifier
+        Column(
+            modifier = Modifier.padding(padding4),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(text = date.dayOfMonth.toString(), fontSize = fontSize16)
+            Spacer(modifier = Modifier.height(padding4))
+            exercises.forEach { ex ->
+                val color = if (ex.completat) COLOR_LIGHT_GREEN else COLOR_LIGHT_RED
+                Box(
+                    modifier = Modifier
                         .fillMaxWidth()
                         .height(HEIGHT_4.dp)
                         .background(Color(color))
                         .padding(vertical = PADDING_VERTICAL_CELL.dp),
-            )
-            Spacer(modifier = Modifier.height(HEIGHT_2.dp))
+                )
+                Spacer(modifier = Modifier.height(HEIGHT_2.dp))
+            }
         }
     }
 }

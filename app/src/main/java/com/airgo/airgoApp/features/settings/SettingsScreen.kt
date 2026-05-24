@@ -102,10 +102,9 @@ private fun settingsMainContent(
 @Composable
 private fun settingsHeader(onBackClick: () -> Unit) {
     Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -125,10 +124,9 @@ private fun settingsUserProfile(
     initial: String,
 ) {
     Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         settingsProfilePicture(pictureUrl = pictureUrl, initial = initial)
@@ -220,24 +218,27 @@ private fun settingsOptions(onAccountSettingsClick: () -> Unit) {
 
 @Composable
 private fun settingsAccountOption(onAccountSettingsClick: () -> Unit) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable { onAccountSettingsClick() }
-                .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+    androidx.compose.material3.Surface(
+        onClick = onAccountSettingsClick,
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        Text(
-            text = stringResource(R.string.account_settings_header),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-        )
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-            contentDescription = stringResource(R.string.acc_go_to_account_settings),
-            modifier = Modifier.size(24.dp),
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(R.string.account_settings_header),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                contentDescription = stringResource(R.string.acc_go_to_account_settings),
+                modifier = Modifier.size(24.dp),
+            )
+        }
     }
 }

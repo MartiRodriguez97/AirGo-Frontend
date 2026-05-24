@@ -275,12 +275,10 @@ fun pastActivitySensationCard(
     val (texto, icono) = getSensationDetails(sensacioValue)
 
     Card(
-        modifier =
-            Modifier
-                .fillMaxWidth(TRACKING_PANEL_WIDTH)
-                .clickable(onClick = onClick),
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(TRACKING_PANEL_WIDTH),
         elevation = CardDefaults.cardElevation(4.dp),
-    ) {
+    )  {
         Column(
             modifier =
                 Modifier
