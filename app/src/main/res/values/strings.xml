@@ -393,6 +393,7 @@
 
     <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
     <string name="tracking_save_progress">Progreso guardado</string>
+    <string name="selection_panel_title">Select route points</string>
 
 
 </resources>

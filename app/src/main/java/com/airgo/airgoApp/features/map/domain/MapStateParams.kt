@@ -24,6 +24,7 @@ data class MapViewModelParams(
     val trackingViewModel: TrackingViewModel,
     val onNavigateToFavorites: () -> Unit,
     val onNavigateToTrackingSummary: () -> Unit,
+    val onNavigateToAddressSearch: (String) -> Unit = {},
 )
 
 /**

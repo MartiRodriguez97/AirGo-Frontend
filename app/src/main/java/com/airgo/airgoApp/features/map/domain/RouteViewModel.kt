@@ -11,23 +11,20 @@ import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.utils.UiText
 import com.airgo.airgoApp.features.map.data.RouteRequest
 import com.airgo.airgoApp.features.map.data.RouteResponse
-import com.airgo.airgoApp.features.map.data.SaveFavoriteRouteRequest
 import com.airgo.airgoApp.features.map.data.TransportProfile
+import com.airgo.airgoApp.features.map.helpers.NominatimResult
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import retrofit2.HttpException
 import java.io.IOException
 
 private const val LOG_TAG = "RouteViewModel"
-private const val OK = 201
-private const val JA_EXISTEIX = 409
 
 class RouteViewModel : ViewModel() {
-    var selectionMode by mutableStateOf(MapSelectionMode.NONE)
     var startPoint by mutableStateOf<GeoPoint?>(null)
     var endPoint by mutableStateOf<GeoPoint?>(null)
     var waypoints by mutableStateOf<List<GeoPoint>>(emptyList())
-    var transportProfile by mutableStateOf(TransportProfile.BIKE) // nuevo
+    var transportProfile by mutableStateOf(TransportProfile.BIKE)
 
     var currentRoute by mutableStateOf<RouteResponse?>(null)
         private set
@@ -35,33 +32,94 @@ class RouteViewModel : ViewModel() {
         private set
     var isLoading by mutableStateOf(false)
         private set
-    var isFavorite by mutableStateOf(false)
-        private set
-    var favoriteMessage by mutableStateOf<String?>(null)
-        private set
 
-    fun fetchRoute(
-        start: GeoPoint,
-        end: GeoPoint,
-    ) {
+    internal val favoriteHandler =
+        FavoriteRouteHandler(
+            scope = viewModelScope,
+            onError = { errorMessage = it },
+        )
+    val addressHandler = AddressSearchHandler(viewModelScope)
+    private val selectionHandler =
+        PointSelectionHandler(
+            scope = viewModelScope,
+            onStartSelected = { point, address ->
+                startPoint = point
+                currentRoute = null
+                addressHandler.startAddressQuery = address
+            },
+            onEndSelected = { point, address ->
+                endPoint = point
+                currentRoute = null
+                addressHandler.endAddressQuery = address
+            },
+            onWaypointSelected = { point, address, index ->
+                if (index >= waypoints.size) {
+                    waypoints = waypoints + point
+                } else {
+                    waypoints = waypoints.toMutableList().also { it[index] = point }
+                }
+                currentRoute = null
+                addressHandler.updateWaypointAddress(index, address)
+            },
+        )
+
+    val isFavorite get() = favoriteHandler.isFavorite
+    val favoriteMessage get() = favoriteHandler.favoriteMessage
+    val selectionMode get() = selectionHandler.selectionMode
+    val editingWaypointIndex get() = selectionHandler.editingWaypointIndex
+    val startAddressQuery get() = addressHandler.startAddressQuery
+    val endAddressQuery get() = addressHandler.endAddressQuery
+    val startSuggestions get() = addressHandler.startSuggestions
+    val endSuggestions get() = addressHandler.endSuggestions
+    val isSearchingAddress get() = addressHandler.isSearchingAddress
+    val waypointAddresses get() = addressHandler.waypointAddresses
+
+    fun onPointSelected(point: org.osmdroid.util.GeoPoint) = selectionHandler.onPointSelected(point, waypoints.size)
+
+    fun setWaypointEditMode(index: Int) = selectionHandler.setWaypointEditMode(index)
+
+    fun onSetSelectionMode(mode: MapSelectionMode) {
+        selectionHandler.selectionMode = mode
+    }
+
+    fun removeWaypoint(index: Int) {
+        waypoints = waypoints.toMutableList().also { it.removeAt(index) }
+        addressHandler.removeWaypointAddress(index)
+        currentRoute = null
+    }
+
+    fun clearRoute() {
+        startPoint = null
+        endPoint = null
+        waypoints = emptyList()
+        currentRoute = null
+        selectionHandler.selectionMode = MapSelectionMode.NONE
+        selectionHandler.editingWaypointIndex = -1
+        favoriteHandler.reset()
+        addressHandler.clear()
+    }
+
+    fun calculateRoute() {
+        errorMessage = null
+        currentRoute = null
+        val start = startPoint
+        val end = endPoint
+        if (start == null || end == null) {
+            errorMessage = UiText.StringResource(R.string.error_route_selection_missing)
+            return
+        }
         viewModelScope.launch {
             isLoading = true
+            favoriteHandler.reset()
             try {
                 errorMessage = null
-
                 val allPoints =
                     buildList {
                         add(listOf(start.latitude, start.longitude))
                         waypoints.forEach { add(listOf(it.latitude, it.longitude)) }
                         add(listOf(end.latitude, end.longitude))
                     }
-
-                val request =
-                    RouteRequest(
-                        profile = transportProfile.value,
-                        points = allPoints,
-                    )
-
+                val request = RouteRequest(profile = transportProfile.value, points = allPoints)
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
                 if (currentRoute?.status !== "success") {
                     errorMessage = UiText.StringResource(R.string.error_fetching_route)
@@ -78,89 +136,30 @@ class RouteViewModel : ViewModel() {
         }
     }
 
-    fun onPointSelected(point: GeoPoint) {
-        when (selectionMode) {
-            MapSelectionMode.START -> {
-                startPoint = point
-                currentRoute = null
-                selectionMode = MapSelectionMode.NONE
-            }
-            MapSelectionMode.END -> {
-                endPoint = point
-                currentRoute = null
-                selectionMode = MapSelectionMode.NONE
-            }
-            MapSelectionMode.WAYPOINT -> {
-                waypoints = waypoints + point
-                currentRoute = null
-                selectionMode = MapSelectionMode.NONE
-            }
-            MapSelectionMode.NONE -> {}
-        }
+    fun toggleFavorite() {
+        favoriteHandler.toggle(currentRoute)
     }
 
-    fun addWaypoint() {
-        selectionMode = MapSelectionMode.WAYPOINT
-    }
-
-    fun removeWaypoint(index: Int) {
-        waypoints = waypoints.toMutableList().also { it.removeAt(index) }
+    fun selectStartAddress(result: NominatimResult) {
+        startPoint = addressHandler.selectStart(result)
         currentRoute = null
     }
 
-    fun clearRoute() {
-        startPoint = null
-        endPoint = null
-        waypoints = emptyList()
+    fun selectEndAddress(result: NominatimResult) {
+        endPoint = addressHandler.selectEnd(result)
         currentRoute = null
-        selectionMode = MapSelectionMode.NONE
     }
 
-    fun calculateRoute() {
-        currentRoute = null
-        val start = startPoint
-        val end = endPoint
-        if (start != null && end != null) {
-            fetchRoute(start, end)
+    fun selectWaypointAddress(
+        result: NominatimResult,
+        index: Int,
+    ) {
+        val point = addressHandler.selectWaypoint(result, index)
+        if (index >= waypoints.size) {
+            waypoints = waypoints + point
         } else {
-            errorMessage = UiText.StringResource(R.string.error_route_selection_missing)
+            waypoints = waypoints.toMutableList().also { it[index] = point }
         }
-    }
-
-    fun clearError() {
-        errorMessage = null
-    }
-
-    fun addToFavorites() {
-        val routeId = currentRoute?.routeId ?: return
-        viewModelScope.launch {
-            try {
-                val response =
-                    RetrofitProvider.favoriteRouteApi.saveFavoriteRoute(
-                        SaveFavoriteRouteRequest(routeId),
-                    )
-                when (response.code()) {
-                    OK -> {
-                        isFavorite = true
-                        favoriteMessage = null
-                    }
-                    JA_EXISTEIX -> errorMessage = UiText.StringResource(R.string.error_route_already_saved)
-                    else -> {
-                        errorMessage = UiText.StringResource(R.string.error_saving_route)
-                        Log.e(LOG_TAG, "Save favorite failed: ${response.code()}")
-                    }
-                }
-            } catch (e: IOException) {
-                Log.e(LOG_TAG, "Network error fetching routes: ${e.message}", e)
-                errorMessage = UiText.StringResource(R.string.error_saving_route)
-            } catch (e: HttpException) {
-                Log.e(LOG_TAG, "HTTP error fetching routes: ${e.code()}", e)
-                errorMessage = UiText.StringResource(R.string.error_saving_route)
-            }
-        }
-    }
-
-    fun clearFavoriteMessage() {
-        favoriteMessage = null
+        currentRoute = null
     }
 }

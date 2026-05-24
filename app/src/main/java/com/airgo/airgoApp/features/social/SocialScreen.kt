@@ -616,9 +616,7 @@ private fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-            ) {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
                 socialSearchBar(
                     query = searchQuery,
                     placeholder = stringResource(R.string.search_forum),
