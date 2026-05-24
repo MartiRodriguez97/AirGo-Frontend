@@ -78,7 +78,8 @@ class ForumViewModel : ViewModel() {
             _forumsUiState.value = ForumUiState.Loading
             try {
                 val currentUserId = SessionManager.userId
-                val favorits = RetrofitProvider.forumApi.getFavoritForums()
+                val favoritResponses = RetrofitProvider.forumApi.getFavoritForums()
+                val favorits = favoritResponses.map { it.forum }
                 android.util.Log.d("ForumViewModel", "Favorits raw: $favorits")
                 favorits.forEach {
                     android.util.Log.d("ForumViewModel", "Favorit: id=${it.id}, nom=${it.nom}, creatPer=${it.creatPer}")

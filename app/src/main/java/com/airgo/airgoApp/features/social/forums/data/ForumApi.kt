@@ -33,7 +33,7 @@ interface ForumApi {
 
     // Obtenir la llista de fòrums favorits de l'usuari autenticat
     @GET(FAVORIT_FORUMS)
-    suspend fun getFavoritForums(): List<Forum>
+    suspend fun getFavoritForums(): List<FavoritForumResponse>
 
     // Afegir un fòrum a la llista de favorits de l'usuari autenticat
     @POST(FAVORIT_FORUMS)

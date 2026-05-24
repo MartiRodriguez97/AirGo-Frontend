@@ -23,3 +23,10 @@ data class AddFavoritForumRequest(
     @SerializedName("forum_id")
     val forumId: Int,
 )
+
+data class FavoritForumResponse(
+    val id: Int,
+    val forum: Forum,
+    @SerializedName("afegit_at")
+    val afegitAt: String,
+)
