@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.features.map.components.bicingStatItem
 import com.airgo.airgoApp.features.map.components.errorToastHandlers
 import com.airgo.airgoApp.features.map.components.fetchLocationDataEffect
 import com.airgo.airgoApp.features.map.components.gpsDisabledWarning
@@ -88,6 +89,9 @@ private const val MEGABYTES_TO_BYTES = 1024L * 1024L
 private const val MAX_CACHE_MB = 100L
 private const val MAX_CACHE_BYTES = MAX_CACHE_MB * MEGABYTES_TO_BYTES
 private const val TRACKING_ZOOM_LEVEL = 18.0
+private const val COLOR_BICING_BLUE = 0xFF0081C9
+private const val COLOR_BICING_ORANGE = 0xFFF5A623
+private const val COLOR_BICING_GREEN = 0xFF4CAF50
 
 data class OsmViewNavigationCallbacks(
     val onNavigateToFavorites: () -> Unit = {},
@@ -220,12 +224,13 @@ private fun rememberBicingOverlay(
     LaunchedEffect(bicingViewModel.stations) {
         overlay.items.clear()
         overlay.items.addAll(
-            BicingHelper.createBicingOverlay(
-                context,
-                mapView,
-                bicingViewModel.stations,
-                onStationSelected = { station -> bicingViewModel.selectStation(station) },
-            ).items,
+            BicingHelper
+                .createBicingOverlay(
+                    context,
+                    mapView,
+                    bicingViewModel.stations,
+                    onStationSelected = { station -> bicingViewModel.selectStation(station) },
+                ).items,
         )
         mapView.invalidate()
     }
@@ -346,18 +351,6 @@ private fun rememberMapState(params: MapStateParams): MapState {
 }
 
 /**
- * Funció per definir l'estructura del panell d'informació de les estacions Bicing
- */
-@Composable
-private fun bicingStatItem(emoji: String, value: String, label: String, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = emoji, style = MaterialTheme.typography.titleLarge)
-        Text(text = value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = color)
-        Text(text = label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-/**
  * Funció per pintar el mapa
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -390,9 +383,24 @@ fun osmMapContainer(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
-                    bicingStatItem("🚲", selectedStation.mechanicalBikes.toString(), stringResource(R.string.bicing_mechanical), Color(0xFF0081C9))
-                    bicingStatItem("⚡", selectedStation.electricBikes.toString(), stringResource(R.string.bicing_electric), Color(0xFFF5A623))
-                    bicingStatItem("🅿️", selectedStation.freeSlots.toString(), stringResource(R.string.bicing_free_slots), Color(0xFF4CAF50))
+                    bicingStatItem(
+                        "🚲",
+                        selectedStation.mechanicalBikes.toString(),
+                        stringResource(R.string.bicing_mechanical),
+                        Color(COLOR_BICING_BLUE),
+                    )
+                    bicingStatItem(
+                        "⚡",
+                        selectedStation.electricBikes.toString(),
+                        stringResource(R.string.bicing_electric),
+                        Color(COLOR_BICING_ORANGE),
+                    )
+                    bicingStatItem(
+                        "🅿️",
+                        selectedStation.freeSlots.toString(),
+                        stringResource(R.string.bicing_free_slots),
+                        Color(COLOR_BICING_GREEN),
+                    )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -409,10 +417,11 @@ fun osmMapContainer(
         )
 
         mapLegend(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .navigationBarsPadding()
-                .padding(bottom = 170.dp, start = 16.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .navigationBarsPadding()
+                    .padding(bottom = 170.dp, start = 16.dp),
         )
 
         trackingMapEffects(state)
