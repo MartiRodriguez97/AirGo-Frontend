@@ -12,10 +12,10 @@ import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
-import com.google.gson.JsonSyntaxException
 import com.airgo.airgoApp.features.map.helpers.NominatimResult
 import com.airgo.airgoApp.features.map.helpers.NominatimService
 import com.airgo.airgoApp.features.profile.data.ComprovarEdificiRequest
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
