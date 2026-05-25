@@ -15,6 +15,7 @@ import androidx.core.graphics.drawable.IconCompat
 import com.airgo.airgoApp.MainActivity
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.events.ChatEventBus
+import com.airgo.airgoApp.core.events.FriendEventBus
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.network.UserPreferencesRepository
@@ -61,6 +62,10 @@ class FirebaseMessagingService : FirebaseMessagingService() {
                 "chat" -> {
                     handleChatNotification(remoteMessage, finalChatId)
                     ChatEventBus.emitMessage(finalChatId)
+                }
+                "friend_accepted" -> {
+                    FriendEventBus.emitFriendAccepted()
+                    showSystemNotification(remoteMessage, finalChatId)
                 }
                 else -> showSystemNotification(remoteMessage, finalChatId)
             }

@@ -3,6 +3,7 @@ package com.airgo.airgoApp.features.social.domain
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.events.FriendEventBus
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.UiText
@@ -16,8 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -67,8 +66,6 @@ sealed class RequestsUiState {
         val message: String?,
     ) : RequestsUiState()
 }
-
-private const val FRIENDS_DEBOUNCE_MS = 400L
 
 @OptIn(FlowPreview::class)
 class SocialViewModel : ViewModel() {
@@ -120,48 +117,50 @@ class SocialViewModel : ViewModel() {
 
     init {
         loadFriends()
-        observeFriendsQuery()
+        observeFriendEvents()
+    }
+
+    private fun observeFriendEvents() {
+        viewModelScope.launch {
+            FriendEventBus.friendAccepted.collect {
+                loadFriends()
+            }
+        }
     }
 
     fun onTabChange(tab: SocialTab) {
         _activeTab.value = tab
     }
 
-    internal fun loadFriends(search: String? = null) {
+    private val _allFriends = MutableStateFlow<List<FriendResponse>>(emptyList())
+    val allFriends: StateFlow<List<FriendResponse>> = _allFriends
+
+    internal fun loadFriends() {
         viewModelScope.launch {
             _friendsUiState.value = FriendsUiState.Loading
-            repository.getFriends(search).fold(
+            repository.getFriends().fold(
                 onSuccess = { friends ->
-                    _friendsUiState.value =
-                        if (friends.isEmpty()) {
-                            FriendsUiState.Empty
-                        } else {
-                            FriendsUiState.Success(friends)
-                        }
+                    _allFriends.value = friends
+                    applyFriendsFilter()
                 },
-                onFailure = { e ->
+                onFailure = {
                     _friendsUiState.value =
-                        FriendsUiState.Error(UiText.StringResource(R.string.error_loading_friends))
+                        FriendsUiState.Error(
+                            UiText.StringResource(R.string.error_loading_friends),
+                        )
                 },
             )
         }
     }
 
-    private fun observeFriendsQuery() {
-        viewModelScope.launch {
-            _friendsQuery
-                .debounce(FRIENDS_DEBOUNCE_MS)
-                .distinctUntilChanged()
-                .collect { query -> loadFriends(search = query.takeIf { it.isNotBlank() }) }
-        }
-    }
-
     fun onFriendsQueryChange(query: String) {
         _friendsQuery.value = query
+        applyFriendsFilter()
     }
 
     fun clearFriendsQuery() {
         _friendsQuery.value = ""
+        applyFriendsFilter()
     }
 
     fun onSearchQueryChange(query: String) {
@@ -170,6 +169,24 @@ class SocialViewModel : ViewModel() {
 
     fun clearSearchQuery() {
         searchHandler.clearQuery()
+    }
+
+    private fun applyFriendsFilter() {
+        val query = _friendsQuery.value
+        val filtered =
+            if (query.isBlank()) {
+                _allFriends.value
+            } else {
+                _allFriends.value.filter {
+                    it.amic.username.contains(query, ignoreCase = true)
+                }
+            }
+        _friendsUiState.value =
+            if (filtered.isEmpty()) {
+                FriendsUiState.Empty
+            } else {
+                FriendsUiState.Success(filtered)
+            }
     }
 
     fun sendFriendRequest(userId: Int) {
@@ -190,18 +207,12 @@ class SocialViewModel : ViewModel() {
         viewModelScope.launch {
             repository.deleteFriend(amicId).fold(
                 onSuccess = {
-                    val current = _friendsUiState.value
-                    if (current is FriendsUiState.Success) {
-                        val updated = current.friends.filter { it.amic.id != amicId }
-                        _friendsUiState.value =
-                            if (updated.isEmpty()) {
-                                FriendsUiState.Empty
-                            } else {
-                                FriendsUiState.Success(updated)
-                            }
-                    }
+                    android.util.Log.d("SocialVM", "before delete: ${_allFriends.value.size}")
+                    _allFriends.value = _allFriends.value.filter { it.amic.id != amicId }
+                    android.util.Log.d("SocialVM", "after delete: ${_allFriends.value.size}")
+                    applyFriendsFilter()
                 },
-                onFailure = { e ->
+                onFailure = {
                     _friendsUiState.value =
                         FriendsUiState.Error(UiText.StringResource(R.string.error_deleting_friend))
                 },
