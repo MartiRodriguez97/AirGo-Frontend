@@ -77,8 +77,11 @@ class HomeViewModel : ViewModel() {
 
     var showBuildingAddressDialog by mutableStateOf(false)
 
-    val needsBuildingAddress: Boolean
-        get() = SessionManager.userBadges?.none { it.insignia.tipus == "EDIFICI" } ?: true
+    private val _needsBuildingAddress =
+        MutableStateFlow(
+            SessionManager.userBadges?.none { it.insignia.tipus == "EDIFICI" } ?: true,
+        )
+    val needsBuildingAddress: StateFlow<Boolean> = _needsBuildingAddress.asStateFlow()
 
     init {
         loadPlans()
@@ -86,12 +89,16 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun loadUserBadges() {
-        if (SessionManager.userBadges != null) return
+        if (SessionManager.userBadges != null) {
+            _needsBuildingAddress.value = SessionManager.userBadges?.none { it.insignia.tipus == "EDIFICI" } ?: true
+            return
+        }
         viewModelScope.launch(exceptionHandler) {
             val badges =
                 com.airgo.airgoApp.core.network.RetrofitProvider.profileApi
                     .getUserBadges()
             SessionManager.userBadges = badges
+            _needsBuildingAddress.value = badges.none { it.insignia.tipus == "EDIFICI" }
         }
     }
 
@@ -134,27 +141,36 @@ class HomeViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
-                        // Update points
-                        SessionManager.userId?.let { userId ->
-                            val currentPunts = SessionManager.punts ?: 0
-                            val newPunts = currentPunts + body.punts
-                            profileApi.updateUser(
-                                userId,
-                                com.airgo.airgoApp.features.profile.data
-                                    .UpdateUserRequest(punts = body.punts),
-                            )
-                            SessionManager.punts = newPunts
-                        }
-
                         if (body.punts >= MIN_VALOR_PUNTS) {
-                            val badgeResponse = profileApi.guanyarEdificiInsignia()
+                            // Update points
+                            SessionManager.userId?.let { userId ->
+                                val currentPunts = SessionManager.punts ?: 0
+                                val newPunts = currentPunts + body.punts
+                                profileApi.updateUser(
+                                    userId,
+                                    com.airgo.airgoApp.features.profile.data
+                                        .UpdateUserRequest(punts = body.punts),
+                                )
+                                SessionManager.punts = newPunts
+                            }
+
+                            val badgeResponse =
+                                profileApi.guanyarEdificiInsignia(
+                                    com.airgo.airgoApp.features.profile.data.GuanyarEdificiInsigniaRequest(
+                                        puntuacio = body.punts,
+                                    ),
+                                )
                             if (badgeResponse.isSuccessful) {
                                 val badgeBody = badgeResponse.body()
-                                if (badgeBody != null) {
+                                val parsedBadgeResponse = badgeBody?.toUserBadgeResponse()
+                                val actualBadge = badgeBody?.extractBadge()
+
+                                if (parsedBadgeResponse != null && actualBadge != null) {
                                     val currentBadges = SessionManager.userBadges?.toMutableList() ?: mutableListOf()
-                                    currentBadges.add(badgeBody)
+                                    currentBadges.add(parsedBadgeResponse)
                                     SessionManager.userBadges = currentBadges
-                                    _buildingBadgeEarned.value = badgeBody.insignia
+                                    _buildingBadgeEarned.value = actualBadge
+                                    _needsBuildingAddress.value = false
                                 }
                                 showBuildingAddressDialog = false
                             } else {

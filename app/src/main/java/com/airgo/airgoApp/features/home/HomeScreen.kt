@@ -106,6 +106,7 @@ fun homeScreen(
     val titolsPendents by viewModel.titolsPendents.collectAsState()
     val availableTitles by viewModel.availableTitles.collectAsState()
     val buildingBadgeEarned by viewModel.buildingBadgeEarned.collectAsState()
+    val needsBuildingAddress by viewModel.needsBuildingAddress.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -180,7 +181,7 @@ fun homeScreen(
                 }
             }
 
-            if (viewModel.needsBuildingAddress) {
+            if (needsBuildingAddress) {
                 item {
                     pendingBuildingCard(
                         onClick = { viewModel.showBuildingAddressDialog = true },

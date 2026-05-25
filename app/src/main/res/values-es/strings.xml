@@ -79,6 +79,10 @@
     <string name="badge_constancy_name">Iniciación a la constancia</string>
     <string name="badge_constancy_desc">Has completado 3 días consecutivos de actividad. ¡Buen inicio!</string>
 
+    <string name="badge_sustainable_building_name">Edificio Sostenible</string>
+    <string name="badge_sustainable_building_desc">¡Tu edificio tiene buena puntuación de eficiencia energética!</string>
+
+
     <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar cuenta</string>
     <string name="profile_delete_account_dialog_title">¿Eliminar cuenta?</string>

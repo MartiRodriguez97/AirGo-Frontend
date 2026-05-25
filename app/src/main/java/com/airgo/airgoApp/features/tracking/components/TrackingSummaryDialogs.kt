@@ -217,8 +217,15 @@ fun newBadgeDialog(
                 )
                 Spacer(modifier = Modifier.height(PADDING_LARGE.dp))
                 if (badge.icona != null) {
+                    val fullUrl =
+                        if (badge.icona.startsWith("http")) {
+                            badge.icona
+                        } else {
+                            com.airgo.airgoApp.BuildConfig.BACKEND_URL + badge.icona
+                        }
+                    android.util.Log.d("BadgeDebug", "Cargando imagen: $fullUrl")
                     AsyncImage(
-                        model = badge.icona,
+                        model = fullUrl,
                         contentDescription = stringResource(R.string.tracking_badge_icon_desc),
                         modifier = Modifier.size(ICON_SIZE_BADGE.dp),
                     )

@@ -77,6 +77,8 @@
 
     <string name="badge_constancy_name">Iniciació a la constància</string>
     <string name="badge_constancy_desc">Has completat 3 dies consecutius d\'activitat. Bon inici!</string>
+    <string name="badge_sustainable_building_name">Sustainable Building</string>
+    <string name="badge_sustainable_building_desc">Your building has a good energy efficiency score!</string>
 
     <string name="profile_delete_account_button">Delete account</string>
     <string name="profile_delete_account_dialog_title">Delete account?</string>

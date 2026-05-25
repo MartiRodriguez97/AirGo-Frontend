@@ -59,6 +59,36 @@ data class ComprovarEdificiResponse(
     val punts: Int,
 )
 
+data class GuanyarEdificiInsigniaRequest(
+    val puntuacio: Int,
+)
+
+data class EdificiInsigniaResponse(
+    val insignia: BadgeDefinition?,
+    val badge: BadgeDefinition?,
+    @SerializedName("data_guanyada")
+    val dataGuanyada: String?,
+    val id: Int?, // If flattened
+    val nom: String?,
+    val descripcio: String?,
+    val icona: String?,
+    val tipus: String?,
+    @SerializedName("valor_requerit")
+    val valorRequerit: Int?,
+) {
+    fun extractBadge(): BadgeDefinition? =
+        insignia ?: badge ?: if (id != null && nom != null) {
+            BadgeDefinition(id, nom, descripcio ?: "", icona, tipus ?: "", valorRequerit ?: 0)
+        } else {
+            null
+        }
+
+    fun toUserBadgeResponse(): UserBadgeResponse? {
+        val b = extractBadge() ?: return null
+        return UserBadgeResponse(b, dataGuanyada ?: "")
+    }
+}
+
 interface ProfileApi {
     // Define API endpoints related to user profile here
     @GET(ApiEndpoints.USER_ACCOUNT_INFO)
@@ -89,5 +119,7 @@ interface ProfileApi {
     ): Response<ComprovarEdificiResponse>
 
     @POST(ApiEndpoints.EDIFICI_INSIGNIA)
-    suspend fun guanyarEdificiInsignia(): Response<UserBadgeResponse>
+    suspend fun guanyarEdificiInsignia(
+        @Body request: GuanyarEdificiInsigniaRequest,
+    ): Response<EdificiInsigniaResponse>
 }
