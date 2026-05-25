@@ -50,6 +50,8 @@ class CalendarViewModel(
                         val body = responsePlans.body() ?: emptyList()
                         _plaEntrenamentList.value = body
                         SessionManager.trainingPlans = body
+                    } else {
+                        _errorResId.value = R.string.calendar_error_server
                     }
                 }
             } catch (e: IOException) {

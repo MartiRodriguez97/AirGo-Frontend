@@ -33,6 +33,9 @@ class CalendarViewModelTest {
         Dispatchers.setMain(testDispatcher)
         SessionManager.clear()
         apiService = mockk()
+
+        coEvery { apiService.getActivities() } returns Response.success(emptyList())
+
         viewModel = CalendarViewModel(apiService)
     }
 
@@ -62,6 +65,7 @@ class CalendarViewModelTest {
                                             Exercise(
                                                 id = 1,
                                                 dataInici = "2024-05-22T18:00:00Z",
+                                                template = null, // Parámetro añadido
                                                 completat = false,
                                                 distanciaObjectiu = 10.0,
                                                 distanciaFeta = 0.0,
@@ -144,7 +148,6 @@ class CalendarViewModelTest {
 
             Assert.assertFalse(viewModel.isLoading.value)
             Assert.assertEquals(cachedData, viewModel.plaEntrenamentList.value)
-            // verify no API call was made
             coVerify(exactly = 0) { apiService.getPlaEntrenament() }
         }
 
