@@ -48,6 +48,7 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.network.UserPreferencesRepository
 import com.airgo.airgoApp.core.network.dataStore
+import com.airgo.airgoApp.core.utils.navigateOnce
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.badgesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
@@ -244,7 +245,7 @@ private fun showProfileInfoContent(
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(8.dp)
                 .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
@@ -270,7 +271,7 @@ private fun showProfileInfoContent(
         Spacer(modifier = Modifier.height(16.dp))
         badgesAndActivitiesZone(
             onActivityClick = { id ->
-                navController.navigate("activity_detail/$id")
+                navController.navigateOnce("activity_detail/$id")
             },
         )
 
@@ -325,7 +326,7 @@ fun profileNavGraph(
                 uiState = uiState,
                 singlePhotoPickerLauncher = singlePhotoPickerLauncher,
                 onSettingsClick = {
-                    navController.navigate(ProfileNestedRoute.SETTINGS.route)
+                    navController.navigateOnce(ProfileNestedRoute.SETTINGS.route)
                 },
                 badges = badges,
                 navController = navController,
@@ -347,7 +348,7 @@ fun profileNavGraph(
                 onBackClick = { navController.popBackStack() },
                 onAccountSettingsClick = {
                     // Navigate to Account Settings
-                    navController.navigate(ProfileNestedRoute.ACCOUNT_SETTINGS.route)
+                    navController.navigateOnce(ProfileNestedRoute.ACCOUNT_SETTINGS.route)
                 },
             )
         }

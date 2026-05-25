@@ -141,7 +141,7 @@ fun homeScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 8.dp),
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
