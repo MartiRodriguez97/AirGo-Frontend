@@ -5,7 +5,6 @@ import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
-import com.airgo.airgoApp.features.home.data.TrainingTemplate
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -34,7 +33,8 @@ class CalendarViewModelTest {
         SessionManager.clear()
         apiService = mockk()
 
-        coEvery { apiService.getActivities() } returns Response.success(emptyList())
+        // ELIMINADA la línea de apiService.getActivities() que causaba el error de compilación.
+        // No la necesitas porque cada test ya hace su propio mock de getPlaEntrenament().
 
         viewModel = CalendarViewModel(apiService)
     }
@@ -53,24 +53,16 @@ class CalendarViewModelTest {
                         id = 1,
                         diesDurada = 30,
                         numEntrenamentsSetmanals = 3,
-                        templates =
+                        // Cambiado 'templates' por 'exercicis' para que coincida con el ViewModel
+                        exercicis =
                             listOf(
-                                TrainingTemplate(
+                                Exercise(
                                     id = 1,
-                                    nom = "Sessio de Bici",
-                                    descripcio = "Ciclisme",
-                                    tipusExercici = "BIC",
-                                    exercicisResposta =
-                                        listOf(
-                                            Exercise(
-                                                id = 1,
-                                                dataInici = "2024-05-22T18:00:00Z",
-                                                template = null, // Parámetro añadido
-                                                completat = false,
-                                                distanciaObjectiu = 10.0,
-                                                distanciaFeta = 0.0,
-                                            ),
-                                        ),
+                                    dataInici = "2024-05-22T18:00:00Z",
+                                    template = null,
+                                    completat = false,
+                                    distanciaObjectiu = 10.0,
+                                    distanciaFeta = 0.0,
                                 ),
                             ),
                     ),
@@ -139,7 +131,7 @@ class CalendarViewModelTest {
                         id = 2,
                         diesDurada = 15,
                         numEntrenamentsSetmanals = 2,
-                        templates = emptyList(),
+                        exercicis = emptyList(), // Cambiado de templates a exercicis
                     ),
                 )
             SessionManager.trainingPlans = cachedData

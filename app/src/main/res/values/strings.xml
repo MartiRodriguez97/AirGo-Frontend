@@ -527,4 +527,6 @@
     <string name="from">From:</string>
     <string name="to">To:</string>
 
+    <string name="select_date_button">Click to select the date</string>
+
 </resources>

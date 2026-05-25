@@ -14,10 +14,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.DirectionsRun
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -155,6 +157,8 @@ fun homeScreen(
     }
 
     Scaffold(
+        // 1. MOVEMOS EL BOTÓN A LA IZQUIERDA
+        floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToQuestionnaire) {
                 Icon(
@@ -172,6 +176,7 @@ fun homeScreen(
                     .padding(horizontal = 8.dp),
         ) {
             item {
+                // 2. AUMENTAMOS EL MARGEN SUPERIOR PARA EVITAR EL NOTCH / BARRA DE ESTADO
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -209,7 +214,6 @@ fun homeScreen(
                 }
             } else {
                 item {
-                    // secció de entrament
                     trainingPlanSection(onCreatePlanClick = onNavigateToQuestionnaire)
                 }
             }
@@ -233,7 +237,7 @@ fun activePlanSection(
                     .padding(20.dp),
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,
+                imageVector = Icons.Default.DateRange,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 8.dp),

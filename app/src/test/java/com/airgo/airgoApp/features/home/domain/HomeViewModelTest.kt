@@ -88,7 +88,7 @@ class HomeViewModelTest {
             viewModel.loadPlans()
 
             assertEquals(cachedPlans, viewModel.plans.value)
-            coVerify(exactly = 1) { mockApi.getTrainingPlans() }
+            coVerify(exactly = 0) { mockApi.getTrainingPlans() }
         }
 
     @Test

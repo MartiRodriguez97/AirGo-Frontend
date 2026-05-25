@@ -532,5 +532,7 @@
 
     <string name="no_pending_activity_today">No tens cap activitat pendent per avui.</string>
     <string name="no_activity_data">No hi ha dades de l\'activitat.</string>
+
+    <string name="select_date_button">Fes clic per seleccionar la data</string>
 </resources>
 
