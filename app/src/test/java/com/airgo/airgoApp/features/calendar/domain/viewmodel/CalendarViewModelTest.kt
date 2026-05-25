@@ -57,7 +57,7 @@ class CalendarViewModelTest {
                                     nom = "Sessio de Bici",
                                     descripcio = "Ciclisme",
                                     tipusExercici = "BIC",
-                                    exercicis =
+                                    exercicisResposta =
                                         listOf(
                                             Exercise(
                                                 id = 1,
