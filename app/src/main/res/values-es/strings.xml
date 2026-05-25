@@ -505,4 +505,6 @@
 
     <string name="no_pending_activity_today">No tienes ninguna actividad pendiente para hoy.</string>
     <string name="no_activity_data">No hay datos de la actividad.</string>
+
+    <string name="select_date_button">Haz clic para seleccionar la fecha</string>
 </resources>

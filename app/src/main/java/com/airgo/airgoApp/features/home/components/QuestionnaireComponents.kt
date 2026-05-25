@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.SignalCellularAlt
@@ -18,25 +19,31 @@ import androidx.compose.material.icons.filled.SignalCellularAlt2Bar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private const val HALF_WIDTH = 0.5f
 
@@ -61,9 +68,10 @@ internal fun stepSportSelection(
 ) {
     Text(stringResource(R.string.quest_title_sport), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
-    Row(
+
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         val sportRun = stringResource(R.string.sport_run)
         selectionButton(
@@ -71,15 +79,14 @@ internal fun stepSportSelection(
             icon = Icons.Default.DirectionsRun,
             selected = selectedSport == "CAM",
             onClick = { onSportSelected("CAM") },
-            modifier = Modifier.weight(1f),
         )
+
         val sportBike = stringResource(R.string.sport_bike)
         selectionButton(
             text = sportBike,
             icon = Icons.Default.DirectionsBike,
             selected = selectedSport == "BIC",
             onClick = { onSportSelected("BIC") },
-            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -161,27 +168,45 @@ internal fun stepDaysSelection(selectedDays: SnapshotStateList<Int>) {
     }
 }
 
-private const val MAX_MIDA_CALENDARI = 1.2f
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun stepDateSelection(datePickerState: DatePickerState) {
+    var showDialog by remember { mutableStateOf(false) }
+
     Text(stringResource(R.string.quest_title_date), style = MaterialTheme.typography.titleMedium)
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(24.dp))
 
-    val currentDensity = LocalDensity.current
-    val customDensity =
-        Density(
-            density = currentDensity.density,
-            fontScale = currentDensity.fontScale.coerceAtMost(MAX_MIDA_CALENDARI),
-        )
+    val selectedDateText =
+        datePickerState.selectedDateMillis?.let { millis ->
+            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(millis))
+        } ?: stringResource(R.string.select_date_button)
 
-    CompositionLocalProvider(LocalDensity provides customDensity) {
-        DatePicker(
-            state = datePickerState,
-            modifier = Modifier.fillMaxWidth(),
-            showModeToggle = false,
-        )
+    selectionButton(
+        text = selectedDateText,
+        icon = Icons.Default.DateRange,
+        selected = datePickerState.selectedDateMillis != null,
+        onClick = { showDialog = true },
+    )
+
+    if (showDialog) {
+        DatePickerDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(stringResource(R.string.acc_close))
+                }
+            },
+        ) {
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = false,
+            )
+        }
     }
 }
 

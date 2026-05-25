@@ -11,6 +11,7 @@ import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -93,16 +94,24 @@ class HomeViewModel : ViewModel() {
         _errorMessage.value = null
     }
 
-    fun loadPlans() {
+    fun loadPlans(forceRefresh: Boolean = false) {
         viewModelScope.launch {
             _isLoading.value = true
 
+            val cachedPlans = SessionManager.trainingPlans
+            if (!forceRefresh && !cachedPlans.isNullOrEmpty()) {
+                // Usamos los datos locales
+                _plans.value = cachedPlans
+                val cachedExercises = cachedPlans.flatMap { it.exercicis ?: emptyList() }
+                updateTodayExercises(cachedExercises)
+                return@launch // Terminamos la ejecución aquí, ¡adiós a la llamada de red extra!
+            }
+            _isLoading.value = true
             try {
                 val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
-
-                val fetchedExercises = repository.getActivities()
+                val fetchedExercises = fetchedPlans.flatMap { it.exercicis ?: emptyList() }
                 updateTodayExercises(fetchedExercises)
             } catch (e: retrofit2.HttpException) {
                 val code = e.code()
@@ -138,31 +147,31 @@ class HomeViewModel : ViewModel() {
                         diesSetmana = daysOfWeek,
                         dataFi = endDate,
                     )
-                val response = repository.createTrainingPlan(request)
-                SessionManager.trainingPlans = null
 
-                val nousExercicis = response.exercicis
-                SessionManager.exercicis = nousExercicis
-                _exercises.value =
-                    nousExercicis.filter {
-                        it.dataInici?.startsWith(
-                            java.time.LocalDate
-                                .now()
-                                .toString(),
-                        ) == true
-                    }
+                repository.createTrainingPlan(request)
+                SessionManager.trainingPlans = null
 
                 val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
-                val totsExercicis = repository.getActivities()
+
+                val totsExercicis = fetchedPlans.flatMap { it.exercicis ?: emptyList() }
                 updateTodayExercises(totsExercicis)
+
                 onSuccess()
-            } catch (e: java.io.IOException) {
-                Log.e("HomeViewModel", "Error de xarxa creant o inicialitzant el pla", e)
+            } catch (e: IOException) {
+                Log.e("HomeViewModel", "Error de red creando el plan", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
             } catch (e: retrofit2.HttpException) {
-                Log.e("HomeViewModel", "Error HTTP creant o inicialitzant el pla (codi: ${e.code()})", e)
+                Log.e("HomeViewModel", "Error HTTP creando el plan (codi: ${e.code()})", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
+            } catch (e: JsonSyntaxException) {
+                // <-- Reemplazo de Exception por la específica del parser
+                Log.e("HomeViewModel", "Error de parseo JSON: ${e.message}", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
+            } catch (e: IllegalArgumentException) {
+                // Opcional: si hay errores de parámetros inválidos
+                Log.e("HomeViewModel", "Error en los datos pasados: ${e.message}", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_create_plan
             } finally {
                 _isLoading.value = false
