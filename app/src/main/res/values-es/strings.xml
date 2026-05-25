@@ -371,8 +371,8 @@
     <string name="profile_no_activities">Todavía no tienes actividades registradas</string>
 
     <!-- features/social -->
-    <string name="friends">Amigos</string>
-    <string name="discover">Descubrir</string>
+    <string name="friends">Mis amigos</string>
+    <string name="discover">Buscar</string>
     <string name="search_friend">Busca a un amigo...</string>
     <string name="friend_requests">Solicitudes de amistad</string>
     <string name="no_friends">Aún no tienes amigos.</string>
@@ -392,7 +392,7 @@
     <string name="error_request">Error al enviar la solicitud</string>
     <string name="delete_friend_title">Eliminar amigo</string>
     <string name="delete_friend_confirm">¿Seguro que quieres eliminar a %1$s de tu lista de amigos?</string>
-    <string name="forums">Foros</string>
+    <string name="forums">Mis foros</string>
     <string name="search_forum">Buscar foros...</string>
     <string name="no_forums_found">No se ha encontrado ningún foro</string>
     <string name="sensation_very_bad">Muy mal</string>

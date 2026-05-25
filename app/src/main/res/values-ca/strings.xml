@@ -372,8 +372,8 @@
     <string name="profile_no_activities">Encara no tens activitats registrades</string>
 
     <!-- features/social -->
-    <string name="friends">Amics</string>
-    <string name="discover">Descobrir</string>
+    <string name="friends">Els meus amics</string>
+    <string name="discover">Cercar</string>
     <string name="search_friend">Cerca un amic...</string>
     <string name="friend_requests">Sol·licituds d\'amistat</string>
     <string name="no_friends">Encara no tens amics.</string>
@@ -393,7 +393,7 @@
     <string name="error_request">Error en enviar la sol·licitud</string>
     <string name="delete_friend_title">Eliminar amic</string>
     <string name="delete_friend_confirm">Segur que vols eliminar a %1$s de la teva llista d\\\'amics?</string>
-    <string name="forums">Fòrums</string>
+    <string name="forums">Els meus fòrums</string>
     <string name="search_forum">Cercar fòrums...</string>
     <string name="no_forums_found">No s\'ha trobat cap fòrum</string>
     <string name="sensation_very_bad">Molt malament</string>
