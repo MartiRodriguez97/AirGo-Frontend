@@ -20,12 +20,65 @@
     <string name="profile_activities_delete_desc">Eliminar activitat</string>
 
     <!-- Badge Translations -->
-    <string name="badge_constancy_name">Iniciació a la constància</string>
-    <string name="badge_constancy_desc">Has completat la teva primera setmana d\'activitat!</string>
-    <string name="badge_walk_name">De passeig</string>
-    <string name="badge_walk_desc">Has caminat els teus primers 5 kilòmetres.</string>
     <string name="badge_welcome_name">Benvingut a AirGo!</string>
-    <string name="badge_welcome_desc">Gràcies por unir-te a la comunitat d\'AirGo.</string>
+    <string name="badge_welcome_desc">Has aconseguit 50 punts. Benvingut a la comunitat AirGo!</string>
+
+    <string name="badge_legend_name">Llegenda AirGo</string>
+    <string name="badge_legend_desc">Has aconseguit 5000 punts. La teva dedicació és llegendària!</string>
+
+    <string name="badge_ambassador_name">Ambaixador AirGo</string>
+    <string name="badge_ambassador_desc">Has aconseguit 2500 punts. Ets un ambaixador de la mobilitat sostenible!</string>
+
+    <string name="badge_elite_name">Elit verd</string>
+    <string name="badge_elite_desc">Has aconseguit 1000 punts. Formes part de l\'elit d\'AirGo!</string>
+
+    <string name="badge_athlete_name">Atleta urbà</string>
+    <string name="badge_athlete_desc">Has aconseguit 500 punts. Ets un atleta urbà!</string>
+
+    <string name="badge_fit_name">En forma</string>
+    <string name="badge_fit_desc">Has aconseguit 250 punts. Cada esforç compta!</string>
+
+    <string name="badge_first_steps_name">Primeres passes</string>
+    <string name="badge_first_steps_desc">Has aconseguit 100 punts. Vas pel bon camí!</string>
+
+    <string name="badge_catalan_crossing_name">Travessia catalana</string>
+    <string name="badge_catalan_crossing_desc">Has recorregut 1000 km en total. De llegenda!</string>
+
+    <string name="badge_pedal_master_name">Mestre del pedal</string>
+    <string name="badge_pedal_master_desc">Has recorregut 500 km en total. Ets un autèntic esportista!</string>
+
+    <string name="badge_centurion_name">Centurió</string>
+    <string name="badge_centurion_desc">Has recorregut 100 km en total. Un centenar de quilòmetres!</string>
+
+    <string name="badge_around_barcelona_name">Voltant Barcelona</string>
+    <string name="badge_around_barcelona_desc">Has recorregut 50 km en total. Tota Barcelona als teus peus!</string>
+
+    <string name="badge_urban_explorer_name">Explorador urbà</string>
+    <string name="badge_urban_explorer_desc">Has recorregut 21 km en total. Ja coneixes la ciutat!</string>
+
+    <string name="badge_first_10km_name">Primers 10 quilòmetres</string>
+    <string name="badge_first_10km_desc">Has recorregut 10 km en total. Vas agafant el ritme!</string>
+
+    <string name="badge_walk_name">De passeig</string>
+    <string name="badge_walk_desc">Has recorregut 5 km en total. El primer pas sempre compta!</string>
+
+    <string name="badge_half_year_streak_name">Mig any de ratxa</string>
+    <string name="badge_half_year_streak_desc">180 dies consecutius. Increïble dedicació!</string>
+
+    <string name="badge_constancy_legend_name">Llegenda de la constància</string>
+    <string name="badge_constancy_legend_desc">60 dies consecutius. Ets un exemple per a tothom.</string>
+
+    <string name="badge_one_month_nonstop_name">Un mes sense parar</string>
+    <string name="badge_one_month_nonstop_desc">30 dies consecutius d\'activitat. Ets una màquina!</string>
+
+    <string name="badge_two_weeks_unstoppable_name">Dues setmanes imparable</string>
+    <string name="badge_two_weeks_unstoppable_desc">14 dies sense parar. La constància és la teva força.</string>
+
+    <string name="badge_iron_week_name">Setmana de ferro</string>
+    <string name="badge_iron_week_desc">Has mantingut una ratxa de 7 dies consecutius. Impressionant!</string>
+
+    <string name="badge_constancy_name">Iniciació a la constància</string>
+    <string name="badge_constancy_desc">Has completat 3 dies consecutius d\'activitat. Bon inici!</string>
 
     <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar compte</string>

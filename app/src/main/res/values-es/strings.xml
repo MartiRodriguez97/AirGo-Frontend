@@ -19,12 +19,65 @@
     <string name="profile_activities_delete_desc">Eliminar actividad</string>
 
     <!-- Badge Translations -->
-    <string name="badge_constancy_name">Iniciación a la constancia</string>
-    <string name="badge_constancy_desc">¡Has completado tu primera semana de actividad!</string>
-    <string name="badge_walk_name">De paseo</string>
-    <string name="badge_walk_desc">Has caminado tus primeros 5 kilómetros.</string>
     <string name="badge_welcome_name">¡Bienvenido a AirGo!</string>
-    <string name="badge_welcome_desc">Gracias por unirte a la comunidad de AirGo.</string>
+    <string name="badge_welcome_desc">Has conseguido 50 puntos. ¡Bienvenido a la comunidad AirGo!</string>
+
+    <string name="badge_legend_name">Leyenda AirGo</string>
+    <string name="badge_legend_desc">Has conseguido 5000 puntos. ¡Tu dedicación es legendaria!</string>
+
+    <string name="badge_ambassador_name">Embajador AirGo</string>
+    <string name="badge_ambassador_desc">Has conseguido 2500 puntos. ¡Eres un embajador de la movilidad sostenible!</string>
+
+    <string name="badge_elite_name">Élite verde</string>
+    <string name="badge_elite_desc">Has conseguido 1000 puntos. ¡Formas parte de la élite de AirGo!</string>
+
+    <string name="badge_athlete_name">Atleta urbano</string>
+    <string name="badge_athlete_desc">Has conseguido 500 puntos. ¡Eres un atleta urbano!</string>
+
+    <string name="badge_fit_name">En forma</string>
+    <string name="badge_fit_desc">Has conseguido 250 puntos. ¡Cada esfuerzo cuenta!</string>
+
+    <string name="badge_first_steps_name">Primeros pasos</string>
+    <string name="badge_first_steps_desc">Has conseguido 100 puntos. ¡Vas por el buen camino!</string>
+
+    <string name="badge_catalan_crossing_name">Travesía catalana</string>
+    <string name="badge_catalan_crossing_desc">Has recorrido 1000 km en total. ¡De leyenda!</string>
+
+    <string name="badge_pedal_master_name">Maestro del pedal</string>
+    <string name="badge_pedal_master_desc">Has recorrido 500 km en total. ¡Eres un auténtico deportista!</string>
+
+    <string name="badge_centurion_name">Centurión</string>
+    <string name="badge_centurion_desc">Has recorrido 100 km en total. ¡Un centenar de kilómetros!</string>
+
+    <string name="badge_around_barcelona_name">Rodeando Barcelona</string>
+    <string name="badge_around_barcelona_desc">Has recorrido 50 km en total. ¡Toda Barcelona a tus pies!</string>
+
+    <string name="badge_urban_explorer_name">Explorador urbano</string>
+    <string name="badge_urban_explorer_desc">Has recorrido 21 km en total. ¡Ya conoces la ciudad!</string>
+
+    <string name="badge_first_10km_name">Primeros 10 kilómetros</string>
+    <string name="badge_first_10km_desc">Has recorrido 10 km en total. ¡Vas cogiendo el ritmo!</string>
+
+    <string name="badge_walk_name">De paseo</string>
+    <string name="badge_walk_desc">Has recorrido 5 km en total. ¡El primer paso siempre cuenta!</string>
+
+    <string name="badge_half_year_streak_name">Medio año de racha</string>
+    <string name="badge_half_year_streak_desc">180 días consecutivos. ¡Increíble dedicación!</string>
+
+    <string name="badge_constancy_legend_name">Leyenda de la constancia</string>
+    <string name="badge_constancy_legend_desc">60 días consecutivos. Eres un ejemplo para todos.</string>
+
+    <string name="badge_one_month_nonstop_name">Un mes sin parar</string>
+    <string name="badge_one_month_nonstop_desc">30 días consecutivos de actividad. ¡Eres una máquina!</string>
+
+    <string name="badge_two_weeks_unstoppable_name">Dos semanas imparable</string>
+    <string name="badge_two_weeks_unstoppable_desc">14 días sin parar. La constancia es tu fuerza.</string>
+
+    <string name="badge_iron_week_name">Semana de hierro</string>
+    <string name="badge_iron_week_desc">Has mantenido una racha de 7 días consecutivos. ¡Impresionante!</string>
+
+    <string name="badge_constancy_name">Iniciación a la constancia</string>
+    <string name="badge_constancy_desc">Has completado 3 días consecutivos de actividad. ¡Buen inicio!</string>
 
     <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar cuenta</string>
