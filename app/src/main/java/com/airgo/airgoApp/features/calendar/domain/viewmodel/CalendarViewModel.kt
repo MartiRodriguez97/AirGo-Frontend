@@ -7,6 +7,7 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
+import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,26 +23,36 @@ class CalendarViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _exercicis = MutableStateFlow<List<Exercise>>(emptyList())
+    val exercicis: StateFlow<List<Exercise>> = _exercicis
     private val _errorResId = MutableStateFlow<Int?>(null)
     val errorResId: StateFlow<Int?> = _errorResId
 
     fun fetchPlaEntrenament() {
-        if (!SessionManager.trainingPlans.isNullOrEmpty()) {
-            _plaEntrenamentList.value = SessionManager.trainingPlans!!
-            return
-        }
-
         viewModelScope.launch {
             _isLoading.value = true
             _errorResId.value = null
             try {
-                val response = apiService.getPlaEntrenament()
-                if (response.isSuccessful) {
-                    val body = response.body() ?: emptyList()
-                    _plaEntrenamentList.value = body
-                    SessionManager.trainingPlans = body
+                val responseExercicis = apiService.getActivities()
+                if (responseExercicis.isSuccessful) {
+                    val totsElsExercicis = responseExercicis.body() ?: emptyList()
+                    val exercicisPlanificats = totsElsExercicis.filter { it.dataInici != null }
+                    _exercicis.value = exercicisPlanificats
+                    SessionManager.exercicis = exercicisPlanificats
                 } else {
                     _errorResId.value = R.string.calendar_error_server
+                }
+                if (!SessionManager.trainingPlans.isNullOrEmpty()) {
+                    _plaEntrenamentList.value = SessionManager.trainingPlans!!
+                } else {
+                    val responsePlans = apiService.getPlaEntrenament()
+                    if (responsePlans.isSuccessful) {
+                        val body = responsePlans.body() ?: emptyList()
+                        _plaEntrenamentList.value = body
+                        SessionManager.trainingPlans = body
+                    } else {
+                        _errorResId.value = R.string.calendar_error_server
+                    }
                 }
             } catch (e: IOException) {
                 _errorResId.value = R.string.calendar_error_network

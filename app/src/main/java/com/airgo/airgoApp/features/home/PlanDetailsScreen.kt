@@ -35,6 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
+import com.airgo.airgoApp.features.home.helpers.TemplateMapper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,13 +120,17 @@ fun planDetailsContent(
 
         plan.templates.forEach { template ->
             Spacer(modifier = Modifier.height(16.dp))
+            val titleResId = TemplateMapper.getTitleResId(template.nom)
+            val descResId = TemplateMapper.getDescResId(template.nom)
+
+            // 2. Usamos stringResource para traducirlos
             Text(
-                text = template.nom,
+                text = stringResource(titleResId),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = template.descripcio,
+                text = stringResource(descResId),
                 style = MaterialTheme.typography.bodyMedium,
             )
             if (template.exercicis.isNotEmpty()) {

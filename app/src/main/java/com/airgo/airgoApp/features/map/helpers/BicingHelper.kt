@@ -21,6 +21,7 @@ object BicingHelper {
         context: Context,
         map: MapView,
         stations: List<BicingStation>,
+        onStationSelected: (BicingStation?) -> Unit,
     ): FolderOverlay {
         val folder = FolderOverlay()
         println("Creant marcadors per ${stations.size} estacions de Bicing")
@@ -35,25 +36,15 @@ object BicingHelper {
                 val marker = BicingMarker(map, context, baseColor)
                 marker.position = GeoPoint(lat, lon)
                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                marker.infoWindow = null
 
-                marker.title = station.name
-                marker.snippet =
-                    context.getString(
-                        R.string.bicing_marker_snippet,
-                        station.mechanicalBikes,
-                        station.electricBikes,
-                        station.freeSlots,
-                        station.status,
-                    )
                 marker.setOnMarkerClickListener { m, _ ->
-                    // Deseleccionar els que abans s'han pres
                     folder.items.forEach { item ->
                         if (item is BicingMarker) item.setSelected(false, map)
                     }
-                    // Seleccionar l'actual
                     (m as BicingMarker).setSelected(true, map)
-                    m.showInfoWindow()
-                    map.controller.animateTo(m.position) // Centrar el mapa a l'estació
+                    onStationSelected(station)
+                    map.controller.animateTo(m.position)
                     true
                 }
                 folder.add(marker)

@@ -12,16 +12,20 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.home.data.Exercise
+import com.airgo.airgoApp.features.home.helpers.TemplateMapper
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 private const val DATE_SUBSTRING_END = 10
 
@@ -29,11 +33,10 @@ private const val DATE_SUBSTRING_END = 10
 @Composable
 fun calendarDetailsScreen(
     date: LocalDate,
-    plaList: List<TrainingPlanResponse>,
+    exercicisList: List<Exercise>,
     onBackClick: () -> Unit,
 ) {
     val padding16 = 16.dp
-    val padding8 = 8.dp
 
     Scaffold(
         topBar = {
@@ -58,56 +61,82 @@ fun calendarDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(padding16),
         ) {
-            var hasExercises = false
-
-            plaList.forEach { pla ->
-                pla.templates.forEach { template ->
-                    template.exercicis.forEach { ex ->
-                        val exDate =
-                            if (ex.dataInici != null && ex.dataInici.length >= DATE_SUBSTRING_END) {
-                                try {
-                                    LocalDate.parse(ex.dataInici.substring(0, DATE_SUBSTRING_END))
-                                } catch (_: java.time.format.DateTimeParseException) {
-                                    null
-                                }
-                            } else {
-                                null
-                            }
-
-                        if (exDate == date) {
-                            hasExercises = true
-                            Card(
-                                modifier =
-                                    Modifier
-                                        .padding(vertical = padding8)
-                                        .fillMaxWidth(),
-                            ) {
-                                Column(modifier = Modifier.padding(padding16)) {
-                                    Text(
-                                        text =
-                                            stringResource(
-                                                R.string.calendar_plan,
-                                                pla.diesDurada,
-                                                pla.numEntrenamentsSetmanals,
-                                            ),
-                                    )
-                                    Text(text = stringResource(R.string.calendar_template, template.nom))
-                                    Text(text = template.descripcio)
-                                    Text(text = stringResource(R.string.calendar_type, template.tipusExercici))
-                                    Text(text = stringResource(R.string.calendar_exercise_date, ex.dataInici ?: ""))
-                                    Text(text = stringResource(R.string.calendar_completed, ex.completat))
-
-                                    Text(text = "Objectiu: ${ex.distanciaObjectiu} km")
-                                    Text(text = "Fet: ${ex.distanciaFeta} km")
-                                }
-                            }
+            val exercisesForToday =
+                exercicisList.filter { ex ->
+                    if (ex.dataInici != null && ex.dataInici.length >= DATE_SUBSTRING_END) {
+                        try {
+                            val dateStr = ex.dataInici.substring(0, DATE_SUBSTRING_END)
+                            LocalDate.parse(dateStr) == date
+                        } catch (_: DateTimeParseException) {
+                            false
                         }
+                    } else {
+                        false
                     }
                 }
-            }
 
-            if (!hasExercises) {
+            if (exercisesForToday.isEmpty()) {
                 Text(text = stringResource(R.string.calendar_no_exercises))
+            } else {
+                exercisesForToday.forEach { ex ->
+                    calendarExerciseCard(ex)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun calendarExerciseCard(ex: Exercise) {
+    val padding16 = 16.dp
+    val padding8 = 8.dp
+
+    Card(
+        modifier =
+            Modifier
+                .padding(vertical = padding8)
+                .fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(padding16)) {
+            val template = ex.template
+
+            if (template != null) {
+                // agafem els noms dels titols a partir del template
+                val titleResId = TemplateMapper.getTitleResId(template.nom)
+                val descResId = TemplateMapper.getDescResId(template.nom)
+
+                Text(
+                    text = stringResource(id = titleResId),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                )
+
+                Text(
+                    text = stringResource(id = descResId),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 12.dp),
+                )
+
+                val sportString =
+                    when (template.tipusExercici) {
+                        "CAM" -> stringResource(R.string.sport_run)
+                        "BIC" -> stringResource(R.string.sport_bike)
+                        else -> template.tipusExercici
+                    }
+
+                Text(
+                    text = stringResource(R.string.calendar_type, sportString),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.template_default_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
     }

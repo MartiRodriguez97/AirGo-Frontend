@@ -191,6 +191,22 @@
     <string name="map_layers_description">Layers</string>
     <string name="map_layer_bicing">Bicing stations</string>
     <string name="map_layer_pollution">Air quality</string>
+    <string name="bicing_mechanical">mechanicals</string>
+    <string name="bicing_free_slots">free slots</string>
+    <string name="bicing_status_operative">Operative</string>
+    <string name="bicing_status_out_of_service">Out of service</string>
+    <string name="bicing_electric">electrics</string>
+
+    <!-- features/map/components/MapUIComponents -->
+    <string name="legend_title">Legend</string>
+    <string name="legend_bicing_available">Bicing stations with bikes</string>
+    <string name="legend_bicing_empty">Empty Bicing stations</string>
+    <string name="legend_route_start">Route starting point</string>
+    <string name="legend_route_end">End point of route</string>
+    <string name="legend_waypoint">Midpoint of the route</string>
+
+    <!-- features/map/components/RoutePanel -->
+    <string name="selection_panel_title">Select route points</string>
 
     <!-- features/map/FavoritesViewModel-->
     <string name="error_deleting_favourite_route">The route could not be removed as a favorite</string>
@@ -358,8 +374,8 @@
     <string name="profile_no_activities">You have no registered activities yet</string>
 
     <!-- features/social -->
-    <string name="friends">Friends</string>
-    <string name="discover">Discover</string>
+    <string name="friends">My friends</string>
+    <string name="discover">Search</string>
     <string name="search_friend">Search a friend...</string>
     <string name="friend_requests">Friend requests</string>
     <string name="no_friends">You don\'t have any friends yet.</string>
@@ -379,14 +395,17 @@
     <string name="error_request">Error sending the request</string>
     <string name="delete_friend_title">Delete friend</string>
     <string name="delete_friend_confirm">Are you sure you want to delete %1$s from your friends list?</string>
-    <string name="forums">Forums</string>
+    <string name="forums">My forums</string>
     <string name="search_forum">Search forums...</string>
     <string name="no_forums_found">No forums found</string>
     <string name="error_loading_profile">Could not load profile</string>
     <string name="error_loading_friends">Could not load friends</string>
     <string name="error_deleting_friend">Couldn\'t delete this friend</string>
 
-    <!-- Tracking Dialogs -->
+    <!-- features/tracking-->
+    <string name="error_saving_activity">Could not save activity</string>
+    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
+    <string name="tracking_save_progress">Progreso guardado</string>
     <string name="tracking_new_title_title">New Title!</string>
     <string name="tracking_new_title_desc">You have a pending title to choose!</string>
     <string name="tracking_set_main_title">Set as main title</string>
@@ -403,9 +422,6 @@
     <string name="chat_reply">Reply</string>
     <string name="chat_reply_label">Write a response...</string>
     <string name="chat_mark_as_read">Mark as read</string>
-
-    <!-- features/tracking-->
-    <string name="error_saving_activity">Could not save activity</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Start</string>
@@ -450,9 +466,6 @@
     <string name="forums_filter_mine">Created</string>
     <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
 
-    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
-    <string name="tracking_save_progress">Progreso guardado</string>
-    <string name="selection_panel_title">Select route points</string>
 
     <string name="home_pending_titles_title">Pending Titles!</string>
     <string name="home_pending_titles_singular">You have 1 title to choose</string>
@@ -473,5 +486,45 @@
     <string name="home_building_municipality_label">Municipi (només Barcelona)</string>
     <string name="error_dialog_title">Error</string>
     <string name="btn_continue">Continuar</string>
+    <string name="template_run_easy_1_title">Easy Walk/Run</string>
+    <string name="template_run_easy_1_desc">Combine walking and light jogging to get your body moving without strain.</string>
+    <string name="template_run_easy_2_title">Short Jog</string>
+    <string name="template_run_easy_2_desc">Maintain a steady, very comfortable pace over a short distance.</string>
+    <string name="template_run_med_1_title">Medium Run</string>
+    <string name="template_run_med_1_desc">Medium pace run to improve your overall aerobic capacity.</string>
+    <string name="template_run_med_2_title">Classic Fartlek</string>
+    <string name="template_run_med_2_desc">Speed play alternating between accelerations and recoveries based on feel.</string>
+    <string name="template_run_hard_1_title">Power Intervals</string>
+    <string name="template_run_hard_1_desc">Demanding high-pace intervals with active recovery periods.</string>
+    <string name="template_run_hard_2_title">Demanding Long Run</string>
+    <string name="template_run_hard_2_desc">Long distance run to challenge and increase your maximum endurance.</string>
+
+    <string name="template_bike_easy_1_title">Cadence Ride</string>
+    <string name="template_bike_easy_1_desc">Flat route focusing on light pedaling and building confidence on the bike.</string>
+    <string name="template_bike_easy_2_title">Urban Ride</string>
+    <string name="template_bike_easy_2_desc">Smooth and relaxed ride, ideal for loosening up your legs.</string>
+    <string name="template_bike_med_1_title">Cruising Pace</string>
+    <string name="template_bike_med_1_desc">Maintain a steady speed over a medium-distance route.</string>
+    <string name="template_bike_med_2_title">Mixed Route</string>
+    <string name="template_bike_med_2_desc">Terrain with gentle slopes to alternate gears and build strength.</string>
+    <string name="template_bike_hard_1_title">Mountain Climb</string>
+    <string name="template_bike_hard_1_desc">Steep ascents designed to push your power output to the maximum.</string>
+    <string name="template_bike_hard_2_title">Gran Fondo</string>
+    <string name="template_bike_hard_2_desc">Long and exhausting route to test your physical and mental endurance.</string>
+
+    <string name="template_default_title">Planned Activity</string>
+    <string name="template_default_desc">Activity description not available.</string>
+
+    <string name="no_pending_activity_today">You have no pending activities for today.</string>
+    <string name="no_activity_data">No activity data available.</string>
+    <string name="start_point">Start point</string>
+    <string name="end_point">End point</string>
+    <string name="waypoint">Waypoint %d</string>
+    <string name="write_address">Write an address...</string>
+    <string name="selection_point_hint">How do you want to select the point?</string>
+    <string name="on_map">On map</string>
+    <string name="search_address">By address</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
 
 </resources>

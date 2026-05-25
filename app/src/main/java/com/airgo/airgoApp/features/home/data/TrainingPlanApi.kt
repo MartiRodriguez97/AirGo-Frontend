@@ -1,6 +1,7 @@
 package com.airgo.airgoApp.features.home.data
 
 import com.airgo.airgoApp.core.network.ApiEndpoints.ACTIVITY
+import com.airgo.airgoApp.core.network.ApiEndpoints.MEUS_PLANS_ENTRENAMENT
 import com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT
 import com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT_ID
 import com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT_INI
@@ -12,7 +13,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface TrainingPlanApi {
-    @GET(PLA_ENTRENAMENT)
+    @GET(MEUS_PLANS_ENTRENAMENT)
     suspend fun getTrainingPlans(): List<TrainingPlanResponse>
 
     @GET(TEMPLATE_EXERCICI)
@@ -23,7 +24,7 @@ interface TrainingPlanApi {
     @POST(PLA_ENTRENAMENT)
     suspend fun createTrainingPlan(
         @Body request: TrainingPlanRequest,
-    ): TrainingPlanRawResponse
+    ): CreateTrainingPlanResponse
 
     @POST(PLA_ENTRENAMENT_INI)
     suspend fun initializeTrainingPlan(
@@ -35,6 +36,9 @@ interface TrainingPlanApi {
     suspend fun deleteTrainingPlan(
         @Path("id") id: Int,
     )
+
+    @GET("api/exercicis/")
+    suspend fun getActivities(): List<Exercise>
 
     @retrofit2.http.PATCH(ACTIVITY)
     suspend fun updateExercise(

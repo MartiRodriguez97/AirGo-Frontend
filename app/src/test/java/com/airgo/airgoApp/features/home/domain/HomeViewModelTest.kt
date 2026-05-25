@@ -2,9 +2,9 @@ package com.airgo.airgoApp.features.home.domain
 
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.home.data.CreateTrainingPlanResponse
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanApi
-import com.airgo.airgoApp.features.home.data.TrainingPlanRawResponse
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.data.TrainingTemplate
 import io.mockk.Runs
@@ -48,7 +48,6 @@ class HomeViewModelTest {
         every { RetrofitProvider.trainingPlanApi } returns mockApi
 
         mockkObject(SessionManager)
-        // Mock SessionManager properties
         every { SessionManager.trainingPlans } returns null
         every { SessionManager.trainingPlans = any() } just Runs
         every { SessionManager.exercicis = any() } just Runs
@@ -56,12 +55,11 @@ class HomeViewModelTest {
         every { SessionManager.nomTemplateActiu = any() } just Runs
         every { SessionManager.titolsPendentsFlow } returns kotlinx.coroutines.flow.MutableStateFlow(0)
 
-        // Default behavior for loadPlans in init
         coEvery { mockApi.getTrainingPlans() } returns emptyList()
+        coEvery { mockApi.getActivities() } returns emptyList()
 
         viewModel = HomeViewModel()
 
-        // El init() del ViewModel llama a loadPlans(). Limpiamos para que los tests empiecen de 0.
         clearMocks(mockApi)
     }
 
@@ -76,7 +74,7 @@ class HomeViewModelTest {
         runTest {
             val cachedPlans =
                 listOf(
-                    com.airgo.airgoApp.features.home.data.TrainingPlanResponse(
+                    TrainingPlanResponse(
                         id = 1,
                         diesDurada = 30,
                         numEntrenamentsSetmanals = 3,
@@ -84,12 +82,13 @@ class HomeViewModelTest {
                     ),
                 )
             every { SessionManager.trainingPlans } returns cachedPlans
+            coEvery { mockApi.getTrainingPlans() } returns cachedPlans
+            coEvery { mockApi.getActivities() } returns emptyList()
 
             viewModel.loadPlans()
 
             assertEquals(cachedPlans, viewModel.plans.value)
-            // Al haber caché, no se debe haber llamado a la API en el cuerpo del test
-            coVerify(exactly = 0) { mockApi.getTrainingPlans() }
+            coVerify(exactly = 1) { mockApi.getTrainingPlans() }
         }
 
     @Test
@@ -112,17 +111,9 @@ class HomeViewModelTest {
                         ),
                     ),
                 )
-            val template =
-                TrainingTemplate(
-                    101,
-                    "Test Template",
-                    "Desc",
-                    "Run",
-                    emptyList(),
-                )
 
             coEvery { mockApi.getTrainingPlans() } returns rawPlans
-            coEvery { mockApi.getTemplate(101) } returns template
+            coEvery { mockApi.getActivities() } returns emptyList()
 
             viewModel.loadPlans()
 
@@ -153,9 +144,11 @@ class HomeViewModelTest {
             val today = LocalDate.now().toString()
             val yesterday = LocalDate.now().minusDays(1).toString()
 
-            val exerciseToday = Exercise(1, today, false, 5.0, 0.0)
-            val exerciseYesterday = Exercise(2, yesterday, false, 5.0, 0.0)
-            val exerciseCompleted = Exercise(3, today, true, 5.0, 0.0)
+            val dummyTemplate = TrainingTemplate(101, "T1", "D", "R", emptyList())
+
+            val exerciseToday = Exercise(1, today, dummyTemplate, false, 5.0, 0.0)
+            val exerciseYesterday = Exercise(2, yesterday, dummyTemplate, false, 5.0, 0.0)
+            val exerciseCompleted = Exercise(3, today, dummyTemplate, true, 5.0, 0.0)
 
             val template =
                 TrainingTemplate(
@@ -166,13 +159,12 @@ class HomeViewModelTest {
                     listOf(exerciseToday, exerciseYesterday, exerciseCompleted),
                 )
             val plan =
-                com.airgo.airgoApp.features.home.data
-                    .TrainingPlanResponse(1, 30, 3, listOf(template))
+
+                TrainingPlanResponse(1, 30, 3, listOf(template))
 
             every { SessionManager.trainingPlans } returns listOf(plan)
-            viewModel.loadPlans()
 
-            viewModel.updateTodayExercises()
+            viewModel.updateTodayExercises(listOf(exerciseToday, exerciseYesterday, exerciseCompleted))
 
             assertEquals(1, viewModel.exercises.value.size)
             assertEquals(1, viewModel.exercises.value[0].id)
@@ -181,13 +173,15 @@ class HomeViewModelTest {
     @Test
     fun startExerciceSetActivInSessionManager() =
         runTest {
-            val exercise = Exercise(1, "2024-01-01", false, 5.0, 0.0)
+            val dummyTemplate = TrainingTemplate(101, "Target Template", "D", "R", emptyList())
+            val exercise = Exercise(1, "2024-01-01", dummyTemplate, false, 5.0, 0.0)
             val template = TrainingTemplate(101, "Target Template", "D", "R", listOf(exercise))
             val plan =
-                com.airgo.airgoApp.features.home.data
-                    .TrainingPlanResponse(1, 30, 3, listOf(template))
+                TrainingPlanResponse(1, 30, 3, listOf(template))
 
             every { SessionManager.trainingPlans } returns listOf(plan)
+            coEvery { mockApi.getTrainingPlans() } returns listOf(plan)
+            coEvery { mockApi.getActivities() } returns emptyList()
             viewModel.loadPlans()
 
             viewModel.startExercise(exercise)
@@ -199,13 +193,31 @@ class HomeViewModelTest {
     @Test
     fun createPlanAllStates() =
         runTest {
-            val rawResponse = TrainingPlanRawResponse(1, 30, 3, emptyList())
+            val dummyPlanData =
+                com.airgo.airgoApp.features.home.data.BackendPlanData(
+                    id = 1,
+                    diesDurada = 30,
+                    numEntrenamentsSetmanals = 3,
+                    esport = "CAM",
+                    nivell = 1,
+                    diesSetmana = listOf(1, 3, 5),
+                    dataFi = "2024-12-31",
+                    templates = emptyList(),
+                )
+
+            val rawResponse =
+                CreateTrainingPlanResponse(
+                    status = "OK",
+                    plan = dummyPlanData,
+                    exercicis = emptyList(),
+                    numExercicisCreats = 0,
+                )
+
             val planResponse = TrainingPlanResponse(1, 30, 3, emptyList())
 
             coEvery { mockApi.createTrainingPlan(any()) } returns rawResponse
-            coEvery { mockApi.initializeTrainingPlan(1, any()) } returns rawResponse
             coEvery { mockApi.getTrainingPlans() } returns listOf(planResponse)
-            coEvery { mockApi.getTemplate(any()) } returns TrainingTemplate(1, "T", "D", "R", emptyList())
+            coEvery { mockApi.getActivities() } returns emptyList()
 
             var successCalled = false
             viewModel.createPlan(
@@ -222,7 +234,6 @@ class HomeViewModelTest {
 
             assertTrue(successCalled)
             coVerify { mockApi.createTrainingPlan(any()) }
-            coVerify(exactly = 0) { mockApi.initializeTrainingPlan(1, any()) } // it is not called in createPlan
             coVerify(exactly = 1) { mockApi.getTrainingPlans() }
         }
 
@@ -230,13 +241,13 @@ class HomeViewModelTest {
     fun deletePlanFromSessionManager() =
         runTest {
             val plan1 =
-                com.airgo.airgoApp.features.home.data
-                    .TrainingPlanResponse(1, 30, 3, emptyList())
+                TrainingPlanResponse(1, 30, 3, emptyList())
             val plan2 =
-                com.airgo.airgoApp.features.home.data
-                    .TrainingPlanResponse(2, 30, 3, emptyList())
+                TrainingPlanResponse(2, 30, 3, emptyList())
 
             every { SessionManager.trainingPlans } returns listOf(plan1, plan2)
+            coEvery { mockApi.getTrainingPlans() } returns listOf(plan1, plan2)
+            coEvery { mockApi.getActivities() } returns emptyList()
             viewModel.loadPlans()
 
             coEvery { mockApi.deleteTrainingPlan(1) } just Runs

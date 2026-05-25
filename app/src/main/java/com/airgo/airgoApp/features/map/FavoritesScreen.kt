@@ -37,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.features.map.data.FavoriteRouteDetail
 import com.airgo.airgoApp.features.map.data.FavoriteRouteItem
 import com.airgo.airgoApp.features.map.domain.FavoritesViewModel
 
@@ -47,6 +48,7 @@ import com.airgo.airgoApp.features.map.domain.FavoritesViewModel
 @Composable
 fun favoritesScreen(
     onBack: () -> Unit,
+    onRouteClick: (FavoriteRouteDetail) -> Unit = {},
     viewModel: FavoritesViewModel = viewModel(),
 ) {
     val context = LocalContext.current
@@ -107,6 +109,7 @@ fun favoritesScreen(
                             favoriteRouteCard(
                                 item = favoriteRoute,
                                 onDelete = { viewModel.deleteFavoriteRoute(favoriteRoute.route.id) },
+                                onClick = { onRouteClick(favoriteRoute.route) },
                             )
                         }
                     }
@@ -123,10 +126,12 @@ fun favoritesScreen(
 private fun favoriteRouteCard(
     item: FavoriteRouteItem,
     onDelete: () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(4.dp),
+        onClick = onClick,
     ) {
         Row(
             modifier =
@@ -149,13 +154,17 @@ private fun favoriteRouteCard(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = "Origen: \n${item.route.startAddress ?: item.route.startLocation ?: "-"}",
+                        text =
+                            stringResource(R.string.from) +
+                                "\n" + (item.route.startAddress ?: item.route.startLocation ?: "-"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Destí: \n${item.route.endAddress ?: item.route.endLocation ?: "-"}",
+                        text =
+                            stringResource(R.string.to) +
+                                "\n" + (item.route.endAddress ?: item.route.endLocation ?: "-"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

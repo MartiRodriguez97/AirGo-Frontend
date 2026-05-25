@@ -49,10 +49,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.utils.navigateOnce
 import com.airgo.airgoApp.features.calendar.details.calendarDetailsScreen
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
 import com.airgo.airgoApp.features.home.data.Exercise
-import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeParseException
@@ -82,7 +82,7 @@ fun calendarScreen(viewModel: CalendarViewModel) {
             exitTransition = { slideOutHorizontally { -it } + fadeOut() },
         ) {
             calendarHomeContent(viewModel) { date ->
-                navController.navigate("calendar_details/$date")
+                navController.navigateOnce("calendar_details/$date")
             }
         }
 
@@ -101,11 +101,10 @@ fun calendarScreen(viewModel: CalendarViewModel) {
                 } catch (e: DateTimeParseException) {
                     LocalDate.now()
                 }
-            val plaList by viewModel.plaEntrenamentList.collectAsState()
-
+            val exercicis by viewModel.exercicis.collectAsState()
             calendarDetailsScreen(
                 date = selectedDate,
-                plaList = plaList,
+                exercicisList = exercicis,
                 onBackClick = { navController.popBackStack() },
             )
         }
@@ -117,12 +116,11 @@ fun calendarHomeContent(
     viewModel: CalendarViewModel,
     onDateSelected: (LocalDate) -> Unit,
 ) {
-    val plaList by viewModel.plaEntrenamentList.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorResId by viewModel.errorResId.collectAsState()
-
+    val exercicis by viewModel.exercicis.collectAsState()
     val context = LocalContext.current
-    val padding16 = 16.dp
+    val padding16 = 8.dp
 
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
@@ -159,7 +157,7 @@ fun calendarHomeContent(
             calendarGrid(
                 modifier = Modifier.weight(1f),
                 currentMonth = currentMonth,
-                plaList = plaList,
+                exercicis = exercicis,
                 onDateSelected = onDateSelected,
             )
         }
@@ -199,19 +197,12 @@ private const val MAX_DENSITY = 1.1f
 fun calendarGrid(
     modifier: Modifier = Modifier,
     currentMonth: YearMonth,
-    plaList: List<TrainingPlanResponse>,
+    exercicis: List<Exercise>,
     onDateSelected: (LocalDate) -> Unit,
 ) {
     val daysInMonth = currentMonth.lengthOfMonth()
     val firstDayOfMonth = currentMonth.atDay(1).dayOfWeek.value % DAYS_IN_WEEK
     val padding8 = 8.dp
-
-    val allExercises =
-        plaList.flatMap { pla ->
-            pla.templates.flatMap { template ->
-                template.exercicis.orEmpty()
-            }
-        }
 
     val currentDensity = LocalDensity.current
     val customDensity =
@@ -254,20 +245,17 @@ fun calendarGrid(
             items(daysInMonth) { day ->
                 val date = currentMonth.atDay(day + 1)
                 val exercisesToday =
-                    allExercises.filter { exer ->
-                        val exerDate =
-                            if (exer.dataInici != null && exer.dataInici.length >= DATE_SUBSTRING_END) {
-                                try {
-                                    val dateStr = exer.dataInici.substring(0, DATE_SUBSTRING_END)
-                                    LocalDate.parse(dateStr)
-                                } catch (_: DateTimeParseException) {
-                                    null
-                                }
-                            } else {
-                                null
+                    exercicis.filter { exer ->
+                        if (exer.dataInici != null && exer.dataInici.length >= DATE_SUBSTRING_END) {
+                            try {
+                                val dateStr = exer.dataInici.substring(0, DATE_SUBSTRING_END)
+                                LocalDate.parse(dateStr) == date
+                            } catch (_: DateTimeParseException) {
+                                false
                             }
-
-                        exerDate == date
+                        } else {
+                            false
+                        }
                     }
                 dayCell(
                     date = date,

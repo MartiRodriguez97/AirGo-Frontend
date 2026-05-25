@@ -34,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.utils.navigateOnce
 import com.airgo.airgoApp.features.activity.activityScreen
 import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
@@ -43,8 +44,10 @@ import com.airgo.airgoApp.features.home.planDetailsScreen
 import com.airgo.airgoApp.features.home.questionnaireScreen
 import com.airgo.airgoApp.features.map.AddressSearchMode
 import com.airgo.airgoApp.features.map.addressSearchScreen
+import com.airgo.airgoApp.features.map.domain.FavoritesViewModel
 import com.airgo.airgoApp.features.map.domain.RouteViewModel
 import com.airgo.airgoApp.features.map.favoritesScreen
+import com.airgo.airgoApp.features.map.routePreviewScreen
 import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.chat.chatScreen
 import com.airgo.airgoApp.features.social.forums.forumChatScreen
@@ -156,7 +159,7 @@ private fun bottomNavigationBar(
                 NavigationBarItem(
                     selected = currentRoute == tab.route,
                     onClick = {
-                        navController.navigate(tab.route) {
+                        navController.navigateOnce(tab.route) {
                             popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
@@ -184,9 +187,9 @@ private fun NavGraphBuilder.homeNavGraph(
     composable(MainShellScreen.HOME.route) {
         screenWrapper(innerPadding) {
             homeScreen(
-                onNavigateToQuestionnaire = { navController.navigate("questionnaire") },
-                onNavigateToDetails = { planId -> navController.navigate("planDetails/$planId") },
-                onNavigateToPendingActivity = { navController.navigate("activityDetail") },
+                onNavigateToQuestionnaire = { navController.navigateOnce("questionnaire") },
+                onNavigateToDetails = { planId -> navController.navigateOnce("planDetails/$planId") },
+                onNavigateToPendingActivity = { navController.navigateOnce("activityDetail") },
             )
         }
     }
@@ -203,13 +206,6 @@ private fun NavGraphBuilder.homeNavGraph(
         screenWrapper(innerPadding) {
             activityDetailScreen(
                 onBackClick = { navController.popBackStack() },
-                onStartActivityClick = {
-                    navController.navigate(MainShellScreen.ACTIVITY.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
             )
         }
     }
@@ -227,7 +223,7 @@ private fun NavGraphBuilder.featuresNavGraph(
     composable(MainShellScreen.SOCIAL.route) {
         screenWrapper(innerPadding) {
             socialScreen(
-                onFriendClick = { userId -> navController.navigate("friend_profile/$userId") },
+                onFriendClick = { userId -> navController.navigateOnce("friend_profile/$userId") },
                 onChatClick = { convId, otherUserId, username, profilePic ->
                     val encodedPic =
                         if (!profilePic.isNullOrEmpty()) {
@@ -235,9 +231,9 @@ private fun NavGraphBuilder.featuresNavGraph(
                         } else {
                             "none"
                         }
-                    navController.navigate("chat/$convId/$otherUserId/$username/$encodedPic")
+                    navController.navigateOnce("chat/$convId/$otherUserId/$username/$encodedPic")
                 },
-                onForumClick = { id, name -> navController.navigate("forum_chat/$id/$name") },
+                onForumClick = { id, name -> navController.navigateOnce("forum_chat/$id/$name") },
             )
         }
     }
@@ -260,6 +256,22 @@ private fun NavGraphBuilder.featuresNavGraph(
         }
     }
     composable("favorites") { favoritesScreen(onBack = { navController.popBackStack() }) }
+    composable("favorites") {
+        val favoritesViewModel: FavoritesViewModel = viewModel()
+        val selectedRoute = favoritesViewModel.selectedRoute
+        if (selectedRoute != null) {
+            routePreviewScreen(
+                route = selectedRoute,
+                onBack = { favoritesViewModel.clearSelectedRoute() },
+            )
+        } else {
+            favoritesScreen(
+                onBack = { navController.popBackStack() },
+                onRouteClick = { favoritesViewModel.selectRoute(it) },
+                viewModel = favoritesViewModel,
+            )
+        }
+    }
     chatNavRoutes(navController)
     addressSearchNavRoute(navController)
     forumChatNavRoute(navController)

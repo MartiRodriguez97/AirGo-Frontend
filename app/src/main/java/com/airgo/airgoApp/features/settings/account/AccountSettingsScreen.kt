@@ -253,7 +253,7 @@ private fun accountSettingsContent(
     uiState: ProfileUiState,
     actions: AccountSettingsActions,
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
         accountSettingsHeader(onBackClick = actions.onBackClick)
         HorizontalDivider(thickness = DividerDefaults.Thickness, color = DividerDefaults.color)
         usernameRow(displayName = state.displayName, onEditUsername = actions.onEditUsername)
@@ -408,7 +408,8 @@ private fun bicycleAvailableRow(
             Modifier
                 .fillMaxWidth()
                 .heightIn(min = 56.dp)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .clickable(enabled = !isLoading) { onBicycleToggle(!isEnabled) },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
