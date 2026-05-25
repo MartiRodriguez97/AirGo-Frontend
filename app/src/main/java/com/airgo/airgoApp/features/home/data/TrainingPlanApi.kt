@@ -36,6 +36,9 @@ interface TrainingPlanApi {
         @Path("id") id: Int,
     )
 
+    @GET("api/exercicis/")
+    suspend fun getActivities(): List<Exercise>
+
     @retrofit2.http.PATCH(ACTIVITY)
     suspend fun updateExercise(
         @Path("id") id: Int,

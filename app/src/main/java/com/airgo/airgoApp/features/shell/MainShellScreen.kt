@@ -186,13 +186,6 @@ private fun NavGraphBuilder.homeNavGraph(
         screenWrapper(innerPadding) {
             activityDetailScreen(
                 onBackClick = { navController.popBackStack() },
-                onStartActivityClick = {
-                    navController.navigate(MainShellScreen.ACTIVITY.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
             )
         }
     }

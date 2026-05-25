@@ -12,6 +12,8 @@ class TrainingPlanRepository {
     @Suppress("MaxLineLength")
     suspend fun createTrainingPlan(request: TrainingPlanRequest): CreateTrainingPlanResponse = api.createTrainingPlan(request)
 
+    suspend fun getActivities(): List<Exercise> = api.getActivities()
+
     suspend fun initializeTrainingPlan(
         id: Int,
         request: TrainingPlanRequest,

@@ -59,16 +59,11 @@ fun calendarDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(padding16),
         ) {
-            Text(
-                text = "DEBUG: He rebut ${exercicisList.size} exercicis en total.",
-                color = androidx.compose.ui.graphics.Color.Red,
-            )
             val exercisesForToday =
                 exercicisList.filter { ex ->
                     if (ex.dataInici != null && ex.dataInici.length >= DATE_SUBSTRING_END) {
                         try {
                             val dateStr = ex.dataInici.substring(0, DATE_SUBSTRING_END)
-                            println("Comparando JSON: $dateStr con DIA CLICADO: $date")
                             LocalDate.parse(dateStr) == date
                         } catch (_: DateTimeParseException) {
                             false
@@ -81,7 +76,6 @@ fun calendarDetailsScreen(
             if (exercisesForToday.isEmpty()) {
                 Text(text = stringResource(R.string.calendar_no_exercises))
             } else {
-                // 3. Si hay, pintamos una Card por cada uno
                 exercisesForToday.forEach { ex ->
                     Card(
                         modifier =
@@ -93,7 +87,6 @@ fun calendarDetailsScreen(
                             val template = ex.template
 
                             if (template != null) {
-                                // 1. Obtenemos los IDs de los textos usando el "nom" (que ahora es nuestro código)
                                 val titleResId =
                                     com.airgo.airgoApp.features.home.helpers.TemplateMapper
                                         .getTitleResId(template.nom)
@@ -101,7 +94,6 @@ fun calendarDetailsScreen(
                                     com.airgo.airgoApp.features.home.helpers.TemplateMapper
                                         .getDescResId(template.nom)
 
-                                // 2. Pintamos los textos traduciéndolos con stringResource
                                 Text(text = stringResource(R.string.calendar_template, stringResource(titleResId)))
                                 Text(text = stringResource(descResId))
                                 Text(text = stringResource(R.string.calendar_type, template.tipusExercici))
