@@ -43,8 +43,10 @@ import com.airgo.airgoApp.features.home.planDetailsScreen
 import com.airgo.airgoApp.features.home.questionnaireScreen
 import com.airgo.airgoApp.features.map.AddressSearchMode
 import com.airgo.airgoApp.features.map.addressSearchScreen
+import com.airgo.airgoApp.features.map.domain.FavoritesViewModel
 import com.airgo.airgoApp.features.map.domain.RouteViewModel
 import com.airgo.airgoApp.features.map.favoritesScreen
+import com.airgo.airgoApp.features.map.routePreviewScreen
 import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.chat.chatScreen
 import com.airgo.airgoApp.features.social.forums.forumChatScreen
@@ -260,6 +262,22 @@ private fun NavGraphBuilder.featuresNavGraph(
         }
     }
     composable("favorites") { favoritesScreen(onBack = { navController.popBackStack() }) }
+    composable("favorites") {
+        val favoritesViewModel: FavoritesViewModel = viewModel()
+        val selectedRoute = favoritesViewModel.selectedRoute
+        if (selectedRoute != null) {
+            routePreviewScreen(
+                route = selectedRoute,
+                onBack = { favoritesViewModel.clearSelectedRoute() },
+            )
+        } else {
+            favoritesScreen(
+                onBack = { navController.popBackStack() },
+                onRouteClick = { favoritesViewModel.selectRoute(it) },
+                viewModel = favoritesViewModel,
+            )
+        }
+    }
     chatNavRoutes(navController)
     addressSearchNavRoute(navController)
     forumChatNavRoute(navController)
