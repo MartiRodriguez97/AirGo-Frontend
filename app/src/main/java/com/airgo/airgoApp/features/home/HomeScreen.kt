@@ -209,29 +209,6 @@ fun activePlanSection(
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = stringResource(R.string.home_plan_duration, plan.diesDurada))
             Text(text = stringResource(R.string.home_plan_workouts_per_week, plan.numEntrenamentsSetmanals))
-
-            val nextExercise =
-                plan.templates
-                    .flatMap {
-                        it.exercicis
-                    }.firstOrNull { !it.completat }
-            val nextTemplateCode =
-                plan.templates
-                    .firstOrNull { template ->
-                        template.exercicis.any { it == nextExercise }
-                    }?.nom
-
-            val nextTitle =
-                if (nextTemplateCode != null) {
-                    stringResource(
-                        TemplateMapper
-                            .getTitleResId(nextTemplateCode),
-                    )
-                } else {
-                    stringResource(R.string.home_plan_no_next_workout)
-                }
-
-            Text(text = stringResource(R.string.home_plan_next_workout, nextTitle))
         }
     }
 }

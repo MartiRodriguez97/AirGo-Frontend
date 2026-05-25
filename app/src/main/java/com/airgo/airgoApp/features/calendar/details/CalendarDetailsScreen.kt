@@ -119,8 +119,15 @@ fun calendarExerciseCard(ex: Exercise) {
                     modifier = Modifier.padding(bottom = 12.dp),
                 )
 
+                val sportString =
+                    when (template.tipusExercici) {
+                        "CAM" -> stringResource(R.string.sport_run)
+                        "BIC" -> stringResource(R.string.sport_bike)
+                        else -> template.tipusExercici
+                    }
+
                 Text(
-                    text = stringResource(R.string.calendar_type, template.tipusExercici),
+                    text = stringResource(R.string.calendar_type, sportString),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.secondary,
                 )
