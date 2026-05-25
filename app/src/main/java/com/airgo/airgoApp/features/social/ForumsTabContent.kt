@@ -45,7 +45,10 @@ import com.airgo.airgoApp.features.social.forums.domain.ForumViewModel
 private enum class ForumFilter { FAVORITS, MEUS }
 
 @Composable
-internal fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
+internal fun forumsTab(
+    onForumClick: (Int, String) -> Unit = { _, _ -> },
+    forumViewModel: ForumViewModel = viewModel(),
+) {
     val uiState by forumViewModel.forumsUiState.collectAsStateWithLifecycle()
     val favoritForums by forumViewModel.favoritForums.collectAsStateWithLifecycle()
     val searchQuery by forumViewModel.searchQuery.collectAsStateWithLifecycle()
@@ -79,6 +82,7 @@ internal fun forumsTab(forumViewModel: ForumViewModel = viewModel()) {
                 activeFilter = activeFilter,
                 forumViewModel = forumViewModel,
                 onDeleteRequest = { forumToDelete = it },
+                onForumClick = { forumId, forumName -> onForumClick(forumId, forumName) },
             )
         }
         createForumFab(
@@ -157,6 +161,7 @@ private fun forumsContent(
     activeFilter: ForumFilter,
     forumViewModel: ForumViewModel,
     onDeleteRequest: (Forum) -> Unit,
+    onForumClick: (Int, String) -> Unit,
 ) {
     when (val state = uiState) {
         is ForumUiState.Loading -> loadingState()
@@ -181,7 +186,7 @@ private fun forumsContent(
                         isOwner = forumViewModel.isCreatedByCurrentUser(forum),
                         onToggleFavorit = { forumViewModel.toggleFavorit(forum.id) },
                         onDelete = { onDeleteRequest(forum) },
-                        onClick = {},
+                        onClick = { onForumClick(forum.id, forum.nom ?: "") },
                     )
                 }
             }
