@@ -23,7 +23,7 @@ interface TrainingPlanApi {
     @POST(PLA_ENTRENAMENT)
     suspend fun createTrainingPlan(
         @Body request: TrainingPlanRequest,
-    ): TrainingPlanRawResponse
+    ): CreateTrainingPlanResponse
 
     @POST(PLA_ENTRENAMENT_INI)
     suspend fun initializeTrainingPlan(

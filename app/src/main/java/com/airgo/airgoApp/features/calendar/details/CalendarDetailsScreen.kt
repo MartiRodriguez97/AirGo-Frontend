@@ -20,8 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.home.data.Exercise
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 private const val DATE_SUBSTRING_END = 10
 
@@ -29,7 +30,7 @@ private const val DATE_SUBSTRING_END = 10
 @Composable
 fun calendarDetailsScreen(
     date: LocalDate,
-    plaList: List<TrainingPlanResponse>,
+    exercicisList: List<Exercise>,
     onBackClick: () -> Unit,
 ) {
     val padding16 = 16.dp
@@ -58,56 +59,58 @@ fun calendarDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(padding16),
         ) {
-            var hasExercises = false
+            Text(
+                text = "DEBUG: He rebut ${exercicisList.size} exercicis en total.",
+                color = androidx.compose.ui.graphics.Color.Red,
+            )
+            val exercisesForToday =
+                exercicisList.filter { ex ->
+                    if (ex.dataInici != null && ex.dataInici.length >= DATE_SUBSTRING_END) {
+                        try {
+                            val dateStr = ex.dataInici.substring(0, DATE_SUBSTRING_END)
+                            println("Comparando JSON: $dateStr con DIA CLICADO: $date")
+                            LocalDate.parse(dateStr) == date
+                        } catch (_: DateTimeParseException) {
+                            false
+                        }
+                    } else {
+                        false
+                    }
+                }
 
-            plaList.forEach { pla ->
-                pla.templates.forEach { template ->
-                    template.exercicis.forEach { ex ->
-                        val exDate =
-                            if (ex.dataInici != null && ex.dataInici.length >= DATE_SUBSTRING_END) {
-                                try {
-                                    LocalDate.parse(ex.dataInici.substring(0, DATE_SUBSTRING_END))
-                                } catch (_: java.time.format.DateTimeParseException) {
-                                    null
-                                }
+            if (exercisesForToday.isEmpty()) {
+                Text(text = stringResource(R.string.calendar_no_exercises))
+            } else {
+                // 3. Si hay, pintamos una Card por cada uno
+                exercisesForToday.forEach { ex ->
+                    Card(
+                        modifier =
+                            Modifier
+                                .padding(vertical = padding8)
+                                .fillMaxWidth(),
+                    ) {
+                        Column(modifier = Modifier.padding(padding16)) {
+                            val template = ex.template
+
+                            if (template != null) {
+                                // 1. Obtenemos los IDs de los textos usando el "nom" (que ahora es nuestro código)
+                                val titleResId =
+                                    com.airgo.airgoApp.features.home.helpers.TemplateMapper
+                                        .getTitleResId(template.nom)
+                                val descResId =
+                                    com.airgo.airgoApp.features.home.helpers.TemplateMapper
+                                        .getDescResId(template.nom)
+
+                                // 2. Pintamos los textos traduciéndolos con stringResource
+                                Text(text = stringResource(R.string.calendar_template, stringResource(titleResId)))
+                                Text(text = stringResource(descResId))
+                                Text(text = stringResource(R.string.calendar_type, template.tipusExercici))
                             } else {
-                                null
-                            }
-
-                        if (exDate == date) {
-                            hasExercises = true
-                            Card(
-                                modifier =
-                                    Modifier
-                                        .padding(vertical = padding8)
-                                        .fillMaxWidth(),
-                            ) {
-                                Column(modifier = Modifier.padding(padding16)) {
-                                    Text(
-                                        text =
-                                            stringResource(
-                                                R.string.calendar_plan,
-                                                pla.diesDurada,
-                                                pla.numEntrenamentsSetmanals,
-                                            ),
-                                    )
-                                    Text(text = stringResource(R.string.calendar_template, template.nom))
-                                    Text(text = template.descripcio)
-                                    Text(text = stringResource(R.string.calendar_type, template.tipusExercici))
-                                    Text(text = stringResource(R.string.calendar_exercise_date, ex.dataInici ?: ""))
-                                    Text(text = stringResource(R.string.calendar_completed, ex.completat))
-
-                                    Text(text = "Objectiu: ${ex.distanciaObjectiu} km")
-                                    Text(text = "Fet: ${ex.distanciaFeta} km")
-                                }
+                                Text(text = "Activitat Planificada") // Fallback
                             }
                         }
                     }
                 }
-            }
-
-            if (!hasExercises) {
-                Text(text = stringResource(R.string.calendar_no_exercises))
             }
         }
     }

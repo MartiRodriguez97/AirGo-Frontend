@@ -46,13 +46,13 @@ private const val LEVEL_MEDIUM_ID = 2
 private const val LEVEL_ADVANCED_ID = 3
 
 // Day IDs
-private const val DAY_MONDAY = 1
-private const val DAY_TUESDAY = 2
-private const val DAY_WEDNESDAY = 3
-private const val DAY_THURSDAY = 4
-private const val DAY_FRIDAY = 5
-private const val DAY_SATURDAY = 6
-private const val DAY_SUNDAY = 7
+private const val DAY_MONDAY = 0
+private const val DAY_TUESDAY = 1
+private const val DAY_WEDNESDAY = 2
+private const val DAY_THURSDAY = 3
+private const val DAY_FRIDAY = 4
+private const val DAY_SATURDAY = 5
+private const val DAY_SUNDAY = 6
 
 @Composable
 internal fun stepSportSelection(

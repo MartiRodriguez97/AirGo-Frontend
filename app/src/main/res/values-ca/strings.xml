@@ -392,5 +392,14 @@
 
     <string name="tracking_save_completed">Entrenament completat i guardat!</string>
     <string name="tracking_save_progress">Progress guardat</string>
+
+    <string name="template_walk_easy_1_title">Caminar 20 minuts</string>
+    <string name="template_walk_easy_1_desc">Sessió suau per començar a caminar.</string>
+
+    <string name="template_run_free_title">Cursa lliure</string>
+    <string name="template_run_free_desc">Rodatge a ritme mitjà per millorar la capacitat aeròbica.</string>
+
+    <string name="template_default_title">Activitat Planificada</string>
+    <string name="template_default_desc">Descripció de l\'activitat no disponible.</string>
 </resources>
 

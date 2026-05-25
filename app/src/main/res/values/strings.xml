@@ -395,5 +395,12 @@
     <string name="tracking_save_progress">Progreso guardado</string>
     <string name="selection_panel_title">Select route points</string>
 
+    <string name="template_walk_easy_1_title">20 minute walk</string>
+    <string name="template_walk_easy_1_desc">Gentle session to start walking.</string>
 
+    <string name="template_run_free_title">Free run</string>
+    <string name="template_run_free_desc">Medium pace run to improve aerobic capacity.</string>
+
+    <string name="template_default_title">Planned Activity</string>
+    <string name="template_default_desc">Activity description not available.</string>
 </resources>

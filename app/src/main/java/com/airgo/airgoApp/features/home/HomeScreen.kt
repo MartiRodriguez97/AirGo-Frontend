@@ -39,6 +39,7 @@ import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
+import com.airgo.airgoApp.features.home.helpers.TemplateMapper
 import com.airgo.airgoApp.features.tracking.components.titleSelectionDialog
 
 @Composable
@@ -206,10 +207,26 @@ fun activePlanSection(
             Text(text = stringResource(R.string.home_plan_duration, plan.diesDurada))
             Text(text = stringResource(R.string.home_plan_workouts_per_week, plan.numEntrenamentsSetmanals))
 
-            val nextExercise = plan.templates.flatMap { it.exercicis.orEmpty() }.firstOrNull { !it.completat }
+            val nextExercise =
+                plan.templates
+                    .flatMap {
+                        it.exercicis
+                    }.firstOrNull { !it.completat }
+            val nextTemplateCode =
+                plan.templates
+                    .firstOrNull { template ->
+                        template.exercicis.any { it == nextExercise }
+                    }?.nom
+
             val nextTitle =
-                plan.templates.firstOrNull { template -> template.exercicis.orEmpty().any { it == nextExercise } }?.nom
-                    ?: stringResource(R.string.home_plan_no_next_workout)
+                if (nextTemplateCode != null) {
+                    stringResource(
+                        TemplateMapper
+                            .getTitleResId(nextTemplateCode),
+                    )
+                } else {
+                    stringResource(R.string.home_plan_no_next_workout)
+                }
 
             Text(text = stringResource(R.string.home_plan_next_workout, nextTitle))
         }
@@ -280,9 +297,15 @@ fun pendingActivitySection(
                 val template =
                     SessionManager.trainingPlans
                         ?.flatMap { it.templates }
-                        ?.find { it.exercicis.orEmpty().any { ex -> ex.id == exercise.id } }
-                val templateName = template?.nom ?: stringResource(R.string.home_pending_activity_card)
+                        ?.find { it.exercicis.any { ex -> ex.id == exercise.id } }
 
+                // Usamos el mapper si encontramos el template
+                val templateName =
+                    if (template != null) {
+                        stringResource(TemplateMapper.getTitleResId(template.nom))
+                    } else {
+                        stringResource(R.string.home_pending_activity_card)
+                    }
                 ElevatedCard(
                     onClick = {
                         viewModel.startExercise(exercise)

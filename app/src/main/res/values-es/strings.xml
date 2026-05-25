@@ -392,4 +392,13 @@
 
     <string name="tracking_save_completed">Workout completed and saved!</string>
     <string name="tracking_save_progress">Progress saved</string>
+
+    <string name="template_walk_easy_1_title">Caminar 20 minutos</string>
+    <string name="template_walk_easy_1_desc">Sesión suave para empezar a caminar.</string>
+
+    <string name="template_run_free_title">Carrera libre</string>
+    <string name="template_run_free_desc">Rodaje a ritmo medio para mejorar la capacidad aeróbica.</string>
+
+    <string name="template_default_title">Actividad Planificada</string>
+    <string name="template_default_desc">Descripción de la actividad no disponible.</string>
 </resources>

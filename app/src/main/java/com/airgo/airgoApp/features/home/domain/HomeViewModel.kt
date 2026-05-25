@@ -148,8 +148,19 @@ class HomeViewModel : ViewModel() {
                         diesSetmana = daysOfWeek,
                         dataFi = endDate,
                     )
-                repository.createTrainingPlan(request)
+                val response = repository.createTrainingPlan(request)
                 SessionManager.trainingPlans = null
+
+                val nousExercicis = response.exercicis
+                SessionManager.exercicis = nousExercicis
+                _exercises.value =
+                    nousExercicis.filter {
+                        it.dataInici?.startsWith(
+                            java.time.LocalDate
+                                .now()
+                                .toString(),
+                        ) == true
+                    }
 
                 val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
