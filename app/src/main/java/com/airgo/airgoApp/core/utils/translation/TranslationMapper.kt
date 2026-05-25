@@ -29,8 +29,15 @@ object TranslationMapper {
             "Dues setmanes imparable" to (
                 R.string.badge_two_weeks_unstoppable_name to R.string.badge_two_weeks_unstoppable_desc
             ),
-            "Setmana de ferro" to (R.string.badge_iron_week_name to R.string.badge_iron_week_desc),
-            "Iniciació a la constància" to (R.string.badge_constancy_name to R.string.badge_constancy_desc),
+            "Setmana de ferro" to (
+                R.string.badge_iron_week_name to R.string.badge_iron_week_desc
+            ),
+            "Iniciació a la constància" to (
+                R.string.badge_constancy_name to R.string.badge_constancy_desc
+            ),
+            "Edifici Sostenible" to (
+                R.string.badge_sustainable_building_name to R.string.badge_sustainable_building_desc
+            ),
         )
 
     fun getBadgeNameResId(backendName: String): Int? = badgeMap[backendName]?.first

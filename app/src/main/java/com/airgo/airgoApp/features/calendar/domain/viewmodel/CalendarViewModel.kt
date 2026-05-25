@@ -28,31 +28,41 @@ class CalendarViewModel(
     private val _errorResId = MutableStateFlow<Int?>(null)
     val errorResId: StateFlow<Int?> = _errorResId
 
-    fun fetchPlaEntrenament() {
+    fun fetchPlaEntrenament(forceRefresh: Boolean = false) {
         viewModelScope.launch {
+            val cachedPlans = SessionManager.trainingPlans
+            if (!forceRefresh && !cachedPlans.isNullOrEmpty()) {
+                _plaEntrenamentList.value = cachedPlans
+
+                val exercicisPlanificats =
+                    cachedPlans
+                        .flatMap { pla -> pla.exercicis }
+                        .filter { it.dataInici != null }
+
+                _exercicis.value = exercicisPlanificats
+
+                return@launch
+            }
+
             _isLoading.value = true
             _errorResId.value = null
             try {
-                val responseExercicis = apiService.getActivities()
-                if (responseExercicis.isSuccessful) {
-                    val totsElsExercicis = responseExercicis.body() ?: emptyList()
-                    val exercicisPlanificats = totsElsExercicis.filter { it.dataInici != null }
+                val responsePlans = apiService.getPlaEntrenament()
+
+                if (responsePlans.isSuccessful) {
+                    val plans = responsePlans.body() ?: emptyList()
+
+                    _plaEntrenamentList.value = plans
+                    SessionManager.trainingPlans = plans
+
+                    val exercicisPlanificats =
+                        plans
+                            .flatMap { pla -> pla.exercicis }
+                            .filter { it.dataInici != null }
                     _exercicis.value = exercicisPlanificats
                     SessionManager.exercicis = exercicisPlanificats
                 } else {
                     _errorResId.value = R.string.calendar_error_server
-                }
-                if (!SessionManager.trainingPlans.isNullOrEmpty()) {
-                    _plaEntrenamentList.value = SessionManager.trainingPlans!!
-                } else {
-                    val responsePlans = apiService.getPlaEntrenament()
-                    if (responsePlans.isSuccessful) {
-                        val body = responsePlans.body() ?: emptyList()
-                        _plaEntrenamentList.value = body
-                        SessionManager.trainingPlans = body
-                    } else {
-                        _errorResId.value = R.string.calendar_error_server
-                    }
                 }
             } catch (e: IOException) {
                 _errorResId.value = R.string.calendar_error_network
@@ -75,6 +85,7 @@ class CalendarViewModel(
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     if (modelClass.isAssignableFrom(CalendarViewModel::class.java)) {
+                        @Suppress("UNCHECKED_CAST")
                         return CalendarViewModel(RetrofitProvider.calendarApi) as T
                     }
                     throw IllegalArgumentException("Unknown ViewModel class")

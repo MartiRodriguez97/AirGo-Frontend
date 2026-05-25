@@ -47,13 +47,5 @@ fun profileUserInfoCard(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        if (!pictureUrl.isNullOrBlank()) {
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = stringResource(R.string.profile_photo_linked_success),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        }
     }
 }

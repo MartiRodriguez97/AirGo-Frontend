@@ -79,6 +79,8 @@
 
     <string name="badge_constancy_name">Iniciació a la constància</string>
     <string name="badge_constancy_desc">Has completat 3 dies consecutius d\'activitat. Bon inici!</string>
+    <string name="badge_sustainable_building_name">Edifici Sostenible</string>
+    <string name="badge_sustainable_building_desc">El teu edifici té bona puntuació d\'eficiencia energètica!</string>
 
     <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar compte</string>
@@ -408,7 +410,6 @@
 
     <!-- features/tracking-->
     <string name="error_saving_activity">No s\'ha pogut emmagatzemar l\'activitat</string>
-    <string name="tracking_save_progress">Progress guardat</string>
     <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu bon ús de l\'aplicació</string>
 
     <!-- Tracking Buttons -->
@@ -473,6 +474,31 @@
     <string name="to">Destí:</string>
 
     <string name="tracking_save_completed">Entrenament completat i guardat!</string>
+    <string name="tracking_save_progress">Progrés desat</string>
+
+    <!-- Building Address -->
+    <string name="home_building_pending_title">Verificació d\'edifici!</string>
+    <string name="home_building_pending_desc">Digue\'ns l\'adreça del teu edifici per guanyar punts.</string>
+    <string name="home_building_btn_verify">VERIFICAR</string>
+    <string name="home_building_dialog_title">Adreça de l\'edifici</string>
+    <string name="home_building_dialog_desc">Introdueix l\'adreça del teu edifici a Barcelona.</string>
+    <string name="home_building_address_label">Adreça</string>
+    <string name="home_building_number_label">Número</string>
+    <string name="home_building_btn_submit">Enviar</string>
+    <string name="error_address_not_found">Adreça no trobada o cap edifici vàlid trobat.</string>
+    <string name="error_building_score_low">L\'edifici no assoleix la puntuació mínima requerida.</string>
+    <string name="enter_house_address">Introdueix l\'adreça de casa teva per guanyar una insígnia!</string>
+    <string name="error_generic">Alguna cosa ha anat malament. Si us plau, torna-ho a intentar.</string>
+    <string name="home_building_municipality_label">Municipi (només Barcelona)</string>
+    <string name="error_dialog_title">Error</string>
+    <string name="btn_continue">Continuar</string>
+
+    <!-- Pending Titles -->
+    <string name="home_pending_titles_title">Títols Pendents!</string>
+    <string name="home_pending_titles_singular">Tens 1 títol per triar</string>
+    <string name="home_pending_titles_plural">Tens %1$d títols per triar</string>
+    <string name="home_pending_titles_btn">TRIAR</string>
+
 
 
     <string name="template_run_easy_1_title">Caminada Suau</string>
@@ -506,5 +532,7 @@
 
     <string name="no_pending_activity_today">No tens cap activitat pendent per avui.</string>
     <string name="no_activity_data">No hi ha dades de l\'activitat.</string>
+
+    <string name="select_date_button">Fes clic per seleccionar la data</string>
 </resources>
 

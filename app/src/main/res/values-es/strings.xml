@@ -79,6 +79,10 @@
     <string name="badge_constancy_name">Iniciación a la constancia</string>
     <string name="badge_constancy_desc">Has completado 3 días consecutivos de actividad. ¡Buen inicio!</string>
 
+    <string name="badge_sustainable_building_name">Edificio Sostenible</string>
+    <string name="badge_sustainable_building_desc">¡Tu edificio tiene buena puntuación de eficiencia energética!</string>
+
+
     <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar cuenta</string>
     <string name="profile_delete_account_dialog_title">¿Eliminar cuenta?</string>
@@ -411,7 +415,7 @@
     <!-- features/tracking-->
     <string name="error_saving_activity">No se pudo guardar la actividad</string>
     <string name="tracking_elevated_speed">Ha llegado a una velocidad extrema, por favor, haga buen uso de la aplicación</string>
-    <string name="tracking_save_progress">Progress saved</string>
+    <string name="tracking_save_progress">Progreso guardado</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Empezar</string>
@@ -472,7 +476,31 @@
     <string name="from">Origen:</string>
     <string name="to">Destino:</string>
 
-    <string name="tracking_save_completed">Workout completed and saved!</string>
+    <string name="tracking_save_completed">¡Ejercicio completado y guardado!</string>
+
+    <!-- Building Address -->
+    <string name="home_building_pending_title">¡Verificación de edificio!</string>
+    <string name="home_building_pending_desc">Dinos la dirección de tu edificio para ganar puntos.</string>
+    <string name="home_building_btn_verify">VERIFICAR</string>
+    <string name="home_building_dialog_title">Dirección del edificio</string>
+    <string name="home_building_dialog_desc">Introduce la dirección de tu edificio en Barcelona.</string>
+    <string name="home_building_address_label">Dirección</string>
+    <string name="home_building_number_label">Número</string>
+    <string name="home_building_btn_submit">Enviar</string>
+    <string name="error_address_not_found">Dirección no encontrada o ningún edificio válido encontrado.</string>
+    <string name="error_building_score_low">El edificio no cumple con la puntuación mínima requerida.</string>
+    <string name="enter_house_address">¡Introduce la dirección de tu casa para ganar una insignia!</string>
+    <string name="error_generic">Algo ha salido mal. Por favor, inténtalo de nuevo.</string>
+    <string name="home_building_municipality_label">Municipio (solo Barcelona)</string>
+    <string name="error_dialog_title">Error</string>
+    <string name="btn_continue">Continuar</string>
+
+    <!-- Pending Titles -->
+    <string name="home_pending_titles_title">¡Títulos Pendientes!</string>
+    <string name="home_pending_titles_singular">Tienes 1 título para elegir</string>
+    <string name="home_pending_titles_plural">Tienes %1$d títulos para elegir</string>
+    <string name="home_pending_titles_btn">ELEGIR</string>
+
 
     <string name="template_run_easy_1_title">Caminata Suave</string>
     <string name="template_run_easy_1_desc">Combina caminar y trotar para empezar a mover el cuerpo sin forzar.</string>
@@ -505,4 +533,6 @@
 
     <string name="no_pending_activity_today">No tienes ninguna actividad pendiente para hoy.</string>
     <string name="no_activity_data">No hay datos de la actividad.</string>
+
+    <string name="select_date_button">Haz clic para seleccionar la fecha</string>
 </resources>
