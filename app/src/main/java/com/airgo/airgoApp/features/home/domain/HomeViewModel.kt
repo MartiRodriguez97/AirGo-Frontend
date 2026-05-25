@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+private const val DATA_FORMAT_LENGTH = 10
+
 class HomeViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
 
@@ -46,22 +48,35 @@ class HomeViewModel : ViewModel() {
         loadPlans()
     }
 
-    fun updateTodayExercises() {
-        val today =
-            java.time.LocalDate
-                .now()
-                .toString() // "yyyy-MM-dd"
+    fun updateTodayExercises(allExercises: List<Exercise>) {
+        val today = java.time.LocalDate.now()
+        Log.d("AirGo_Debug", "Buscando ejercicios pendientes para hoy: $today")
 
         val todayExercises =
-            _plans.value.flatMap { plan ->
-                plan.templates.flatMap { template ->
-                    template.exercicis.filter { exercise ->
-                        exercise.dataInici?.startsWith(today) == true && !exercise.completat
+            allExercises.filter { ex ->
+                if (ex.dataInici != null && ex.dataInici.length >= DATA_FORMAT_LENGTH) {
+                    try {
+                        val dateStr = ex.dataInici.substring(0, DATA_FORMAT_LENGTH)
+                        val isToday = java.time.LocalDate.parse(dateStr) == today
+
+                        // Mostrar si es hoy Y NO está completado
+                        isToday && !ex.completat
+                    } catch (e: java.time.format.DateTimeParseException) {
+                        false
                     }
+                } else {
+                    false
                 }
             }
-        SessionManager.exercicis = todayExercises
+
+        Log.d("AirGo_Debug", "Ejercicios finales para hoy: ${todayExercises.size}")
+
+        // Actualizamos el estado del Home
         _exercises.value = todayExercises
+
+        // OJO: No guardes todayExercises en SessionManager.exercicis si el Calendario
+        // espera que ahí estén TODOS los planificados. Mejor guardarlo en otra variable
+        // como SessionManager.exercicisAvui si lo necesitas, o no guardarlo.
     }
 
     fun startExercise(exercise: Exercise) {
@@ -79,36 +94,16 @@ class HomeViewModel : ViewModel() {
     }
 
     fun loadPlans() {
-        if (!SessionManager.trainingPlans.isNullOrEmpty()) {
-            _plans.value = SessionManager.trainingPlans!!
-            updateTodayExercises()
-            return
-        }
-
         viewModelScope.launch {
             _isLoading.value = true
-            try {
-                /*
-                 * val rawPlans = repository.getTrainingPlans()
-                val fetchedPlans =
-                    rawPlans.map { raw ->
-                        val fullTemplates =
-                            raw.templates.map { templateId ->
-                                repository.getTemplate(templateId)
-                            }
-                        TrainingPlanResponse(
-                            id = raw.id,
-                            diesDurada = raw.diesDurada,
-                            numEntrenamentsSetmanals = raw.numEntrenamentsSetmanals,
-                            templates = fullTemplates,
-                            )
-                        }
-                 * */
-                val fetchedPlans = repository.getTrainingPlans()
 
+            try {
+                val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
-                updateTodayExercises()
+
+                val fetchedExercises = repository.getActivities()
+                updateTodayExercises(fetchedExercises)
             } catch (e: retrofit2.HttpException) {
                 val code = e.code()
                 val errorBody = e.response()?.errorBody()?.string()
@@ -143,13 +138,25 @@ class HomeViewModel : ViewModel() {
                         diesSetmana = daysOfWeek,
                         dataFi = endDate,
                     )
-                repository.createTrainingPlan(request)
+                val response = repository.createTrainingPlan(request)
                 SessionManager.trainingPlans = null
+
+                val nousExercicis = response.exercicis
+                SessionManager.exercicis = nousExercicis
+                _exercises.value =
+                    nousExercicis.filter {
+                        it.dataInici?.startsWith(
+                            java.time.LocalDate
+                                .now()
+                                .toString(),
+                        ) == true
+                    }
 
                 val fetchedPlans = repository.getTrainingPlans()
                 SessionManager.trainingPlans = fetchedPlans
                 _plans.value = fetchedPlans
-                updateTodayExercises()
+                val totsExercicis = repository.getActivities()
+                updateTodayExercises(totsExercicis)
                 onSuccess()
             } catch (e: java.io.IOException) {
                 Log.e("HomeViewModel", "Error de xarxa creant o inicialitzant el pla", e)

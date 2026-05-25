@@ -473,5 +473,40 @@
     <string name="from">Origen:</string>
     <string name="to">Destí:</string>
 
+    <string name="tracking_save_completed">Entrenament completat i guardat!</string>
+    <string name="tracking_save_progress">Progress guardat</string>
+
+
+    <string name="template_run_easy_1_title">Caminada Suau</string>
+    <string name="template_run_easy_1_desc">Combina caminar i trotar per començar a moure el cos sense forçar.</string>
+    <string name="template_run_easy_2_title">Trot Continu Curt</string>
+    <string name="template_run_easy_2_desc">Mantén un ritme constant i molt còmode durant una distància curta.</string>
+    <string name="template_run_med_1_title">Rodatge Mitjà</string>
+    <string name="template_run_med_1_desc">Cursa a ritme mitjà per millorar la teva capacitat aeròbica general.</string>
+    <string name="template_run_med_2_title">Fartlek Clàssic</string>
+    <string name="template_run_med_2_desc">Joc de ritmes alternant acceleracions i recuperacions per sensacions.</string>
+    <string name="template_run_hard_1_title">Sèries de Potència</string>
+    <string name="template_run_hard_1_desc">Intervals exigents a ritme alt amb períodes de recuperació activa.</string>
+    <string name="template_run_hard_2_title">Fons Exigent</string>
+    <string name="template_run_hard_2_desc">Cursa de llarga distància per desafiar i augmentar la teva resistència màxima.</string>
+
+    <string name="template_bike_easy_1_title">Passeig de Cadència</string>
+    <string name="template_bike_easy_1_desc">Ruta plana buscant pedalar lleuger i agafar confiança amb la bicicleta.</string>
+    <string name="template_bike_easy_2_title">Rodatge Urbà</string>
+    <string name="template_bike_easy_2_desc">Recorregut suau i relaxat, ideal per deixar anar les cames.</string>
+    <string name="template_bike_med_1_title">Ritme de Creuer</string>
+    <string name="template_bike_med_1_desc">Mantén una velocitat constant en un recorregut de mitja distància.</string>
+    <string name="template_bike_med_2_title">Ruta Mixta</string>
+    <string name="template_bike_med_2_desc">Terreny amb suaus desnivells per alternar marxes i millorar la força.</string>
+    <string name="template_bike_hard_1_title">Escalada de Muntanya</string>
+    <string name="template_bike_hard_1_desc">Ascensos pronunciats dissenyats per esprémer la teva potència al màxim.</string>
+    <string name="template_bike_hard_2_title">Gran Fons</string>
+    <string name="template_bike_hard_2_desc">Ruta llarga i desgastadora per posar a prova la teva resistència física i mental.</string>
+
+    <string name="template_default_title">Activitat Planificada</string>
+    <string name="template_default_desc">Descripció de l\'activitat no disponible.</string>
+
+    <string name="no_pending_activity_today">No tens cap activitat pendent per avui.</string>
+    <string name="no_activity_data">No hi ha dades de l\'activitat.</string>
 </resources>
 

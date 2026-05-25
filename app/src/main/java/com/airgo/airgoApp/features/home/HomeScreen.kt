@@ -1,6 +1,7 @@
 package com.airgo.airgoApp.features.home
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,10 +36,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
+import com.airgo.airgoApp.features.home.helpers.TemplateMapper
 import com.airgo.airgoApp.features.tracking.components.titleSelectionDialog
 
 @Composable
@@ -101,6 +102,9 @@ fun homeScreen(
 
     LaunchedEffect(Unit) {
         viewModel.loadPlans()
+    }
+    LaunchedEffect(plans) {
+        viewModel.updateTodayExercises(exercises)
     }
 
     LaunchedEffect(errorMessage) {
@@ -205,13 +209,6 @@ fun activePlanSection(
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = stringResource(R.string.home_plan_duration, plan.diesDurada))
             Text(text = stringResource(R.string.home_plan_workouts_per_week, plan.numEntrenamentsSetmanals))
-
-            val nextExercise = plan.templates.flatMap { it.exercicis.orEmpty() }.firstOrNull { !it.completat }
-            val nextTitle =
-                plan.templates.firstOrNull { template -> template.exercicis.orEmpty().any { it == nextExercise } }?.nom
-                    ?: stringResource(R.string.home_plan_no_next_workout)
-
-            Text(text = stringResource(R.string.home_plan_next_workout, nextTitle))
         }
     }
 }
@@ -267,31 +264,41 @@ fun pendingActivitySection(
     exercises: List<Exercise>,
     onNavigateToPendingActivity: () -> Unit,
 ) {
-    if (exercises.isNotEmpty()) {
-        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
-            Text(
-                text = stringResource(R.string.home_today_task_title),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 12.dp),
-            )
+    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+        Text(
+            text = stringResource(R.string.home_today_task_title),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp),
+        )
 
+        if (exercises.isNotEmpty()) {
             exercises.forEach { exercise ->
-                val template =
-                    SessionManager.trainingPlans
-                        ?.flatMap { it.templates }
-                        ?.find { it.exercicis.orEmpty().any { ex -> ex.id == exercise.id } }
-                val templateName = template?.nom ?: stringResource(R.string.home_pending_activity_card)
 
+                val templateCode = exercise.template?.nom ?: ""
+
+                val titleText =
+                    if (templateCode.isNotEmpty()) {
+                        stringResource(TemplateMapper.getTitleResId(templateCode))
+                    } else {
+                        stringResource(R.string.home_pending_activity_card) // Título por defecto si falla
+                    }
+
+                val descText =
+                    if (templateCode.isNotEmpty()) {
+                        stringResource(TemplateMapper.getDescResId(templateCode))
+                    } else {
+                        ""
+                    }
                 ElevatedCard(
-                    onClick = {
-                        viewModel.startExercise(exercise)
-                        onNavigateToPendingActivity()
-                    },
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp),
+                            .padding(bottom = 8.dp)
+                            .clickable {
+                                viewModel.startExercise(exercise)
+                                onNavigateToPendingActivity()
+                            },
                 ) {
                     Column(
                         modifier =
@@ -306,15 +313,21 @@ fun pendingActivitySection(
                             modifier = Modifier.padding(bottom = 8.dp),
                         )
                         Text(
-                            text = templateName,
+                            text = titleText,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = stringResource(R.string.home_pending_activity_objective, exercise.distanciaObjectiu),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
+
+                        if (descText.isNotEmpty()) {
+                            Text(
+                                text = descText,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
                         if (exercise.distanciaFeta > 0) {
                             Text(
                                 text = stringResource(R.string.home_pending_activity_progress, exercise.distanciaFeta),
@@ -325,6 +338,13 @@ fun pendingActivitySection(
                     }
                 }
             }
+        } else {
+            Text(
+                text = stringResource(R.string.no_pending_activity_today),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 8.dp),
+            )
         }
     }
 }

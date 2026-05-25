@@ -10,6 +10,7 @@ data class ActivityResponse(
     @SerializedName("route_points") val routePoints: List<List<Double>>? = null,
     @SerializedName("sensacio") val sensacio: Int? = null,
     @SerializedName("comentari") val comentari: String? = null,
+    @SerializedName("dataInici") val dataInici: String? = null,
 )
 
 data class UpdateSensationRequest(

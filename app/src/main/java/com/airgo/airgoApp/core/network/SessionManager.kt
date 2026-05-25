@@ -61,6 +61,10 @@ object SessionManager {
         insignies = null
         userBadges = null
         titolsPendents = 0
+        trainingPlans = null
+        exercicis = null
+        exerciciActiu = null
+        nomTemplateActiu = null
     }
 
     var punts: Int? = null

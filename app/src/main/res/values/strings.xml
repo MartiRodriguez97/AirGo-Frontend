@@ -463,6 +463,43 @@
     <string name="no_favorite_created_forums_found">You don\'t have any favorite form or created by you.</string>
     <string name="forums_filter_saved">Followed</string>
     <string name="forums_filter_mine">Created</string>
+    <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
+
+    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
+    <string name="tracking_save_progress">Progreso guardado</string>
+    <string name="selection_panel_title">Select route points</string>
+
+    <string name="template_run_easy_1_title">Easy Walk/Run</string>
+    <string name="template_run_easy_1_desc">Combine walking and light jogging to get your body moving without strain.</string>
+    <string name="template_run_easy_2_title">Short Jog</string>
+    <string name="template_run_easy_2_desc">Maintain a steady, very comfortable pace over a short distance.</string>
+    <string name="template_run_med_1_title">Medium Run</string>
+    <string name="template_run_med_1_desc">Medium pace run to improve your overall aerobic capacity.</string>
+    <string name="template_run_med_2_title">Classic Fartlek</string>
+    <string name="template_run_med_2_desc">Speed play alternating between accelerations and recoveries based on feel.</string>
+    <string name="template_run_hard_1_title">Power Intervals</string>
+    <string name="template_run_hard_1_desc">Demanding high-pace intervals with active recovery periods.</string>
+    <string name="template_run_hard_2_title">Demanding Long Run</string>
+    <string name="template_run_hard_2_desc">Long distance run to challenge and increase your maximum endurance.</string>
+
+    <string name="template_bike_easy_1_title">Cadence Ride</string>
+    <string name="template_bike_easy_1_desc">Flat route focusing on light pedaling and building confidence on the bike.</string>
+    <string name="template_bike_easy_2_title">Urban Ride</string>
+    <string name="template_bike_easy_2_desc">Smooth and relaxed ride, ideal for loosening up your legs.</string>
+    <string name="template_bike_med_1_title">Cruising Pace</string>
+    <string name="template_bike_med_1_desc">Maintain a steady speed over a medium-distance route.</string>
+    <string name="template_bike_med_2_title">Mixed Route</string>
+    <string name="template_bike_med_2_desc">Terrain with gentle slopes to alternate gears and build strength.</string>
+    <string name="template_bike_hard_1_title">Mountain Climb</string>
+    <string name="template_bike_hard_1_desc">Steep ascents designed to push your power output to the maximum.</string>
+    <string name="template_bike_hard_2_title">Gran Fondo</string>
+    <string name="template_bike_hard_2_desc">Long and exhausting route to test your physical and mental endurance.</string>
+
+    <string name="template_default_title">Planned Activity</string>
+    <string name="template_default_desc">Activity description not available.</string>
+
+    <string name="no_pending_activity_today">You have no pending activities for today.</string>
+    <string name="no_activity_data">No activity data available.</string>
     <string name="start_point">Start point</string>
     <string name="end_point">End point</string>
     <string name="waypoint">Waypoint %d</string>
