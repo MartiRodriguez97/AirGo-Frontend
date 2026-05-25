@@ -405,7 +405,7 @@
     <!-- features/tracking-->
     <string name="error_saving_activity">Could not save activity</string>
     <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
-    <string name="tracking_save_progress">Progreso guardado</string>
+    <string name="tracking_save_progress">Progress saved</string>
     <string name="tracking_new_title_title">New Title!</string>
     <string name="tracking_new_title_desc">You have a pending title to choose!</string>
     <string name="tracking_set_main_title">Set as main title</string>

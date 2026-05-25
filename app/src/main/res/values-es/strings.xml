@@ -415,7 +415,7 @@
     <!-- features/tracking-->
     <string name="error_saving_activity">No se pudo guardar la actividad</string>
     <string name="tracking_elevated_speed">Ha llegado a una velocidad extrema, por favor, haga buen uso de la aplicación</string>
-    <string name="tracking_save_progress">Progress saved</string>
+    <string name="tracking_save_progress">Progreso guardado</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Empezar</string>
@@ -476,8 +476,7 @@
     <string name="from">Origen:</string>
     <string name="to">Destino:</string>
 
-    <string name="tracking_save_completed">Workout completed and saved!</string>
-    <string name="tracking_save_progress">Progress saved</string>
+    <string name="tracking_save_completed">¡Ejercicio completado y guardado!</string>
 
     <!-- Building Address -->
     <string name="home_building_pending_title">¡Verificación de edificio!</string>

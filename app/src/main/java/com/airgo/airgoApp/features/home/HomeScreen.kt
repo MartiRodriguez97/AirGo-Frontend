@@ -36,17 +36,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
-import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.components.buildingAddressDialog
 import com.airgo.airgoApp.features.home.components.pendingBuildingCard
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
-import com.airgo.airgoApp.features.tracking.components.newBadgeDialog
-import com.airgo.airgoApp.features.home.data.Exercise
-import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
-import com.airgo.airgoApp.features.home.domain.HomeViewModel
 import com.airgo.airgoApp.features.home.helpers.TemplateMapper
+import com.airgo.airgoApp.features.tracking.components.newBadgeDialog
 import com.airgo.airgoApp.features.tracking.components.titleSelectionDialog
 
 @Composable

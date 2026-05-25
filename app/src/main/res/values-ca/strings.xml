@@ -410,7 +410,6 @@
 
     <!-- features/tracking-->
     <string name="error_saving_activity">No s\'ha pogut emmagatzemar l\'activitat</string>
-    <string name="tracking_save_progress">Progress guardat</string>
     <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu bon ús de l\'aplicació</string>
 
     <!-- Tracking Buttons -->
