@@ -1,7 +1,6 @@
 package com.airgo.airgoApp.features.social
 
 import android.annotation.SuppressLint
-import androidx.core.content.PackageManagerCompat.LOG_TAG
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.features.social.data.SocialApi
 import com.airgo.airgoApp.features.social.data.UserSearchResult
@@ -42,13 +41,11 @@ class SocialRepository(
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                
                 Result.failure(Exception("Error ${response.code()}"))
             }
         } catch (e: IOException) {
             Result.failure(e)
         } catch (e: HttpException) {
-            
             Result.failure(e)
         }
 

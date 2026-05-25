@@ -21,42 +21,68 @@ fun createUserPerson(context: Context): Person {
     val myBitmap = getBitmapFromUrl(myProfilePicUrl)?.let { getCircularBitmap(it) }
     val myIcon = myBitmap?.let { IconCompat.createWithBitmap(it) }
     val userName = context.getString(R.string.chat_user_me)
-    return Person.Builder().setName(userName).apply { if (myIcon != null) setIcon(myIcon) }.build()
+    return Person
+        .Builder()
+        .setName(userName)
+        .apply { if (myIcon != null) setIcon(myIcon) }
+        .build()
 }
 
-fun createSenderPerson(title: String, circularBitmap: Bitmap?): Person {
+fun createSenderPerson(
+    title: String,
+    circularBitmap: Bitmap?,
+): Person {
     val avatarIcon = circularBitmap?.let { IconCompat.createWithBitmap(it) }
-    return Person.Builder().setName(title).apply { if (avatarIcon != null) setIcon(avatarIcon) }.build()
+    return Person
+        .Builder()
+        .setName(title)
+        .apply { if (avatarIcon != null) setIcon(avatarIcon) }
+        .build()
 }
 
 fun getOrInitMessagingStyle(
     context: Context,
     chatId: String,
-    userPerson: Person
+    userPerson: Person,
 ): NotificationCompat.MessagingStyle {
-    val activeNotif = context.getSystemService(
-        NotificationManager::class.java).activeNotifications.find {
-            it.id == chatId.hashCode()
+    val activeNotif =
+        context
+            .getSystemService(
+                NotificationManager::class.java,
+            ).activeNotifications
+            .find {
+                it.id == chatId.hashCode()
+            }
+    val existingStyle =
+        activeNotif?.let {
+            NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(it.notification)
         }
-    val existingStyle = activeNotif?.let {
-        NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(it.notification)
-    }
     return existingStyle ?: NotificationCompat.MessagingStyle(userPerson)
 }
 
-fun shouldResetStyle(context: Context, messagingStyle: NotificationCompat.MessagingStyle): Boolean {
-    return messagingStyle.messages.isNotEmpty() &&
-            messagingStyle.messages.last().person?.name ==
-            context.getString(R.string.chat_user_me)
-}
+fun shouldResetStyle(
+    context: Context,
+    messagingStyle: NotificationCompat.MessagingStyle,
+): Boolean =
+    messagingStyle.messages.isNotEmpty() &&
+        messagingStyle.messages
+            .last()
+            .person
+            ?.name ==
+        context.getString(R.string.chat_user_me)
 
-fun isDuplicateMessage(style: NotificationCompat.MessagingStyle, body: String, timestamp: Long): Boolean {
-    return style.messages.any { it.text == body && abs(it.timestamp - timestamp) < ONE_SECOND_MS }
-}
+fun isDuplicateMessage(
+    style: NotificationCompat.MessagingStyle,
+    body: String,
+    timestamp: Long,
+): Boolean =
+    style.messages.any {
+        it.text == body && abs(it.timestamp - timestamp) < ONE_SECOND_MS
+    }
 
 fun trimMessagingStyleIfNeeded(
     style: NotificationCompat.MessagingStyle,
-    userPerson: Person
+    userPerson: Person,
 ): NotificationCompat.MessagingStyle {
     if (style.messages.size <= SIZE_N) return style
     val newStyle = NotificationCompat.MessagingStyle(userPerson)

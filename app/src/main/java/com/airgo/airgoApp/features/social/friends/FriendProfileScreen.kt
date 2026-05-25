@@ -27,10 +27,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.features.social.friends.data.FriendProfileData

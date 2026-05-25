@@ -2,7 +2,6 @@ package com.airgo.airgoApp.features.notifications
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import com.airgo.airgoApp.BuildConfig
 import java.net.HttpURLConnection
 import java.net.URL
@@ -12,6 +11,7 @@ object NotificationUtils {
     private const val DST_WIDTH = 256
     private const val DST_HEIGHT = 256
     private const val TIMEOUT_MS = 5000
+
     fun getBitmapFromUrl(urlString: String?): Bitmap? {
         if (urlString.isNullOrEmpty()) return null
         val finalUrl =

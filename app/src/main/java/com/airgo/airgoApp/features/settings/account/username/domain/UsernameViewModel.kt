@@ -58,7 +58,6 @@ class UsernameViewModel : ViewModel() {
                     SessionManager.username = newUsername
                     _uiState.value = UsernameUiState.Success
                 } else {
-                    
                     _uiState.value =
                         UsernameUiState.Error(
                             UiText.StringResource(R.string.error_update_username),

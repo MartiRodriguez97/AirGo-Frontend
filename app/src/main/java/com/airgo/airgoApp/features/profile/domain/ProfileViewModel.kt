@@ -135,7 +135,7 @@ class ProfileViewModel : ViewModel() {
 
                     if (newImageUrl != null) {
                         SessionManager.profilePictureUrl = newImageUrl
-                        
+
                         // Guardamos en persistencia para que las notificaciones la encuentren
                         val prefsRepo = UserPreferencesRepository(context.dataStore)
                         prefsRepo.saveSession(SessionManager.toUserPreferences())

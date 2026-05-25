@@ -45,7 +45,6 @@ class TeBiciViewModel : ViewModel() {
                         SessionManager.teBici = hasBike
                         _uiState.value = TeBiciUiState.Success
                     } else {
-                        
                         _uiState.value =
                             TeBiciUiState.Error(
                                 UiText.StringResource(

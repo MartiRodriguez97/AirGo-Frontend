@@ -101,7 +101,6 @@ class TitolViewModel : ViewModel() {
                     SessionManager.titol = newTitol
                     _uiState.value = TitolUiState.Success
                 } else {
-                    
                     _uiState.value =
                         TitolUiState.Error(
                             UiText.StringResource(

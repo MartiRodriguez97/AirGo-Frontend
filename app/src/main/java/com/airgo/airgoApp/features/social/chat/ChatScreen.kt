@@ -118,8 +118,10 @@ fun chatScreen(
                     SessionManager.currentChatId = conversationId
 
                     // Limpiar notificaciones de este chat al entrar o volver
-                    val notificationManager = context.getSystemService(
-                        Context.NOTIFICATION_SERVICE)
+                    val notificationManager =
+                        context.getSystemService(
+                            Context.NOTIFICATION_SERVICE,
+                        )
                             as NotificationManager
                     notificationManager.cancel(conversationId.hashCode())
 
@@ -178,7 +180,7 @@ fun chatScreen(
                             messages = messages,
                             listState = listState,
                             onDelete = { viewModel.deleteMessage(it) },
-                            otherProfilePic = otherProfilePic
+                            otherProfilePic = otherProfilePic,
                         )
                 }
             }
@@ -216,7 +218,7 @@ private fun chatMessageList(
                     onDelete(message.id)
                     selectedMessageId = null
                 },
-                otherProfilePic = otherProfilePic
+                otherProfilePic = otherProfilePic,
             )
         }
     }

@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
         ) { isGranted: Boolean ->
             if (isGranted) {
                 fetchAndSendFcmToken()
-            } 
+            }
         }
 
     fun askNotificationPermission() {
@@ -83,8 +83,8 @@ class MainActivity : ComponentActivity() {
                 val accessToken = SessionManager.accessToken
 
                 if (token != null && accessToken != null) {
-                    RetrofitProvider.authApi.updateFcmToken(UpdateFcmTokenRequest(token)) 
-                } 
+                    RetrofitProvider.authApi.updateFcmToken(UpdateFcmTokenRequest(token))
+                }
             } catch (e: java.lang.Exception) {
                 Log.e("AIRGO_FCM_DEBUG", "💥 EXCEPCIÓN: ${e.message}", e)
             }

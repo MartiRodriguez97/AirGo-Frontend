@@ -85,11 +85,14 @@ class FirebaseMessagingService : FirebaseMessagingService() {
     private fun isNotificationForOtherUser(receiverId: Int?): Boolean {
         val currentUserId = SessionManager.userId
         val isForOther = receiverId != null && receiverId != currentUserId
-        
+
         return isForOther
     }
 
-    private fun resolveChatId(remoteMessage: RemoteMessage, emissorId: String?): String {
+    private fun resolveChatId(
+        remoteMessage: RemoteMessage,
+        emissorId: String?,
+    ): String {
         val myId = SessionManager.userId
         return if (emissorId != null && myId != null) {
             val otherId = emissorId.toIntOrNull() ?: 0
@@ -99,15 +102,19 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 
-    private fun handleChatNotification(remoteMessage: RemoteMessage, chatId: String) {
+    private fun handleChatNotification(
+        remoteMessage: RemoteMessage,
+        chatId: String,
+    ) {
         val currentChat = SessionManager.currentChatId
         val notificationManager = getSystemService(NotificationManager::class.java)
 
         if (currentChat == chatId && isAppInForeground()) {
             notificationManager.cancel(chatId.hashCode())
-            val hasMoreChats = notificationManager.activeNotifications.any {
-                it.id != chatId.hashCode() && it.id != SUMMARY_ID && it.notification.group == CHAT_GROUP_KEY
-            }
+            val hasMoreChats =
+                notificationManager.activeNotifications.any {
+                    it.id != chatId.hashCode() && it.id != SUMMARY_ID && it.notification.group == CHAT_GROUP_KEY
+                }
             if (!hasMoreChats) notificationManager.cancel(SUMMARY_ID)
             return
         }
@@ -125,7 +132,10 @@ class FirebaseMessagingService : FirebaseMessagingService() {
             false
         }
 
-    private fun showSystemNotification(remoteMessage: RemoteMessage, explicitChatId: String? = null) {
+    private fun showSystemNotification(
+        remoteMessage: RemoteMessage,
+        explicitChatId: String? = null,
+    ) {
         val notificationManager = getSystemService(NotificationManager::class.java)
         val chatId = explicitChatId ?: "0"
 
@@ -133,14 +143,14 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
         val title = remoteMessage.data["emissor_username"] ?: remoteMessage.notification?.title ?: "AirGo"
         val body =
-            remoteMessage.data["contingut"] ?:
-            remoteMessage.data["body"] ?:
-            remoteMessage.notification?.body ?: ""
+            remoteMessage.data["contingut"]
+                ?: remoteMessage.data["body"]
+                ?: remoteMessage.notification?.body ?: ""
         val emissorId = remoteMessage.data["emissor_id"] ?: "0"
         val profilePicUrl =
-            remoteMessage.data["emissor_profile_pic"] ?:
-            remoteMessage.data["profile_pic"] ?:
-            remoteMessage.data["emissor_photo"]
+            remoteMessage.data["emissor_profile_pic"]
+                ?: remoteMessage.data["profile_pic"]
+                ?: remoteMessage.data["emissor_photo"]
 
         val circularBitmap = getBitmapFromUrl(profilePicUrl)?.let { getCircularBitmap(it) }
 
@@ -149,7 +159,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
         val userPerson = createUserPerson(this)
         val senderPerson = createSenderPerson(title, circularBitmap)
-        
+
         var messagingStyle = getOrInitMessagingStyle(this, chatId, userPerson)
 
         if (shouldResetStyle(this, messagingStyle)) {
@@ -160,21 +170,22 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         messagingStyle.isGroupConversation = false
 
         val messageTimestamp = if (remoteMessage.sentTime > 0) remoteMessage.sentTime else System.currentTimeMillis()
-        
+
         if (body.isNotBlank() && !isDuplicateMessage(messagingStyle, body, messageTimestamp)) {
             messagingStyle.addMessage(body, messageTimestamp, senderPerson)
         }
 
         messagingStyle = trimMessagingStyleIfNeeded(messagingStyle, userPerson)
 
-        val intentForShortcut = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            putExtra("CONV_ID", chatId)
-            putExtra("OTHER_USER_ID", emissorId)
-            putExtra("OTHER_USERNAME", title)
-            putExtra("OTHER_PROFILE_PIC", profilePicUrl)
-            putExtra("FROM_NOTIFICATION", true)
-        }
+        val intentForShortcut =
+            Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("CONV_ID", chatId)
+                putExtra("OTHER_USER_ID", emissorId)
+                putExtra("OTHER_USERNAME", title)
+                putExtra("OTHER_PROFILE_PIC", profilePicUrl)
+                putExtra("FROM_NOTIFICATION", true)
+            }
         pushShortcut(chatId, title, circularBitmap, intentForShortcut)
 
         buildAndNotify(
@@ -184,7 +195,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
             pendingIntent,
             replyAction,
             readAction,
-            notificationManager
+            notificationManager,
         )
 
         showSummaryNotification(title, body, pendingIntent, notificationManager)
@@ -192,15 +203,17 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
     private fun createNotificationChannel(notificationManager: NotificationManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Missatges de AirGo",
-                NotificationManager.IMPORTANCE_HIGH).apply {
-                description = "Notificacions dels chats"
-                enableLights(true)
-                enableVibration(true)
-                setShowBadge(true)
-            }
+            val channel =
+                NotificationChannel(
+                    CHANNEL_ID,
+                    "Missatges de AirGo",
+                    NotificationManager.IMPORTANCE_HIGH,
+                ).apply {
+                    description = "Notificacions dels chats"
+                    enableLights(true)
+                    enableVibration(true)
+                    setShowBadge(true)
+                }
             notificationManager.createNotificationChannel(channel)
         }
     }
@@ -209,34 +222,48 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         chatId: String,
         emissorId: String,
         title: String?,
-        profilePicUrl: String?
+        profilePicUrl: String?,
     ): PendingIntent {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            putExtra("CONV_ID", chatId)
-            putExtra("OTHER_USER_ID", emissorId)
-            putExtra("OTHER_USERNAME", title)
-            putExtra("OTHER_PROFILE_PIC", profilePicUrl)
-            putExtra("FROM_NOTIFICATION", true)
-        }
+        val intent =
+            Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("CONV_ID", chatId)
+                putExtra("OTHER_USER_ID", emissorId)
+                putExtra("OTHER_USERNAME", title)
+                putExtra("OTHER_PROFILE_PIC", profilePicUrl)
+                putExtra("FROM_NOTIFICATION", true)
+            }
         return PendingIntent.getActivity(
             this,
             chatId.hashCode(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
     }
 
-    private fun pushShortcut(chatId: String, title: String, circularBitmap: Bitmap?, intent: Intent) {
-        val senderPerson = androidx.core.app.Person.Builder().setName(title).setIcon(circularBitmap?.let {
-            IconCompat.createWithBitmap(it)
-        }).build()
-        val shortcut = ShortcutInfoCompat.Builder(this, chatId)
-            .setShortLabel(title)
-            .setPerson(senderPerson)
-            .setIntent(intent.apply { action = Intent.ACTION_VIEW })
-            .setLongLived(true)
-            .build()
+    private fun pushShortcut(
+        chatId: String,
+        title: String,
+        circularBitmap: Bitmap?,
+        intent: Intent,
+    ) {
+        val senderPerson =
+            androidx.core.app.Person
+                .Builder()
+                .setName(title)
+                .setIcon(
+                    circularBitmap?.let {
+                        IconCompat.createWithBitmap(it)
+                    },
+                ).build()
+        val shortcut =
+            ShortcutInfoCompat
+                .Builder(this, chatId)
+                .setShortLabel(title)
+                .setPerson(senderPerson)
+                .setIntent(intent.apply { action = Intent.ACTION_VIEW })
+                .setLongLived(true)
+                .build()
         ShortcutManagerCompat.pushDynamicShortcut(this, shortcut)
     }
 
@@ -244,18 +271,20 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         title: String,
         body: String,
         pendingIntent: PendingIntent,
-        notificationManager: NotificationManager
+        notificationManager: NotificationManager,
     ) {
-        val summaryNotification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("AirGo")
-            .setContentText(if (title != "AirGo" && title.isNotEmpty()) "$title: $body" else body)
-            .setGroup(CHAT_GROUP_KEY)
-            .setGroupSummary(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setOnlyAlertOnce(true)
-            .setContentIntent(pendingIntent)
-            .build()
+        val summaryNotification =
+            NotificationCompat
+                .Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("AirGo")
+                .setContentText(if (title != "AirGo" && title.isNotEmpty()) "$title: $body" else body)
+                .setGroup(CHAT_GROUP_KEY)
+                .setGroupSummary(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(pendingIntent)
+                .build()
         notificationManager.notify(SUMMARY_ID, summaryNotification)
     }
 
@@ -268,19 +297,21 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         readAction: NotificationCompat.Action,
         notificationManager: NotificationManager,
     ) {
-        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setGroup(CHAT_GROUP_KEY)
-            .setShortcutId(chatId)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-            .addAction(replyAction)
-            .addAction(readAction)
-            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-            .setOnlyAlertOnce(false)
-            .setStyle(style)
+        val notificationBuilder =
+            NotificationCompat
+                .Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setGroup(CHAT_GROUP_KEY)
+                .setShortcutId(chatId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .addAction(replyAction)
+                .addAction(readAction)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setOnlyAlertOnce(false)
+                .setStyle(style)
 
         if (circularBitmap != null) {
             notificationBuilder.setLargeIcon(circularBitmap)
@@ -292,7 +323,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         if (SessionManager.accessToken == null) return
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                RetrofitProvider.authApi.updateFcmToken(UpdateFcmTokenRequest(token)) 
+                RetrofitProvider.authApi.updateFcmToken(UpdateFcmTokenRequest(token))
             } catch (e: java.lang.Exception) {
                 Log.e("AIRGO_FCM", "Error de red enviando token", e)
             }

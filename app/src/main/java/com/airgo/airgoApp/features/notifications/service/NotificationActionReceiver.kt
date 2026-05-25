@@ -9,8 +9,8 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.graphics.drawable.IconCompat
-import com.airgo.airgoApp.R
 import com.airgo.airgoApp.BuildConfig
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.network.UserPreferencesRepository
@@ -36,6 +36,7 @@ private const val CODE_1000 = 1000
 
 private const val MAX_TIME_MS = 10000L
 private const val MAX_TIMEOUT = 10L
+
 class NotificationActionReceiver : BroadcastReceiver() {
     private val gson = Gson()
     private val client =
@@ -78,7 +79,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
                             }
                         }
                     }
-                } 
+                }
             } catch (e: java.lang.Exception) {
                 Log.e("AirGo_Receiver", "Error processant acció: ${e.message}", e)
             } finally {

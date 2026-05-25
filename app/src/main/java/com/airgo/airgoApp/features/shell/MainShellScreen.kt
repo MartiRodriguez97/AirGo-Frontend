@@ -71,7 +71,7 @@ fun mainShellScreen(
     pictureUrl: String?,
     onLogout: () -> Unit,
     pendingNavData: android.os.Bundle? = null,
-    onNavigated: () -> Unit = {}
+    onNavigated: () -> Unit = {},
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -84,11 +84,14 @@ fun mainShellScreen(
             val otherUserId = pendingNavData.getString("otherUserId")
             val username = pendingNavData.getString("username") ?: "Usuari"
             val otherProfilePic = pendingNavData.getString("otherProfilePic")
-            
+
             if (convId != null && otherUserId != null) {
-                val encodedPic = if (!otherProfilePic.isNullOrEmpty()) {
-                    java.net.URLEncoder.encode(otherProfilePic, "UTF-8")
-                } else "none"
+                val encodedPic =
+                    if (!otherProfilePic.isNullOrEmpty()) {
+                        java.net.URLEncoder.encode(otherProfilePic, "UTF-8")
+                    } else {
+                        "none"
+                    }
 
                 // Primero navegamos a SOCIAL para que quede en el backstack
                 navController.navigate(MainShellScreen.SOCIAL.route) {
@@ -242,9 +245,12 @@ private fun NavGraphBuilder.featuresNavGraph(
             socialScreen(
                 onFriendClick = { userId -> navController.navigate("friend_profile/$userId") },
                 onChatClick = { convId, otherUserId, username, profilePic ->
-                    val encodedPic = if (!profilePic.isNullOrEmpty()) {
-                        java.net.URLEncoder.encode(profilePic, "UTF-8")
-                    } else "none"
+                    val encodedPic =
+                        if (!profilePic.isNullOrEmpty()) {
+                            java.net.URLEncoder.encode(profilePic, "UTF-8")
+                        } else {
+                            "none"
+                        }
                     navController.navigate("chat/$convId/$otherUserId/$username/$encodedPic")
                 },
             )

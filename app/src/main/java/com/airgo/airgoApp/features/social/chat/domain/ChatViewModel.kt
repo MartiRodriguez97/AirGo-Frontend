@@ -152,7 +152,6 @@ class ChatViewModel : ViewModel() {
                         webSocket: WebSocket,
                         text: String,
                     ) {
-
                         try {
                             val json = gson.fromJson(text, JsonObject::class.java)
                             val type = json.get("type")?.asString
