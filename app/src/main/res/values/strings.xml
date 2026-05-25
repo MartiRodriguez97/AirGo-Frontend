@@ -402,7 +402,6 @@
 
     <!-- features/tracking-->
     <string name="error_saving_activity">Could not save activity</string>
-    <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
     <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
     <string name="tracking_save_progress">Progreso guardado</string>
     <string name="tracking_new_title_title">New Title!</string>
@@ -465,9 +464,6 @@
     <string name="forums_filter_mine">Created</string>
     <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
 
-    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
-    <string name="tracking_save_progress">Progreso guardado</string>
-    <string name="selection_panel_title">Select route points</string>
 
     <string name="template_run_easy_1_title">Easy Walk/Run</string>
     <string name="template_run_easy_1_desc">Combine walking and light jogging to get your body moving without strain.</string>

@@ -408,7 +408,6 @@
 
     <!-- features/tracking-->
     <string name="error_saving_activity">No s\'ha pogut emmagatzemar l\'activitat</string>
-    <string name="tracking_save_completed">Entrenament completat i guardat!</string>
     <string name="tracking_save_progress">Progress guardat</string>
     <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu bon ús de l\'aplicació</string>
 
@@ -474,7 +473,6 @@
     <string name="to">Destí:</string>
 
     <string name="tracking_save_completed">Entrenament completat i guardat!</string>
-    <string name="tracking_save_progress">Progress guardat</string>
 
 
     <string name="template_run_easy_1_title">Caminada Suau</string>
