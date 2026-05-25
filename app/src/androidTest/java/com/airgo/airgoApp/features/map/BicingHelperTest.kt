@@ -53,7 +53,7 @@ class BicingHelperTest {
 
     @Test
     fun emptyStationsReturnsEmptyOverlay() {
-        val overlay = BicingHelper.createBicingOverlay(context, mapView, emptyList())
+        val overlay = BicingHelper.createBicingOverlay(context, mapView, emptyList()) { _ -> }
 
         assertTrue(overlay.items.isEmpty())
     }
@@ -62,7 +62,7 @@ class BicingHelperTest {
     fun overlayHasSameNumberOfMarkersAsStations() {
         val stations = listOf(makeStation(3, 1), makeStation(0, 0), makeStation(1, 0))
 
-        val overlay = BicingHelper.createBicingOverlay(context, mapView, stations)
+        val overlay = BicingHelper.createBicingOverlay(context, mapView, stations) { _ -> }
 
         assertEquals(stations.size, overlay.items.size)
     }
@@ -76,7 +76,7 @@ class BicingHelperTest {
         val expectedBlue = Color.parseColor("#0081C9")
         val station = makeStation(mechanicalBikes = 2, electricBikes = 0)
 
-        val overlay = BicingHelper.createBicingOverlay(context, mapView, listOf(station))
+        val overlay = BicingHelper.createBicingOverlay(context, mapView, listOf(station)) { _ -> }
         val marker = overlay.items.first() as BicingHelper.BicingMarker
 
         assertEquals(expectedBlue, marker.color)
@@ -87,7 +87,7 @@ class BicingHelperTest {
         val expectedRed = Color.parseColor("#FF0000")
         val station = makeStation(mechanicalBikes = 0, electricBikes = 0)
 
-        val overlay = BicingHelper.createBicingOverlay(context, mapView, listOf(station))
+        val overlay = BicingHelper.createBicingOverlay(context, mapView, listOf(station)) { _ -> }
         val marker = overlay.items.first() as BicingHelper.BicingMarker
 
         assertEquals(expectedRed, marker.color)
@@ -98,7 +98,7 @@ class BicingHelperTest {
         val expectedBlue = Color.parseColor("#0081C9")
         val station = makeStation(mechanicalBikes = 0, electricBikes = 3)
 
-        val overlay = BicingHelper.createBicingOverlay(context, mapView, listOf(station))
+        val overlay = BicingHelper.createBicingOverlay(context, mapView, listOf(station)) { _ -> }
         val marker = overlay.items.first() as BicingHelper.BicingMarker
 
         assertEquals(expectedBlue, marker.color)

@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
 import com.airgo.airgoApp.features.home.data.Exercise
@@ -60,6 +61,7 @@ class CalendarUiTest {
                                             completat = false,
                                             distanciaObjectiu = 10.0,
                                             distanciaFeta = 0.0,
+                                            template = null,
                                         ),
                                     ),
                             ),
@@ -70,8 +72,7 @@ class CalendarUiTest {
         coEvery { apiService.getPlaEntrenament() } returns Response.success(mockData)
 
         composeTestRule.setContent {
-            com.airgo.airgoApp.features.calendar
-                .calendarScreen(viewModel = viewModel)
+            calendarScreen(viewModel = viewModel)
         }
 
         // Check if calendar is displayed
