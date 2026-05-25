@@ -86,8 +86,12 @@ fun mainShellScreen(
             val username = pendingNavData.getString("username") ?: "Usuari"
             val otherProfilePic = pendingNavData.getString("otherProfilePic")
             if (convId != null && otherUserId != null) {
-                val encodedPic = if (!otherProfilePic.isNullOrEmpty())
-                    java.net.URLEncoder.encode(otherProfilePic, "UTF-8") else "none"
+                val encodedPic =
+                    if (!otherProfilePic.isNullOrEmpty()) {
+                        java.net.URLEncoder.encode(otherProfilePic, "UTF-8")
+                    } else {
+                        "none"
+                    }
                 navController.navigate(MainShellScreen.SOCIAL.route) {
                     popUpTo(navController.graph.startDestinationId) { saveState = true }
                     launchSingleTop = true
@@ -126,16 +130,25 @@ fun screenWrapper(
 }
 
 @Composable
-private fun bottomNavigationBar(currentRoute: String?, navController: NavHostController) {
+private fun bottomNavigationBar(
+    currentRoute: String?,
+    navController: NavHostController,
+) {
     val hiddenRoutes = setOf("questionnaire", "favorites", "tracking_summary", "address_search")
-    val isChatScreen = currentRoute.orEmpty().startsWith("chat") ||
+    val isChatScreen =
+        currentRoute.orEmpty().startsWith("chat") ||
             currentRoute.orEmpty().startsWith("forum_chat")
     val isFriendProfile = currentRoute.orEmpty().startsWith("friend_profile")
     val isPlanDetails = currentRoute.orEmpty().startsWith("planDetails")
     val isActivityDetail = currentRoute == "activityDetail"
     val isTrackingSummary = currentRoute == "tracking_summary"
-    val showBar = currentRoute !in hiddenRoutes && !isFriendProfile && !isChatScreen &&
-            !isPlanDetails && !isActivityDetail && !isTrackingSummary
+    val showBar =
+        currentRoute !in hiddenRoutes &&
+            !isFriendProfile &&
+            !isChatScreen &&
+            !isPlanDetails &&
+            !isActivityDetail &&
+            !isTrackingSummary
 
     if (showBar) {
         NavigationBar {
@@ -164,7 +177,10 @@ private fun bottomNavigationBar(currentRoute: String?, navController: NavHostCon
     }
 }
 
-private fun NavGraphBuilder.homeNavGraph(navController: NavHostController, innerPadding: PaddingValues) {
+private fun NavGraphBuilder.homeNavGraph(
+    navController: NavHostController,
+    innerPadding: PaddingValues,
+) {
     composable(MainShellScreen.HOME.route) {
         screenWrapper(innerPadding) {
             homeScreen(
@@ -213,8 +229,12 @@ private fun NavGraphBuilder.featuresNavGraph(
             socialScreen(
                 onFriendClick = { userId -> navController.navigate("friend_profile/$userId") },
                 onChatClick = { convId, otherUserId, username, profilePic ->
-                    val encodedPic = if (!profilePic.isNullOrEmpty())
-                        java.net.URLEncoder.encode(profilePic, "UTF-8") else "none"
+                    val encodedPic =
+                        if (!profilePic.isNullOrEmpty()) {
+                            java.net.URLEncoder.encode(profilePic, "UTF-8")
+                        } else {
+                            "none"
+                        }
                     navController.navigate("chat/$convId/$otherUserId/$username/$encodedPic")
                 },
                 onForumClick = { id, name -> navController.navigate("forum_chat/$id/$name") },
@@ -277,14 +297,19 @@ private fun NavGraphBuilder.addressSearchNavRoute(navController: NavHostControll
         val mode = backStackEntry.arguments?.getString("mode") ?: "start"
         val activityEntry = remember(backStackEntry) { navController.getBackStackEntry(MainShellScreen.ACTIVITY.route) }
         val routeViewModel: RouteViewModel = viewModel(activityEntry)
-        val searchMode = when {
-            mode == "start" -> AddressSearchMode.START
-            mode == "end" -> AddressSearchMode.END
-            mode.startsWith("waypoint-") -> AddressSearchMode.WAYPOINT
-            else -> AddressSearchMode.START
-        }
-        val waypointIndex = if (mode.startsWith("waypoint-"))
-            mode.substringAfter("waypoint-").toIntOrNull() ?: 0 else -1
+        val searchMode =
+            when {
+                mode == "start" -> AddressSearchMode.START
+                mode == "end" -> AddressSearchMode.END
+                mode.startsWith("waypoint-") -> AddressSearchMode.WAYPOINT
+                else -> AddressSearchMode.START
+            }
+        val waypointIndex =
+            if (mode.startsWith("waypoint-")) {
+                mode.substringAfter("waypoint-").toIntOrNull() ?: 0
+            } else {
+                -1
+            }
         addressSearchScreen(
             mode = searchMode,
             waypointIndex = waypointIndex,
