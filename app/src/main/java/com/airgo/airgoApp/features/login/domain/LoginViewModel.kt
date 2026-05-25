@@ -102,6 +102,8 @@ class LoginViewModel : ViewModel() {
         session.email = user
         session.refreshToken = refresh
 
+        Log.d(TAG, "Access token: $access")
+
         if (user != null) {
             fetchAndSaveUserDetails(session)
         }

@@ -12,7 +12,7 @@ object ApiEndpoints {
     const val USER_ACCOUNT_INFO = "api/usuaris/me/profile/"
     const val USER_PROFILE = "api/usuaris/{id}/"
     const val UPDATE_FCM_TOKEN = "api/usuaris/me/fcm-token/"
-    const val COMPROVAR_EDIFICI = "api/usuaris/me/comprovar-edifici/"
+    const val COMPROVAR_EDIFICI_URL = "http://nattech.fib.upc.edu:40600/api/servei/puntuacio-edifici/"
 
     fun getChangeInfoEndpoint(id: Int): String = "api/usuaris/$id/"
 
@@ -64,4 +64,5 @@ object ApiEndpoints {
 
     // Endpoints insignies
     const val INSIGNIES = "api/usuaris/me/insignies/"
+    const val EDIFICI_INSIGNIA = "api/usuaris/me/edifici-insignia/"
 }

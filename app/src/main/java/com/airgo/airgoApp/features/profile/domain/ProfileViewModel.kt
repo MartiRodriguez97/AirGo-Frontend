@@ -60,6 +60,9 @@ class ProfileViewModel : ViewModel() {
                 SessionManager.pes = profile.pes
                 SessionManager.altura = profile.altura
                 SessionManager.username = profile.username
+                SessionManager.punts = profile.punts
+                SessionManager.ratxa = profile.ratxa
+                SessionManager.teBici = profile.teBici
             } catch (e: IOException) {
                 Log.e(TAG, "loadProfile network error", e)
                 _uiState.value = ProfileUiState.Error(UiText.StringResource(R.string.error_loading_profile))

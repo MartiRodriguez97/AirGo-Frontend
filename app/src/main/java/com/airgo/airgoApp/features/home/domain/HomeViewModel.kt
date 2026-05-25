@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.airgo.airgoApp.core.network.RetrofitProvider.profileApi
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
@@ -13,6 +14,7 @@ import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.map.helpers.NominatimResult
 import com.airgo.airgoApp.features.map.helpers.NominatimService
+import com.airgo.airgoApp.features.profile.data.ComprovarEdificiRequest
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -124,9 +126,8 @@ class HomeViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 val response =
-                    com.airgo.airgoApp.core.network.RetrofitProvider.profileApi.comprovarEdifici(
-                        com.airgo.airgoApp.features.profile.data
-                            .ComprovarEdificiRequest(municipi, adreca, numero),
+                    profileApi.comprovarEdifici(
+                        ComprovarEdificiRequest(municipi, adreca, numero),
                     )
 
                 if (response.isSuccessful) {
@@ -135,31 +136,32 @@ class HomeViewModel : ViewModel() {
                         // Update points
                         SessionManager.userId?.let { userId ->
                             val currentPunts = SessionManager.punts ?: 0
-                            val newPunts = currentPunts + body.puntuacio
-                            com.airgo.airgoApp.core.network.RetrofitProvider.profileApi.updateUser(
+                            val newPunts = currentPunts + body.punts
+                            profileApi.updateUser(
                                 userId,
                                 com.airgo.airgoApp.features.profile.data
-                                    .UpdateUserRequest(punts = newPunts),
+                                    .UpdateUserRequest(punts = body.punts),
                             )
                             SessionManager.punts = newPunts
                         }
 
-                        if (body.insigniaGuanyada && body.badge != null) {
-                            // Update badges in SessionManager
-                            val currentBadges = SessionManager.userBadges?.toMutableList() ?: mutableListOf()
-                            currentBadges.add(
-                                com.airgo.airgoApp.features.profile.data.UserBadgeResponse(
-                                    insignia = body.badge,
-                                    dataGuanyada =
-                                        java.time.ZonedDateTime
-                                            .now()
-                                            .toString(),
-                                ),
-                            )
-                            SessionManager.userBadges = currentBadges
-                            _buildingBadgeEarned.value = body.badge
+                        if (body.punts > 7) {
+                            val badgeResponse = profileApi.guanyarEdificiInsignia()
+                            if (badgeResponse.isSuccessful) {
+                                val badgeBody = badgeResponse.body()
+                                if (badgeBody != null) {
+                                    val currentBadges = SessionManager.userBadges?.toMutableList() ?: mutableListOf()
+                                    currentBadges.add(badgeBody)
+                                    SessionManager.userBadges = currentBadges
+                                    _buildingBadgeEarned.value = badgeBody.insignia
+                                }
+                                showBuildingAddressDialog = false
+                            } else {
+                                _errorMessage.value = com.airgo.airgoApp.R.string.error_generic
+                            }
+                        } else {
+                            _errorMessage.value = com.airgo.airgoApp.R.string.error_building_score_low
                         }
-                        showBuildingAddressDialog = false
                     }
                 } else if (response.code() == ERROR_HTTP_404) {
                     _errorMessage.value = com.airgo.airgoApp.R.string.error_address_not_found

@@ -50,17 +50,13 @@ data class UpdateUserRequest(
 )
 
 data class ComprovarEdificiRequest(
-    val municipi: String,
-    val adreca: String,
+    val municipio: String,
+    val direccion: String,
     val numero: String,
 )
 
 data class ComprovarEdificiResponse(
-    val puntuacio: Int,
-    @SerializedName("insignia_guanyada")
-    val insigniaGuanyada: Boolean,
-    val missatge: String,
-    val badge: BadgeDefinition?,
+    val punts: Int,
 )
 
 interface ProfileApi {
@@ -78,7 +74,7 @@ interface ProfileApi {
     @PATCH(ApiEndpoints.CHANGE_PROFILE_PICTURE)
     suspend fun updateProfilePicture(
         @Part image: MultipartBody.Part,
-    ): Response<ProfilePictureResponse> // O la clase de resposta que te devuelvan (ej. ProfileResponse)
+    ): Response<ProfilePictureResponse> // O la classe de resposta que te devuelvan (ej. ProfileResponse)
 
     @PATCH(ApiEndpoints.USER_PROFILE)
     suspend fun updateUser(
@@ -86,8 +82,12 @@ interface ProfileApi {
         @Body request: UpdateUserRequest,
     ): Response<Void>
 
-    @POST(ApiEndpoints.COMPROVAR_EDIFICI)
+    @retrofit2.http.Headers("No-Authentication: true")
+    @POST(ApiEndpoints.COMPROVAR_EDIFICI_URL)
     suspend fun comprovarEdifici(
         @Body request: ComprovarEdificiRequest,
     ): Response<ComprovarEdificiResponse>
+
+    @POST(ApiEndpoints.EDIFICI_INSIGNIA)
+    suspend fun guanyarEdificiInsignia(): Response<UserBadgeResponse>
 }

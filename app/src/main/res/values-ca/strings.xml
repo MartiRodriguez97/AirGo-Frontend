@@ -459,7 +459,9 @@
     <string name="home_building_address_label">Adreça</string>
     <string name="home_building_number_label">Número</string>
     <string name="home_building_btn_submit">Enviar</string>
-    <string name="error_address_not_found">Adreça no trobada. Si us plau, revisa-la i torna-ho a intentar.</string>
+    <string name="error_address_not_found">Adreça no trobada o cap edifici vàlid trobat.</string>
+    <string name="error_building_score_low">L\'edifici no assoleix la puntuació mínima requerida.</string>
+    <string name="enter_house_address">Introdueix l\'adreça de casa teva per guanyar una insígnia!</string>
     <string name="error_generic">Alguna cosa ha anat malament. Si us plau, torna-ho a intentar.</string>
     <string name="home_building_municipality_label">Municipi (només Barcelona)</string>
     <string name="error_dialog_title">Error</string>
