@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,13 +17,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
-import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.DirectionsWalk
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardColors
+import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalIconToggleButton
@@ -292,4 +301,94 @@ internal fun BoxScope.trackingFabSection(
                 .navigationBarsPadding()
                 .padding(bottom = 100.dp),
     )
+}
+@Composable
+internal fun mapLegend(modifier: Modifier = Modifier) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier.fillMaxWidth(0.5f),
+        horizontalAlignment = Alignment.Start,
+    ) {
+        Surface(
+            onClick = { expanded = !expanded },
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+            shadowElevation = 4.dp,
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = stringResource(R.string.legend_title),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
+
+        androidx.compose.animation.AnimatedVisibility(visible = expanded) {
+            Card(
+                modifier = Modifier.padding(top = 4.dp),
+                elevation = cardElevation(4.dp),
+                colors = cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+                ),
+            ) {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    legendItem(Color(0xFF0081C9), stringResource(R.string.legend_bicing_available), false)
+                    legendItem(Color(0xFFFF0000), stringResource(R.string.legend_bicing_empty), false)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
+                    legendItem(Color(0xFF00C853), stringResource(R.string.legend_route_start), true)
+                    legendItem(Color(0xFFFF1744), stringResource(R.string.legend_route_end), true)
+                    legendItem(Color(0xFFFF8C00), stringResource(R.string.legend_waypoint), true)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun legendItem(
+    color: Color,
+    label: String,
+    useFlag: Boolean = true,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (useFlag) {
+            Icon(
+                imageVector = Icons.Default.Flag,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(14.dp),
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(14.dp),
+            )
+        }
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = label, style = MaterialTheme.typography.labelSmall)
+    }
 }

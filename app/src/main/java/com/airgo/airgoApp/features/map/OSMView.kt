@@ -4,17 +4,26 @@ import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -25,8 +34,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +47,7 @@ import com.airgo.airgoApp.features.map.components.fetchLocationDataEffect
 import com.airgo.airgoApp.features.map.components.gpsDisabledWarning
 import com.airgo.airgoApp.features.map.components.layerSelector
 import com.airgo.airgoApp.features.map.components.locationCenteringButton
+import com.airgo.airgoApp.features.map.components.mapLegend
 import com.airgo.airgoApp.features.map.components.modeSelector
 import com.airgo.airgoApp.features.map.components.rememberLocationPermissions
 import com.airgo.airgoApp.features.map.components.routeSelectionPanel
@@ -191,7 +203,11 @@ fun osmView(
             onSensationSelected = { valor -> trackingViewModel.submitSensation(valor) },
         )
     }
-    osmMapContainer(state = mapState, modifier = modifier)
+    osmMapContainer(
+        state = mapState,
+        bicingViewModel = bicingViewModel,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -203,7 +219,14 @@ private fun rememberBicingOverlay(
     val overlay = remember { FolderOverlay() }
     LaunchedEffect(bicingViewModel.stations) {
         overlay.items.clear()
-        overlay.items.addAll(BicingHelper.createBicingOverlay(context, mapView, bicingViewModel.stations).items)
+        overlay.items.addAll(
+            BicingHelper.createBicingOverlay(
+                context,
+                mapView,
+                bicingViewModel.stations,
+                onStationSelected = { station -> bicingViewModel.selectStation(station) },
+            ).items,
+        )
         mapView.invalidate()
     }
     return overlay
@@ -323,11 +346,25 @@ private fun rememberMapState(params: MapStateParams): MapState {
 }
 
 /**
+ * Funció per definir l'estructura del panell d'informació de les estacions Bicing
+ */
+@Composable
+private fun bicingStatItem(emoji: String, value: String, label: String, color: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = emoji, style = MaterialTheme.typography.titleLarge)
+        Text(text = value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = color)
+        Text(text = label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/**
  * Funció per pintar el mapa
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun osmMapContainer(
     state: MapState,
+    bicingViewModel: BicingViewModel,
     modifier: Modifier = Modifier,
 ) {
     // Variable per saber si s'activa/desactiva la capa de Bicing
@@ -336,13 +373,46 @@ fun osmMapContainer(
     var showPollution by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val isGpsEnabled by rememberGpsEnabledState(context)
+    val selectedStation = bicingViewModel.selectedStation
+
+    if (selectedStation != null) {
+        ModalBottomSheet(
+            onDismissRequest = { bicingViewModel.selectStation(null) },
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = selectedStation.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    bicingStatItem("🚲", selectedStation.mechanicalBikes.toString(), stringResource(R.string.bicing_mechanical), Color(0xFF0081C9))
+                    bicingStatItem("⚡", selectedStation.electricBikes.toString(), stringResource(R.string.bicing_electric), Color(0xFFF5A623))
+                    bicingStatItem("🅿️", selectedStation.freeSlots.toString(), stringResource(R.string.bicing_free_slots), Color(0xFF4CAF50))
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         mapRenderer(
             state = state,
+            bicingViewModel = bicingViewModel,
             showBicing = showBicing,
             showPollution = showPollution,
             modifier = Modifier.fillMaxSize().statusBarsPadding(),
+        )
+
+        mapLegend(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .navigationBarsPadding()
+                .padding(bottom = 170.dp, start = 16.dp),
         )
 
         trackingMapEffects(state)
@@ -457,6 +527,7 @@ private fun BoxScope.mapNormalModeUi(state: MapState) {
 @Composable
 private fun mapRenderer(
     state: MapState,
+    bicingViewModel: BicingViewModel,
     showBicing: Boolean,
     showPollution: Boolean,
     modifier: Modifier = Modifier,
@@ -480,6 +551,7 @@ private fun mapRenderer(
                         bicingOverlay = state.bicingOverlay,
                         selectionModeProvider = { selectionModeState.value },
                         onPointSelectedProvider = { onPointSelectedState.value },
+                        onStationDeselected = { bicingViewModel.selectStation(null) },
                     )
                 overlays.add(eventsOverlay)
                 overlays.add(state.bicingOverlay)

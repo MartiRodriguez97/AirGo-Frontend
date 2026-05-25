@@ -137,6 +137,22 @@
     <string name="map_layers_description">Capas</string>
     <string name="map_layer_bicing">Estaciones de Bicing</string>
     <string name="map_layer_pollution">Calidad del aire</string>
+    <string name="bicing_mechanical">mecánicas</string>
+    <string name="bicing_free_slots">plazas libres</string>
+    <string name="bicing_status_operative">Operativa</string>
+    <string name="bicing_status_out_of_service">Fuera de servicio</string>
+    <string name="bicing_electric">eléctricas</string>
+
+    <!-- features/map/components/MapUIComponents -->
+    <string name="legend_title">Leyenda</string>
+    <string name="legend_bicing_available">Estaciones de Bicing con bicicletas</string>
+    <string name="legend_bicing_empty">Estaciones Bicing vacias</string>
+    <string name="legend_route_start">Punto inicial de ruta</string>
+    <string name="legend_route_end">Punto final de ruta</string>
+    <string name="legend_waypoint">Punto intermedio de ruta</string>
+
+    <!-- features/map/components/RoutePanel-->
+    <string name="selection_panel_title">Selecciona los puntos de la ruta</string>
 
     <!-- features/map/RouteViewModel-->
     <string name="error_route_connection">Error de conexión con el servidor</string>
@@ -335,9 +351,15 @@
     <string name="error_loading_profile">No se pudo cargar el perfil</string>
     <string name="error_loading_friends">No se pudo cargar a los amigos</string>
     <string name="error_deleting_friend">No se pudo eliminar a este amigo</string>
+    <string name="forums_filter_saved">Seguidos</string>
+    <string name="forums_filter_mine">Creados</string>
+    <string name="no_favorite_created_forums_found">No tienes ningún foro favorito ni creado por ti.</string>
 
     <!-- features/tracking-->
     <string name="error_saving_activity">No se pudo guardar la actividad</string>
+    <string name="tracking_elevated_speed">Ha llegado a una velocidad extrema, por favor, haga buen uso de la aplicación</string>
+    <string name="tracking_save_completed">Workout completed and saved!</string>
+    <string name="tracking_save_progress">Progress saved</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Empezar</string>
@@ -388,12 +410,5 @@
     <!-- Titles -->
     <string name="error_fetching_titles">No se pudieron obtener los títulos disponibles</string>
     <string name="error_unlocking_title">No se pudo desbloquear el título</string>
-    <string name="no_favorite_created_forums_found">No tienes ningún foro favorito ni creado por ti.</string>
-    <string name="selection_panel_title">Selecciona los puntos de la ruta</string>
-    <string name="forums_filter_saved">Seguidos</string>
-    <string name="forums_filter_mine">Creados</string>
-    <string name="tracking_elevated_speed">Ha llegado a una velocidad extrema, por favor, haga buen uso de la aplicación</string>
 
-    <string name="tracking_save_completed">Workout completed and saved!</string>
-    <string name="tracking_save_progress">Progress saved</string>
 </resources>

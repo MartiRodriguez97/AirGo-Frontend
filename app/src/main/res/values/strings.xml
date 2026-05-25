@@ -136,6 +136,22 @@
     <string name="map_layers_description">Layers</string>
     <string name="map_layer_bicing">Bicing stations</string>
     <string name="map_layer_pollution">Air quality</string>
+    <string name="bicing_mechanical">mechanicals</string>
+    <string name="bicing_free_slots">free slots</string>
+    <string name="bicing_status_operative">Operative</string>
+    <string name="bicing_status_out_of_service">Out of service</string>
+    <string name="bicing_electric">electrics</string>
+
+    <!-- features/map/components/MapUIComponents -->
+    <string name="legend_title">Legend</string>
+    <string name="legend_bicing_available">Bicing stations with bikes</string>
+    <string name="legend_bicing_empty">Empty Bicing stations</string>
+    <string name="legend_route_start">Route starting point</string>
+    <string name="legend_route_end">End point of route</string>
+    <string name="legend_waypoint">Midpoint of the route</string>
+
+    <!-- features/map/components/RoutePanel -->
+    <string name="selection_panel_title">Select route points</string>
 
     <!-- features/map/FavoritesViewModel-->
     <string name="error_deleting_favourite_route">The route could not be removed as a favorite</string>
@@ -331,7 +347,11 @@
     <string name="error_loading_friends">Could not load friends</string>
     <string name="error_deleting_friend">Couldn\'t delete this friend</string>
 
-    <!-- Tracking Dialogs -->
+    <!-- features/tracking-->
+    <string name="error_saving_activity">Could not save activity</string>
+    <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
+    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
+    <string name="tracking_save_progress">Progreso guardado</string>
     <string name="tracking_new_title_title">New Title!</string>
     <string name="tracking_new_title_desc">You have a pending title to choose!</string>
     <string name="tracking_set_main_title">Set as main title</string>
@@ -348,9 +368,6 @@
     <string name="chat_reply">Reply</string>
     <string name="chat_reply_label">Write a response...</string>
     <string name="chat_mark_as_read">Mark as read</string>
-
-    <!-- features/tracking-->
-    <string name="error_saving_activity">Could not save activity</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Start</string>
@@ -393,11 +410,5 @@
     <string name="no_favorite_created_forums_found">You don\'t have any favorite form or created by you.</string>
     <string name="forums_filter_saved">Followed</string>
     <string name="forums_filter_mine">Created</string>
-    <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
-
-    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
-    <string name="tracking_save_progress">Progreso guardado</string>
-    <string name="selection_panel_title">Select route points</string>
-
 
 </resources>
