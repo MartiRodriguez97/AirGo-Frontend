@@ -470,5 +470,7 @@
     <string name="selection_point_hint">How do you want to select the point?</string>
     <string name="on_map">On map</string>
     <string name="search_address">By address</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
 
 </resources>

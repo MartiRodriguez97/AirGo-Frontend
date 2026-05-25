@@ -470,6 +470,8 @@
     <string name="selection_point_hint">Com vols seleccionar el punt?</string>
     <string name="on_map">En el mapa</string>
     <string name="search_address">Cercar adreça</string>
+    <string name="from">Origen:</string>
+    <string name="to">Destí:</string>
 
 </resources>
 
