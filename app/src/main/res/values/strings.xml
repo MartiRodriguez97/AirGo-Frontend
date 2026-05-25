@@ -393,6 +393,11 @@
     <string name="no_favorite_created_forums_found">You don\'t have any favorite form or created by you.</string>
     <string name="forums_filter_saved">Followed</string>
     <string name="forums_filter_mine">Created</string>
+    <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
+
+    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
+    <string name="tracking_save_progress">Progreso guardado</string>
+    <string name="selection_panel_title">Select route points</string>
 
 
 </resources>

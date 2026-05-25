@@ -6,36 +6,39 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.SignalCellularAlt
 import androidx.compose.material.icons.filled.SignalCellularAlt1Bar
 import androidx.compose.material.icons.filled.SignalCellularAlt2Bar
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 
 private const val HALF_WIDTH = 0.5f
-
-private const val SPORT_RUN_ID = 1
-private const val SPORT_BIKE_ID = 2
 
 // Level IDs
 private const val LEVEL_EASY_ID = 1
@@ -53,27 +56,30 @@ private const val DAY_SUNDAY = 7
 
 @Composable
 internal fun stepSportSelection(
-    selectedSport: Int?,
-    onSportSelected: (Int) -> Unit,
+    selectedSport: String?,
+    onSportSelected: (String) -> Unit,
 ) {
     Text(stringResource(R.string.quest_title_sport), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(24.dp))
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        // correr opcio 1
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         val sportRun = stringResource(R.string.sport_run)
         selectionButton(
             text = sportRun,
             icon = Icons.Default.DirectionsRun,
-            selected = selectedSport == SPORT_RUN_ID,
-            onClick = { onSportSelected(SPORT_RUN_ID) },
+            selected = selectedSport == "CAM",
+            onClick = { onSportSelected("CAM") },
+            modifier = Modifier.weight(1f),
         )
-        // bici opcio 2
         val sportBike = stringResource(R.string.sport_bike)
         selectionButton(
             text = sportBike,
             icon = Icons.Default.DirectionsBike,
-            selected = selectedSport == SPORT_BIKE_ID,
-            onClick = { onSportSelected(SPORT_BIKE_ID) },
+            selected = selectedSport == "BIC",
+            onClick = { onSportSelected("BIC") },
+            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -155,16 +161,28 @@ internal fun stepDaysSelection(selectedDays: SnapshotStateList<Int>) {
     }
 }
 
+private const val MAX_MIDA_CALENDARI = 1.2f
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun stepDateSelection(datePickerState: DatePickerState) {
     Text(stringResource(R.string.quest_title_date), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(16.dp))
-    DatePicker(
-        state = datePickerState,
-        modifier = Modifier.fillMaxWidth(),
-        showModeToggle = false,
-    )
+
+    val currentDensity = LocalDensity.current
+    val customDensity =
+        Density(
+            density = currentDensity.density,
+            fontScale = currentDensity.fontScale.coerceAtMost(MAX_MIDA_CALENDARI),
+        )
+
+    CompositionLocalProvider(LocalDensity provides customDensity) {
+        DatePicker(
+            state = datePickerState,
+            modifier = Modifier.fillMaxWidth(),
+            showModeToggle = false,
+        )
+    }
 }
 
 @Composable
@@ -173,36 +191,54 @@ internal fun selectionButton(
     icon: ImageVector,
     selected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val containerCol =
-        if (selected) {
-            MaterialTheme.colorScheme.primaryContainer
-        } else {
-            MaterialTheme.colorScheme.surface
-        }
-
-    val contentCol =
-        if (selected) {
-            MaterialTheme.colorScheme.onPrimaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        }
-
-    ElevatedButton(
+    Button(
         onClick = onClick,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(60.dp),
         colors =
-            ButtonDefaults.elevatedButtonColors(
-                containerColor = containerCol,
-                contentColor = contentCol,
+            ButtonDefaults.buttonColors(
+                containerColor =
+                    if (selected) {
+                        MaterialTheme
+                            .colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
+                contentColor =
+                    if (selected) {
+                        MaterialTheme
+                            .colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
             ),
+        shape = RoundedCornerShape(12.dp),
         elevation =
-            ButtonDefaults.elevatedButtonElevation(
-                defaultElevation = if (selected) 8.dp else 2.dp,
+            ButtonDefaults.buttonElevation(
+                defaultElevation = 2.dp,
+                pressedElevation = 8.dp,
             ),
-        modifier = Modifier.height(56.dp),
     ) {
-        Icon(imageVector = icon, contentDescription = null)
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+            )
+        }
     }
 }

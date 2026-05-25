@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -102,9 +101,10 @@ private fun settingsMainContent(
 @Composable
 private fun settingsHeader(onBackClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -124,9 +124,10 @@ private fun settingsUserProfile(
     initial: String,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         settingsProfilePicture(pictureUrl = pictureUrl, initial = initial)
@@ -223,9 +224,10 @@ private fun settingsAccountOption(onAccountSettingsClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {

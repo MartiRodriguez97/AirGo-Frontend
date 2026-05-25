@@ -10,13 +10,14 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -60,8 +61,8 @@ private const val TARGET_MAX_STEP = 3
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal data class QuestionnaireFormState(
-    val selectedSport: Int?,
-    val onSportSelected: (Int) -> Unit,
+    val selectedSport: String?,
+    val onSportSelected: (String) -> Unit,
     val selectedLevel: Int?,
     val onLevelSelected: (Int) -> Unit,
     val selectedDays: SnapshotStateList<Int>,
@@ -74,7 +75,7 @@ fun questionnaireScreen(
     onClose: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
 ) {
-    var selectedSport by remember { mutableStateOf<Int?>(null) }
+    var selectedSport by remember { mutableStateOf<String?>(null) }
     var selectedLevel by remember { mutableStateOf<Int?>(null) }
     val selectedDays = remember { mutableStateListOf<Int>() }
     var currentStep by remember { mutableStateOf(0) }
@@ -132,12 +133,15 @@ fun questionnaireScreen(
                     val daysDuration = (diffMillis / MILLIS_IN_DAY).toInt().coerceAtLeast(0)
                     val workoutsPerWeek = selectedDays.size
 
+                    val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                    val dateString = formatter.format(java.util.Date(endDateMillis))
                     viewModel.createPlan(
                         daysDuration = daysDuration,
                         workoutsPerWeek = workoutsPerWeek,
                         sport = selectedSport,
                         level = selectedLevel,
                         daysOfWeek = selectedDays,
+                        endDate = dateString,
                         onSuccess = {
                             onClose()
                         },
@@ -172,9 +176,13 @@ private fun questionnaireStepContent(
         modifier = modifier,
     ) { step ->
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()) // 1. Añade scroll aquí
+                    .padding(vertical = 16.dp),
+            // 2. Añade un poco de margen vertical
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
         ) {
             when (step) {
                 STEP_SPORT -> stepSportSelection(formState.selectedSport, formState.onSportSelected)
@@ -278,7 +286,7 @@ private fun rememberDateState(): DatePickerState {
 @OptIn(ExperimentalMaterial3Api::class)
 private fun checkNextEnabled(
     currentStep: Int,
-    selectedSport: Int?,
+    selectedSport: String?,
     selectedLevel: Int?,
     selectedDays: SnapshotStateList<Int>,
     datePickerState: DatePickerState,

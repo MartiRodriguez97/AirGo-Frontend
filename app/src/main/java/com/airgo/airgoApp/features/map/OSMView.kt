@@ -77,6 +77,12 @@ private const val MAX_CACHE_MB = 100L
 private const val MAX_CACHE_BYTES = MAX_CACHE_MB * MEGABYTES_TO_BYTES
 private const val TRACKING_ZOOM_LEVEL = 18.0
 
+data class OsmViewNavigationCallbacks(
+    val onNavigateToFavorites: () -> Unit = {},
+    val onNavigateToTrackingSummary: () -> Unit = {},
+    val onNavigateToAddressSearch: (String) -> Unit = {},
+)
+
 /**
  * Composable principal que mostra el mapa i les capes.
  * Gestiona els permissos, la configuració del mapa i la interacció amb el ViewModel.
@@ -88,9 +94,8 @@ fun osmView(
     pollutionViewModel: PollutionViewModel = viewModel(),
     routeViewModel: RouteViewModel = viewModel(),
     bicingViewModel: BicingViewModel = viewModel(),
-    onNavigateToFavorites: () -> Unit = {},
-    onNavigateToTrackingSummary: () -> Unit = {},
     trackingViewModel: TrackingViewModel = viewModel(),
+    navigation: OsmViewNavigationCallbacks = OsmViewNavigationCallbacks(),
 ) {
     val context = LocalContext.current
 
@@ -151,7 +156,7 @@ fun osmView(
 
     LaunchedEffect(trackingViewModel.hasSummary) {
         if (trackingViewModel.hasSummary) {
-            onNavigateToTrackingSummary()
+            navigation.onNavigateToTrackingSummary()
         }
     }
 
@@ -172,8 +177,9 @@ fun osmView(
                         pollutionViewModel = pollutionViewModel,
                         routeViewModel = routeViewModel,
                         trackingViewModel = trackingViewModel,
-                        onNavigateToFavorites = onNavigateToFavorites,
-                        onNavigateToTrackingSummary = onNavigateToTrackingSummary,
+                        onNavigateToFavorites = navigation.onNavigateToFavorites,
+                        onNavigateToTrackingSummary = navigation.onNavigateToTrackingSummary,
+                        onNavigateToAddressSearch = navigation.onNavigateToAddressSearch,
                     ),
             ),
         )
@@ -264,6 +270,12 @@ private fun rememberMapState(params: MapStateParams): MapState {
         vm.trackingViewModel.trackPoints,
         vm.routeViewModel.waypoints,
         vm.routeViewModel.transportProfile,
+        vm.routeViewModel.startAddressQuery,
+        vm.routeViewModel.endAddressQuery,
+        vm.routeViewModel.startSuggestions,
+        vm.routeViewModel.endSuggestions,
+        vm.routeViewModel.waypointAddresses,
+        vm.routeViewModel.editingWaypointIndex,
     ) {
         MapState(
             mapView = l.mapView,
@@ -273,15 +285,13 @@ private fun rememberMapState(params: MapStateParams): MapState {
             hasLocationPermission = l.hasLocationPermission,
             stations = vm.pollutionViewModel.stations,
             selectionMode = vm.routeViewModel.selectionMode,
-            startPoint = vm.routeViewModel.startPoint,
-            endPoint = vm.routeViewModel.endPoint,
+            startPoint = vm.routeViewModel.startPoint as GeoPoint?,
+            endPoint = vm.routeViewModel.endPoint as GeoPoint?,
             currentRoute = vm.routeViewModel.currentRoute,
             isCalculatingRoute = vm.routeViewModel.isLoading,
             onPointSelected = { vm.routeViewModel.onPointSelected(it) },
             onCalculateRoute = { vm.routeViewModel.calculateRoute() },
             onClearRoute = { vm.routeViewModel.clearRoute() },
-            onSetSelectionMode = { vm.routeViewModel.selectionMode = it },
-            onAddToFavorites = { vm.routeViewModel.addToFavorites() },
             isFavorite = vm.routeViewModel.isFavorite,
             favoriteMessage = vm.routeViewModel.favoriteMessage,
             onNavigateToFavorites = vm.onNavigateToFavorites,
@@ -292,10 +302,22 @@ private fun rememberMapState(params: MapStateParams): MapState {
             onStartTracking = { vm.trackingViewModel.startTracking() },
             onStopTracking = { vm.trackingViewModel.stopTracking() },
             waypoints = vm.routeViewModel.waypoints,
-            onAddWaypoint = { vm.routeViewModel.addWaypoint() },
             onRemoveWaypoint = { vm.routeViewModel.removeWaypoint(it) },
             transportProfile = vm.routeViewModel.transportProfile,
             onTransportProfileChange = { vm.routeViewModel.transportProfile = it },
+            startAddressQuery = vm.routeViewModel.startAddressQuery,
+            endAddressQuery = vm.routeViewModel.endAddressQuery,
+            startSuggestions = vm.routeViewModel.startSuggestions,
+            endSuggestions = vm.routeViewModel.endSuggestions,
+            isSearchingAddress = vm.routeViewModel.isSearchingAddress,
+            onSetSelectionMode = { vm.routeViewModel.onSetSelectionMode(it) },
+            onSearchStartAddress = { vm.routeViewModel.addressHandler.searchStart(it) },
+            onSearchEndAddress = { vm.routeViewModel.addressHandler.searchEnd(it) },
+            onNavigateToAddressSearch = vm.onNavigateToAddressSearch,
+            waypointAddresses = vm.routeViewModel.waypointAddresses,
+            onSetWaypointEditMode = { vm.routeViewModel.setWaypointEditMode(it) },
+            editingWaypointIndex = vm.routeViewModel.editingWaypointIndex,
+            onToggleFavorite = { vm.routeViewModel.toggleFavorite() },
         )
     }
 }
@@ -399,7 +421,11 @@ private fun BoxScope.mapNormalModeUi(state: MapState) {
     // Panell de selecció de ruta
     routeSelectionPanel(
         state = state,
-        modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
+        modifier =
+            Modifier
+                .align(Alignment.TopCenter)
+                .statusBarsPadding()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
     )
 
     // Botó per canviar entre mode bici i mode a peu
@@ -487,14 +513,17 @@ private fun trackingUiEventEffect(
                 is com.airgo.airgoApp.features.tracking.domain.TrackingUiEvent.SaveSuccess -> {
                     val message =
                         if (event.completed) {
-                            "Entrenament completat i guardat!"
+                            context.getString(R.string.tracking_save_completed)
                         } else {
-                            "Progress guardat"
+                            context.getString(R.string.tracking_save_progress)
                         }
                     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                 }
                 is com.airgo.airgoApp.features.tracking.domain.TrackingUiEvent.SaveError -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                }
+                else -> {
+                    // Do nothing
                 }
             }
         }

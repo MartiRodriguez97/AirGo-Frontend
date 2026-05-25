@@ -3,7 +3,10 @@ package com.airgo.airgoApp.features.map.data
 data class GeoPoint(
     val lat: Double,
     val lon: Double,
-)
+) {
+    val longitude: Double get() = lon
+    val latitude: Double get() = lat
+}
 
 data class BicingStation(
     val id: String,

@@ -122,14 +122,14 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    @Suppress("UnusedParameter")
     fun createPlan(
         onSuccess: () -> Unit,
         daysDuration: Int,
         workoutsPerWeek: Int,
-        sport: Int?,
+        sport: String?,
         level: Int?,
         daysOfWeek: List<Int>,
+        endDate: String,
     ) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -138,9 +138,10 @@ class HomeViewModel : ViewModel() {
                     TrainingPlanRequest(
                         diesDurada = daysDuration,
                         numEntrenamentsSetmanals = workoutsPerWeek,
-                        esport = sport ?: 1,
+                        esport = sport ?: "CAM",
                         nivell = level ?: 1,
                         diesSetmana = daysOfWeek,
+                        dataFi = endDate,
                     )
                 repository.createTrainingPlan(request)
                 SessionManager.trainingPlans = null
