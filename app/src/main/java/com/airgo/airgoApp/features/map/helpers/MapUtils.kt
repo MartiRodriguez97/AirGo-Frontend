@@ -65,19 +65,19 @@ internal fun createMapEventsOverlay(
     bicingOverlay: FolderOverlay,
     selectionModeProvider: () -> MapSelectionMode,
     onPointSelectedProvider: () -> (GeoPoint) -> Unit,
+    onStationDeselected: () -> Unit = {},
 ): MapEventsOverlay {
     val receiver =
         object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
                 if (p == null) return true
-
                 val currentMode = selectionModeProvider()
                 if (currentMode != MapSelectionMode.NONE) {
                     onPointSelectedProvider()(p)
                 } else {
                     resetBicingMarkers(bicingOverlay, mapView)
+                    onStationDeselected()
                 }
-
                 return true
             }
 

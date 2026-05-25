@@ -192,6 +192,22 @@
     <string name="map_layers_description">Capes</string>
     <string name="map_layer_bicing">Estacions de Bicing</string>
     <string name="map_layer_pollution">Qualitat de l\'aire</string>
+    <string name="bicing_mechanical">mecàniques</string>
+    <string name="bicing_free_slots">llocs lliures</string>
+    <string name="bicing_status_operative">Operativa</string>
+    <string name="bicing_status_out_of_service">Fora de servei</string>
+    <string name="bicing_electric">elèctriques</string>
+
+    <!-- features/map/components/MapUIComponents -->
+    <string name="legend_title">Llegenda</string>
+    <string name="legend_bicing_available">Estacions de Bicing amb bicis</string>
+    <string name="legend_bicing_empty">Estacions Bicing buides</string>
+    <string name="legend_route_start">Punt inicial de ruta</string>
+    <string name="legend_route_end">Punt final de ruta</string>
+    <string name="legend_waypoint">Punt intermig de ruta</string>
+
+    <!-- features/map/components/RoutePanel -->
+    <string name="selection_panel_title">Selecciona els punts de la ruta</string>
 
     <!-- features/map/RouteViewModel-->
     <string name="error_route_connection">Error de connexió amb el servidor</string>
@@ -392,6 +408,9 @@
 
     <!-- features/tracking-->
     <string name="error_saving_activity">No s\'ha pogut emmagatzemar l\'activitat</string>
+    <string name="tracking_save_completed">Entrenament completat i guardat!</string>
+    <string name="tracking_save_progress">Progress guardat</string>
+    <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu bon ús de l\'aplicació</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Començar</string>
@@ -444,10 +463,6 @@
     <string name="no_favorite_created_forums_found">No tens fòrums preferits ni creats per tu.</string>
     <string name="forums_filter_saved">Seguits</string>
     <string name="forums_filter_mine">Creats</string>
-    <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu bon ús de l\'aplicació</string>
-    <string name="selection_panel_title">Selecciona els punts de la ruta</string>
 
-    <string name="tracking_save_completed">Entrenament completat i guardat!</string>
-    <string name="tracking_save_progress">Progress guardat</string>
 </resources>
 

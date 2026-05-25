@@ -22,6 +22,13 @@ class BicingViewModel : ViewModel() {
     var errorMessage by mutableStateOf<UiText?>(null)
         private set
 
+    var selectedStation by mutableStateOf<BicingStation?>(null)
+        private set
+
+    fun selectStation(station: BicingStation?) {
+        selectedStation = station
+    }
+
     fun fetchStations(
         lat: Double,
         lon: Double,
