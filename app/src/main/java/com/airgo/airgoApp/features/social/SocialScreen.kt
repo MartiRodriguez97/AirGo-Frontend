@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ManageSearch
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.AlertDialog
@@ -92,7 +93,7 @@ fun socialScreen(
     val activeTab by viewModel.activeTab.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        val visibleTabs = listOf(SocialTab.FRIENDS, SocialTab.SEARCH, SocialTab.FORUMS)
+        val visibleTabs = listOf(SocialTab.FRIENDS, SocialTab.FORUMS, SocialTab.SEARCH)
 
         TabRow(selectedTabIndex = visibleTabs.indexOf(activeTab).coerceAtLeast(0)) {
             Tab(
@@ -101,15 +102,27 @@ fun socialScreen(
                 text = { Text(stringResource(R.string.friends)) },
             )
             Tab(
-                selected = activeTab == SocialTab.SEARCH,
-                onClick = { viewModel.onTabChange(SocialTab.SEARCH) },
-                text = { Text(stringResource(R.string.discover)) },
-            )
-            Tab(
                 selected = activeTab == SocialTab.FORUMS,
                 onClick = { viewModel.onTabChange(SocialTab.FORUMS) },
                 text = { Text(stringResource(R.string.forums)) },
             )
+            Tab(
+                selected = activeTab == SocialTab.SEARCH,
+                onClick = { viewModel.onTabChange(SocialTab.SEARCH) },
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ManageSearch,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                    Text(stringResource(R.string.discover))
+                }
+            }
         }
 
         when (activeTab) {

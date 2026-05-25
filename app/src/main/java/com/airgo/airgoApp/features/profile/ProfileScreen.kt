@@ -14,8 +14,10 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -27,6 +29,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -74,6 +79,9 @@ data class ProfileScreen(
     val titol: String?,
     val currentPictureUrl: String?,
     val initial: String,
+    val punts: Int?,
+    val ratxa: Int?,
+    val teBici: Boolean?,
 )
 
 fun createProfileInfo(
@@ -88,6 +96,9 @@ fun createProfileInfo(
         titol = SessionManager.titol ?: "",
         currentPictureUrl = currentPictureUrl,
         initial = displayName.firstOrNull()?.toString() ?: "U",
+        punts = SessionManager.punts,
+        ratxa = SessionManager.ratxa,
+        teBici = SessionManager.teBici,
     )
 }
 
@@ -262,6 +273,25 @@ private fun showProfileInfoContent(
                 )
             },
         )
+        Spacer(modifier = Modifier.height(24.dp))
+        HorizontalDivider(
+            thickness = DividerDefaults.Thickness,
+            color = DividerDefaults.color,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Stats
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            profileStat(label = "Punts", value = (profileInfo.punts ?: 0).toString())
+            profileStat(label = "Ratxa", value = "${profileInfo.ratxa ?: 0} dies")
+            if (profileInfo.teBici == true) {
+                profileStat(label = "Bici", value = "✓")
+            }
+        }
+
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 16.dp),
             thickness = DividerDefaults.Thickness,
@@ -298,6 +328,25 @@ private fun showProfileInfoSettingsButton(onSettingsClick: () -> Unit) {
                 contentDescription = "Settings",
             )
         }
+    }
+}
+
+@Composable
+private fun profileStat(
+    label: String,
+    value: String,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

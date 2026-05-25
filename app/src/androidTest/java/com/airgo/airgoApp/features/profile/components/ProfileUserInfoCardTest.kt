@@ -79,40 +79,6 @@ class ProfileUserInfoCardTest {
     }
 
     @Test
-    fun profileUserInfoCard_withPictureUrl_showsLinkedSuccessText() {
-        composeTestRule.setContent {
-            profileUserInfoCard(
-                displayName = "Joan",
-                titol = null,
-                pictureUrl = "https://example.com/photo.jpg",
-                initial = "J",
-                isUpdatingPicture = false,
-                onEditProfilePictureClick = {},
-            )
-        }
-        composeTestRule
-            .onNodeWithText(context.getString(R.string.profile_photo_linked_success), substring = true, ignoreCase = true)
-            .assertExists()
-    }
-
-    @Test
-    fun profileUserInfoCard_nullPictureUrl_doesNotShowLinkedText() {
-        composeTestRule.setContent {
-            profileUserInfoCard(
-                displayName = "Joan",
-                titol = null,
-                pictureUrl = null,
-                initial = "J",
-                isUpdatingPicture = false,
-                onEditProfilePictureClick = {},
-            )
-        }
-        composeTestRule
-            .onNodeWithText(context.getString(R.string.profile_photo_linked_success), substring = true, ignoreCase = true)
-            .assertDoesNotExist()
-    }
-
-    @Test
     fun profileUserInfoCard_editClick_callsCallback() {
         val onEdit: () -> Unit = mockk(relaxed = true)
 

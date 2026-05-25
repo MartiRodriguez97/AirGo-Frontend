@@ -358,12 +358,11 @@ private fun rememberMapState(params: MapStateParams): MapState {
 fun osmMapContainer(
     state: MapState,
     bicingViewModel: BicingViewModel,
+    routeViewModel: RouteViewModel = viewModel(),
     modifier: Modifier = Modifier,
 ) {
-    // Variable per saber si s'activa/desactiva la capa de Bicing
-    var showBicing by remember { mutableStateOf(true) }
-    // Variable per saber si s'activa/desactiva la capa de qualitat de l'aire
-    var showPollution by remember { mutableStateOf(true) }
+    val showBicing = routeViewModel.showBicing
+    val showPollution = routeViewModel.showPollution
     val context = LocalContext.current
     val isGpsEnabled by rememberGpsEnabledState(context)
     val selectedStation = bicingViewModel.selectedStation
@@ -449,9 +448,9 @@ fun osmMapContainer(
         // Selector de capes (Bicing i contaminació)
         layerSelector(
             showBicing = showBicing,
-            onToggleBicing = { showBicing = it },
+            onToggleBicing = { routeViewModel.showBicing = it },
             showPollution = showPollution,
-            onTogglePollution = { showPollution = it },
+            onTogglePollution = { routeViewModel.showPollution = it },
         )
 
         // Panell de selecció de ruta i botons només si no estem en mode tracking

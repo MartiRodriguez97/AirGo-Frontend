@@ -77,6 +77,8 @@
 
     <string name="badge_constancy_name">Iniciació a la constància</string>
     <string name="badge_constancy_desc">Has completat 3 dies consecutius d\'activitat. Bon inici!</string>
+    <string name="badge_sustainable_building_name">Sustainable Building</string>
+    <string name="badge_sustainable_building_desc">Your building has a good energy efficiency score!</string>
 
     <string name="profile_delete_account_button">Delete account</string>
     <string name="profile_delete_account_dialog_title">Delete account?</string>
@@ -372,8 +374,8 @@
     <string name="profile_no_activities">You have no registered activities yet</string>
 
     <!-- features/social -->
-    <string name="friends">Friends</string>
-    <string name="discover">Discover</string>
+    <string name="friends">My friends</string>
+    <string name="discover">Search</string>
     <string name="search_friend">Search a friend...</string>
     <string name="friend_requests">Friend requests</string>
     <string name="no_friends">You don\'t have any friends yet.</string>
@@ -393,7 +395,7 @@
     <string name="error_request">Error sending the request</string>
     <string name="delete_friend_title">Delete friend</string>
     <string name="delete_friend_confirm">Are you sure you want to delete %1$s from your friends list?</string>
-    <string name="forums">Forums</string>
+    <string name="forums">My forums</string>
     <string name="search_forum">Search forums...</string>
     <string name="no_forums_found">No forums found</string>
     <string name="error_loading_profile">Could not load profile</string>
@@ -403,7 +405,7 @@
     <!-- features/tracking-->
     <string name="error_saving_activity">Could not save activity</string>
     <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
-    <string name="tracking_save_progress">Progreso guardado</string>
+    <string name="tracking_save_progress">Progress saved</string>
     <string name="tracking_new_title_title">New Title!</string>
     <string name="tracking_new_title_desc">You have a pending title to choose!</string>
     <string name="tracking_set_main_title">Set as main title</string>
@@ -465,6 +467,25 @@
     <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
 
 
+    <string name="home_pending_titles_title">Pending Titles!</string>
+    <string name="home_pending_titles_singular">You have 1 title to choose</string>
+    <string name="home_pending_titles_plural">You have %1$d titles to choose</string>
+    <string name="home_pending_titles_btn">CHOOSE</string>
+    <string name="home_building_pending_title">Verificació d\'edifici!</string>
+    <string name="home_building_pending_desc">Digue\'ns l\'adreça del teu edifici per guanyar punts.</string>
+    <string name="home_building_btn_verify">VERIFICAR</string>
+    <string name="home_building_dialog_title">Adreça de l\'edifici</string>
+    <string name="home_building_dialog_desc">Introdueix l\'adreça del teu edifici a Barcelona.</string>
+    <string name="home_building_address_label">Adreça</string>
+    <string name="home_building_number_label">Núm. edifici</string>
+    <string name="home_building_btn_submit">Enviar</string>
+    <string name="error_address_not_found">Address not found or no valid building found.</string>
+    <string name="error_building_score_low">The building does not meet the minimum score requirement.</string>
+    <string name="enter_house_address">Enter your house address to earn a badge!</string>
+    <string name="error_generic">Alguna cosa ha anat malament. Si us plau, torna-ho a intentar.</string>
+    <string name="home_building_municipality_label">Municipi (només Barcelona)</string>
+    <string name="error_dialog_title">Error</string>
+    <string name="btn_continue">Continuar</string>
     <string name="template_run_easy_1_title">Easy Walk/Run</string>
     <string name="template_run_easy_1_desc">Combine walking and light jogging to get your body moving without strain.</string>
     <string name="template_run_easy_2_title">Short Jog</string>
