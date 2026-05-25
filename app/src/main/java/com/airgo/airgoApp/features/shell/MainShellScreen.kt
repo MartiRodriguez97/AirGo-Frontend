@@ -34,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.utils.navigateOnce
 import com.airgo.airgoApp.features.activity.activityScreen
 import com.airgo.airgoApp.features.calendar.calendarScreen
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
@@ -158,7 +159,7 @@ private fun bottomNavigationBar(
                 NavigationBarItem(
                     selected = currentRoute == tab.route,
                     onClick = {
-                        navController.navigate(tab.route) {
+                        navController.navigateOnce(tab.route) {
                             popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
@@ -186,9 +187,9 @@ private fun NavGraphBuilder.homeNavGraph(
     composable(MainShellScreen.HOME.route) {
         screenWrapper(innerPadding) {
             homeScreen(
-                onNavigateToQuestionnaire = { navController.navigate("questionnaire") },
-                onNavigateToDetails = { planId -> navController.navigate("planDetails/$planId") },
-                onNavigateToPendingActivity = { navController.navigate("activityDetail") },
+                onNavigateToQuestionnaire = { navController.navigateOnce("questionnaire") },
+                onNavigateToDetails = { planId -> navController.navigateOnce("planDetails/$planId") },
+                onNavigateToPendingActivity = { navController.navigateOnce("activityDetail") },
             )
         }
     }
@@ -206,7 +207,7 @@ private fun NavGraphBuilder.homeNavGraph(
             activityDetailScreen(
                 onBackClick = { navController.popBackStack() },
                 onStartActivityClick = {
-                    navController.navigate(MainShellScreen.ACTIVITY.route) {
+                    navController.navigateOnce(MainShellScreen.ACTIVITY.route) {
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
@@ -229,7 +230,7 @@ private fun NavGraphBuilder.featuresNavGraph(
     composable(MainShellScreen.SOCIAL.route) {
         screenWrapper(innerPadding) {
             socialScreen(
-                onFriendClick = { userId -> navController.navigate("friend_profile/$userId") },
+                onFriendClick = { userId -> navController.navigateOnce("friend_profile/$userId") },
                 onChatClick = { convId, otherUserId, username, profilePic ->
                     val encodedPic =
                         if (!profilePic.isNullOrEmpty()) {
@@ -237,9 +238,9 @@ private fun NavGraphBuilder.featuresNavGraph(
                         } else {
                             "none"
                         }
-                    navController.navigate("chat/$convId/$otherUserId/$username/$encodedPic")
+                    navController.navigateOnce("chat/$convId/$otherUserId/$username/$encodedPic")
                 },
-                onForumClick = { id, name -> navController.navigate("forum_chat/$id/$name") },
+                onForumClick = { id, name -> navController.navigateOnce("forum_chat/$id/$name") },
             )
         }
     }

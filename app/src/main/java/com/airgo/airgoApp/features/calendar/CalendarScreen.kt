@@ -49,6 +49,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.utils.navigateOnce
 import com.airgo.airgoApp.features.calendar.details.calendarDetailsScreen
 import com.airgo.airgoApp.features.calendar.domain.viewmodel.CalendarViewModel
 import com.airgo.airgoApp.features.home.data.Exercise
@@ -82,7 +83,7 @@ fun calendarScreen(viewModel: CalendarViewModel) {
             exitTransition = { slideOutHorizontally { -it } + fadeOut() },
         ) {
             calendarHomeContent(viewModel) { date ->
-                navController.navigate("calendar_details/$date")
+                navController.navigateOnce("calendar_details/$date")
             }
         }
 
@@ -122,7 +123,7 @@ fun calendarHomeContent(
     val errorResId by viewModel.errorResId.collectAsState()
 
     val context = LocalContext.current
-    val padding16 = 16.dp
+    val padding16 = 8.dp
 
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 

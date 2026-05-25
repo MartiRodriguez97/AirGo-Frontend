@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.airgo.airgoApp.core.utils.navigateOnce
 import com.airgo.airgoApp.features.map.OsmViewNavigationCallbacks
 import com.airgo.airgoApp.features.map.osmView
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
@@ -16,9 +17,9 @@ fun activityScreen(navController: NavController) {
     osmView(
         navigation =
             OsmViewNavigationCallbacks(
-                onNavigateToFavorites = { navController.navigate("favorites") },
-                onNavigateToTrackingSummary = { navController.navigate("tracking_summary") },
-                onNavigateToAddressSearch = { mode -> navController.navigate("address_search/$mode") },
+                onNavigateToFavorites = { navController.navigateOnce("favorites") },
+                onNavigateToTrackingSummary = { navController.navigateOnce("tracking_summary") },
+                onNavigateToAddressSearch = { mode -> navController.navigateOnce("address_search/$mode") },
             ),
         trackingViewModel = trackingViewModel,
     )
