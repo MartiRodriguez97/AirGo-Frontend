@@ -190,7 +190,7 @@ class LoginViewModel : ViewModel() {
                     _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_training_plan))
                     Log.e("LoginViewModel", "HTTP Error fetching training plans", e)
                 } catch (ignored: java.lang.Exception) {
-                    Log.e("LoginViewModel", "Error inesperado en planes de entrenamiento", e)
+                    Log.e("LoginViewModel", "Error inesperado en planes de entrenamiento")
                 }
             }
         } catch (e: IOException) {
