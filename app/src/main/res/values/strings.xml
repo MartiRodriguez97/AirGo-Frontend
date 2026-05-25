@@ -463,5 +463,12 @@
     <string name="no_favorite_created_forums_found">You don\'t have any favorite form or created by you.</string>
     <string name="forums_filter_saved">Followed</string>
     <string name="forums_filter_mine">Created</string>
+    <string name="start_point">Start point</string>
+    <string name="end_point">End point</string>
+    <string name="waypoint">Waypoint %d</string>
+    <string name="write_address">Write an address...</string>
+    <string name="selection_point_hint">How do you want to select the point?</string>
+    <string name="on_map">On map</string>
+    <string name="search_address">By address</string>
 
 </resources>

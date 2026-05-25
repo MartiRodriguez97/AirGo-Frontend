@@ -463,5 +463,12 @@
     <!-- Titles -->
     <string name="error_fetching_titles">No se pudieron obtener los títulos disponibles</string>
     <string name="error_unlocking_title">No se pudo desbloquear el título</string>
+    <string name="start_point">Punto de inicio</string>
+    <string name="end_point">Punto de destino</string>
+    <string name="waypoint">Punto intermedio %d</string>
+    <string name="write_address">Escriba una dirección</string>
+    <string name="selection_point_hint">Cómo queres seleccionar el punto?</string>
+    <string name="on_map">En el mapa</string>
+    <string name="search_address">Buscar dirección</string>
 
 </resources>

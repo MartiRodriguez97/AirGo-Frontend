@@ -315,9 +315,9 @@ private fun pointSelectionDialog(
             Text(
                 text =
                     when (target) {
-                        SelectionTarget.START -> "Punt d'inici"
-                        SelectionTarget.END -> "Punt de destí"
-                        is SelectionTarget.Waypoint -> "Punt intermig"
+                        SelectionTarget.START -> stringResource(R.string.start_point)
+                        SelectionTarget.END -> stringResource(R.string.end_point)
+                        is SelectionTarget.Waypoint -> stringResource(R.string.waypoint, target.index + 2)
                     },
             )
         },
@@ -331,21 +331,21 @@ private fun pointSelectionDialog(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                Text("Com vols seleccionar el punt?")
+                Text(stringResource(R.string.selection_point_hint))
             }
         },
         confirmButton = {
             TextButton(onClick = onSelectOnMap) {
                 Icon(Icons.Default.Map, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Al mapa")
+                Text(stringResource(R.string.on_map))
             }
         },
         dismissButton = {
             TextButton(onClick = onSearchAddress) {
                 Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Cercar adreça")
+                Text(stringResource(R.string.search_address))
             }
         },
     )

@@ -33,8 +33,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.map.domain.RouteViewModel
 import com.airgo.airgoApp.features.map.helpers.NominatimResult
 import com.airgo.airgoApp.features.map.helpers.NominatimService
@@ -66,9 +68,9 @@ fun addressSearchScreen(
 
     val title =
         when (mode) {
-            AddressSearchMode.START -> "Punt d'inici"
-            AddressSearchMode.END -> "Punt de destí"
-            AddressSearchMode.WAYPOINT -> "Punt intermig ${waypointIndex + 2}"
+            AddressSearchMode.START -> stringResource(R.string.start_point)
+            AddressSearchMode.END -> stringResource(R.string.end_point)
+            AddressSearchMode.WAYPOINT -> stringResource(R.string.waypoint, waypointIndex + 2)
         }
 
     Scaffold(
@@ -77,7 +79,7 @@ fun addressSearchScreen(
                 title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Tornar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
             )
@@ -103,7 +105,7 @@ fun addressSearchScreen(
                         results = emptyList()
                     }
                 },
-                placeholder = { Text("Escriu una adreça...") },
+                placeholder = { Text(stringResource(R.string.write_address)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 trailingIcon = {
