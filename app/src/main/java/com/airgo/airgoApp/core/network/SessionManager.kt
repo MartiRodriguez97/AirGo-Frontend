@@ -27,6 +27,9 @@ object SessionManager {
     var nomTemplateActiu: String? = null
     var userBadges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>? = null
 
+    // ID del chat actualmente abierto para evitar duplicar notificaciones
+    var currentChatId: String? = null
+
     private val _titolsPendents = MutableStateFlow(0)
     val titolsPendentsFlow = _titolsPendents.asStateFlow()
     var titolsPendents: Int
@@ -79,6 +82,7 @@ object SessionManager {
             token = accessToken,
             refreshToken = refreshToken,
             userId = userId,
+            profilePictureUrl = profilePictureUrl,
         )
 
     fun isProfileIncomplete(): Boolean =

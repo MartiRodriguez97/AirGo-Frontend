@@ -62,7 +62,6 @@ class TitolViewModel : ViewModel() {
                     _loadError.value = null
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("TitolViewModel", "Error fetching titols HTTP ${response.code()}: $errorBody")
                     _loadError.value = UiText.StringResource(R.string.titol_error_load, response.code())
                 }
             } catch (e: IOException) {
@@ -102,8 +101,6 @@ class TitolViewModel : ViewModel() {
                     SessionManager.titol = newTitol
                     _uiState.value = TitolUiState.Success
                 } else {
-                    val errorBodyString = response.errorBody()?.string()
-                    Log.e("TitolViewModel", "Error changing titol HTTP ${response.code()}: $errorBodyString")
                     _uiState.value =
                         TitolUiState.Error(
                             UiText.StringResource(

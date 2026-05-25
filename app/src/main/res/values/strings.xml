@@ -344,6 +344,10 @@
     <string name="begin_conversation">Start the conversation!</string>
     <string name="message">Message...</string>
     <string name="send">Send</string>
+    <string name="chat_user_me">Me</string>
+    <string name="chat_reply">Reply</string>
+    <string name="chat_reply_label">Write a response...</string>
+    <string name="chat_mark_as_read">Mark as read</string>
 
     <!-- features/tracking-->
     <string name="error_saving_activity">Could not save activity</string>

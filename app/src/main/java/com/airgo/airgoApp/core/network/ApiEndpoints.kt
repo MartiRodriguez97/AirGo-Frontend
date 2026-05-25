@@ -12,6 +12,8 @@ object ApiEndpoints {
     const val USER_ACCOUNT_INFO = "api/usuaris/me/profile/"
     const val USER_PROFILE = "api/usuaris/{id}/"
 
+    const val UPDATE_FCM_TOKEN = "api/usuaris/me/fcm-token/"
+
     fun getChangeInfoEndpoint(id: Int): String = "api/usuaris/$id/"
 
     fun getAvailableTitolsEndpoint(id: Int): String = "api/usuaris/$id/titols/"

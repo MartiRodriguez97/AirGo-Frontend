@@ -114,13 +114,8 @@ class HomeViewModel : ViewModel() {
                 val errorBody = e.response()?.errorBody()?.string()
                 Log.e("HomeViewModel", "HTTP Error $code: $errorBody", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
-            } catch (e: IOException) {
-                Log.e("HomeViewModel", "Network error (IOException): ${e.message}", e)
-                _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
-                // Fallback to SessionManager if available
-                SessionManager.trainingPlans?.let {
-                    _plans.value = it
-                }
+            } catch (e: java.lang.Exception) {
+                Log.e("HomeViewModel", "Error cargando planes de entrenamiento (silenciado)", e)
             } finally {
                 _isLoading.value = false
             }

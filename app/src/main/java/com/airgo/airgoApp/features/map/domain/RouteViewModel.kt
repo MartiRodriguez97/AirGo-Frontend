@@ -136,6 +136,10 @@ class RouteViewModel : ViewModel() {
         }
     }
 
+    fun clearError() {
+        errorMessage = null
+    }
+
     fun toggleFavorite() {
         favoriteHandler.toggle(currentRoute)
     }

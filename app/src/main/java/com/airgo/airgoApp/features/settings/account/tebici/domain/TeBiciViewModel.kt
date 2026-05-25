@@ -45,8 +45,6 @@ class TeBiciViewModel : ViewModel() {
                         SessionManager.teBici = hasBike
                         _uiState.value = TeBiciUiState.Success
                     } else {
-                        val errBody = response.errorBody()?.string()
-                        android.util.Log.e("TeBiciViewModel", "HTTP ${response.code()}: $errBody")
                         _uiState.value =
                             TeBiciUiState.Error(
                                 UiText.StringResource(

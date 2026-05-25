@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.R
+import com.airgo.airgoApp.core.events.ChatEventBus
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.utils.UiText
@@ -45,6 +46,10 @@ sealed class ChatUiState {
     ) : ChatUiState()
 }
 
+private const val DELAY_500MS = 500L
+private const val ATTEMPTS_ZERO = 0
+private const val ATTEMPTS_MAX = 10
+
 class ChatViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
     val uiState: StateFlow<ChatUiState> = _uiState
@@ -63,9 +68,41 @@ class ChatViewModel : ViewModel() {
         convId: String,
         otherUserId: Int,
     ) {
-        conversationId = convId
-        loadMessages(convId)
-        connectWebSocket(otherUserId)
+        viewModelScope.launch {
+            // Esperar a que SessionManager.userId esté disponible si es un cold start
+            var attempts = ATTEMPTS_ZERO
+            while (SessionManager.userId == null && attempts < ATTEMPTS_MAX) {
+                kotlinx.coroutines.delay(DELAY_500MS)
+                attempts++
+            }
+
+            val currentUserId = SessionManager.userId
+            // Si recibimos un ID simple (como "7"), lo convertimos al formato compuesto "X-Y"
+            // que es lo que espera el endpoint de mensajes.
+            val finalConvId =
+                if (!convId.contains("-") && currentUserId != null) {
+                    if (currentUserId < otherUserId) "$currentUserId-$otherUserId" else "$otherUserId-$currentUserId"
+                } else {
+                    convId
+                }
+
+            if (conversationId == finalConvId && _messages.value.isNotEmpty()) {
+                return@launch
+            }
+
+            conversationId = finalConvId
+            _messages.value = emptyList()
+            loadMessages(finalConvId)
+            connectWebSocket(otherUserId)
+
+            viewModelScope.launch {
+                ChatEventBus.messageReceived.collect { updatedChatId ->
+                    if (updatedChatId == conversationId) {
+                        loadMessages(conversationId)
+                    }
+                }
+            }
+        }
     }
 
     private fun loadMessages(convId: String) {
@@ -81,11 +118,10 @@ class ChatViewModel : ViewModel() {
                     _uiState.value = ChatUiState.Empty
                 } else {
                     _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_server_generic, e.code()))
-                    Log.e(LOG_TAG, "HTTP failure: ${e.message()}", e)
                 }
             } catch (e: IOException) {
+                Log.e(LOG_TAG, "❌ Error de red cargando mensajes (ID: $convId)", e)
                 _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_network_generic))
-                Log.e(LOG_TAG, "Network failure: ${e.message}", e)
             }
         }
     }
@@ -175,6 +211,7 @@ class ChatViewModel : ViewModel() {
                     id = wsMsg.id ?: 0,
                     emissor = wsMsg.emissor ?: 0,
                     emissorUsername = wsMsg.emissorUsername ?: "",
+                    emissorProfilePic = wsMsg.emissorProfilePic,
                     contingut = wsMsg.contingut,
                     enviatAt = wsMsg.enviatAt ?: "",
                     llegit = false,

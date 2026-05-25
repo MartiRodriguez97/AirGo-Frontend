@@ -68,9 +68,6 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     handleSuccessfulLogin(context, body.access, body.refresh, body.user, body.picture)
-
-                    Log.d("TOKEN_K6", "Backend Access Token: ${body.access}")
-                    Log.d("TOKEN_K6", "Backend Refresh Token: ${body.refresh}")
                 } else {
                     val rawError = response.errorBody()?.string()
                     val backendMessage = extractBackendMessage(rawError)
@@ -86,10 +83,8 @@ class LoginViewModel : ViewModel() {
                 Log.e("LoginViewModel", "IO Error", e)
                 _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_google))
             } catch (_: SecurityException) {
-                Log.e("LoginViewModel", "Security error")
                 _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_google))
             } catch (_: IllegalStateException) {
-                Log.e("LoginViewModel", "IllegalState error")
                 _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_google))
             }
         }
@@ -193,6 +188,8 @@ class LoginViewModel : ViewModel() {
                 } catch (e: retrofit2.HttpException) {
                     _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_training_plan))
                     Log.e("LoginViewModel", "HTTP Error fetching training plans", e)
+                } catch (ignored: java.lang.Exception) {
+                    Log.e("LoginViewModel", "Error inesperado en planes de entrenamiento")
                 }
             }
         } catch (e: IOException) {
@@ -274,8 +271,7 @@ class LoginViewModel : ViewModel() {
             } catch (e: IOException) {
                 Log.e("LoginViewModel", "IO Error", e)
                 _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_updating_picture))
-            } catch (e: IllegalArgumentException) {
-                Log.e("LoginViewModel", "IllegalState error")
+            } catch (ignored: IllegalArgumentException) {
                 _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_updating_picture))
             }
         }

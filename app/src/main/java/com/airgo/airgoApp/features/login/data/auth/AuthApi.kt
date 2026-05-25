@@ -5,6 +5,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 data class AuthResponse(
@@ -43,6 +44,11 @@ data class UserDetailResponse(
     val insignies: String?,
 )
 
+data class UpdateFcmTokenRequest(
+    @com.google.gson.annotations.SerializedName("fcm_token")
+    val fcmToken: String,
+)
+
 interface AuthApi {
     @POST(ApiEndpoints.GOOGLE_LOGIN)
     suspend fun loginWithGoogle(
@@ -57,4 +63,9 @@ interface AuthApi {
 
     @GET(ApiEndpoints.USER_ACCOUNT_INFO)
     suspend fun getCurrentUserProfile(): Response<UserDetailResponse>
+
+    @PATCH(ApiEndpoints.UPDATE_FCM_TOKEN)
+    suspend fun updateFcmToken(
+        @Body body: UpdateFcmTokenRequest,
+    ): Response<Unit>
 }

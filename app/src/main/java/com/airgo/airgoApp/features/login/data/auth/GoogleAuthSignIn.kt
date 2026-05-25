@@ -13,7 +13,6 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 suspend fun signInWithGoogle(context: Context): GoogleIdTokenCredential? {
     val serverClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID
     if (serverClientId.isBlank()) {
-        Log.e("GoogleAuthSignIn", "GOOGLE_WEB_CLIENT_ID no configurado")
         return null
     }
 

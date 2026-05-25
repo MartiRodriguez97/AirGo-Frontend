@@ -22,6 +22,7 @@ data class FriendRequestResponse(
     @SerializedName("id") val id: Int,
     @SerializedName("solicitant_id") val solicitantId: Int,
     @SerializedName("solicitant_username") val solicitantUsername: String,
+    @SerializedName("solicitant_profile_pic") val solicitantProfilePic: String?,
 )
 
 data class RespondFriendRequestBody(

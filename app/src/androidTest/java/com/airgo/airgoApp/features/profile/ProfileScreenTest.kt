@@ -30,14 +30,17 @@ class ProfileScreenTest {
 
     private lateinit var mockViewModel: ProfileViewModel
     private lateinit var uiStateFlow: MutableStateFlow<ProfileUiState>
+    private lateinit var badgesFlow: MutableStateFlow<List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>>
     private lateinit var context: android.content.Context
 
     @Before
     fun setUp() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
         uiStateFlow = MutableStateFlow(ProfileUiState.Idle)
+        badgesFlow = MutableStateFlow(emptyList())
         mockViewModel = mockk(relaxed = true)
         every { mockViewModel.uiState } returns uiStateFlow
+        every { mockViewModel.badges } returns badgesFlow
     }
 
     @After
@@ -88,6 +91,15 @@ class ProfileScreenTest {
     fun profileScreen_displaysDeleteAccountButton() {
         setProfileScreen()
 
+        // Navigate to Account Settings
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule
+            .onNodeWithText(
+                context.getString(R.string.account_settings_header),
+                substring = true,
+                ignoreCase = true,
+            ).performClick()
+
         composeTestRule
             .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .assertIsDisplayed()
@@ -110,11 +122,25 @@ class ProfileScreenTest {
 
         setProfileScreen()
 
+        // Navigate to Account Settings
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule
+            .onNodeWithText(
+                context.getString(R.string.account_settings_header),
+                substring = true,
+                ignoreCase = true,
+            ).performClick()
+
         composeTestRule
             .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .assertIsDisplayed()
+
+        // Go back to Profile Home
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.acc_back_button)).performClick()
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.acc_back_button)).performClick()
+
         composeTestRule
-            .onNodeWithContentDescription("edit", substring = true, ignoreCase = true)
+            .onNodeWithContentDescription(context.getString(R.string.profile_edit_avatar_description), substring = true, ignoreCase = true)
             .assertDoesNotExist()
     }
 
@@ -141,6 +167,15 @@ class ProfileScreenTest {
 
         setProfileScreen()
 
+        // Navigate to Account Settings
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule
+            .onNodeWithText(
+                context.getString(R.string.account_settings_header),
+                substring = true,
+                ignoreCase = true,
+            ).performClick()
+
         composeTestRule
             .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .assertIsDisplayed()
@@ -151,6 +186,15 @@ class ProfileScreenTest {
     @Test
     fun profileScreen_clickDeleteButton_showsDialog() {
         setProfileScreen()
+
+        // Navigate to Account Settings
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule
+            .onNodeWithText(
+                context.getString(R.string.account_settings_header),
+                substring = true,
+                ignoreCase = true,
+            ).performClick()
 
         composeTestRule
             .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
@@ -164,6 +208,15 @@ class ProfileScreenTest {
     @Test
     fun profileScreen_deleteDialog_cancelDismissesDialog() {
         setProfileScreen()
+
+        // Navigate to Account Settings
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule
+            .onNodeWithText(
+                context.getString(R.string.account_settings_header),
+                substring = true,
+                ignoreCase = true,
+            ).performClick()
 
         composeTestRule
             .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
@@ -182,6 +235,15 @@ class ProfileScreenTest {
     fun profileScreen_deleteDialog_confirmCallsViewModel() {
         setProfileScreen()
 
+        // Navigate to Account Settings
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule
+            .onNodeWithText(
+                context.getString(R.string.account_settings_header),
+                substring = true,
+                ignoreCase = true,
+            ).performClick()
+
         composeTestRule
             .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .performClick()
@@ -196,6 +258,15 @@ class ProfileScreenTest {
     @Test
     fun profileScreen_deleteDialog_confirmDismissesDialog() {
         setProfileScreen()
+
+        // Navigate to Account Settings
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule
+            .onNodeWithText(
+                context.getString(R.string.account_settings_header),
+                substring = true,
+                ignoreCase = true,
+            ).performClick()
 
         composeTestRule
             .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)

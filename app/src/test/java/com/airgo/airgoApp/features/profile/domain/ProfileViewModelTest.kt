@@ -4,6 +4,8 @@ import android.content.ContentResolver
 import android.content.Context
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.core.network.UserPreferences
+import com.airgo.airgoApp.core.network.UserPreferencesRepository
 import com.airgo.airgoApp.core.utils.FileUtils
 import com.airgo.airgoApp.features.onboarding.data.UserProfileResponse
 import com.airgo.airgoApp.features.profile.data.ProfileApi
@@ -13,6 +15,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
@@ -48,6 +51,7 @@ class ProfileViewModelTest {
         every { RetrofitProvider.profileApi } returns mockApi
 
         mockkObject(SessionManager)
+        mockkConstructor(UserPreferencesRepository::class)
 
         // Mock getUserProfile() called in ViewModel init
         val fakeProfile =
@@ -70,6 +74,7 @@ class ProfileViewModelTest {
         every { SessionManager.pes = any() } just Runs
         every { SessionManager.altura = any() } just Runs
         every { SessionManager.username = any() } just Runs
+        every { SessionManager.userBadges } returns emptyList()
 
         viewModel = ProfileViewModel()
     }
@@ -164,7 +169,7 @@ class ProfileViewModelTest {
     @Test
     fun `updateProfilePicture success sets PictureUpdateSuccess`() =
         runTest {
-            val context = mockk<Context>()
+            val context = mockk<Context>(relaxed = true)
             val contentResolver = mockk<ContentResolver>()
             val fakeFile = mockk<File>(relaxed = true)
 
@@ -180,6 +185,8 @@ class ProfileViewModelTest {
             coEvery { mockApi.updateProfilePicture(any()) } returns Response.success(responseBody)
 
             every { SessionManager.profilePictureUrl = any() } just Runs
+            every { SessionManager.toUserPreferences() } returns mockk<UserPreferences>()
+            coEvery { anyConstructed<UserPreferencesRepository>().saveSession(any()) } just Runs
 
             viewModel.updateProfilePicture(context, "content://fake/uri")
 
@@ -191,7 +198,7 @@ class ProfileViewModelTest {
     @Test
     fun `updateProfilePicture success with empty url sets PictureUpdateSuccess`() =
         runTest {
-            val context = mockk<Context>()
+            val context = mockk<Context>(relaxed = true)
             val contentResolver = mockk<ContentResolver>()
             val fakeFile = mockk<File>(relaxed = true)
 
@@ -206,6 +213,8 @@ class ProfileViewModelTest {
             val responseBody = ProfilePictureResponse(newPictureUrl = "")
             coEvery { mockApi.updateProfilePicture(any()) } returns Response.success(responseBody)
             every { SessionManager.profilePictureUrl = any() } just Runs
+            every { SessionManager.toUserPreferences() } returns mockk<UserPreferences>()
+            coEvery { anyConstructed<UserPreferencesRepository>().saveSession(any()) } just Runs
 
             viewModel.updateProfilePicture(context, "content://fake/uri")
 
