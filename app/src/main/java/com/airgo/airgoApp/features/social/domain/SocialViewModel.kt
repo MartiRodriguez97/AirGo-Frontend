@@ -17,8 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -68,8 +66,6 @@ sealed class RequestsUiState {
         val message: String?,
     ) : RequestsUiState()
 }
-
-private const val FRIENDS_DEBOUNCE_MS = 400L
 
 @OptIn(FlowPreview::class)
 class SocialViewModel : ViewModel() {
@@ -137,6 +133,7 @@ class SocialViewModel : ViewModel() {
     }
 
     private val _allFriends = MutableStateFlow<List<FriendResponse>>(emptyList())
+    val allFriends: StateFlow<List<FriendResponse>> = _allFriends
 
     internal fun loadFriends() {
         viewModelScope.launch {
@@ -147,9 +144,10 @@ class SocialViewModel : ViewModel() {
                     applyFriendsFilter()
                 },
                 onFailure = {
-                    _friendsUiState.value = FriendsUiState.Error(
-                        UiText.StringResource(R.string.error_loading_friends)
-                    )
+                    _friendsUiState.value =
+                        FriendsUiState.Error(
+                            UiText.StringResource(R.string.error_loading_friends),
+                        )
                 },
             )
         }
@@ -175,17 +173,21 @@ class SocialViewModel : ViewModel() {
 
     private fun applyFriendsFilter() {
         val query = _friendsQuery.value
-        val filtered = if (query.isBlank()) {
-            _allFriends.value
-        } else {
-            _allFriends.value.filter {
-                it.amic.username.contains(query, ignoreCase = true)
+        val filtered =
+            if (query.isBlank()) {
+                _allFriends.value
+            } else {
+                _allFriends.value.filter {
+                    it.amic.username.contains(query, ignoreCase = true)
+                }
             }
-        }
-        _friendsUiState.value = if (filtered.isEmpty()) FriendsUiState.Empty
-        else FriendsUiState.Success(filtered)
+        _friendsUiState.value =
+            if (filtered.isEmpty()) {
+                FriendsUiState.Empty
+            } else {
+                FriendsUiState.Success(filtered)
+            }
     }
-
 
     fun sendFriendRequest(userId: Int) {
         viewModelScope.launch {

@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.collections.filter
 
+private const val POLL_INTERVAL_MS = 30_000L
+
 class FriendRequestsViewModel : ViewModel() {
     private val repository = SocialRepository(RetrofitProvider.socialApi)
 
@@ -27,8 +29,6 @@ class FriendRequestsViewModel : ViewModel() {
             .map { if (it is RequestsUiState.Success) it.requests.size else 0 }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
-    private  val pollInterval = 30_000L
-
     init {
         loadRequests()
         startPolling()
@@ -37,7 +37,7 @@ class FriendRequestsViewModel : ViewModel() {
     private fun startPolling() {
         viewModelScope.launch {
             while (true) {
-                kotlinx.coroutines.delay(pollInterval)
+                kotlinx.coroutines.delay(POLL_INTERVAL_MS)
                 loadRequests()
             }
         }
@@ -75,8 +75,12 @@ class FriendRequestsViewModel : ViewModel() {
                     val current = _uiState.value
                     if (current is RequestsUiState.Success) {
                         val updated = current.requests.filter { it.id != amistatId }
-                        _uiState.value = if (updated.isEmpty()) RequestsUiState.Empty
-                        else RequestsUiState.Success(updated)
+                        _uiState.value =
+                            if (updated.isEmpty()) {
+                                RequestsUiState.Empty
+                            } else {
+                                RequestsUiState.Success(updated)
+                            }
                     }
                     if (accept) onAccepted()
                     loadRequests()
