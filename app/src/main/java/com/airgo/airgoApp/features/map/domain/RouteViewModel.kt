@@ -25,6 +25,8 @@ class RouteViewModel : ViewModel() {
     var endPoint by mutableStateOf<GeoPoint?>(null)
     var waypoints by mutableStateOf<List<GeoPoint>>(emptyList())
     var transportProfile by mutableStateOf(TransportProfile.BIKE)
+    var showBicing by mutableStateOf(true)
+    var showPollution by mutableStateOf(true)
 
     var currentRoute by mutableStateOf<RouteResponse?>(null)
         private set
@@ -121,7 +123,7 @@ class RouteViewModel : ViewModel() {
                     }
                 val request = RouteRequest(profile = transportProfile.value, points = allPoints)
                 currentRoute = RetrofitProvider.routeGenerationApi.getCleanRoute(request)
-                if (currentRoute?.status !== "success") {
+                if (currentRoute?.status != "success") {
                     errorMessage = UiText.StringResource(R.string.error_fetching_route)
                 }
             } catch (e: IOException) {
