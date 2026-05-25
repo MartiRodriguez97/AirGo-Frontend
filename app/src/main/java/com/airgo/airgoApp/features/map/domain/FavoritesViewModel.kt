@@ -60,7 +60,6 @@ class FavoritesViewModel : ViewModel() {
                     routes = routes.filter { it.route.id != routeId }
                 } else {
                     errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)
-                    Log.e(LOG_TAG, "Delete failed: ${response.code()}")
                 }
             } catch (e: IOException) {
                 errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)

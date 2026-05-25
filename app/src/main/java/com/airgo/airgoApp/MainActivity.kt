@@ -53,11 +53,8 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.RequestPermission(),
         ) { isGranted: Boolean ->
             if (isGranted) {
-                Log.d("MainActivity", "Permiso de notificaciones concedido")
                 fetchAndSendFcmToken()
-            } else {
-                Log.d("MainActivity", "Permiso de notificaciones denegado")
-            }
+            } 
         }
 
     fun askNotificationPermission() {
@@ -80,28 +77,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun fetchAndSendFcmToken() {
-        Log.e("AIRGO_FCM_DEBUG", "--- INICIANDO PROCESO DE TOKEN EN MAINACTIVITY ---")
         lifecycleScope.launch {
             try {
                 val token = FcmTokenManager.getToken()
                 val accessToken = SessionManager.accessToken
 
                 if (token != null && accessToken != null) {
-                    Log.e("AIRGO_FCM_DEBUG", "TOKEN LISTO PARA ENVIAR AL BACKEND: $token")
-                    val response = RetrofitProvider.authApi.updateFcmToken(UpdateFcmTokenRequest(token))
-                    if (response.isSuccessful) {
-                        Log.e("AIRGO_FCM_DEBUG", "✅ ÉXITO: Token actualizado en el servidor")
-                    } else {
-                        Log.e("AIRGO_FCM_DEBUG", "❌ ERROR SERVIDOR: ${response.code()}")
-                    }
-                } else {
-                    Log.e(
-                        "AIRGO_FCM_DEBUG",
-                        "ABORTANDO ENVÍO: token=${if (token != null) "SÍ" else "NULL"}," +
-                            " tieneSesion=${accessToken != null}",
-                    )
-                }
-            } catch (e: Exception) {
+                    RetrofitProvider.authApi.updateFcmToken(UpdateFcmTokenRequest(token)) 
+                } 
+            } catch (e: java.lang.Exception) {
                 Log.e("AIRGO_FCM_DEBUG", "💥 EXCEPCIÓN: ${e.message}", e)
             }
         }
@@ -379,7 +363,7 @@ private suspend fun fetchTrainingPlans() {
         Log.e("MainActivity", "IO Error fetching training plans", e)
     } catch (e: retrofit2.HttpException) {
         Log.e("MainActivity", "HTTP Error fetching training plans", e)
-    } catch (e: Exception) {
+    } catch (e: java.lang.Exception) {
         Log.e("MainActivity", "Error inesperado en planes de entrenamiento (posible cambio en el Backend)", e)
     }
 }

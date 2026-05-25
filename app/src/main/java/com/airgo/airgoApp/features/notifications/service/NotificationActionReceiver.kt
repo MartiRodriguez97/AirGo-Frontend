@@ -56,7 +56,6 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {
-                Log.d("AirGo_Receiver", "Acció rebuda: $action per a chatId: $chatId")
                 val token = ensureToken(context)
 
                 if (token != null && chatId.isNotEmpty()) {
@@ -71,7 +70,6 @@ class NotificationActionReceiver : BroadcastReceiver() {
                                     ?.getCharSequence("KEY_TEXT_REPLY")
                                     ?.toString()
 
-                            Log.d("AirGo_Receiver", "Text de resposta: $replyText")
                             if (!replyText.isNullOrBlank()) {
                                 updateNotificationWithReply(context, notificationId, replyText)
                                 withTimeoutOrNull(MAX_TIME_MS) {
@@ -80,10 +78,8 @@ class NotificationActionReceiver : BroadcastReceiver() {
                             }
                         }
                     }
-                } else {
-                    Log.e("AirGo_Receiver", "Token o ChatId absents. Token: ${token != null}, ChatId: $chatId")
-                }
-            } catch (e: Exception) {
+                } 
+            } catch (e: java.lang.Exception) {
                 Log.e("AirGo_Receiver", "Error processant acció: ${e.message}", e)
             } finally {
                 if (action == "com.airgo.airgoApp.ACTION_MARK_AS_READ") {
@@ -148,17 +144,15 @@ class NotificationActionReceiver : BroadcastReceiver() {
                     .build()
 
             notificationManager.notify(notificationId, updatedNotification)
-            Log.d("AirGo_Receiver", "Notificació actualitzada amb la resposta")
-        } catch (e: Exception) {
+        } catch (e: java.lang.Exception) {
             Log.e("AirGo_Receiver", "Error actualitzant notificació", e)
         }
     }
 
     private suspend fun markAsRead(chatId: String) {
         try {
-            val response = RetrofitProvider.chatApi.markAsRead(chatId)
-            Log.d("AirGo_Receiver", "Marcar com llegit ($chatId): ${response.isSuccessful}")
-        } catch (e: Exception) {
+            RetrofitProvider.chatApi.markAsRead(chatId)
+        } catch (e: java.lang.Exception) {
             Log.e("AirGo_Receiver", "Error markAsRead", e)
         }
     }
@@ -173,9 +167,8 @@ class NotificationActionReceiver : BroadcastReceiver() {
             SessionManager.accessToken = prefs.token
             SessionManager.userId = prefs.userId
             SessionManager.profilePictureUrl = prefs.profilePictureUrl
-            Log.d("AirGo_Receiver", "Sessió restaurada: ID=${prefs.userId}, Pic=${prefs.profilePictureUrl != null}")
             prefs.token
-        } catch (e: Exception) {
+        } catch (e: java.lang.Exception) {
             Log.e("AirGo_Receiver", "Error restaurando session", e)
             null
         }
@@ -194,7 +187,6 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 .replace("https://", "wss://")
                 .trimEnd('/') + "/ws/chat/$otherUserId/?token=$token"
 
-        Log.d("AirGo_Receiver", "Connectant a WS per respondre: $wsUrl")
         val request = Request.Builder().url(wsUrl).build()
 
         kotlinx.coroutines.suspendCancellableCoroutine<Unit> { continuation ->
@@ -207,7 +199,6 @@ class NotificationActionReceiver : BroadcastReceiver() {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            Log.d("AirGo_Receiver", "WS Obert, enviant missatge...")
                             val payload = gson.toJson(mapOf("missatge" to text))
                             webSocket.send(payload)
                             webSocket.close(CODE_1000, "Reply sent")
@@ -238,7 +229,6 @@ class NotificationActionReceiver : BroadcastReceiver() {
                             code: Int,
                             reason: String,
                         ) {
-                            Log.d("AirGo_Receiver", "WS Tancat: $reason")
                             if (!isFinished) {
                                 isFinished = true
                                 continuation.resume(Unit)

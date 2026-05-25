@@ -38,12 +38,10 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.e("AIRGO_FCM", "### SERVICIO INICIALIZADO POR EL SISTEMA ###")
     }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.e("AIRGO_FCM", "NUEVO TOKEN GENERADO: $token")
         sendTokenToBackend(token)
     }
 
@@ -78,9 +76,8 @@ class FirebaseMessagingService : FirebaseMessagingService() {
                 SessionManager.userId = prefs.userId
                 SessionManager.accessToken = prefs.token
                 SessionManager.profilePictureUrl = prefs.profilePictureUrl
-                Log.e("AIRGO_FCM", "Session restaurada desde DataStore: ${prefs.userId}")
             }
-        } catch (e: Exception) {
+        } catch (e: java.lang.Exception) {
             Log.e("AIRGO_FCM", "Error restaurando session", e)
         }
     }
@@ -88,12 +85,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
     private fun isNotificationForOtherUser(receiverId: Int?): Boolean {
         val currentUserId = SessionManager.userId
         val isForOther = receiverId != null && receiverId != currentUserId
-        if (isForOther) {
-            Log.e(
-                "AIRGO_FCM",
-                "Notificación bloqueada: Destinatario ($receiverId) " +
-                        "no coincide con usuario activo ($currentUserId)")
-        }
+        
         return isForOther
     }
 
@@ -128,7 +120,8 @@ class FirebaseMessagingService : FirebaseMessagingService() {
             val processInfo = ActivityManager.RunningAppProcessInfo()
             ActivityManager.getMyMemoryState(processInfo)
             processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-        } catch (e: Exception) {
+        } catch (ignored: java.lang.Exception) {
+            Log.e("AIRGO_FCM", "Error verificando estado de la app", ignored)
             false
         }
 
@@ -299,13 +292,8 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         if (SessionManager.accessToken == null) return
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = RetrofitProvider.authApi.updateFcmToken(UpdateFcmTokenRequest(token))
-                if (response.isSuccessful) {
-                    Log.e("AIRGO_FCM", "Token actualizado en servidor con éxito")
-                } else {
-                    Log.e("AIRGO_FCM", "Error al actualizar token: ${response.code()}")
-                }
-            } catch (e: Exception) {
+                RetrofitProvider.authApi.updateFcmToken(UpdateFcmTokenRequest(token)) 
+            } catch (e: java.lang.Exception) {
                 Log.e("AIRGO_FCM", "Error de red enviando token", e)
             }
         }

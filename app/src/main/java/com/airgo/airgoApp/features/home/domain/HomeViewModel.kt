@@ -114,7 +114,7 @@ class HomeViewModel : ViewModel() {
                 val errorBody = e.response()?.errorBody()?.string()
                 Log.e("HomeViewModel", "HTTP Error $code: $errorBody", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
-            } catch (e: Exception) {
+            } catch (e: java.lang.Exception) {
                 Log.e("HomeViewModel", "Error cargando planes de entrenamiento (silenciado)", e)
             } finally {
                 _isLoading.value = false
@@ -133,7 +133,6 @@ class HomeViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             _isLoading.value = true
-            Log.d("AirGo_Debug", "2. Entrando al ViewModelScope")
             try {
                 val request =
                     TrainingPlanRequest(
@@ -143,9 +142,7 @@ class HomeViewModel : ViewModel() {
                         nivell = level ?: 1,
                         diesSetmana = daysOfWeek,
                     )
-                Log.d("AirGo_Debug", "3. Petición construida, a punto de hacer el POST: $request")
                 repository.createTrainingPlan(request)
-                Log.d("AirGo_Debug", "4. POST realizado con éxito (el backend ha respondido bien)")
                 SessionManager.trainingPlans = null
 
                 val fetchedPlans = repository.getTrainingPlans()

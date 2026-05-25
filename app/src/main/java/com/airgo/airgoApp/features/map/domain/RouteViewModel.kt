@@ -147,7 +147,6 @@ class RouteViewModel : ViewModel() {
                     JA_EXISTEIX -> errorMessage = UiText.StringResource(R.string.error_route_already_saved)
                     else -> {
                         errorMessage = UiText.StringResource(R.string.error_saving_route)
-                        Log.e(LOG_TAG, "Save favorite failed: ${response.code()}")
                     }
                 }
             } catch (e: IOException) {

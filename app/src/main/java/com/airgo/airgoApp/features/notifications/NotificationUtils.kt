@@ -34,8 +34,7 @@ object NotificationUtils {
                 }
             connection.disconnect()
             bitmap
-        } catch (e: Exception) {
-            Log.e("AIRGO_NOTIF", "Error descargando imagen ($finalUrl): ${e.message}")
+        } catch (ignored: java.lang.Exception) {
             null
         }
     }

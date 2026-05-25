@@ -87,7 +87,6 @@ class ChatViewModel : ViewModel() {
                 }
 
             if (conversationId == finalConvId && _messages.value.isNotEmpty()) {
-                Log.d(LOG_TAG, "init: Ya estamos en esta conversación ($finalConvId), saltando carga.")
                 return@launch
             }
 
@@ -99,7 +98,6 @@ class ChatViewModel : ViewModel() {
             viewModelScope.launch {
                 ChatEventBus.messageReceived.collect { updatedChatId ->
                     if (updatedChatId == conversationId) {
-                        Log.e(LOG_TAG, "🔔 Evento recibido: recargando chat $conversationId")
                         loadMessages(conversationId)
                     }
                 }
@@ -108,16 +106,13 @@ class ChatViewModel : ViewModel() {
     }
 
     private fun loadMessages(convId: String) {
-        Log.e(LOG_TAG, "🔄 Cargando mensajes para conversación: $convId")
         viewModelScope.launch {
             _uiState.value = ChatUiState.Loading
             try {
                 val msgs = RetrofitProvider.chatApi.getMessages(convId)
-                Log.e(LOG_TAG, "✅ Mensajes cargados: ${msgs.size}")
                 _messages.value = msgs
                 _uiState.value = if (msgs.isEmpty()) ChatUiState.Empty else ChatUiState.Success(msgs)
             } catch (e: HttpException) {
-                Log.e(LOG_TAG, "❌ Error HTTP cargando mensajes (ID: $convId, Código: ${e.code()})")
                 if (e.code() == ERROR_CODE_NOT_FOUND) {
                     _messages.value = emptyList()
                     _uiState.value = ChatUiState.Empty
@@ -157,7 +152,6 @@ class ChatViewModel : ViewModel() {
                         webSocket: WebSocket,
                         text: String,
                     ) {
-                        Log.e("CHATS_WS", "⬇️ RECIBIDO POR WEBSOCKET: $text")
 
                         try {
                             val json = gson.fromJson(text, JsonObject::class.java)

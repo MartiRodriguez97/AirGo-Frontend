@@ -108,7 +108,6 @@ fun chatScreen(
 
     // Añadimos un log para ver qué nos llega
     LaunchedEffect(otherProfilePic) {
-        android.util.Log.d("CHAT_DEBUG", "Imagen global: $otherProfilePic")
     }
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -335,7 +334,6 @@ private fun bubbleAvatar(
         contentAlignment = Alignment.Center,
     ) {
         val showImage = !profilePicUrl.isNullOrEmpty() && profilePicUrl != "null" && profilePicUrl != "undefined"
-        android.util.Log.d("CHAT_AVATAR_DEBUG", "Emisor: $username, URL: $profilePicUrl, showImage: $showImage")
         if (showImage) {
             val fullUrl =
                 if (profilePicUrl.startsWith("http")) {
