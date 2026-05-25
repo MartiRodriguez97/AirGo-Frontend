@@ -46,6 +46,7 @@ import com.airgo.airgoApp.features.map.domain.RouteViewModel
 import com.airgo.airgoApp.features.map.favoritesScreen
 import com.airgo.airgoApp.features.profile.profileScreen
 import com.airgo.airgoApp.features.social.chat.chatScreen
+import com.airgo.airgoApp.features.social.forums.forumChatScreen
 import com.airgo.airgoApp.features.social.friends.friendProfileScreen
 import com.airgo.airgoApp.features.social.socialScreen
 import com.airgo.airgoApp.features.tracking.domain.TrackingViewModel
@@ -116,8 +117,10 @@ private fun bottomNavigationBar(
     navController: NavHostController,
 ) {
     val hiddenRoutes = setOf("questionnaire", "favorites", "tracking_summary", "address_search")
+    val isChatScreen =
+        currentRoute.orEmpty().startsWith("chat") ||
+            currentRoute.orEmpty().startsWith("forum_chat")
     val isFriendProfile = currentRoute.orEmpty().startsWith("friend_profile")
-    val isChatScreen = currentRoute.orEmpty().startsWith("chat")
     val isPlanDetails = currentRoute.orEmpty().startsWith("planDetails")
     val isActivityDetail = currentRoute == "activityDetail"
     val isTrackingSummary = currentRoute == "tracking_summary"
@@ -199,6 +202,65 @@ private fun NavGraphBuilder.homeNavGraph(
 }
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+private fun NavGraphBuilder.chatNavRoutes(navController: NavHostController) {
+    composable("tracking_summary") {
+        val activityEntry = remember(it) { navController.getBackStackEntry(MainShellScreen.ACTIVITY.route) }
+        val summaryViewModel: TrackingViewModel = viewModel(activityEntry)
+        trackingSummaryScreen(
+            onBack = { navController.popBackStack() },
+            onSave = { navController.popBackStack() },
+            viewModel = summaryViewModel,
+        )
+    }
+    composable("chat/{convId}/{otherUserId}/{username}") { backStackEntry ->
+        val convId = backStackEntry.arguments?.getString("convId") ?: return@composable
+        val otherUserId = backStackEntry.arguments?.getString("otherUserId")?.toIntOrNull() ?: return@composable
+        val username = backStackEntry.arguments?.getString("username") ?: ""
+        chatScreen(
+            conversationId = convId,
+            otherUserId = otherUserId,
+            otherUsername = username,
+            onBack = { navController.popBackStack() },
+        )
+    }
+}
+
+private fun NavGraphBuilder.addressSearchNavRoute(navController: NavHostController) {
+    composable("address_search/{mode}") { backStackEntry ->
+        val mode = backStackEntry.arguments?.getString("mode") ?: "start"
+        val activityEntry = remember(backStackEntry) { navController.getBackStackEntry(MainShellScreen.ACTIVITY.route) }
+        val routeViewModel: RouteViewModel = viewModel(activityEntry)
+        val searchMode =
+            when {
+                mode == "start" -> AddressSearchMode.START
+                mode == "end" -> AddressSearchMode.END
+                mode.startsWith("waypoint-") -> AddressSearchMode.WAYPOINT
+                else -> AddressSearchMode.START
+            }
+        val waypointIndex =
+            if (mode.startsWith("waypoint-")) {
+                mode.substringAfter("waypoint-").toIntOrNull() ?: 0
+            } else {
+                -1
+            }
+        addressSearchScreen(
+            mode = searchMode,
+            waypointIndex = waypointIndex,
+            onBack = { navController.popBackStack() },
+            routeViewModel = routeViewModel,
+        )
+    }
+}
+
+private fun NavGraphBuilder.forumChatNavRoute(navController: NavHostController) {
+    composable("forum_chat/{forumId}/{forumName}") { backStackEntry ->
+        val forumId = backStackEntry.arguments?.getString("forumId")?.toIntOrNull() ?: return@composable
+        val forumName = backStackEntry.arguments?.getString("forumName") ?: ""
+        forumChatScreen(forumId = forumId, forumName = forumName, onBack = { navController.popBackStack() })
+    }
+}
+
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @RequiresApi(Build.VERSION_CODES.O)
 private fun NavGraphBuilder.featuresNavGraph(
     navController: NavHostController,
@@ -214,6 +276,7 @@ private fun NavGraphBuilder.featuresNavGraph(
                 onChatClick = { convId, otherUserId, username ->
                     navController.navigate("chat/$convId/$otherUserId/$username")
                 },
+                onForumClick = { id, name -> navController.navigate("forum_chat/$id/$name") },
             )
         }
     }
@@ -236,51 +299,7 @@ private fun NavGraphBuilder.featuresNavGraph(
         }
     }
     composable("favorites") { favoritesScreen(onBack = { navController.popBackStack() }) }
-    composable("tracking_summary") {
-        val activityEntry =
-            remember(it) { navController.getBackStackEntry(MainShellScreen.ACTIVITY.route) }
-        val summaryViewModel: TrackingViewModel = viewModel(activityEntry)
-        trackingSummaryScreen(
-            onBack = { navController.popBackStack() },
-            onSave = { navController.popBackStack() },
-            viewModel = summaryViewModel,
-        )
-    }
-    composable("chat/{convId}/{otherUserId}/{username}") { backStackEntry ->
-        val convId = backStackEntry.arguments?.getString("convId") ?: return@composable
-        val otherUserId = backStackEntry.arguments?.getString("otherUserId")?.toIntOrNull() ?: return@composable
-        val username = backStackEntry.arguments?.getString("username") ?: ""
-        chatScreen(
-            conversationId = convId,
-            otherUserId = otherUserId,
-            otherUsername = username,
-            onBack = { navController.popBackStack() },
-        )
-    }
-    composable("address_search/{mode}") { backStackEntry ->
-        val mode = backStackEntry.arguments?.getString("mode") ?: "start"
-        val activityEntry =
-            remember(backStackEntry) { navController.getBackStackEntry(MainShellScreen.ACTIVITY.route) }
-        val routeViewModel: RouteViewModel = viewModel(activityEntry)
-        val searchMode =
-            when {
-                mode == "start" -> AddressSearchMode.START
-                mode == "end" -> AddressSearchMode.END
-                mode.startsWith("waypoint/") -> AddressSearchMode.WAYPOINT
-                else -> AddressSearchMode.START
-            }
-        val waypointIndex = (
-            if (mode.startsWith("waypoint/")) {
-                mode.substringAfter("waypoint/").toIntOrNull() ?: 0
-            } else {
-                -1
-            }
-        )
-        addressSearchScreen(
-            mode = searchMode,
-            waypointIndex = waypointIndex,
-            onBack = { navController.popBackStack() },
-            routeViewModel = routeViewModel,
-        )
-    }
+    chatNavRoutes(navController)
+    addressSearchNavRoute(navController)
+    forumChatNavRoute(navController)
 }

@@ -84,6 +84,7 @@ import com.airgo.airgoApp.features.social.friends.domain.FriendRequestsViewModel
 fun socialScreen(
     onFriendClick: (Int) -> Unit = {},
     onChatClick: (convId: String, otherUserId: Int, username: String) -> Unit = { _, _, _ -> },
+    onForumClick: (Int, String) -> Unit = { _, _ -> },
     viewModel: SocialViewModel = viewModel(),
 ) {
     val activeTab by viewModel.activeTab.collectAsStateWithLifecycle()
@@ -116,9 +117,13 @@ fun socialScreen(
                     onFriendClick = onFriendClick,
                     onChatClick = onChatClick,
                 )
-            SocialTab.SEARCH -> searchTab(viewModel = viewModel)
+            SocialTab.SEARCH ->
+                searchTab(
+                    viewModel = viewModel,
+                    onForumClick = onForumClick,
+                )
             SocialTab.REQUESTS -> Unit
-            SocialTab.FORUMS -> forumsTab()
+            SocialTab.FORUMS -> forumsTab(onForumClick = onForumClick)
         }
     }
 }
@@ -451,7 +456,10 @@ private fun friendItem(
 }
 
 @Composable
-private fun searchTab(viewModel: SocialViewModel) {
+private fun searchTab(
+    viewModel: SocialViewModel,
+    onForumClick: (Int, String) -> Unit = { _, _ -> },
+) {
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
     val uiState by viewModel.searchUiState.collectAsStateWithLifecycle()
     val requestSentTo by viewModel.requestSentTo.collectAsStateWithLifecycle()
@@ -516,7 +524,7 @@ private fun searchTab(viewModel: SocialViewModel) {
                                     isOwner = forumViewModel.isCreatedByCurrentUser(result.forum),
                                     onToggleFavorit = { forumViewModel.toggleFavorit(result.forum.id) },
                                     onDelete = { forumViewModel.deleteForum(result.forum.id) },
-                                    onClick = {},
+                                    onClick = { onForumClick(result.forum.id, result.forum.nom ?: "") },
                                 )
                         }
                     }
