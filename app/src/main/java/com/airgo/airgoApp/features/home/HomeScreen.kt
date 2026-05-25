@@ -36,9 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.home.components.buildingAddressDialog
+import com.airgo.airgoApp.features.home.components.pendingBuildingCard
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
+import com.airgo.airgoApp.features.tracking.components.newBadgeDialog
 import com.airgo.airgoApp.features.tracking.components.titleSelectionDialog
 
 @Composable
@@ -69,17 +72,22 @@ fun pendingTitlesCard(
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Títols Pendents!",
+                    text = stringResource(R.string.home_pending_titles_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = if (count == 1) "Tens 1 títol per triar" else "Tens $count títols per triar",
+                    text =
+                        if (count == 1) {
+                            stringResource(R.string.home_pending_titles_singular)
+                        } else {
+                            stringResource(R.string.home_pending_titles_plural, count)
+                        },
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
             TextButton(onClick = onClick) {
-                Text("TRIAR")
+                Text(stringResource(R.string.home_pending_titles_btn))
             }
         }
     }
@@ -97,6 +105,7 @@ fun homeScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val titolsPendents by viewModel.titolsPendents.collectAsState()
     val availableTitles by viewModel.availableTitles.collectAsState()
+    val buildingBadgeEarned by viewModel.buildingBadgeEarned.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -105,8 +114,12 @@ fun homeScreen(
 
     LaunchedEffect(errorMessage) {
         errorMessage?.let { resId ->
-            Toast.makeText(context, resId, Toast.LENGTH_SHORT).show()
-            viewModel.clearErrorMessage()
+            // Si el diàleg de l'edifici està obert, no mostrem el Toast
+            // aquí ja que el diàleg ja té el seu propi mecanisme d'error
+            if (!viewModel.showBuildingAddressDialog) {
+                Toast.makeText(context, resId, Toast.LENGTH_SHORT).show()
+                viewModel.clearErrorMessage()
+            }
         }
     }
 
@@ -119,6 +132,20 @@ fun homeScreen(
             onDismiss = {
                 viewModel.showTitleSelectionDialog = false
             },
+        )
+    }
+
+    if (viewModel.showBuildingAddressDialog) {
+        buildingAddressDialog(
+            viewModel = viewModel,
+            onDismiss = { viewModel.showBuildingAddressDialog = false },
+        )
+    }
+
+    buildingBadgeEarned?.let { badge ->
+        newBadgeDialog(
+            badge = badge,
+            onDismiss = { viewModel.dismissBuildingBadge() },
         )
     }
 
@@ -148,6 +175,15 @@ fun homeScreen(
                     pendingTitlesCard(
                         count = titolsPendents,
                         onClick = { viewModel.fetchAvailableTitles() },
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            if (viewModel.needsBuildingAddress) {
+                item {
+                    pendingBuildingCard(
+                        onClick = { viewModel.showBuildingAddressDialog = true },
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }

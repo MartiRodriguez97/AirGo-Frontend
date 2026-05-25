@@ -197,7 +197,7 @@ fun titleSelectionDialog(
 }
 
 @Composable
-private fun newBadgeDialog(
+fun newBadgeDialog(
     badge: BadgeDefinition,
     onDismiss: () -> Unit,
 ) {

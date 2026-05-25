@@ -11,6 +11,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -45,6 +46,21 @@ data class UpdateUserRequest(
     val altura: Int? = null,
     val nom: String? = null,
     val idioma: String? = null,
+    val punts: Int? = null,
+)
+
+data class ComprovarEdificiRequest(
+    val municipi: String,
+    val adreca: String,
+    val numero: String,
+)
+
+data class ComprovarEdificiResponse(
+    val puntuacio: Int,
+    @SerializedName("insignia_guanyada")
+    val insigniaGuanyada: Boolean,
+    val missatge: String,
+    val badge: BadgeDefinition?,
 )
 
 interface ProfileApi {
@@ -69,4 +85,9 @@ interface ProfileApi {
         @Path("id") id: Int,
         @Body request: UpdateUserRequest,
     ): Response<Void>
+
+    @POST(ApiEndpoints.COMPROVAR_EDIFICI)
+    suspend fun comprovarEdifici(
+        @Body request: ComprovarEdificiRequest,
+    ): Response<ComprovarEdificiResponse>
 }

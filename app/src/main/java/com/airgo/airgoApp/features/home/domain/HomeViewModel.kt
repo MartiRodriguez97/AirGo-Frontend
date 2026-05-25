@@ -11,14 +11,28 @@ import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.map.helpers.NominatimResult
+import com.airgo.airgoApp.features.map.helpers.NominatimService
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+private const val SEARCH_DEBOUNCE_MS = 400L
+private const val ERROR_HTTP_404 = 404
+private const val SIZE_SEARCH = 3
+
 class HomeViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
+
+    private val exceptionHandler =
+        kotlinx.coroutines.CoroutineExceptionHandler { _, exception ->
+            Log.e("HomeViewModel", "Unexpected error", exception)
+            _errorMessage.value = com.airgo.airgoApp.R.string.error_generic
+        }
 
     private val _plans = MutableStateFlow<List<TrainingPlanResponse>>(emptyList())
     val plans: StateFlow<List<TrainingPlanResponse>> = _plans.asStateFlow()
@@ -42,8 +56,126 @@ class HomeViewModel : ViewModel() {
 
     val errorMessage: StateFlow<Int?> = _errorMessage.asStateFlow()
 
+    private val _buildingBadgeEarned =
+        MutableStateFlow<
+            com.airgo.airgoApp.features.profile.data.BadgeDefinition?,
+        >(null)
+    val buildingBadgeEarned: StateFlow<
+        com.airgo.airgoApp.features.profile.data.BadgeDefinition?,
+    > = _buildingBadgeEarned.asStateFlow()
+
+    private val _addressResults = MutableStateFlow<List<NominatimResult>>(emptyList())
+    val addressResults: StateFlow<List<NominatimResult>> = _addressResults.asStateFlow()
+
+    private val _isSearchingAddress = MutableStateFlow(false)
+    val isSearchingAddress: StateFlow<Boolean> = _isSearchingAddress.asStateFlow()
+
+    private var searchJob: Job? = null
+
+    var showBuildingAddressDialog by mutableStateOf(false)
+
+    val needsBuildingAddress: Boolean
+        get() = SessionManager.userBadges?.none { it.insignia.tipus == "EDIFICI" } ?: true
+
     init {
         loadPlans()
+        loadUserBadges()
+    }
+
+    private fun loadUserBadges() {
+        if (SessionManager.userBadges != null) return
+        viewModelScope.launch(exceptionHandler) {
+            val badges =
+                com.airgo.airgoApp.core.network.RetrofitProvider.profileApi
+                    .getUserBadges()
+            SessionManager.userBadges = badges
+        }
+    }
+
+    fun dismissBuildingBadge() {
+        _buildingBadgeEarned.value = null
+    }
+
+    fun searchAddresses(query: String) {
+        searchJob?.cancel()
+        if (query.length < SIZE_SEARCH) {
+            _addressResults.value = emptyList()
+            return
+        }
+
+        searchJob =
+            viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_MS)
+                _isSearchingAddress.value = true
+                try {
+                    _addressResults.value = NominatimService.searchAddress(query)
+                } finally {
+                    _isSearchingAddress.value = false
+                }
+            }
+    }
+
+    fun checkBuildingAddress(
+        municipi: String,
+        adreca: String,
+        numero: String,
+    ) {
+        viewModelScope.launch(exceptionHandler) {
+            _isLoading.value = true
+            try {
+                val response =
+                    com.airgo.airgoApp.core.network.RetrofitProvider.profileApi.comprovarEdifici(
+                        com.airgo.airgoApp.features.profile.data
+                            .ComprovarEdificiRequest(municipi, adreca, numero),
+                    )
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        // Update points
+                        SessionManager.userId?.let { userId ->
+                            val currentPunts = SessionManager.punts ?: 0
+                            val newPunts = currentPunts + body.puntuacio
+                            com.airgo.airgoApp.core.network.RetrofitProvider.profileApi.updateUser(
+                                userId,
+                                com.airgo.airgoApp.features.profile.data
+                                    .UpdateUserRequest(punts = newPunts),
+                            )
+                            SessionManager.punts = newPunts
+                        }
+
+                        if (body.insigniaGuanyada && body.badge != null) {
+                            // Update badges in SessionManager
+                            val currentBadges = SessionManager.userBadges?.toMutableList() ?: mutableListOf()
+                            currentBadges.add(
+                                com.airgo.airgoApp.features.profile.data.UserBadgeResponse(
+                                    insignia = body.badge,
+                                    dataGuanyada =
+                                        java.time.ZonedDateTime
+                                            .now()
+                                            .toString(),
+                                ),
+                            )
+                            SessionManager.userBadges = currentBadges
+                            _buildingBadgeEarned.value = body.badge
+                        }
+                        showBuildingAddressDialog = false
+                    }
+                } else if (response.code() == ERROR_HTTP_404) {
+                    _errorMessage.value = com.airgo.airgoApp.R.string.error_address_not_found
+                } else {
+                    _errorMessage.value = com.airgo.airgoApp.R.string.error_generic
+                }
+            } catch (e: java.io.IOException) {
+                Log.e("HomeViewModel", "Error checking building address", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_generic
+            } catch (e: retrofit2.HttpException) {
+                Log.e("HomeViewModel", "Error checking building address", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_generic
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
     fun updateTodayExercises() {
@@ -85,7 +217,7 @@ class HomeViewModel : ViewModel() {
             return
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             _isLoading.value = true
             try {
                 /*
@@ -114,7 +246,7 @@ class HomeViewModel : ViewModel() {
                 val errorBody = e.response()?.errorBody()?.string()
                 Log.e("HomeViewModel", "HTTP Error $code: $errorBody", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_load_plans
-            } catch (e: java.lang.Exception) {
+            } catch (e: java.io.IOException) {
                 Log.e("HomeViewModel", "Error cargando planes de entrenamiento (silenciado)", e)
             } finally {
                 _isLoading.value = false
@@ -131,7 +263,7 @@ class HomeViewModel : ViewModel() {
         daysOfWeek: List<Int>,
         endDate: String,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             _isLoading.value = true
             try {
                 val request =
@@ -167,7 +299,7 @@ class HomeViewModel : ViewModel() {
         id: Int,
         onSuccess: () -> Unit,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             _isLoading.value = true
             try {
                 repository.deleteTrainingPlan(id)
@@ -189,7 +321,7 @@ class HomeViewModel : ViewModel() {
     }
 
     fun fetchAvailableTitles() {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             try {
                 val response =
                     com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi
@@ -210,7 +342,7 @@ class HomeViewModel : ViewModel() {
         titleId: Int,
         setAsMain: Boolean,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             try {
                 com.airgo.airgoApp.core.network.RetrofitProvider.trackingApi.unlockTitle(
                     com.airgo.airgoApp.features.tracking.data

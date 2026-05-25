@@ -2,6 +2,7 @@ package com.airgo.airgoApp.core.network
 
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.profile.data.UserBadgeResponse
 import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,7 @@ object SessionManager {
     var exercicis: List<Exercise>? = null
     var exerciciActiu: Exercise? = null
     var nomTemplateActiu: String? = null
-    var userBadges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>? = null
+    var userBadges: List<UserBadgeResponse>? = null
 
     // ID del chat actualmente abierto para evitar duplicar notificaciones
     var currentChatId: String? = null

@@ -449,4 +449,26 @@
 
     <string name="tracking_save_completed">Workout completed and saved!</string>
     <string name="tracking_save_progress">Progress saved</string>
+
+    <!-- Building Address -->
+    <string name="home_building_pending_title">¡Verificación de edificio!</string>
+    <string name="home_building_pending_desc">Dinos la dirección de tu edificio para ganar puntos.</string>
+    <string name="home_building_btn_verify">VERIFICAR</string>
+    <string name="home_building_dialog_title">Dirección del edificio</string>
+    <string name="home_building_dialog_desc">Introduce la dirección de tu edificio en Barcelona.</string>
+    <string name="home_building_address_label">Dirección</string>
+    <string name="home_building_number_label">Número</string>
+    <string name="home_building_btn_submit">Enviar</string>
+    <string name="error_address_not_found">Dirección no encontrada. Por favor, revisa e inténtalo de nuevo.</string>
+    <string name="error_generic">Algo ha salido mal. Por favor, inténtalo de nuevo.</string>
+    <string name="home_building_municipality_label">Municipio (solo Barcelona)</string>
+    <string name="error_dialog_title">Error</string>
+    <string name="btn_continue">Continuar</string>
+
+    <!-- Pending Titles -->
+    <string name="home_pending_titles_title">¡Títulos Pendientes!</string>
+    <string name="home_pending_titles_singular">Tienes 1 título para elegir</string>
+    <string name="home_pending_titles_plural">Tienes %1$d títulos para elegir</string>
+    <string name="home_pending_titles_btn">ELEGIR</string>
+
 </resources>

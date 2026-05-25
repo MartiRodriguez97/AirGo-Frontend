@@ -452,5 +452,22 @@
     <string name="tracking_save_progress">Progreso guardado</string>
     <string name="selection_panel_title">Select route points</string>
 
+    <string name="home_pending_titles_title">Títols Pendents!</string>
+    <string name="home_pending_titles_singular">Tens 1 títol per triar</string>
+    <string name="home_pending_titles_plural">Tens %1$d títols per triar</string>
+    <string name="home_pending_titles_btn">TRIAR</string>
+    <string name="home_building_pending_title">Verificació d\'edifici!</string>
+    <string name="home_building_pending_desc">Digue\'ns l\'adreça del teu edifici per guanyar punts.</string>
+    <string name="home_building_btn_verify">VERIFICAR</string>
+    <string name="home_building_dialog_title">Adreça de l\'edifici</string>
+    <string name="home_building_dialog_desc">Introdueix l\'adreça del teu edifici a Barcelona.</string>
+    <string name="home_building_address_label">Adreça</string>
+    <string name="home_building_number_label">Núm. edifici</string>
+    <string name="home_building_btn_submit">Enviar</string>
+    <string name="error_address_not_found">Adreça no trobada. Si us plau, revisa-la i torna-ho a intentar.</string>
+    <string name="error_generic">Alguna cosa ha anat malament. Si us plau, torna-ho a intentar.</string>
+    <string name="home_building_municipality_label">Municipi (només Barcelona)</string>
+    <string name="error_dialog_title">Error</string>
+    <string name="btn_continue">Continuar</string>
 
 </resources>
