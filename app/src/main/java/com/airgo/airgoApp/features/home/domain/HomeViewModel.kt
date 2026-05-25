@@ -26,6 +26,7 @@ import java.io.IOException
 private const val SEARCH_DEBOUNCE_MS = 400L
 private const val ERROR_HTTP_404 = 404
 private const val SIZE_SEARCH = 3
+private const val MIN_VALOR_PUNTS = 7
 
 class HomeViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
@@ -145,7 +146,7 @@ class HomeViewModel : ViewModel() {
                             SessionManager.punts = newPunts
                         }
 
-                        if (body.punts > 7) {
+                        if (body.punts >= MIN_VALOR_PUNTS) {
                             val badgeResponse = profileApi.guanyarEdificiInsignia()
                             if (badgeResponse.isSuccessful) {
                                 val badgeBody = badgeResponse.body()
