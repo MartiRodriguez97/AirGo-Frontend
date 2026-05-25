@@ -5,39 +5,41 @@ import androidx.compose.ui.res.stringResource
 import com.airgo.airgoApp.R
 
 object TranslationMapper {
-    fun getBadgeNameResId(backendName: String): Int? =
-        when (backendName) {
-            "Iniciació a la constància" -> R.string.badge_constancy_name
-            "De passeig" -> R.string.badge_walk_name
-            "Benvingut a AirGo!" -> R.string.badge_welcome_name
-            else -> null
-        }
+    private val badgeMap =
+        mapOf(
+            "Benvingut a AirGo!" to (R.string.badge_welcome_name to R.string.badge_welcome_desc),
+            "Llegenda AirGo" to (R.string.badge_legend_name to R.string.badge_legend_desc),
+            "Ambaixador AirGo" to (R.string.badge_ambassador_name to R.string.badge_ambassador_desc),
+            "Elit verd" to (R.string.badge_elite_name to R.string.badge_elite_desc),
+            "Atleta urbà" to (R.string.badge_athlete_name to R.string.badge_athlete_desc),
+            "En forma" to (R.string.badge_fit_name to R.string.badge_fit_desc),
+            "Primeres passes" to (R.string.badge_first_steps_name to R.string.badge_first_steps_desc),
+            "Travessia catalana" to (R.string.badge_catalan_crossing_name to R.string.badge_catalan_crossing_desc),
+            "Mestre del pedal" to (R.string.badge_pedal_master_name to R.string.badge_pedal_master_desc),
+            "Centurió" to (R.string.badge_centurion_name to R.string.badge_centurion_desc),
+            "Voltant Barcelona" to (R.string.badge_around_barcelona_name to R.string.badge_around_barcelona_desc),
+            "Explorador urbà" to (R.string.badge_urban_explorer_name to R.string.badge_urban_explorer_desc),
+            "Primers 10 quilòmetres" to (R.string.badge_first_10km_name to R.string.badge_first_10km_desc),
+            "De passeig" to (R.string.badge_walk_name to R.string.badge_walk_desc),
+            "Mig any de ratxa" to (R.string.badge_half_year_streak_name to R.string.badge_half_year_streak_desc),
+            "Llegenda de la constància" to (
+                R.string.badge_constancy_legend_name to R.string.badge_constancy_legend_desc
+            ),
+            "Un mes sense parar" to (R.string.badge_one_month_nonstop_name to R.string.badge_one_month_nonstop_desc),
+            "Dues setmanes imparable" to (
+                R.string.badge_two_weeks_unstoppable_name to R.string.badge_two_weeks_unstoppable_desc
+            ),
+            "Setmana de ferro" to (R.string.badge_iron_week_name to R.string.badge_iron_week_desc),
+            "Iniciació a la constància" to (R.string.badge_constancy_name to R.string.badge_constancy_desc),
+        )
 
-    fun getBadgeDescriptionResId(backendName: String): Int? =
-        when (backendName) {
-            "Iniciació a la constància" -> R.string.badge_constancy_desc
-            "De passeig" -> R.string.badge_walk_desc
-            "Benvingut a AirGo!" -> R.string.badge_welcome_desc
-            else -> null
-        }
+    fun getBadgeNameResId(backendName: String): Int? = badgeMap[backendName]?.first
 
-    // Para los títulos en EditTitolScreen, si también vienen del backend
-    fun getTitolNameResId(backendName: String): Int? =
-        when (backendName) {
-            // Añadir aquí si hay títulos específicos que no coinciden con las insignias
-            "Iniciació a la constància" -> R.string.badge_constancy_name
-            "De passeig" -> R.string.badge_walk_name
-            "Benvingut a AirGo!" -> R.string.badge_welcome_name
-            else -> null
-        }
+    fun getBadgeDescriptionResId(backendName: String): Int? = badgeMap[backendName]?.second
 
-    fun getTitolDescriptionResId(backendName: String): Int? =
-        when (backendName) {
-            "Iniciació a la constància" -> R.string.badge_constancy_desc
-            "De passeig" -> R.string.badge_walk_desc
-            "Benvingut a AirGo!" -> R.string.badge_welcome_desc
-            else -> null
-        }
+    fun getTitolNameResId(backendName: String): Int? = getBadgeNameResId(backendName)
+
+    fun getTitolDescriptionResId(backendName: String): Int? = getBadgeDescriptionResId(backendName)
 }
 
 @Composable
