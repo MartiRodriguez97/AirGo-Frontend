@@ -1,7 +1,6 @@
 package com.airgo.airgoApp.features.social
 
 import android.annotation.SuppressLint
-import androidx.core.content.PackageManagerCompat.LOG_TAG
 import com.airgo.airgoApp.core.network.ApiEndpoints
 import com.airgo.airgoApp.features.social.data.SocialApi
 import com.airgo.airgoApp.features.social.data.UserSearchResult
@@ -42,16 +41,11 @@ class SocialRepository(
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                val errBody = response.errorBody()?.string()
-                android.util.Log.e(LOG_TAG, "sendFriendRequest ${response.code()}: $errBody")
                 Result.failure(Exception("Error ${response.code()}"))
             }
         } catch (e: IOException) {
-            android.util.Log.e(LOG_TAG, "sendFriendRequest IOException: ${e.message}")
             Result.failure(e)
         } catch (e: HttpException) {
-            val errBody = e.response()?.errorBody()?.string()
-            android.util.Log.e(LOG_TAG, "sendFriendRequest HTTP ${e.code()}: $errBody")
             Result.failure(e)
         }
 

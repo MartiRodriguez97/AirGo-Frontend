@@ -52,7 +52,7 @@ class CalendarUiTest {
                                 nom = "Test Template",
                                 descripcio = "Test Description",
                                 tipusExercici = "CAM",
-                                exercicis =
+                                exercicisResposta =
                                     listOf(
                                         Exercise(
                                             id = 1,

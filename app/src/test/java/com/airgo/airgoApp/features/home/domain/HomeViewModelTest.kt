@@ -5,6 +5,7 @@ import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanApi
 import com.airgo.airgoApp.features.home.data.TrainingPlanRawResponse
+import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.home.data.TrainingTemplate
 import io.mockk.Runs
 import io.mockk.clearMocks
@@ -25,11 +26,12 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
-import java.io.IOException
+import retrofit2.HttpException
+import retrofit2.Response
 import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -52,6 +54,7 @@ class HomeViewModelTest {
         every { SessionManager.exercicis = any() } just Runs
         every { SessionManager.exerciciActiu = any() } just Runs
         every { SessionManager.nomTemplateActiu = any() } just Runs
+        every { SessionManager.titolsPendentsFlow } returns kotlinx.coroutines.flow.MutableStateFlow(0)
 
         // Default behavior for loadPlans in init
         coEvery { mockApi.getTrainingPlans() } returns emptyList()
@@ -92,8 +95,31 @@ class HomeViewModelTest {
     @Test
     fun cacheLoadPlanFetchAndSessionManager() =
         runTest {
-            val rawPlans = listOf(TrainingPlanRawResponse(1, 30, 3, listOf(101)))
-            val template = TrainingTemplate(101, "Test Template", "Desc", "Run", emptyList())
+            val rawPlans =
+                listOf(
+                    TrainingPlanResponse(
+                        1,
+                        30,
+                        3,
+                        listOf(
+                            TrainingTemplate(
+                                101,
+                                "Test Template",
+                                "Desc",
+                                "Run",
+                                emptyList(),
+                            ),
+                        ),
+                    ),
+                )
+            val template =
+                TrainingTemplate(
+                    101,
+                    "Test Template",
+                    "Desc",
+                    "Run",
+                    emptyList(),
+                )
 
             coEvery { mockApi.getTrainingPlans() } returns rawPlans
             coEvery { mockApi.getTemplate(101) } returns template
@@ -110,11 +136,14 @@ class HomeViewModelTest {
     @Test
     fun loadPlanHandlerErrorNetwork() =
         runTest {
-            coEvery { mockApi.getTrainingPlans() } throws IOException("Network Error")
+            coEvery { mockApi.getTrainingPlans() } throws
+                HttpException(
+                    Response.error<Any>(500, "Server Error".toResponseBody()),
+                )
 
             viewModel.loadPlans()
 
-            assertTrue(viewModel.errorMessage.value != null)
+            org.junit.Assert.assertNotNull(viewModel.errorMessage.value)
             coVerify(exactly = 1) { mockApi.getTrainingPlans() }
         }
 
@@ -167,15 +196,15 @@ class HomeViewModelTest {
             verify { SessionManager.nomTemplateActiu = "Target Template" }
         }
 
-    @Ignore("Create training plan feature is not finished yet")
     @Test
     fun createPlanAllStates() =
         runTest {
-            val rawResponse = TrainingPlanRawResponse(1, 30, 3, listOf(1, 2, 3, 4))
+            val rawResponse = TrainingPlanRawResponse(1, 30, 3, emptyList())
+            val planResponse = TrainingPlanResponse(1, 30, 3, emptyList())
 
             coEvery { mockApi.createTrainingPlan(any()) } returns rawResponse
             coEvery { mockApi.initializeTrainingPlan(1, any()) } returns rawResponse
-            coEvery { mockApi.getTrainingPlans() } returns listOf(rawResponse)
+            coEvery { mockApi.getTrainingPlans() } returns listOf(planResponse)
             coEvery { mockApi.getTemplate(any()) } returns TrainingTemplate(1, "T", "D", "R", emptyList())
 
             var successCalled = false
@@ -185,12 +214,15 @@ class HomeViewModelTest {
                 },
                 daysDuration = 30,
                 workoutsPerWeek = 3,
-                level = "Bàsic",
+                sport = "CAM",
+                level = 1,
+                daysOfWeek = listOf(1, 3, 5),
+                endDate = "2024-12-31",
             )
 
             assertTrue(successCalled)
-            coVerify { mockApi.createTrainingPlan(match { it.templates == listOf(1, 2, 3, 4) }) }
-            coVerify { mockApi.initializeTrainingPlan(1, any()) }
+            coVerify { mockApi.createTrainingPlan(any()) }
+            coVerify(exactly = 0) { mockApi.initializeTrainingPlan(1, any()) } // it is not called in createPlan
             coVerify(exactly = 1) { mockApi.getTrainingPlans() }
         }
 
@@ -223,10 +255,13 @@ class HomeViewModelTest {
     @Test
     fun clearErrorMessageToNull() =
         runTest {
-            coEvery { mockApi.getTrainingPlans() } throws IOException()
+            coEvery { mockApi.getTrainingPlans() } throws
+                HttpException(
+                    Response.error<Any>(500, "Server Error".toResponseBody()),
+                )
             viewModel.loadPlans()
 
-            assertTrue(viewModel.errorMessage.value != null)
+            org.junit.Assert.assertNotNull(viewModel.errorMessage.value)
 
             viewModel.clearErrorMessage()
 

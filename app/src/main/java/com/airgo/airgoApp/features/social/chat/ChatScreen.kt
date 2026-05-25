@@ -1,5 +1,7 @@
 package com.airgo.airgoApp.features.social.chat
 
+import android.app.NotificationManager
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,14 +50,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.SessionManager
+import com.airgo.airgoApp.features.notifications.service.FirebaseMessagingService
 import com.airgo.airgoApp.features.social.chat.data.Message
 import com.airgo.airgoApp.features.social.chat.domain.ChatUiState
 import com.airgo.airgoApp.features.social.chat.domain.ChatViewModel
@@ -85,20 +97,66 @@ fun chatScreen(
     conversationId: String,
     otherUserId: Int,
     otherUsername: String,
+    otherProfilePic: String? = null,
     onBack: () -> Unit,
     viewModel: ChatViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
-    LaunchedEffect(Unit) { viewModel.init(conversationId, otherUserId) }
+    // Añadimos un log para ver qué nos llega
+    LaunchedEffect(otherProfilePic) {
+    }
+
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(conversationId, lifecycleOwner) {
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    SessionManager.currentChatId = conversationId
+
+                    // Limpiar notificaciones de este chat al entrar o volver
+                    val notificationManager =
+                        context.getSystemService(
+                            Context.NOTIFICATION_SERVICE,
+                        )
+                            as NotificationManager
+                    notificationManager.cancel(conversationId.hashCode())
+
+                    // Limpiar resumen si no quedan más chats activos
+                    val activeNotifications = notificationManager.activeNotifications
+                    val hasMoreChats =
+                        activeNotifications.any {
+                            it.id != FirebaseMessagingService.SUMMARY_ID &&
+                                it.id != conversationId.hashCode() &&
+                                it.notification.group == FirebaseMessagingService.CHAT_GROUP_KEY
+                        }
+                    if (!hasMoreChats) {
+                        notificationManager.cancel(FirebaseMessagingService.SUMMARY_ID)
+                    }
+                } else if (event == Lifecycle.Event.ON_PAUSE) {
+                    SessionManager.currentChatId = null
+                }
+            }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            SessionManager.currentChatId = null
+        }
+    }
+
+    LaunchedEffect(conversationId) {
+        viewModel.init(conversationId, otherUserId)
+    }
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) listState.animateScrollToItem(0)
     }
 
     Scaffold(
-        topBar = { chatTopBar(otherUsername = otherUsername, onBack = onBack) },
+        topBar = { chatTopBar(otherUsername = otherUsername, otherProfilePic = otherProfilePic, onBack = onBack) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding).imePadding()) {
@@ -122,6 +180,7 @@ fun chatScreen(
                             messages = messages,
                             listState = listState,
                             onDelete = { viewModel.deleteMessage(it) },
+                            otherProfilePic = otherProfilePic,
                         )
                 }
             }
@@ -139,6 +198,7 @@ private fun chatMessageList(
     messages: List<Message>,
     listState: androidx.compose.foundation.lazy.LazyListState,
     onDelete: (Int) -> Unit,
+    otherProfilePic: String? = null,
 ) {
     var selectedMessageId by remember { mutableStateOf<Int?>(null) }
     LazyColumn(
@@ -158,6 +218,7 @@ private fun chatMessageList(
                     onDelete(message.id)
                     selectedMessageId = null
                 },
+                otherProfilePic = otherProfilePic,
             )
         }
     }
@@ -167,6 +228,7 @@ private fun chatMessageList(
 @Composable
 private fun chatTopBar(
     otherUsername: String,
+    otherProfilePic: String? = null,
     onBack: () -> Unit,
 ) {
     TopAppBar(
@@ -177,15 +239,33 @@ private fun chatTopBar(
                         Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .then(
+                                if (otherProfilePic != null) Modifier else Modifier.padding(8.dp),
+                            ),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(22.dp),
-                    )
+                    if (!otherProfilePic.isNullOrEmpty()) {
+                        val fullUrl =
+                            if (otherProfilePic.startsWith("http")) {
+                                otherProfilePic
+                            } else {
+                                BuildConfig.BACKEND_URL.trimEnd('/') + "/" + otherProfilePic.trimStart('/')
+                            }
+                        AsyncImage(
+                            model = fullUrl,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(22.dp),
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
@@ -222,13 +302,14 @@ private fun messageBubble(
     isSelected: Boolean,
     onSelect: () -> Unit,
     onDelete: () -> Unit,
+    otherProfilePic: String? = null,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
         horizontalArrangement = if (isOwn) Arrangement.End else Arrangement.Start,
         verticalAlignment = Alignment.Bottom,
     ) {
-        if (!isOwn) bubbleAvatar(message.emissorUsername)
+        if (!isOwn) bubbleAvatar(message.emissorUsername, message.emissorProfilePic ?: otherProfilePic)
         Column(
             horizontalAlignment = if (isOwn) Alignment.End else Alignment.Start,
             modifier = Modifier.widthIn(max = BUBBLE_MAX_WIDTH.dp),
@@ -242,7 +323,10 @@ private fun messageBubble(
 }
 
 @Composable
-private fun bubbleAvatar(username: String) {
+private fun bubbleAvatar(
+    username: String,
+    profilePicUrl: String?,
+) {
     Box(
         modifier =
             Modifier
@@ -251,12 +335,28 @@ private fun bubbleAvatar(username: String) {
                 .background(MaterialTheme.colorScheme.secondaryContainer),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = username.firstOrNull()?.uppercaseChar()?.toString() ?: AVATAR_INITIAL_PLACEHOLDER,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
+        val showImage = !profilePicUrl.isNullOrEmpty() && profilePicUrl != "null" && profilePicUrl != "undefined"
+        if (showImage) {
+            val fullUrl =
+                if (profilePicUrl.startsWith("http")) {
+                    profilePicUrl
+                } else {
+                    BuildConfig.BACKEND_URL.trimEnd('/') + "/" + profilePicUrl.trimStart('/')
+                }
+            AsyncImage(
+                model = fullUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            Text(
+                text = username.firstOrNull()?.uppercaseChar()?.toString() ?: AVATAR_INITIAL_PLACEHOLDER,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        }
     }
     Spacer(modifier = Modifier.width(6.dp))
 }

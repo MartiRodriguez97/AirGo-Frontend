@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.features.map.data.FavoriteRouteDetail
 import com.airgo.airgoApp.features.map.data.FavoriteRouteItem
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -26,6 +27,9 @@ class FavoritesViewModel : ViewModel() {
         private set
 
     var errorMessage by mutableStateOf<UiText?>(null)
+        private set
+
+    var selectedRoute by mutableStateOf<FavoriteRouteDetail?>(null)
         private set
 
     /**
@@ -60,7 +64,6 @@ class FavoritesViewModel : ViewModel() {
                     routes = routes.filter { it.route.id != routeId }
                 } else {
                     errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)
-                    Log.e(LOG_TAG, "Delete failed: ${response.code()}")
                 }
             } catch (e: IOException) {
                 errorMessage = UiText.StringResource(R.string.error_deleting_favourite_route)
@@ -74,5 +77,13 @@ class FavoritesViewModel : ViewModel() {
 
     fun clearError() {
         errorMessage = null
+    }
+
+    fun selectRoute(route: FavoriteRouteDetail) {
+        selectedRoute = route
+    }
+
+    fun clearSelectedRoute() {
+        selectedRoute = null
     }
 }

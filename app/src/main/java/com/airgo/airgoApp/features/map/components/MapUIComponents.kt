@@ -2,11 +2,15 @@ package com.airgo.airgoApp.features.map.components
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,13 +18,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
-import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.DirectionsWalk
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardColors
+import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalIconToggleButton
@@ -41,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.map.data.TransportProfile
@@ -53,6 +64,12 @@ import com.airgo.airgoApp.features.tracking.components.trackingFab
  */
 
 private const val SELECTION_PANEL_WIDTH = 0.9f
+private const val COLOR_BICING_BLUE = 0xFF0081C9
+private const val COLOR_BICING_RED = 0xFFFF0000
+private const val COLOR_ROUTE_START = 0xFF00C853
+private const val COLOR_ROUTE_END = 0xFFFF1744
+private const val COLOR_WAYPOINT = 0xFFFF8C00
+private const val LEGEND_HALF_WIDTH = 0.5f
 
 /**
  * Missatge de GPS desactivat.
@@ -292,4 +309,122 @@ internal fun BoxScope.trackingFabSection(
                 .navigationBarsPadding()
                 .padding(bottom = 100.dp),
     )
+}
+
+@Composable
+internal fun mapLegend(modifier: Modifier = Modifier) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier.fillMaxWidth(LEGEND_HALF_WIDTH),
+        horizontalAlignment = Alignment.Start,
+    ) {
+        Surface(
+            onClick = { expanded = !expanded },
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+            shadowElevation = 4.dp,
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = stringResource(R.string.legend_title),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
+
+        AnimatedVisibility(visible = expanded) {
+            Card(
+                modifier = Modifier.padding(top = 4.dp),
+                elevation = cardElevation(4.dp),
+                colors =
+                    cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+                    ),
+            ) {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    legendItem(Color(COLOR_BICING_BLUE), stringResource(R.string.legend_bicing_available), true)
+                    legendItem(Color(COLOR_BICING_RED), stringResource(R.string.legend_bicing_empty), true)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
+                    legendItem(Color(COLOR_ROUTE_START), stringResource(R.string.legend_route_start), false)
+                    legendItem(Color(COLOR_ROUTE_END), stringResource(R.string.legend_route_end), false)
+                    legendItem(Color(COLOR_WAYPOINT), stringResource(R.string.legend_waypoint), false)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun legendItem(
+    color: Color,
+    label: String,
+    useFlag: Boolean = true,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (useFlag) {
+            Icon(
+                imageVector = Icons.Default.Flag,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(14.dp),
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(14.dp),
+            )
+        }
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = label, style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+/**
+ * Funció per definir l'estructura del panell d'informació de les estacions Bicing
+ */
+@Composable
+internal fun bicingStatItem(
+    emoji: String,
+    value: String,
+    label: String,
+    color: Color,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = emoji, style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = color,
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }

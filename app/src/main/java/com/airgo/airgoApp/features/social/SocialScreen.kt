@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -60,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.airgo.airgoApp.BuildConfig
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.social.components.emptyState
 import com.airgo.airgoApp.features.social.components.errorState
@@ -83,7 +85,8 @@ import com.airgo.airgoApp.features.social.friends.domain.FriendRequestsViewModel
 @Composable
 fun socialScreen(
     onFriendClick: (Int) -> Unit = {},
-    onChatClick: (convId: String, otherUserId: Int, username: String) -> Unit = { _, _, _ -> },
+    onChatClick: (convId: String, otherUserId: Int, username: String, profilePic: String?) -> Unit = { _, _, _, _ -> },
+    onForumClick: (Int, String) -> Unit = { _, _ -> },
     viewModel: SocialViewModel = viewModel(),
 ) {
     val activeTab by viewModel.activeTab.collectAsStateWithLifecycle()
@@ -116,9 +119,13 @@ fun socialScreen(
                     onFriendClick = onFriendClick,
                     onChatClick = onChatClick,
                 )
-            SocialTab.SEARCH -> searchTab(viewModel = viewModel)
+            SocialTab.SEARCH ->
+                searchTab(
+                    viewModel = viewModel,
+                    onForumClick = onForumClick,
+                )
             SocialTab.REQUESTS -> Unit
-            SocialTab.FORUMS -> forumsTab()
+            SocialTab.FORUMS -> forumsTab(onForumClick = onForumClick)
         }
     }
 }
@@ -128,7 +135,7 @@ private fun friendsTab(
     viewModel: SocialViewModel,
     requestsViewModel: FriendRequestsViewModel = viewModel(),
     onFriendClick: (Int) -> Unit,
-    onChatClick: (convId: String, otherUserId: Int, username: String) -> Unit = { _, _, _ -> },
+    onChatClick: (convId: String, otherUserId: Int, username: String, profilePic: String?) -> Unit = { _, _, _, _ -> },
 ) {
     val query by viewModel.friendsQuery.collectAsStateWithLifecycle()
     val uiState by viewModel.friendsUiState.collectAsStateWithLifecycle()
@@ -179,8 +186,8 @@ private fun friendsTab(
                     friends = state.friends,
                     onFriendClick = onFriendClick,
                     onChatClick = { amicId ->
-                        viewModel.getConversationId(amicId) { convId, otherUserId, username ->
-                            onChatClick(convId, otherUserId, username)
+                        viewModel.getConversationId(amicId) { convId, otherUserId, username, profilePic ->
+                            onChatClick(convId, otherUserId, username, profilePic)
                         }
                     },
                     onDelete = { amicId -> viewModel.deleteFriend(amicId) },
@@ -328,7 +335,22 @@ private fun friendRequestItem(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        userAvatarPlaceholder()
+        if (!request.solicitantProfilePic.isNullOrEmpty()) {
+            val fullUrl =
+                if (request.solicitantProfilePic.startsWith("http")) {
+                    request.solicitantProfilePic
+                } else {
+                    BuildConfig.BACKEND_URL.trimEnd('/') + "/" + request.solicitantProfilePic.trimStart('/')
+                }
+            AsyncImage(
+                model = fullUrl,
+                contentDescription = null,
+                modifier = Modifier.size(40.dp).clip(CircleShape),
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            userAvatarPlaceholder()
+        }
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -425,12 +447,27 @@ private fun friendItem(
                         .clickable(onClick = { onFriendClick(friend.amic.id) }),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(24.dp),
-                )
+                if (!friend.amic.profilePic.isNullOrEmpty()) {
+                    val fullUrl =
+                        if (friend.amic.profilePic.startsWith("http")) {
+                            friend.amic.profilePic
+                        } else {
+                            BuildConfig.BACKEND_URL.trimEnd('/') + "/" + friend.amic.profilePic.trimStart('/')
+                        }
+                    AsyncImage(
+                        model = fullUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(12.dp))
             Text(
@@ -451,7 +488,10 @@ private fun friendItem(
 }
 
 @Composable
-private fun searchTab(viewModel: SocialViewModel) {
+private fun searchTab(
+    viewModel: SocialViewModel,
+    onForumClick: (Int, String) -> Unit = { _, _ -> },
+) {
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
     val uiState by viewModel.searchUiState.collectAsStateWithLifecycle()
     val requestSentTo by viewModel.requestSentTo.collectAsStateWithLifecycle()
@@ -516,7 +556,7 @@ private fun searchTab(viewModel: SocialViewModel) {
                                     isOwner = forumViewModel.isCreatedByCurrentUser(result.forum),
                                     onToggleFavorit = { forumViewModel.toggleFavorit(result.forum.id) },
                                     onDelete = { forumViewModel.deleteForum(result.forum.id) },
-                                    onClick = {},
+                                    onClick = { onForumClick(result.forum.id, result.forum.nom ?: "") },
                                 )
                         }
                     }
@@ -542,11 +582,18 @@ private fun userResultItem(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (user.profilePic != null) {
+            if (!user.profilePic.isNullOrEmpty()) {
+                val fullUrl =
+                    if (user.profilePic.startsWith("http")) {
+                        user.profilePic
+                    } else {
+                        BuildConfig.BACKEND_URL.trimEnd('/') + "/" + user.profilePic.trimStart('/')
+                    }
                 AsyncImage(
-                    model = user.profilePic,
+                    model = fullUrl,
                     contentDescription = stringResource(R.string.photo) + " ${user.username}",
                     modifier = Modifier.size(44.dp).clip(CircleShape),
+                    contentScale = ContentScale.Crop,
                 )
             } else {
                 userAvatarPlaceholder()

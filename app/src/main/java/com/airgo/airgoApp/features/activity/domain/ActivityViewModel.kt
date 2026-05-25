@@ -67,7 +67,6 @@ class ActivityViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     loadActivities()
                 } else {
-                    Log.e(TAG, "Delete failed: ${response.code()}")
                     _uiState.value = ActivityUiState.Error(R.string.error_deleting_activity)
                 }
             } catch (e: IOException) {
@@ -104,7 +103,6 @@ class ActivityViewModel : ViewModel() {
                         _uiState.value = ActivityUiState.Success(updatedActivities)
                     }
                 } else {
-                    Log.e(TAG, "Update failed: ${response.code()}")
                     _uiState.value = ActivityUiState.Error(R.string.error_updating_activity_sensation)
                 }
             } catch (e: IOException) {
@@ -140,7 +138,6 @@ class ActivityViewModel : ViewModel() {
                         _uiState.value = ActivityUiState.Success(updatedActivities)
                     }
                 } else {
-                    Log.e(TAG, "Update comment failed: ${response.code()}")
                     _uiState.value = ActivityUiState.Error(R.string.error_updating_activity_comment)
                 }
             } catch (e: IOException) {

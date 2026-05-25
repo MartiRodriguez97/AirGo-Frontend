@@ -58,8 +58,6 @@ class UsernameViewModel : ViewModel() {
                     SessionManager.username = newUsername
                     _uiState.value = UsernameUiState.Success
                 } else {
-                    val errorBodyString = response.errorBody()?.string()
-                    android.util.Log.e("UsernameViewModel", "HTTP ${response.code()}: $errorBodyString")
                     _uiState.value =
                         UsernameUiState.Error(
                             UiText.StringResource(R.string.error_update_username),

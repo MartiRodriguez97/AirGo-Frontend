@@ -7,11 +7,12 @@ import com.airgo.airgoApp.features.map.data.RouteResponse
 import com.airgo.airgoApp.features.map.data.RouteSummary
 import com.airgo.airgoApp.features.map.domain.MapSelectionMode
 import com.airgo.airgoApp.features.map.domain.RouteViewModel
+import com.airgo.airgoApp.features.map.helpers.NominatimService
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.unmockkObject
+import io.mockk.unmockkAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -63,13 +64,15 @@ class RouteViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         mockkObject(RetrofitProvider)
+        mockkObject(NominatimService)
+        coEvery { NominatimService.reverseGeocode(any(), any()) } returns "Mock Address"
         viewModel = RouteViewModel()
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
-        unmockkObject(RetrofitProvider)
+        unmockkAll()
     }
 
     // region calculateRoute
@@ -155,14 +158,16 @@ class RouteViewModelTest {
     // region onPointSelected
 
     @Test
-    fun `onPointSelected START mode sets startPoint and resets mode to NONE`() {
-        viewModel.selectionMode = MapSelectionMode.START
+    fun `onPointSelected START mode sets startPoint and resets mode to NONE`() =
+        runTest {
+            viewModel.onSetSelectionMode(MapSelectionMode.START)
 
-        viewModel.onPointSelected(startPoint)
+            viewModel.onPointSelected(startPoint)
+            advanceUntilIdle()
 
-        assertEquals(startPoint, viewModel.startPoint)
-        assertEquals(MapSelectionMode.NONE, viewModel.selectionMode)
-    }
+            assertEquals(startPoint, viewModel.startPoint)
+            assertEquals(MapSelectionMode.NONE, viewModel.selectionMode)
+        }
 
     @Test
     fun `onPointSelected START mode clears currentRoute`() =
@@ -173,21 +178,24 @@ class RouteViewModelTest {
             viewModel.calculateRoute()
             advanceUntilIdle()
 
-            viewModel.selectionMode = MapSelectionMode.START
+            viewModel.onSetSelectionMode(MapSelectionMode.START)
             viewModel.onPointSelected(GeoPoint(41.0, 2.0))
+            advanceUntilIdle()
 
             assertNull(viewModel.currentRoute)
         }
 
     @Test
-    fun `onPointSelected END mode sets endPoint and resets mode to NONE`() {
-        viewModel.selectionMode = MapSelectionMode.END
+    fun `onPointSelected END mode sets endPoint and resets mode to NONE`() =
+        runTest {
+            viewModel.onSetSelectionMode(MapSelectionMode.END)
 
-        viewModel.onPointSelected(endPoint)
+            viewModel.onPointSelected(endPoint)
+            advanceUntilIdle()
 
-        assertEquals(endPoint, viewModel.endPoint)
-        assertEquals(MapSelectionMode.NONE, viewModel.selectionMode)
-    }
+            assertEquals(endPoint, viewModel.endPoint)
+            assertEquals(MapSelectionMode.NONE, viewModel.selectionMode)
+        }
 
     @Test
     fun `onPointSelected END mode clears currentRoute`() =
@@ -198,8 +206,9 @@ class RouteViewModelTest {
             viewModel.calculateRoute()
             advanceUntilIdle()
 
-            viewModel.selectionMode = MapSelectionMode.END
+            viewModel.onSetSelectionMode(MapSelectionMode.END)
             viewModel.onPointSelected(GeoPoint(41.0, 2.0))
+            advanceUntilIdle()
 
             assertNull(viewModel.currentRoute)
         }
@@ -207,7 +216,7 @@ class RouteViewModelTest {
     @Test
     fun `onPointSelected NONE mode does not change startPoint`() {
         viewModel.startPoint = startPoint
-        viewModel.selectionMode = MapSelectionMode.NONE
+        viewModel.onSetSelectionMode(MapSelectionMode.NONE)
 
         viewModel.onPointSelected(GeoPoint(41.0, 2.0))
 

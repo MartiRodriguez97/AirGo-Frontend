@@ -19,6 +19,7 @@ class UserPreferencesRepository(
         val TOKEN = stringPreferencesKey("token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
         val USER_ID = intPreferencesKey("user_id")
+        val PROFILE_PICTURE_URL = stringPreferencesKey("profile_picture_url")
     }
 
     val userPreferencesFlow: Flow<UserPreferences> =
@@ -27,6 +28,7 @@ class UserPreferencesRepository(
                 token = preferences[PreferencesKeys.TOKEN],
                 refreshToken = preferences[PreferencesKeys.REFRESH_TOKEN],
                 userId = preferences[PreferencesKeys.USER_ID],
+                profilePictureUrl = preferences[PreferencesKeys.PROFILE_PICTURE_URL],
             )
         }
 
@@ -46,6 +48,7 @@ class UserPreferencesRepository(
             preferences.setOrRemove(PreferencesKeys.TOKEN, userPrefs.token)
             preferences.setOrRemove(PreferencesKeys.REFRESH_TOKEN, userPrefs.refreshToken)
             preferences.setOrRemove(PreferencesKeys.USER_ID, userPrefs.userId)
+            preferences.setOrRemove(PreferencesKeys.PROFILE_PICTURE_URL, userPrefs.profilePictureUrl)
         }
     }
 
@@ -58,4 +61,5 @@ data class UserPreferences(
     val token: String?,
     val refreshToken: String?,
     val userId: Int?,
+    val profilePictureUrl: String? = null,
 )

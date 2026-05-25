@@ -18,12 +18,65 @@
     <string name="profile_activities_delete_desc">Eliminar activitat</string>
 
     <!-- Badge Translations -->
-    <string name="badge_constancy_name">Iniciació a la constància</string>
-    <string name="badge_constancy_desc">Has completat la teva primera setmana d\'activitat!</string>
-    <string name="badge_walk_name">De passeig</string>
-    <string name="badge_walk_desc">Has caminat els teus primers 5 kilòmetres.</string>
     <string name="badge_welcome_name">Benvingut a AirGo!</string>
-    <string name="badge_welcome_desc">Gràcies por unir-te a la comunitat d\'AirGo.</string>
+    <string name="badge_welcome_desc">Has aconseguit 50 punts. Benvingut a la comunitat AirGo!</string>
+
+    <string name="badge_legend_name">Llegenda AirGo</string>
+    <string name="badge_legend_desc">Has aconseguit 5000 punts. La teva dedicació és llegendària!</string>
+
+    <string name="badge_ambassador_name">Ambaixador AirGo</string>
+    <string name="badge_ambassador_desc">Has aconseguit 2500 punts. Ets un ambaixador de la mobilitat sostenible!</string>
+
+    <string name="badge_elite_name">Elit verd</string>
+    <string name="badge_elite_desc">Has aconseguit 1000 punts. Formes part de l\'elit d\'AirGo!</string>
+
+    <string name="badge_athlete_name">Atleta urbà</string>
+    <string name="badge_athlete_desc">Has aconseguit 500 punts. Ets un atleta urbà!</string>
+
+    <string name="badge_fit_name">En forma</string>
+    <string name="badge_fit_desc">Has aconseguit 250 punts. Cada esforç compta!</string>
+
+    <string name="badge_first_steps_name">Primeres passes</string>
+    <string name="badge_first_steps_desc">Has aconseguit 100 punts. Vas pel bon camí!</string>
+
+    <string name="badge_catalan_crossing_name">Travessia catalana</string>
+    <string name="badge_catalan_crossing_desc">Has recorregut 1000 km en total. De llegenda!</string>
+
+    <string name="badge_pedal_master_name">Mestre del pedal</string>
+    <string name="badge_pedal_master_desc">Has recorregut 500 km en total. Ets un autèntic esportista!</string>
+
+    <string name="badge_centurion_name">Centurió</string>
+    <string name="badge_centurion_desc">Has recorregut 100 km en total. Un centenar de quilòmetres!</string>
+
+    <string name="badge_around_barcelona_name">Voltant Barcelona</string>
+    <string name="badge_around_barcelona_desc">Has recorregut 50 km en total. Tota Barcelona als teus peus!</string>
+
+    <string name="badge_urban_explorer_name">Explorador urbà</string>
+    <string name="badge_urban_explorer_desc">Has recorregut 21 km en total. Ja coneixes la ciutat!</string>
+
+    <string name="badge_first_10km_name">Primers 10 quilòmetres</string>
+    <string name="badge_first_10km_desc">Has recorregut 10 km en total. Vas agafant el ritme!</string>
+
+    <string name="badge_walk_name">De passeig</string>
+    <string name="badge_walk_desc">Has recorregut 5 km en total. El primer pas sempre compta!</string>
+
+    <string name="badge_half_year_streak_name">Mig any de ratxa</string>
+    <string name="badge_half_year_streak_desc">180 dies consecutius. Increïble dedicació!</string>
+
+    <string name="badge_constancy_legend_name">Llegenda de la constància</string>
+    <string name="badge_constancy_legend_desc">60 dies consecutius. Ets un exemple per a tothom.</string>
+
+    <string name="badge_one_month_nonstop_name">Un mes sense parar</string>
+    <string name="badge_one_month_nonstop_desc">30 dies consecutius d\'activitat. Ets una màquina!</string>
+
+    <string name="badge_two_weeks_unstoppable_name">Dues setmanes imparable</string>
+    <string name="badge_two_weeks_unstoppable_desc">14 dies sense parar. La constància és la teva força.</string>
+
+    <string name="badge_iron_week_name">Setmana de ferro</string>
+    <string name="badge_iron_week_desc">Has mantingut una ratxa de 7 dies consecutius. Impressionant!</string>
+
+    <string name="badge_constancy_name">Iniciació a la constància</string>
+    <string name="badge_constancy_desc">Has completat 3 dies consecutius d\'activitat. Bon inici!</string>
 
     <string name="profile_delete_account_button">Delete account</string>
     <string name="profile_delete_account_dialog_title">Delete account?</string>
@@ -136,6 +189,22 @@
     <string name="map_layers_description">Layers</string>
     <string name="map_layer_bicing">Bicing stations</string>
     <string name="map_layer_pollution">Air quality</string>
+    <string name="bicing_mechanical">mechanicals</string>
+    <string name="bicing_free_slots">free slots</string>
+    <string name="bicing_status_operative">Operative</string>
+    <string name="bicing_status_out_of_service">Out of service</string>
+    <string name="bicing_electric">electrics</string>
+
+    <!-- features/map/components/MapUIComponents -->
+    <string name="legend_title">Legend</string>
+    <string name="legend_bicing_available">Bicing stations with bikes</string>
+    <string name="legend_bicing_empty">Empty Bicing stations</string>
+    <string name="legend_route_start">Route starting point</string>
+    <string name="legend_route_end">End point of route</string>
+    <string name="legend_waypoint">Midpoint of the route</string>
+
+    <!-- features/map/components/RoutePanel -->
+    <string name="selection_panel_title">Select route points</string>
 
     <!-- features/map/FavoritesViewModel-->
     <string name="error_deleting_favourite_route">The route could not be removed as a favorite</string>
@@ -331,7 +400,11 @@
     <string name="error_loading_friends">Could not load friends</string>
     <string name="error_deleting_friend">Couldn\'t delete this friend</string>
 
-    <!-- Tracking Dialogs -->
+    <!-- features/tracking-->
+    <string name="error_saving_activity">Could not save activity</string>
+    <string name="tracking_elevated_speed">You have reached an extreme speed, please use the application responsibly</string>
+    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
+    <string name="tracking_save_progress">Progreso guardado</string>
     <string name="tracking_new_title_title">New Title!</string>
     <string name="tracking_new_title_desc">You have a pending title to choose!</string>
     <string name="tracking_set_main_title">Set as main title</string>
@@ -344,9 +417,10 @@
     <string name="begin_conversation">Start the conversation!</string>
     <string name="message">Message...</string>
     <string name="send">Send</string>
-
-    <!-- features/tracking-->
-    <string name="error_saving_activity">Could not save activity</string>
+    <string name="chat_user_me">Me</string>
+    <string name="chat_reply">Reply</string>
+    <string name="chat_reply_label">Write a response...</string>
+    <string name="chat_mark_as_read">Mark as read</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Start</string>
@@ -426,4 +500,14 @@
 
     <string name="no_pending_activity_today">You have no pending activities for today.</string>
     <string name="no_activity_data">No activity data available.</string>
+    <string name="start_point">Start point</string>
+    <string name="end_point">End point</string>
+    <string name="waypoint">Waypoint %d</string>
+    <string name="write_address">Write an address...</string>
+    <string name="selection_point_hint">How do you want to select the point?</string>
+    <string name="on_map">On map</string>
+    <string name="search_address">By address</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
+
 </resources>
