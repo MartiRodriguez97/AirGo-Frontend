@@ -16,8 +16,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -82,9 +86,9 @@ fun planDetailsScreen(
                 plan = plan,
                 modifier = Modifier.padding(padding).padding(16.dp),
                 onFinishClick = { showDeleteDialog = true },
+                onUpdateName = { newName -> viewModel.updatePlanName(plan.id, newName) },
             )
         } else {
-            // Handle plan not found
             Text(
                 text = stringResource(R.string.home_plan_not_found),
                 modifier = Modifier.padding(padding).padding(16.dp),
@@ -112,19 +116,70 @@ fun planDetailsContent(
     plan: TrainingPlanResponse,
     modifier: Modifier = Modifier,
     onFinishClick: () -> Unit,
+    onUpdateName: (String) -> Unit = {},
 ) {
+    var isEditing by remember { mutableStateOf(false) }
+    var editedName by remember(plan.nom) { mutableStateOf(plan.nom ?: "") }
     Column(
         modifier =
             modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
     ) {
-        Text(
-            text = plan.nom.takeIf { !it.isNullOrBlank() } ?: stringResource(R.string.home_plan_summary_title),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (isEditing) {
+                OutlinedTextField(
+                    value = editedName,
+                    onValueChange = { editedName = it },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    label = { Text("Nom del pla") },
+                )
+
+                IconButton(onClick = {
+                    if (editedName.isNotBlank() && editedName != plan.nom) {
+                        onUpdateName(editedName)
+                    }
+                    isEditing = false
+                }) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = stringResource(R.string.btn_save),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+
+                IconButton(onClick = {
+                    editedName = plan.nom ?: ""
+                    isEditing = false
+                }) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = stringResource(R.string.home_plan_delete_cancel),
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                }
+            } else {
+                Text(
+                    text = plan.nom.takeIf { !it.isNullOrBlank() } ?: stringResource(R.string.home_plan_summary_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f),
+                )
+
+                IconButton(onClick = { isEditing = true }) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.acc_edit_icon),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(16.dp))
         planSummaryCard(plan = plan)
         Spacer(modifier = Modifier.weight(1f))

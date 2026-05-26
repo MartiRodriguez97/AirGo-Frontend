@@ -16,6 +16,13 @@ class TrainingPlanRepository {
 
     suspend fun fetchFullTrainingPlans(): List<TrainingPlanResponse> = getTrainingPlans()
 
+    suspend fun updateTrainingPlanName(
+        id: Int,
+        newName: String,
+    ) {
+        api.updateTrainingPlanName(id, UpdatePlanNameRequest(newName))
+    }
+
     suspend fun updateExercise(
         id: Int,
         completat: Boolean,

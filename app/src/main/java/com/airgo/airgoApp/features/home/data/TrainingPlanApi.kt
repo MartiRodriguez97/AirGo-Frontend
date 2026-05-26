@@ -9,6 +9,7 @@ import com.airgo.airgoApp.core.network.ApiEndpoints.TEMPLATE_EXERCICI
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -34,16 +35,26 @@ interface TrainingPlanApi {
     @GET(SAVE_ACTIVITY)
     suspend fun getActivities(): List<Exercise>
 
-    @retrofit2.http.PATCH(ACTIVITY)
+    @PATCH(ACTIVITY)
     suspend fun updateExercise(
         @Path("id") id: Int,
         @Body request: UpdateExerciseRequest,
     ): Exercise
+
+    @PATCH(PLA_ENTRENAMENT_ID)
+    suspend fun updateTrainingPlanName(
+        @Path("id") id: Int,
+        @Body request: UpdatePlanNameRequest,
+    ): BackendPlanData
 }
 
 data class UpdateExerciseRequest(
     val completat: Boolean,
     val distanciaFeta: Double,
+)
+
+data class UpdatePlanNameRequest(
+    val nom: String,
 )
 
 data class TrainingPlanRequest(

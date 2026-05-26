@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.home.domain
 
+import android.net.http.HttpException
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.core.network.RetrofitProvider.profileApi
 import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.home.data.Exercise
+import com.airgo.airgoApp.features.home.data.NomPla
 import com.airgo.airgoApp.features.home.data.TrainingPlanRepository
 import com.airgo.airgoApp.features.home.data.TrainingPlanRequest
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
@@ -354,6 +356,47 @@ class HomeViewModel : ViewModel() {
             } catch (e: retrofit2.HttpException) {
                 Log.e("HomeViewModel", "Error deleting plan", e)
                 _errorMessage.value = com.airgo.airgoApp.R.string.home_error_delete_plan
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun updatePlanName(
+        planId: Int,
+        newName: String,
+    ) {
+        viewModelScope.launch(exceptionHandler) {
+            _isLoading.value = true
+            try {
+                repository.updateTrainingPlanName(planId, newName)
+
+                val currentPlans = _plans.value.toMutableList()
+                val index = currentPlans.indexOfFirst { it.id == planId }
+
+                if (index != -1) {
+                    val oldPlan = currentPlans[index]
+
+                    val updatedExercises =
+                        oldPlan.exercicis.map { ex ->
+                            ex.copy(nomPla = NomPla(newName))
+                        }
+
+                    currentPlans[index] =
+                        oldPlan.copy(
+                            nom = newName,
+                            exercicis = updatedExercises,
+                        )
+
+                    _plans.value = currentPlans
+                    SessionManager.trainingPlans = currentPlans
+
+                    val totsExercicis = currentPlans.flatMap { it.exercicis ?: emptyList() }
+                    updateTodayExercises(totsExercicis)
+                }
+            } catch (e: IOException) {
+                Log.e("HomeViewModel", "Error de xarxa actualitzant el nom del pla", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_generic
             } finally {
                 _isLoading.value = false
             }
