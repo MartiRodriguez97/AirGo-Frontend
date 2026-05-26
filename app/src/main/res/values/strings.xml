@@ -529,4 +529,8 @@
 
     <string name="select_date_button">Click to select the date</string>
 
+    <string name="default_training_plan_name">Training plan</string>
+    <string name="question_plan_name">What name do you want to give to the plan?</string>
+    <string name="home_my_plans_title">Your training plans:</string>
+
 </resources>

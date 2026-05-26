@@ -4,7 +4,7 @@ import com.airgo.airgoApp.core.network.ApiEndpoints.ACTIVITY
 import com.airgo.airgoApp.core.network.ApiEndpoints.MEUS_PLANS_ENTRENAMENT
 import com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT
 import com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT_ID
-import com.airgo.airgoApp.core.network.ApiEndpoints.PLA_ENTRENAMENT_INI
+import com.airgo.airgoApp.core.network.ApiEndpoints.SAVE_ACTIVITY
 import com.airgo.airgoApp.core.network.ApiEndpoints.TEMPLATE_EXERCICI
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -26,18 +26,12 @@ interface TrainingPlanApi {
         @Body request: TrainingPlanRequest,
     ): CreateTrainingPlanResponse
 
-    @POST(PLA_ENTRENAMENT_INI)
-    suspend fun initializeTrainingPlan(
-        @Path("id") id: Int,
-        @Body request: TrainingPlanRequest,
-    ): TrainingPlanRawResponse
-
     @DELETE(PLA_ENTRENAMENT_ID)
     suspend fun deleteTrainingPlan(
         @Path("id") id: Int,
     )
 
-    @GET("api/exercicis/")
+    @GET(SAVE_ACTIVITY)
     suspend fun getActivities(): List<Exercise>
 
     @retrofit2.http.PATCH(ACTIVITY)
@@ -53,6 +47,7 @@ data class UpdateExerciseRequest(
 )
 
 data class TrainingPlanRequest(
+    val nom: String,
     val diesDurada: Int,
     val numEntrenamentsSetmanals: Int,
     val esport: String,

@@ -7,12 +7,8 @@ class TrainingPlanRepository {
 
     suspend fun getTrainingPlans(): List<TrainingPlanResponse> = api.getTrainingPlans()
 
-    suspend fun getTemplate(id: Int): TrainingTemplate = api.getTemplate(id)
-
     @Suppress("MaxLineLength")
     suspend fun createTrainingPlan(request: TrainingPlanRequest): CreateTrainingPlanResponse = api.createTrainingPlan(request)
-
-    suspend fun getActivities(): List<Exercise> = api.getActivities()
 
     suspend fun deleteTrainingPlan(id: Int) {
         api.deleteTrainingPlan(id)

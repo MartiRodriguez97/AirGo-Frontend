@@ -535,4 +535,9 @@
     <string name="no_activity_data">No hay datos de la actividad.</string>
 
     <string name="select_date_button">Haz clic para seleccionar la fecha</string>
+
+    <string name="default_training_plan_name">Plan de entrenamiento</string>
+    <string name="question_plan_name">¿Qué nombre le quieres poner al plan?</string>
+    <string name="home_my_plans_title">Tus planes de entrenamiento:</string>
+
 </resources>

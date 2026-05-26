@@ -115,14 +115,10 @@ fun homeScreen(
     LaunchedEffect(Unit) {
         viewModel.loadPlans()
     }
-    LaunchedEffect(plans) {
-        viewModel.updateTodayExercises(exercises)
-    }
 
     LaunchedEffect(errorMessage) {
         errorMessage?.let { resId ->
-            // Si el diàleg de l'edifici està obert, no mostrem el Toast
-            // aquí ja que el diàleg ja té el seu propi mecanisme d'error
+
             if (!viewModel.showBuildingAddressDialog) {
                 Toast.makeText(context, resId, Toast.LENGTH_SHORT).show()
                 viewModel.clearErrorMessage()
@@ -157,14 +153,15 @@ fun homeScreen(
     }
 
     Scaffold(
-        // 1. MOVEMOS EL BOTÓN A LA IZQUIERDA
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateToQuestionnaire) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.plan_create_title),
-                )
+            if (plans.isNotEmpty()) {
+                FloatingActionButton(onClick = onNavigateToQuestionnaire) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.plan_create_title),
+                    )
+                }
             }
         },
     ) { padding ->
@@ -176,7 +173,6 @@ fun homeScreen(
                     .padding(horizontal = 8.dp),
         ) {
             item {
-                // 2. AUMENTAMOS EL MARGEN SUPERIOR PARA EVITAR EL NOTCH / BARRA DE ESTADO
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -208,6 +204,15 @@ fun homeScreen(
             }
 
             if (plans.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.home_my_plans_title),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 12.dp),
+                    )
+                }
+
                 items(plans) { plan ->
                     activePlanSection(plan, onClick = { onNavigateToDetails(plan.id) })
                     Spacer(modifier = Modifier.height(16.dp))
@@ -243,7 +248,7 @@ fun activePlanSection(
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             Text(
-                text = stringResource(R.string.home_active_plan_label),
+                text = plan.nom.takeIf { !it.isNullOrBlank() } ?: stringResource(R.string.home_active_plan_label),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
@@ -367,14 +372,6 @@ fun pendingActivitySection(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                        }
-
-                        if (exercise.distanciaFeta > 0) {
-                            Text(
-                                text = stringResource(R.string.home_pending_activity_progress, exercise.distanciaFeta),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.secondary,
-                            )
                         }
                     }
                 }

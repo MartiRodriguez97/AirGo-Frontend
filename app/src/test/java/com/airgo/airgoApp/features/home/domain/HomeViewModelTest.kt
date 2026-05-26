@@ -76,6 +76,7 @@ class HomeViewModelTest {
                 listOf(
                     TrainingPlanResponse(
                         id = 1,
+                        nom = "Test Plan",
                         diesDurada = 30,
                         numEntrenamentsSetmanals = 3,
                         templates = emptyList(),
@@ -97,18 +98,20 @@ class HomeViewModelTest {
             val rawPlans =
                 listOf(
                     TrainingPlanResponse(
-                        1,
-                        30,
-                        3,
-                        listOf(
-                            TrainingTemplate(
-                                101,
-                                "Test Template",
-                                "Desc",
-                                "Run",
-                                emptyList(),
+                        id = 1,
+                        nom = "Test Plan",
+                        diesDurada = 30,
+                        numEntrenamentsSetmanals = 3,
+                        templates =
+                            listOf(
+                                TrainingTemplate(
+                                    101,
+                                    "Test Template",
+                                    "Desc",
+                                    "Run",
+                                    emptyList(),
+                                ),
                             ),
-                        ),
                     ),
                 )
 
@@ -146,9 +149,33 @@ class HomeViewModelTest {
 
             val dummyTemplate = TrainingTemplate(101, "T1", "D", "R", emptyList())
 
-            val exerciseToday = Exercise(1, today, dummyTemplate, false, 5.0, 0.0)
-            val exerciseYesterday = Exercise(2, yesterday, dummyTemplate, false, 5.0, 0.0)
-            val exerciseCompleted = Exercise(3, today, dummyTemplate, true, 5.0, 0.0)
+            val exerciseToday =
+                Exercise(
+                    id = 1,
+                    dataInici = today,
+                    template = dummyTemplate,
+                    completat = false,
+                    distanciaObjectiu = 5.0,
+                    distanciaFeta = 0.0,
+                )
+            val exerciseYesterday =
+                Exercise(
+                    id = 2,
+                    dataInici = yesterday,
+                    template = dummyTemplate,
+                    completat = false,
+                    distanciaObjectiu = 5.0,
+                    distanciaFeta = 0.0,
+                )
+            val exerciseCompleted =
+                Exercise(
+                    id = 3,
+                    dataInici = today,
+                    template = dummyTemplate,
+                    completat = true,
+                    distanciaObjectiu = 5.0,
+                    distanciaFeta = 0.0,
+                )
 
             val template =
                 TrainingTemplate(
@@ -159,8 +186,13 @@ class HomeViewModelTest {
                     listOf(exerciseToday, exerciseYesterday, exerciseCompleted),
                 )
             val plan =
-
-                TrainingPlanResponse(1, 30, 3, listOf(template))
+                TrainingPlanResponse(
+                    id = 1,
+                    nom = "Test Plan",
+                    diesDurada = 30,
+                    numEntrenamentsSetmanals = 3,
+                    templates = listOf(template),
+                )
 
             every { SessionManager.trainingPlans } returns listOf(plan)
 
@@ -174,10 +206,24 @@ class HomeViewModelTest {
     fun startExerciceSetActivInSessionManager() =
         runTest {
             val dummyTemplate = TrainingTemplate(101, "Target Template", "D", "R", emptyList())
-            val exercise = Exercise(1, "2024-01-01", dummyTemplate, false, 5.0, 0.0)
+            val exercise =
+                Exercise(
+                    id = 1,
+                    dataInici = "2024-01-01",
+                    template = dummyTemplate,
+                    completat = false,
+                    distanciaObjectiu = 5.0,
+                    distanciaFeta = 0.0,
+                )
             val template = TrainingTemplate(101, "Target Template", "D", "R", listOf(exercise))
             val plan =
-                TrainingPlanResponse(1, 30, 3, listOf(template))
+                TrainingPlanResponse(
+                    id = 1,
+                    nom = "Test Plan",
+                    diesDurada = 30,
+                    numEntrenamentsSetmanals = 3,
+                    templates = listOf(template),
+                )
 
             every { SessionManager.trainingPlans } returns listOf(plan)
             coEvery { mockApi.getTrainingPlans() } returns listOf(plan)
@@ -196,6 +242,7 @@ class HomeViewModelTest {
             val dummyPlanData =
                 com.airgo.airgoApp.features.home.data.BackendPlanData(
                     id = 1,
+                    nom = "Test Plan",
                     diesDurada = 30,
                     numEntrenamentsSetmanals = 3,
                     esport = "CAM",
@@ -213,23 +260,37 @@ class HomeViewModelTest {
                     numExercicisCreats = 0,
                 )
 
-            val planResponse = TrainingPlanResponse(1, 30, 3, emptyList())
+            val planResponse =
+                TrainingPlanResponse(
+                    id = 1,
+                    nom = "Test Plan",
+                    diesDurada = 30,
+                    numEntrenamentsSetmanals = 3,
+                    templates = emptyList(),
+                )
 
             coEvery { mockApi.createTrainingPlan(any()) } returns rawResponse
             coEvery { mockApi.getTrainingPlans() } returns listOf(planResponse)
             coEvery { mockApi.getActivities() } returns emptyList()
 
             var successCalled = false
+
+            val params =
+                CreatePlanParams(
+                    name = "Test Plan",
+                    daysDuration = 30,
+                    workoutsPerWeek = 3,
+                    sport = "CAM",
+                    level = 1,
+                    daysOfWeek = listOf(1, 3, 5),
+                    endDate = "2024-12-31",
+                )
+
             viewModel.createPlan(
+                params = params,
                 onSuccess = {
                     successCalled = true
                 },
-                daysDuration = 30,
-                workoutsPerWeek = 3,
-                sport = "CAM",
-                level = 1,
-                daysOfWeek = listOf(1, 3, 5),
-                endDate = "2024-12-31",
             )
 
             assertTrue(successCalled)
@@ -241,9 +302,21 @@ class HomeViewModelTest {
     fun deletePlanFromSessionManager() =
         runTest {
             val plan1 =
-                TrainingPlanResponse(1, 30, 3, emptyList())
+                TrainingPlanResponse(
+                    id = 1,
+                    nom = "Plan 1",
+                    diesDurada = 30,
+                    numEntrenamentsSetmanals = 3,
+                    templates = emptyList(),
+                )
             val plan2 =
-                TrainingPlanResponse(2, 30, 3, emptyList())
+                TrainingPlanResponse(
+                    id = 2,
+                    nom = "Plan 2",
+                    diesDurada = 30,
+                    numEntrenamentsSetmanals = 3,
+                    templates = emptyList(),
+                )
 
             every { SessionManager.trainingPlans } returns listOf(plan1, plan2)
             coEvery { mockApi.getTrainingPlans() } returns listOf(plan1, plan2)

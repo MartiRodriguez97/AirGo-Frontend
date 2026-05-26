@@ -3,6 +3,7 @@ import com.google.gson.annotations.SerializedName
 
 data class TrainingPlanResponse(
     val id: Int,
+    val nom: String? = null,
     val diesDurada: Int,
     val numEntrenamentsSetmanals: Int,
     val templates: List<TrainingTemplate> = emptyList(),
@@ -18,6 +19,7 @@ data class CreateTrainingPlanResponse(
 
 data class BackendPlanData(
     val id: Int,
+    val nom: String? = null,
     val diesDurada: Int,
     val numEntrenamentsSetmanals: Int,
     val esport: String,
@@ -25,13 +27,6 @@ data class BackendPlanData(
     val diesSetmana: List<Int>,
     val dataFi: String,
     val templates: List<TrainingTemplate> = emptyList(),
-)
-
-data class TrainingPlanRawResponse(
-    val id: Int,
-    val diesDurada: Int,
-    val numEntrenamentsSetmanals: Int,
-    val templates: List<Int> = emptyList(),
 )
 
 data class TrainingTemplate(
@@ -48,9 +43,16 @@ data class TrainingTemplate(
 
 data class Exercise(
     val id: Int,
+    val pla: Int? = null,
+    @SerializedName("nom_pla")
+    val nomPla: NomPla? = null,
     val dataInici: String?,
     val template: TrainingTemplate?,
     val completat: Boolean,
     val distanciaObjectiu: Double = 0.0,
     val distanciaFeta: Double = 0.0,
+)
+
+data class NomPla(
+    val nom: String,
 )

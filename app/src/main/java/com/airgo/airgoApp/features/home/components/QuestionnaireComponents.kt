@@ -25,6 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -266,4 +267,24 @@ internal fun selectionButton(
             )
         }
     }
+}
+
+@Composable
+internal fun stepNameSelection(
+    name: String,
+    onNameChange: (String) -> Unit,
+) {
+    Text(
+        text = stringResource(R.string.question_plan_name),
+        style = MaterialTheme.typography.titleMedium,
+    )
+    Spacer(modifier = Modifier.height(24.dp))
+
+    OutlinedTextField(
+        value = name,
+        onValueChange = onNameChange,
+        label = { Text(stringResource(R.string.default_training_plan_name)) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+    )
 }

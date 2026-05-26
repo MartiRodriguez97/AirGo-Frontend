@@ -30,6 +30,16 @@ private const val SIZE_SEARCH = 3
 private const val MIN_VALOR_PUNTS = 7
 private const val DATA_FORMAT_LENGTH = 10
 
+data class CreatePlanParams(
+    val name: String,
+    val daysDuration: Int,
+    val workoutsPerWeek: Int,
+    val sport: String?,
+    val level: Int?,
+    val daysOfWeek: List<Int>,
+    val endDate: String,
+)
+
 class HomeViewModel : ViewModel() {
     private val repository = TrainingPlanRepository()
 
@@ -277,25 +287,21 @@ class HomeViewModel : ViewModel() {
     }
 
     fun createPlan(
+        params: CreatePlanParams,
         onSuccess: () -> Unit,
-        daysDuration: Int,
-        workoutsPerWeek: Int,
-        sport: String?,
-        level: Int?,
-        daysOfWeek: List<Int>,
-        endDate: String,
     ) {
         viewModelScope.launch(exceptionHandler) {
             _isLoading.value = true
             try {
                 val request =
                     TrainingPlanRequest(
-                        diesDurada = daysDuration,
-                        numEntrenamentsSetmanals = workoutsPerWeek,
-                        esport = sport ?: "CAM",
-                        nivell = level ?: 1,
-                        diesSetmana = daysOfWeek,
-                        dataFi = endDate,
+                        nom = params.name,
+                        diesDurada = params.daysDuration,
+                        numEntrenamentsSetmanals = params.workoutsPerWeek,
+                        esport = params.sport ?: "CAM",
+                        nivell = params.level ?: 1,
+                        diesSetmana = params.daysOfWeek,
+                        dataFi = params.endDate,
                     )
 
                 repository.createTrainingPlan(request)

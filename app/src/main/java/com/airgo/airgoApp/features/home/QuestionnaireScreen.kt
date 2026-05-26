@@ -47,16 +47,19 @@ import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.home.components.stepDateSelection
 import com.airgo.airgoApp.features.home.components.stepDaysSelection
 import com.airgo.airgoApp.features.home.components.stepLevelSelection
+import com.airgo.airgoApp.features.home.components.stepNameSelection
 import com.airgo.airgoApp.features.home.components.stepSportSelection
+import com.airgo.airgoApp.features.home.domain.CreatePlanParams
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
 
 internal const val STEP_SPORT = 0
 internal const val STEP_LEVEL = 1
 internal const val STEP_DAYS = 2
 internal const val STEP_DATE = 3
-private const val TOTAL_STEPS = 4
+internal const val STEP_NAME = 4
+private const val TOTAL_STEPS = 5
 private const val MILLIS_IN_DAY = 86400000L
-private const val TARGET_MAX_STEP = 3
+private const val TARGET_MAX_STEP = 4
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal data class QuestionnaireFormState(
@@ -66,6 +69,8 @@ internal data class QuestionnaireFormState(
     val onLevelSelected: (Int) -> Unit,
     val selectedDays: SnapshotStateList<Int>,
     val datePickerState: DatePickerState,
+    val planName: String,
+    val onPlanNameChanged: (String) -> Unit,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,6 +85,8 @@ fun questionnaireScreen(
     var currentStep by remember { mutableStateOf(0) }
     val datePickerState = rememberDateState()
 
+    val defaultPlanName = stringResource(R.string.default_training_plan_name)
+    var planName by remember { mutableStateOf(defaultPlanName) }
     val isNextEnabled =
         checkNextEnabled(
             currentStep,
@@ -87,6 +94,7 @@ fun questionnaireScreen(
             selectedLevel,
             selectedDays,
             datePickerState,
+            planName,
         )
 
     BackHandler(enabled = true) {
@@ -115,6 +123,8 @@ fun questionnaireScreen(
                     onLevelSelected = { selectedLevel = it },
                     selectedDays = selectedDays,
                     datePickerState = datePickerState,
+                    planName = planName,
+                    onPlanNameChanged = { planName = it },
                 )
             questionnaireStepContent(
                 currentStep = currentStep,
@@ -134,13 +144,19 @@ fun questionnaireScreen(
 
                     val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
                     val dateString = formatter.format(java.util.Date(endDateMillis))
+
+                    val planParams =
+                        CreatePlanParams(
+                            name = planName,
+                            daysDuration = daysDuration,
+                            workoutsPerWeek = workoutsPerWeek,
+                            sport = selectedSport,
+                            level = selectedLevel,
+                            daysOfWeek = selectedDays,
+                            endDate = dateString,
+                        )
                     viewModel.createPlan(
-                        daysDuration = daysDuration,
-                        workoutsPerWeek = workoutsPerWeek,
-                        sport = selectedSport,
-                        level = selectedLevel,
-                        daysOfWeek = selectedDays,
-                        endDate = dateString,
+                        params = planParams,
                         onSuccess = {
                             onClose()
                         },
@@ -180,7 +196,6 @@ private fun questionnaireStepContent(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()) // 1. Añade scroll aquí
                     .padding(vertical = 16.dp),
-            // 2. Añade un poco de margen vertical
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             when (step) {
@@ -188,6 +203,7 @@ private fun questionnaireStepContent(
                 STEP_LEVEL -> stepLevelSelection(formState.selectedLevel, formState.onLevelSelected)
                 STEP_DAYS -> stepDaysSelection(formState.selectedDays)
                 STEP_DATE -> stepDateSelection(formState.datePickerState)
+                STEP_NAME -> stepNameSelection(formState.planName, formState.onPlanNameChanged)
             }
         }
     }
@@ -289,11 +305,13 @@ private fun checkNextEnabled(
     selectedLevel: Int?,
     selectedDays: SnapshotStateList<Int>,
     datePickerState: DatePickerState,
+    planName: String,
 ): Boolean =
     when (currentStep) {
         STEP_SPORT -> selectedSport != null
         STEP_LEVEL -> selectedLevel != null
         STEP_DAYS -> selectedDays.isNotEmpty()
         STEP_DATE -> datePickerState.selectedDateMillis != null
+        STEP_NAME -> planName.isNotBlank()
         else -> false
     }

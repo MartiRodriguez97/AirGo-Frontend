@@ -534,5 +534,10 @@
     <string name="no_activity_data">No hi ha dades de l\'activitat.</string>
 
     <string name="select_date_button">Fes clic per seleccionar la data</string>
+
+    <string name="default_training_plan_name">Plan d\'entrenament</string>
+    <string name="question_plan_name">Quin nom li vols posar al pla?</string>
+    <string name="home_my_plans_title">Els teus plans d\'entrenament:</string>
+
 </resources>
 

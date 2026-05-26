@@ -98,6 +98,16 @@ fun calendarExerciseCard(ex: Exercise) {
                 .fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(padding16)) {
+            val planName = ex.nomPla?.nom
+            if (!planName.isNullOrBlank()) {
+                Text(
+                    text = planName,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 6.dp),
+                )
+            }
             val template = ex.template
 
             if (template != null) {
