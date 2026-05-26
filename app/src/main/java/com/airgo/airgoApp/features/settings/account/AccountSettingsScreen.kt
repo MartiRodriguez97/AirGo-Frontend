@@ -302,7 +302,6 @@ private fun accountSettingsHeader(onBackClick: () -> Unit) {
                 contentDescription = stringResource(R.string.acc_back_button),
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
         Text(
             text = stringResource(id = R.string.account_settings_header),
             style = MaterialTheme.typography.headlineSmall,

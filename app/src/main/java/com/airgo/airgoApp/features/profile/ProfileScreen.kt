@@ -61,14 +61,12 @@ import com.airgo.airgoApp.features.profile.components.profileUserInfoCard
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
 import com.airgo.airgoApp.features.settings.account.accountSettingsScreen
-import com.airgo.airgoApp.features.settings.settingsScreen
 import kotlinx.coroutines.launch
 
 enum class ProfileNestedRoute(
     val route: String,
 ) {
     HOME("profile_home"),
-    SETTINGS("settings"),
     ACCOUNT_SETTINGS("account_settings"),
     ACTIVITY_DETAIL("activity_detail/{activityId}"),
 }
@@ -375,30 +373,10 @@ fun profileNavGraph(
                 uiState = uiState,
                 singlePhotoPickerLauncher = singlePhotoPickerLauncher,
                 onSettingsClick = {
-                    navController.navigateOnce(ProfileNestedRoute.SETTINGS.route)
+                    navController.navigateOnce(ProfileNestedRoute.ACCOUNT_SETTINGS.route)
                 },
                 badges = badges,
                 navController = navController,
-            )
-        }
-        // Settings main menu
-        composable(
-            route = ProfileNestedRoute.SETTINGS.route,
-            enterTransition = { slideInHorizontally { it } + fadeIn() },
-            exitTransition = { slideOutHorizontally { -it } + fadeOut() },
-            popEnterTransition = { slideInHorizontally { -it } + fadeIn() },
-            popExitTransition = { slideOutHorizontally { it } + fadeOut() },
-        ) {
-            settingsScreen(
-                email = profileInfo.email,
-                displayName = profileInfo.displayName,
-                pictureUrl = profileInfo.currentPictureUrl,
-                initial = profileInfo.initial,
-                onBackClick = { navController.popBackStack() },
-                onAccountSettingsClick = {
-                    // Navigate to Account Settings
-                    navController.navigateOnce(ProfileNestedRoute.ACCOUNT_SETTINGS.route)
-                },
             )
         }
         // account settings
