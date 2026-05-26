@@ -106,6 +106,10 @@ fun calendarScreen(viewModel: CalendarViewModel) {
                 date = selectedDate,
                 exercicisList = exercicis,
                 onBackClick = { navController.popBackStack() },
+                onMoveActivity = { exerciseId, newDateIso ->
+                    viewModel.updateExerciseDate(exerciseId, newDateIso) {
+                    }
+                },
             )
         }
     }

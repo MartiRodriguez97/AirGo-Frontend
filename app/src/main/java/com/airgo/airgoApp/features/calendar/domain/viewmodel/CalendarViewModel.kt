@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.features.calendar.domain.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.calendar.data.remote.CalendarApiService
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
+import com.airgo.airgoApp.features.home.data.UpdateExerciseDateRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -80,6 +82,49 @@ class CalendarViewModel(
             } catch (e: retrofit2.HttpException) {
                 _errorResId.value = R.string.calendar_error_server
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun updateExerciseDate(
+        exerciseId: Int,
+        newDateIso: String,
+        onSuccess: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                apiService.updateExerciseDate(exerciseId, UpdateExerciseDateRequest(newDateIso))
+
+                val currentPlans =
+                    SessionManager.trainingPlans?.map { plan ->
+                        val updatedExercises =
+                            plan.exercicis.map { ex ->
+                                if (ex.id == exerciseId) ex.copy(dataInici = newDateIso) else ex
+                            }
+                        plan.copy(exercicis = updatedExercises)
+                    } ?: emptyList()
+
+                _plaEntrenamentList.value = currentPlans
+                SessionManager.trainingPlans = currentPlans
+
+                val exercicisPlanificats =
+                    currentPlans
+                        .flatMap { pla -> pla.exercicis }
+                        .filter { it.dataInici != null }
+
+                _exercicis.value = exercicisPlanificats
+                SessionManager.exercicis = exercicisPlanificats
+
+                onSuccess()
+            } catch (e: IOException) {
+                Log.e("CalendarViewModel", "Error moving activity", e)
+                _errorResId.value = R.string.error_move_activity
+            } catch (e: retrofit2.HttpException) {
+                Log.e("CalendarViewModel", "HTTP error moving activity", e)
+                _errorResId.value = R.string.error_move_activity
             } finally {
                 _isLoading.value = false
             }

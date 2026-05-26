@@ -563,4 +563,8 @@
     <string name="home_my_plans_title">Your training plans:</string>
     <string name="no_planned_exercises">No exercises planned.</string>
     <string name="ends_at">Ends at: %1$s</string>
+
+    <string name="activity_btn_move">Move activity</string>
+    <string name="activity_move_dialog_title">Select a new date</string>
+    <string name="error_move_activity">Could not move the activity</string>
 </resources>

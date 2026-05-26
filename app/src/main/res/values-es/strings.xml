@@ -567,4 +567,8 @@
     <string name="no_planned_exercises">No hay ejercicios planificados.</string>
 
     <string name="ends_at">Finaliza: %1$s</string>
-    </resources>
+
+    <string name="activity_btn_move">Mover actividad</string>
+    <string name="activity_move_dialog_title">Seleccionar nueva fecha</string>
+    <string name="error_move_activity">No se ha podido mover la actividad</string>
+</resources>

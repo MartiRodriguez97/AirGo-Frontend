@@ -473,4 +473,43 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
+
+    fun updateExerciseDate(
+        exerciseId: Int,
+        newDateIso: String,
+        onSuccess: () -> Unit,
+    ) {
+        viewModelScope.launch(exceptionHandler) {
+            _isLoading.value = true
+            try {
+                repository.updateExerciseDate(exerciseId, newDateIso)
+
+                val currentPlans =
+                    _plans.value.map { plan ->
+                        val updatedExercises =
+                            plan.exercicis.map { ex ->
+                                if (ex.id == exerciseId) {
+                                    ex.copy(dataInici = newDateIso)
+                                } else {
+                                    ex
+                                }
+                            }
+                        plan.copy(exercicis = updatedExercises)
+                    }
+
+                _plans.value = currentPlans
+                SessionManager.trainingPlans = currentPlans
+
+                val totsExercicis = currentPlans.flatMap { it.exercicis ?: emptyList() }
+                updateTodayExercises(totsExercicis)
+
+                onSuccess()
+            } catch (e: IOException) {
+                Log.e("HomeViewModel", "Error de red al mover la actividad", e)
+                _errorMessage.value = com.airgo.airgoApp.R.string.error_move_activity
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 }

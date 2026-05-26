@@ -28,4 +28,9 @@ class TrainingPlanRepository {
         completat: Boolean,
         distanciaFeta: Double,
     ): Exercise = api.updateExercise(id, UpdateExerciseRequest(completat, distanciaFeta))
+
+    suspend fun updateExerciseDate(
+        id: Int,
+        dataInici: String,
+    ): Exercise = api.updateExerciseDate(id, UpdateExerciseDateRequest(dataInici))
 }

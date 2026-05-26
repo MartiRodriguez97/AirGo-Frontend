@@ -41,6 +41,12 @@ interface TrainingPlanApi {
         @Body request: UpdateExerciseRequest,
     ): Exercise
 
+    @retrofit2.http.PATCH(ACTIVITY)
+    suspend fun updateExerciseDate(
+        @Path("id") id: Int,
+        @Body request: UpdateExerciseDateRequest,
+    ): Exercise
+
     @PATCH(PLA_ENTRENAMENT_ID)
     suspend fun updateTrainingPlanName(
         @Path("id") id: Int,
@@ -55,6 +61,10 @@ data class UpdateExerciseRequest(
 
 data class UpdatePlanNameRequest(
     val nom: String,
+)
+
+data class UpdateExerciseDateRequest(
+    val dataInici: String,
 )
 
 data class TrainingPlanRequest(
