@@ -486,34 +486,63 @@
     <string name="home_building_municipality_label">Municipi (només Barcelona)</string>
     <string name="error_dialog_title">Error</string>
     <string name="btn_continue">Continuar</string>
-    <string name="template_run_easy_1_title">Easy Walk/Run</string>
-    <string name="template_run_easy_1_desc">Combine walking and light jogging to get your body moving without strain.</string>
-    <string name="template_run_easy_2_title">Short Jog</string>
-    <string name="template_run_easy_2_desc">Maintain a steady, very comfortable pace over a short distance.</string>
+
+    <string name="template_run_easy_1_title">Easy Walk</string>
+    <string name="template_run_easy_1_desc">Alternate walking and jogging at a comfortable pace to start moving without pushing too hard.</string>
+
+    <string name="template_run_easy_2_title">Short Easy Jog</string>
+    <string name="template_run_easy_2_desc">A short and relaxed jog to spend some time running without getting too tired.</string>
+
+    <string name="template_run_easy_3_title">Morning Activation</string>
+    <string name="template_run_easy_3_desc">Light jogging mixed with some mobility work to get your body moving in the morning.</string>
+
     <string name="template_run_med_1_title">Medium Run</string>
-    <string name="template_run_med_1_desc">Medium pace run to improve your overall aerobic capacity.</string>
+    <string name="template_run_med_1_desc">A steady run at a comfortable pace to build endurance and stay consistent.</string>
+
     <string name="template_run_med_2_title">Classic Fartlek</string>
-    <string name="template_run_med_2_desc">Speed play alternating between accelerations and recoveries based on feel.</string>
+    <string name="template_run_med_2_desc">Mix faster and slower sections without worrying too much about exact pacing.</string>
+
+    <string name="template_run_med_3_title">Progressive Run</string>
+    <string name="template_run_med_3_desc">Start easy and gradually increase the pace until you finish strong.</string>
+
     <string name="template_run_hard_1_title">Power Intervals</string>
-    <string name="template_run_hard_1_desc">Demanding high-pace intervals with active recovery periods.</string>
-    <string name="template_run_hard_2_title">Demanding Long Run</string>
-    <string name="template_run_hard_2_desc">Long distance run to challenge and increase your maximum endurance.</string>
+    <string name="template_run_hard_1_desc">Fast and intense intervals with short recovery breaks between efforts.</string>
+
+    <string name="template_run_hard_2_title">Challenging Long Run</string>
+    <string name="template_run_hard_2_desc">A long run at a demanding pace to test your endurance.</string>
+
+    <string name="template_run_hard_3_title">Explosive Hills</string>
+    <string name="template_run_hard_3_desc">Short and intense hill efforts to build strength and improve speed.</string>
 
     <string name="template_bike_easy_1_title">Cadence Ride</string>
-    <string name="template_bike_easy_1_desc">Flat route focusing on light pedaling and building confidence on the bike.</string>
+    <string name="template_bike_easy_1_desc">An easy ride to pedal comfortably and get used to keeping a steady rhythm.</string>
+
     <string name="template_bike_easy_2_title">Urban Ride</string>
-    <string name="template_bike_easy_2_desc">Smooth and relaxed ride, ideal for loosening up your legs.</string>
-    <string name="template_bike_med_1_title">Cruising Pace</string>
-    <string name="template_bike_med_1_desc">Maintain a steady speed over a medium-distance route.</string>
+    <string name="template_bike_easy_2_desc">A relaxed ride on easy terrain to move your legs without too much effort.</string>
+
+    <string name="template_bike_easy_3_title">Active Recovery</string>
+    <string name="template_bike_easy_3_desc">Very easy pedaling to recover after a harder workout.</string>
+
+    <string name="template_bike_med_1_title">Cruise Pace</string>
+    <string name="template_bike_med_1_desc">Keep a steady speed throughout the ride to build endurance.</string>
+
     <string name="template_bike_med_2_title">Mixed Route</string>
-    <string name="template_bike_med_2_desc">Terrain with gentle slopes to alternate gears and build strength.</string>
+    <string name="template_bike_med_2_desc">A route with some climbs and descents to vary the effort during the ride.</string>
+
+    <string name="template_bike_med_3_title">Threshold Intervals</string>
+    <string name="template_bike_med_3_desc">Long effort blocks at a hard pace with short recovery periods.</string>
+
     <string name="template_bike_hard_1_title">Mountain Climb</string>
-    <string name="template_bike_hard_1_desc">Steep ascents designed to push your power output to the maximum.</string>
+    <string name="template_bike_hard_1_desc">Long and demanding climbs to work on strength and endurance on the bike.</string>
+
     <string name="template_bike_hard_2_title">Gran Fondo</string>
-    <string name="template_bike_hard_2_desc">Long and exhausting route to test your physical and mental endurance.</string>
+    <string name="template_bike_hard_2_desc">A long route with plenty of elevation designed to rack up time and distance.</string>
+
+    <string name="template_bike_hard_3_title">Max Sprints</string>
+    <string name="template_bike_hard_3_desc">Short and intense sprint efforts followed by recovery time.</string>
 
     <string name="template_default_title">Planned Activity</string>
-    <string name="template_default_desc">Activity description not available.</string>
+    <string name="template_default_desc">You have a session scheduled for today! Get ready and go out to give it your best.</string>
 
     <string name="no_pending_activity_today">You have no pending activities for today.</string>
     <string name="no_activity_data">No activity data available.</string>

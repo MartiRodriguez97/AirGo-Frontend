@@ -210,8 +210,18 @@ fun calendarGrid(
             density = currentDensity.density,
             fontScale = currentDensity.fontScale.coerceAtMost(MAX_DENSITY),
         )
-
-    // 2. Envolvemos el grid
+    val exercisesByDate =
+        remember(exercicis) {
+            exercicis.groupBy { ex ->
+                ex.dataInici?.take(DATE_SUBSTRING_END)?.let { dateStr ->
+                    try {
+                        LocalDate.parse(dateStr)
+                    } catch (_: DateTimeParseException) {
+                        null
+                    }
+                }
+            }
+        }
     CompositionLocalProvider(LocalDensity provides customDensity) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(DAYS_IN_WEEK),
@@ -233,8 +243,8 @@ fun calendarGrid(
                     modifier = Modifier.padding(padding8),
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
-                    maxLines = 1, // 3. Obligamos a que se quede en una sola línea
-                    overflow = TextOverflow.Ellipsis, // Por si acaso sigue sin caber
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
@@ -244,19 +254,7 @@ fun calendarGrid(
 
             items(daysInMonth) { day ->
                 val date = currentMonth.atDay(day + 1)
-                val exercisesToday =
-                    exercicis.filter { exer ->
-                        if (exer.dataInici != null && exer.dataInici.length >= DATE_SUBSTRING_END) {
-                            try {
-                                val dateStr = exer.dataInici.substring(0, DATE_SUBSTRING_END)
-                                LocalDate.parse(dateStr) == date
-                            } catch (_: DateTimeParseException) {
-                                false
-                            }
-                        } else {
-                            false
-                        }
-                    }
+                val exercisesToday = exercisesByDate[date] ?: emptyList()
                 dayCell(
                     date = date,
                     exercises = exercisesToday,

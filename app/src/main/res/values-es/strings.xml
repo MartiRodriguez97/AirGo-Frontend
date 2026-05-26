@@ -501,36 +501,61 @@
     <string name="home_pending_titles_plural">Tienes %1$d títulos para elegir</string>
     <string name="home_pending_titles_btn">ELEGIR</string>
 
-
     <string name="template_run_easy_1_title">Caminata Suave</string>
-    <string name="template_run_easy_1_desc">Combina caminar y trotar para empezar a mover el cuerpo sin forzar.</string>
+    <string name="template_run_easy_1_desc">Alterna caminar y trotar a un ritmo cómodo para empezar a moverte sin forzar.</string>
+
     <string name="template_run_easy_2_title">Trote Continuo Corto</string>
-    <string name="template_run_easy_2_desc">Mantén un ritmo constante y muy cómodo durante una distancia corta.</string>
+    <string name="template_run_easy_2_desc">Un trote corto y tranquilo para sumar minutos corriendo sin cansarte demasiado.</string>
+
+    <string name="template_run_easy_3_title">Activación Matutina</string>
+    <string name="template_run_easy_3_desc">Trote suave combinado con algo de movilidad para arrancar el día moviendo el cuerpo.</string>
+
     <string name="template_run_med_1_title">Rodaje Medio</string>
-    <string name="template_run_med_1_desc">Carrera a ritmo medio para mejorar tu capacidad aeróbica general.</string>
+    <string name="template_run_med_1_desc">Carrera continua a ritmo cómodo pero constante para aguantar más tiempo corriendo.</string>
+
     <string name="template_run_med_2_title">Fartlek Clásico</string>
-    <string name="template_run_med_2_desc">Juego de ritmos alternando aceleraciones y recuperaciones por sensaciones.</string>
+    <string name="template_run_med_2_desc">Combina tramos rápidos y suaves sin complicarte demasiado con ritmos exactos.</string>
+
+    <string name="template_run_med_3_title">Carrera Progresiva</string>
+    <string name="template_run_med_3_desc">Empieza suave y ve aumentando el ritmo poco a poco hasta terminar fuerte.</string>
+
     <string name="template_run_hard_1_title">Series de Potencia</string>
-    <string name="template_run_hard_1_desc">Intervalos exigentes a ritmo alto con periodos de recuperación activa.</string>
+    <string name="template_run_hard_1_desc">Cambios de ritmo rápidos e intensos con descansos cortos entre cada serie.</string>
+
     <string name="template_run_hard_2_title">Fondo Exigente</string>
-    <string name="template_run_hard_2_desc">Carrera de larga distancia para desafiar y aumentar tu resistencia máxima.</string>
+    <string name="template_run_hard_2_desc">Una carrera larga a ritmo exigente para poner a prueba tu resistencia.</string>
+
+    <string name="template_run_hard_3_title">Cuestas Explosivas</string>
+    <string name="template_run_hard_3_desc">Subidas cortas e intensas para trabajar fuerza y mejorar el ritmo.</string>
 
     <string name="template_bike_easy_1_title">Paseo de Cadencia</string>
-    <string name="template_bike_easy_1_desc">Ruta llana buscando pedalear ligero y coger confianza en la bicicleta.</string>
+    <string name="template_bike_easy_1_desc">Ruta suave para pedalear cómodo y acostumbrarte a mantener un ritmo constante.</string>
+
     <string name="template_bike_easy_2_title">Rodaje Urbano</string>
-    <string name="template_bike_easy_2_desc">Recorrido suave y relajado, ideal para soltar piernas.</string>
+    <string name="template_bike_easy_2_desc">Salida tranquila por terreno fácil para mover las piernas sin demasiada intensidad.</string>
+
+    <string name="template_bike_easy_3_title">Recuperación Activa</string>
+    <string name="template_bike_easy_3_desc">Pedaleo muy suave para recuperarte después de un entrenamiento más duro.</string>
+
     <string name="template_bike_med_1_title">Ritmo de Crucero</string>
-    <string name="template_bike_med_1_desc">Mantén una velocidad constante en un recorrido de media distancia.</string>
+    <string name="template_bike_med_1_desc">Mantén una velocidad estable durante toda la ruta para ganar resistencia.</string>
+
     <string name="template_bike_med_2_title">Ruta Mixta</string>
-    <string name="template_bike_med_2_desc">Terreno con suaves desniveles para alternar marchas y mejorar la fuerza.</string>
+    <string name="template_bike_med_2_desc">Recorrido con algunas subidas y bajadas para variar el esfuerzo durante la salida.</string>
+
+    <string name="template_bike_med_3_title">Series de Umbral</string>
+    <string name="template_bike_med_3_desc">Bloques largos a ritmo intenso con descansos cortos entre medias.</string>
+
     <string name="template_bike_hard_1_title">Escalada de Montaña</string>
-    <string name="template_bike_hard_1_desc">Ascensos pronunciados diseñados para exprimir tu potencia al máximo.</string>
+    <string name="template_bike_hard_1_desc">Subidas largas y exigentes para trabajar fuerza y resistencia en la bici.</string>
+
     <string name="template_bike_hard_2_title">Gran Fondo</string>
-    <string name="template_bike_hard_2_desc">Ruta larga y desgastante para poner a prueba tu resistencia física y mental.</string>
+    <string name="template_bike_hard_2_desc">Ruta larga con bastante desnivel pensada para acumular tiempo y kilómetros.</string>
 
+    <string name="template_bike_hard_3_title">Sprints Máximos</string>
+    <string name="template_bike_hard_3_desc">Aceleraciones cortas e intensas seguidas de descansos para recuperar.</string>
     <string name="template_default_title">Actividad Planificada</string>
-    <string name="template_default_desc">Descripción de la actividad no disponible.</string>
-
+    <string name="template_default_desc">¡Tienes una sesión programada para hoy! Prepárate y sal a dar lo mejor de ti.</string>
     <string name="no_pending_activity_today">No tienes ninguna actividad pendiente para hoy.</string>
     <string name="no_activity_data">No hay datos de la actividad.</string>
 
@@ -540,4 +565,4 @@
     <string name="question_plan_name">¿Qué nombre le quieres poner al plan?</string>
     <string name="home_my_plans_title">Tus planes de entrenamiento:</string>
 
-</resources>
+    </resources>

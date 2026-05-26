@@ -17,16 +17,26 @@ import java.io.IOException
 class CalendarViewModel(
     private val apiService: CalendarApiService,
 ) : ViewModel() {
-    private val _plaEntrenamentList = MutableStateFlow<List<TrainingPlanResponse>>(emptyList())
+    private val _plaEntrenamentList =
+        MutableStateFlow<List<TrainingPlanResponse>>(
+            SessionManager.trainingPlans ?: emptyList(),
+        )
     val plaEntrenamentList: StateFlow<List<TrainingPlanResponse>> = _plaEntrenamentList
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _exercicis = MutableStateFlow<List<Exercise>>(emptyList())
-    val exercicis: StateFlow<List<Exercise>> = _exercicis
     private val _errorResId = MutableStateFlow<Int?>(null)
     val errorResId: StateFlow<Int?> = _errorResId
+
+    private val _exercicis =
+        MutableStateFlow<List<Exercise>>(
+            SessionManager.trainingPlans
+                ?.flatMap { it.exercicis }
+                ?.filter { it.dataInici != null }
+                ?: emptyList(),
+        )
+    val exercicis: StateFlow<List<Exercise>> = _exercicis
 
     fun fetchPlaEntrenament(forceRefresh: Boolean = false) {
         viewModelScope.launch {

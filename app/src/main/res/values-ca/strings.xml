@@ -499,36 +499,62 @@
     <string name="home_pending_titles_plural">Tens %1$d títols per triar</string>
     <string name="home_pending_titles_btn">TRIAR</string>
 
-
-
     <string name="template_run_easy_1_title">Caminada Suau</string>
-    <string name="template_run_easy_1_desc">Combina caminar i trotar per començar a moure el cos sense forçar.</string>
+    <string name="template_run_easy_1_desc">Alterna caminar i trotar a un ritme còmode per començar a moure\'t sense forçar.</string>
+
     <string name="template_run_easy_2_title">Trot Continu Curt</string>
-    <string name="template_run_easy_2_desc">Mantén un ritme constant i molt còmode durant una distància curta.</string>
+    <string name="template_run_easy_2_desc">Un trot curt i tranquil per sumar minuts corrent sense cansar-te massa.</string>
+
+    <string name="template_run_easy_3_title">Activació Matinal</string>
+    <string name="template_run_easy_3_desc">Trot suau combinat amb una mica de mobilitat per començar el dia movent el cos.</string>
+
     <string name="template_run_med_1_title">Rodatge Mitjà</string>
-    <string name="template_run_med_1_desc">Cursa a ritme mitjà per millorar la teva capacitat aeròbica general.</string>
+    <string name="template_run_med_1_desc">Cursa contínua a ritme còmode però constant per aguantar més estona corrent.</string>
+
     <string name="template_run_med_2_title">Fartlek Clàssic</string>
-    <string name="template_run_med_2_desc">Joc de ritmes alternant acceleracions i recuperacions per sensacions.</string>
+    <string name="template_run_med_2_desc">Combina trams ràpids i suaus sense complicar-te gaire amb ritmes exactes.</string>
+
+    <string name="template_run_med_3_title">Cursa Progressiva</string>
+    <string name="template_run_med_3_desc">Comença suau i augmenta el ritme a poc a poc fins acabar fort.</string>
+
     <string name="template_run_hard_1_title">Sèries de Potència</string>
-    <string name="template_run_hard_1_desc">Intervals exigents a ritme alt amb períodes de recuperació activa.</string>
+    <string name="template_run_hard_1_desc">Canvis de ritme ràpids i intensos amb descansos curts entre cada sèrie.</string>
+
     <string name="template_run_hard_2_title">Fons Exigent</string>
-    <string name="template_run_hard_2_desc">Cursa de llarga distància per desafiar i augmentar la teva resistència màxima.</string>
+    <string name="template_run_hard_2_desc">Una cursa llarga a ritme exigent per posar a prova la teva resistència.</string>
+
+    <string name="template_run_hard_3_title">Pujades Explosives</string>
+    <string name="template_run_hard_3_desc">Pujades curtes i intenses per treballar força i millorar el ritme.</string>
 
     <string name="template_bike_easy_1_title">Passeig de Cadència</string>
-    <string name="template_bike_easy_1_desc">Ruta plana buscant pedalar lleuger i agafar confiança amb la bicicleta.</string>
-    <string name="template_bike_easy_2_title">Rodatge Urbà</string>
-    <string name="template_bike_easy_2_desc">Recorregut suau i relaxat, ideal per deixar anar les cames.</string>
-    <string name="template_bike_med_1_title">Ritme de Creuer</string>
-    <string name="template_bike_med_1_desc">Mantén una velocitat constant en un recorregut de mitja distància.</string>
-    <string name="template_bike_med_2_title">Ruta Mixta</string>
-    <string name="template_bike_med_2_desc">Terreny amb suaus desnivells per alternar marxes i millorar la força.</string>
-    <string name="template_bike_hard_1_title">Escalada de Muntanya</string>
-    <string name="template_bike_hard_1_desc">Ascensos pronunciats dissenyats per esprémer la teva potència al màxim.</string>
-    <string name="template_bike_hard_2_title">Gran Fons</string>
-    <string name="template_bike_hard_2_desc">Ruta llarga i desgastadora per posar a prova la teva resistència física i mental.</string>
+    <string name="template_bike_easy_1_desc">Ruta suau per pedalar còmode i acostumar-te a mantenir un ritme constant.</string>
 
-    <string name="template_default_title">Activitat Planificada</string>
-    <string name="template_default_desc">Descripció de l\'activitat no disponible.</string>
+    <string name="template_bike_easy_2_title">Rodatge Urbà</string>
+    <string name="template_bike_easy_2_desc">Sortida tranquil·la per terreny fàcil per moure les cames sense gaire intensitat.</string>
+
+    <string name="template_bike_easy_3_title">Recuperació Activa</string>
+    <string name="template_bike_easy_3_desc">Pedalada molt suau per recuperar-te després d\'un entrenament més dur.</string>
+
+    <string name="template_bike_med_1_title">Ritme de Creuer</string>
+    <string name="template_bike_med_1_desc">Mantén una velocitat estable durant tota la ruta per guanyar resistència.</string>
+
+    <string name="template_bike_med_2_title">Ruta Mixta</string>
+    <string name="template_bike_med_2_desc">Recorregut amb algunes pujades i baixades per variar l\'esforç durant la sortida.</string>
+
+    <string name="template_bike_med_3_title">Sèries de Llindar</string>
+    <string name="template_bike_med_3_desc">Blocs llargs a ritme intens amb descansos curts entre mig.</string>
+
+    <string name="template_bike_hard_1_title">Escalada de Muntanya</string>
+    <string name="template_bike_hard_1_desc">Pujades llargues i exigents per treballar força i resistència amb la bici.</string>
+
+    <string name="template_bike_hard_2_title">Gran Fons</string>
+    <string name="template_bike_hard_2_desc">Ruta llarga amb força desnivell pensada per acumular temps i quilòmetres.</string>
+
+    <string name="template_bike_hard_3_title">Esprints Màxims</string>
+    <string name="template_bike_hard_3_desc">Acceleracions curtes i intenses seguides de descansos per recuperar.</string>
+
+    <string name="template_default_title">Planned Activity</string>
+    <string name="template_default_desc">You have a session scheduled for today! Get ready and go out to give it your best.</string>
 
     <string name="no_pending_activity_today">No tens cap activitat pendent per avui.</string>
     <string name="no_activity_data">No hi ha dades de l\'activitat.</string>
