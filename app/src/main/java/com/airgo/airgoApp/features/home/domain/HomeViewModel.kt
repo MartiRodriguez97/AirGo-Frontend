@@ -262,11 +262,11 @@ class HomeViewModel : ViewModel() {
 
             val cachedPlans = SessionManager.trainingPlans
             if (!forceRefresh && !cachedPlans.isNullOrEmpty()) {
-                // Usamos los datos locales
                 _plans.value = cachedPlans
                 val cachedExercises = cachedPlans.flatMap { it.exercicis ?: emptyList() }
                 updateTodayExercises(cachedExercises)
-                return@launch // Terminamos la ejecución aquí, ¡adiós a la llamada de red extra!
+                _isLoading.value = false
+                return@launch
             }
             _isLoading.value = true
             try {
