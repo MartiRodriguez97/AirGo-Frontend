@@ -564,6 +564,6 @@
     <string name="default_training_plan_name">Plan d\'entrenament</string>
     <string name="question_plan_name">Quin nom li vols posar al pla?</string>
     <string name="home_my_plans_title">Els teus plans d\'entrenament:</string>
-
-</resources>
+    <string name="no_planned_exercises">No hi ha exercicis planificats.</string>
+    <string name="ends_at">Finalitza: %1$s</string></resources>
 

@@ -561,5 +561,6 @@
     <string name="default_training_plan_name">Training plan</string>
     <string name="question_plan_name">What name do you want to give to the plan?</string>
     <string name="home_my_plans_title">Your training plans:</string>
-
+    <string name="no_planned_exercises">No exercises planned.</string>
+    <string name="ends_at">Ends at: %1$s</string>
 </resources>

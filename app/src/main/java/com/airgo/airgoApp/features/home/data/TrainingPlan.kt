@@ -6,6 +6,7 @@ data class TrainingPlanResponse(
     val nom: String? = null,
     val diesDurada: Int,
     val numEntrenamentsSetmanals: Int,
+    val dataFi: String? = null,
     val templates: List<TrainingTemplate> = emptyList(),
     val exercicis: List<Exercise> = emptyList(),
 )
