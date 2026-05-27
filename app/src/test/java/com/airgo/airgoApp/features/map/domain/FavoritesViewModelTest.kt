@@ -102,7 +102,10 @@ class FavoritesViewModelTest {
             viewModel.deleteFavoriteRoute(1)
             advanceUntilIdle()
 
-            assertEquals(R.string.error_deleting_favourite_route, (viewModel.errorMessage as UiText.StringResource).resId)
+            assertEquals(
+                R.string.error_deleting_favourite_route,
+                (viewModel.errorMessage as UiText.StringResource).resId,
+            )
         }
 
     @Test
