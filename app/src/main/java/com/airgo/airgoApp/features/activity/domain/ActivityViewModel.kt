@@ -41,27 +41,6 @@ class ActivityViewModel : ViewModel() {
 
     fun loadActivities(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            /*
-            val cachedActivities = SessionManager.activities
-            if (!forceRefresh && cachedActivities != null) {
-                _uiState.value = if (cachedActivities.isEmpty()) {
-                    ActivityUiState.Empty
-                } else {
-                    ActivityUiState.Success(cachedActivities)
-                }
-                return@launch
-            }
-            _uiState.value = ActivityUiState.Loading
-
-            try {
-                val activities = RetrofitProvider.activityApi.getActivities()
-                _uiState.value =
-                    if (activities.isEmpty()) {
-                        ActivityUiState.Empty
-                    } else {
-                        val sortedActivities = activities.sortedByDescending { it.id }
-                        ActivityUiState.Success(sortedActivities)
-                    }*/
             val cachedActivities = SessionManager.activities
             if (!forceRefresh && cachedActivities != null) {
                 _uiState.value =
@@ -78,7 +57,6 @@ class ActivityViewModel : ViewModel() {
                 val activities = RetrofitProvider.activityApi.getActivities()
                 val sortedActivities = activities.sortedByDescending { it.id }
 
-                // Guardamos en la NUEVA variable específica
                 SessionManager.activities = sortedActivities
 
                 _uiState.value =

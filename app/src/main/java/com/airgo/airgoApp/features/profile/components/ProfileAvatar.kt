@@ -1,8 +1,5 @@
 package com.airgo.airgoApp.features.profile.components
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -19,22 +16,17 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.SubcomposeAsyncImage
 import com.airgo.airgoApp.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.net.URL
 
 @Composable
 fun profileAvatar(
@@ -43,54 +35,39 @@ fun profileAvatar(
     isLoading: Boolean,
     onEditClick: () -> Unit,
 ) {
-    val avatarBitmap by produceState<Bitmap?>(
-        initialValue = null,
-        key1 = pictureUrl,
-    ) {
-        if (pictureUrl.isNullOrBlank()) {
-            value = null
-            return@produceState
-        }
-
-        value =
-            withContext(Dispatchers.IO) {
-                runCatching {
-                    URL(pictureUrl).openStream().use { stream ->
-                        BitmapFactory.decodeStream(stream)
-                    }
-                }.getOrNull()
-            }
-    }
     Box(
         modifier = Modifier.padding(8.dp),
         contentAlignment = Alignment.Center,
     ) {
-        if (avatarBitmap != null) {
-            avatarImage(bitmap = avatarBitmap!!)
-        } else {
+        if (pictureUrl.isNullOrBlank()) {
             avatarFallback(initial = initial)
+        } else {
+            SubcomposeAsyncImage(
+                model = pictureUrl,
+                contentDescription = stringResource(R.string.profile_avatar_description),
+                contentScale = ContentScale.Crop,
+                modifier =
+                    Modifier
+                        .size(84.dp)
+                        .clip(CircleShape)
+                        .testTag("profile_avatar_image"),
+                loading = {
+                    avatarFallback(initial = initial)
+                },
+                error = {
+                    avatarFallback(initial = initial)
+                },
+            )
         }
+
         if (isLoading) {
             avatarLoadingOverlay()
         }
+
         if (!isLoading) {
             avatarEditButton(onEditClick = onEditClick)
         }
     }
-}
-
-@Composable
-private fun avatarImage(bitmap: Bitmap) {
-    Image(
-        bitmap = bitmap.asImageBitmap(),
-        contentDescription = stringResource(R.string.profile_avatar_description),
-        contentScale = ContentScale.Crop,
-        modifier =
-            Modifier
-                .size(84.dp)
-                .clip(CircleShape)
-                .testTag("profile_avatar_image"),
-    )
 }
 
 @Composable

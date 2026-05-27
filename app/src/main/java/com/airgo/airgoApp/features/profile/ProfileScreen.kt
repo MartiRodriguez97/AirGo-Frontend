@@ -60,6 +60,7 @@ import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.badgesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
 import com.airgo.airgoApp.features.profile.components.profileUserInfoCard
+import com.airgo.airgoApp.features.profile.data.UserBadgeResponse
 import com.airgo.airgoApp.features.profile.domain.ProfileUiState
 import com.airgo.airgoApp.features.profile.domain.ProfileViewModel
 import com.airgo.airgoApp.features.settings.account.accountSettingsScreen
@@ -197,7 +198,7 @@ private fun profileScreenLaunchedEffect(
                         context.getString(R.string.profile_picture_update_success),
                         Toast.LENGTH_SHORT,
                     ).show()
-                onResetUiState() // Resetear el estado tras mostrar el mensaje
+                onResetUiState()
             }
             is ProfileUiState.Error -> {
                 Toast.makeText(context, uiState.message.asString(context), Toast.LENGTH_LONG).show()
@@ -228,7 +229,7 @@ fun showProfileInfo(
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
     onSettingsClick: () -> Unit,
-    badges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>,
+    badges: List<UserBadgeResponse>,
     navController: NavHostController,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -249,7 +250,7 @@ private fun showProfileInfoContent(
     profileInfo: ProfileScreen,
     uiState: ProfileUiState,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
-    badges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>,
+    badges: List<UserBadgeResponse>,
     navController: NavHostController,
 ) {
     Column(
@@ -367,7 +368,7 @@ fun profileNavGraph(
     singlePhotoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, android.net.Uri?>,
     onShowDeleteDialog: () -> Unit,
     onLogout: () -> Unit,
-    badges: List<com.airgo.airgoApp.features.profile.data.UserBadgeResponse>,
+    badges: List<UserBadgeResponse>,
 ) {
     NavHost(
         navController = navController,
