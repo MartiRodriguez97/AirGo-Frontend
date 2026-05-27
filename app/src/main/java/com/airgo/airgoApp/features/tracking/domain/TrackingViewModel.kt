@@ -85,6 +85,10 @@ class TrackingViewModel : ViewModel() {
         data class Error(
             val message: UiText.StringResource,
         ) : SaveState()
+
+        data class InvalidActivity(
+            val motiu: String,
+        ) : SaveState()
     }
 
     fun startTracking() {

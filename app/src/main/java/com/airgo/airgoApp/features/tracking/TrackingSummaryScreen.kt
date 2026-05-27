@@ -2,10 +2,26 @@ package com.airgo.airgoApp.features.tracking
 
 import android.os.Build
 import androidx.annotation.RequiresExtension
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.tracking.components.buildShareText
@@ -35,6 +51,38 @@ fun trackingSummaryScreen(
     val backDescription = stringResource(R.string.back)
     val summaryTitle = stringResource(R.string.activity_summary)
     val shareText = buildShareText(data.distanceMeters, data.elapsedSeconds, data.avgSpeedKmh)
+
+    if (saveState is TrackingViewModel.SaveState.InvalidActivity) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(48.dp),
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.tracking_elevated_speed),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.clearSummary()
+                    onBack()
+                }) {
+                    Text(stringResource(R.string.accept))
+                }
+            },
+        )
+    }
 
     trackingSummaryBadgeHandler(
         saveState = saveState,
