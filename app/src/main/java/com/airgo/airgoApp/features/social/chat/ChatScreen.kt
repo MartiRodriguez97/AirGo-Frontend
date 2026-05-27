@@ -9,11 +9,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,7 +53,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -106,18 +106,13 @@ fun chatScreen(
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
-    // Añadimos un log para ver qué nos llega
-    LaunchedEffect(otherProfilePic) {
-    }
-
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(conversationId, lifecycleOwner) {
         val observer =
             LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
                     SessionManager.currentChatId = conversationId
 
-                    // Limpiar notificaciones de este chat al entrar o volver
                     val notificationManager =
                         context.getSystemService(
                             Context.NOTIFICATION_SERVICE,
@@ -125,7 +120,6 @@ fun chatScreen(
                             as NotificationManager
                     notificationManager.cancel(conversationId.hashCode())
 
-                    // Limpiar resumen si no quedan más chats activos
                     val activeNotifications = notificationManager.activeNotifications
                     val hasMoreChats =
                         activeNotifications.any {
@@ -158,8 +152,16 @@ fun chatScreen(
     Scaffold(
         topBar = { chatTopBar(otherUsername = otherUsername, otherProfilePic = otherProfilePic, onBack = onBack) },
         containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { innerPadding ->
-        Column(modifier = Modifier.fillMaxSize().padding(innerPadding).imePadding()) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .imePadding(),
+        ) {
             Box(modifier = Modifier.weight(1f)) {
                 when (uiState) {
                     is ChatUiState.Loading ->
@@ -187,7 +189,6 @@ fun chatScreen(
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
             chatInputBar(
                 onSend = { text -> viewModel.sendMessage(text) },
-                modifier = Modifier.navigationBarsPadding(),
             )
         }
     }

@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -159,12 +160,12 @@ private fun appContent(
     val onboardingViewModel: OnboardingViewModel = viewModel()
     val coroutineScope = rememberCoroutineScope()
 
-    var isLoggedIn by remember { mutableStateOf(false) }
-    var userEmail by remember { mutableStateOf<String?>(null) }
-    var userPictureUrl by remember { mutableStateOf<String?>(null) }
-    var needsOnboarding by remember { mutableStateOf(false) }
-    var isDataStoreLoaded by remember { mutableStateOf(false) }
-    var isAutoLoggingIn by remember { mutableStateOf(false) }
+    var isLoggedIn by rememberSaveable { mutableStateOf(false) }
+    var userEmail by rememberSaveable { mutableStateOf<String?>(null) }
+    var userPictureUrl by rememberSaveable { mutableStateOf<String?>(null) }
+    var needsOnboarding by rememberSaveable { mutableStateOf(false) }
+    var isDataStoreLoaded by rememberSaveable { mutableStateOf(false) }
+    var isAutoLoggingIn by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(userPrefs) {
         val prefs = userPrefs
