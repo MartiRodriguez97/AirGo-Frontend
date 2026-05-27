@@ -388,9 +388,11 @@
     <string name="pending_requests">Solicitudes pendientes</string>
     <string name="no_pending_requests">No tienes solicitudes pendientes.</string>
     <string name="friend_request">Quiere ser tu amigo.</string>
+    <string name="friend_accepted_body">¡Ha aceptado tu solicitud de amistad!</string>
     <string name="search_users_forums">Buscar usuarios y foros...</string>
     <string name="accept">Aceptar</string>
     <string name="reject">Rechazar</string>
+    <string name="ignore">Ignorar</string>
     <string name="no_user_found">No se ha encontrado ningún usuario.</string>
     <string name="photo">Foto de</string>
     <string name="sent">Enviada</string>

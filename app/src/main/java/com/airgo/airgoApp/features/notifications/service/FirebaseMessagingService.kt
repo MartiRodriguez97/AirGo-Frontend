@@ -63,9 +63,12 @@ class FirebaseMessagingService : FirebaseMessagingService() {
                     handleChatNotification(remoteMessage, finalChatId)
                     ChatEventBus.emitMessage(finalChatId)
                 }
+                "friend_request" -> {
+                    showFriendNotification(remoteMessage, isRequest = true)
+                }
                 "friend_accepted" -> {
                     FriendEventBus.emitFriendAccepted()
-                    showSystemNotification(remoteMessage, finalChatId)
+                    showFriendNotification(remoteMessage, isRequest = false)
                 }
                 else -> showSystemNotification(remoteMessage, finalChatId)
             }
@@ -204,6 +207,88 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         )
 
         showSummaryNotification(title, body, pendingIntent, notificationManager)
+    }
+
+    private fun showFriendNotification(
+        remoteMessage: RemoteMessage,
+        isRequest: Boolean,
+    ) {
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        createNotificationChannel(notificationManager)
+
+        val username =
+            if (isRequest) {
+                remoteMessage.data["solicitant_username"] ?: "Usuari"
+            } else {
+                remoteMessage.data["usuari_username"] ?: "Usuari"
+            }
+
+        val body =
+            if (isRequest) {
+                getString(R.string.friend_request)
+            } else {
+                getString(R.string.friend_accepted_body)
+            }
+
+        val profilePicUrl =
+            if (isRequest) {
+                remoteMessage.data["solicitant_profile_pic"]
+            } else {
+                remoteMessage.data["usuari_profile_pic"]
+            }
+
+        val circularBitmap = getBitmapFromUrl(profilePicUrl)?.let { getCircularBitmap(it) }
+
+        val id =
+            if (isRequest) {
+                "friend_req_${remoteMessage.data["amistat_id"]}"
+            } else {
+                "friend_acc_${remoteMessage.data["usuari_id"]}"
+            }
+
+        val intent =
+            Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("TARGET_SCREEN", "social")
+                putExtra("FROM_NOTIFICATION", true)
+            }
+        val pendingIntent =
+            PendingIntent.getActivity(
+                this,
+                id.hashCode(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+
+        val userPerson = createUserPerson(this)
+        val senderPerson = createSenderPerson(username, circularBitmap)
+        val style =
+            NotificationCompat
+                .MessagingStyle(userPerson)
+                .addMessage(body, System.currentTimeMillis(), senderPerson)
+                .setConversationTitle(null)
+                .setGroupConversation(false)
+
+        pushShortcut(id, username, circularBitmap, intent)
+
+        val notificationBuilder =
+            NotificationCompat
+                .Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setStyle(style)
+                .setShortcutId(id)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+
+        if (isRequest) {
+            val amistatId = remoteMessage.data["amistat_id"]?.toIntOrNull() ?: 0
+            val actions = createFriendRequestActions(this, amistatId)
+            actions.forEach { notificationBuilder.addAction(it) }
+        }
+
+        notificationManager.notify(id.hashCode(), notificationBuilder.build())
     }
 
     private fun createNotificationChannel(notificationManager: NotificationManager) {

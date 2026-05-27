@@ -118,6 +118,7 @@ class MainActivity : ComponentActivity() {
         if (intent.getBooleanExtra("FROM_NOTIFICATION", false)) {
             pendingNavigation =
                 Bundle().apply {
+                    putString("TARGET_SCREEN", intent.getStringExtra("TARGET_SCREEN"))
                     putString("convId", intent.getStringExtra("CONV_ID"))
                     putString("otherUserId", intent.getStringExtra("OTHER_USER_ID"))
                     putString("username", intent.getStringExtra("OTHER_USERNAME"))
