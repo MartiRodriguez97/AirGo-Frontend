@@ -43,7 +43,7 @@ class CalendarViewModel(
     fun fetchPlaEntrenament(forceRefresh: Boolean = false) {
         viewModelScope.launch {
             val cachedPlans = SessionManager.trainingPlans
-            if (!forceRefresh && !cachedPlans.isNullOrEmpty()) {
+            if (!forceRefresh && cachedPlans != null) {
                 _plaEntrenamentList.value = cachedPlans
 
                 val exercicisPlanificats =

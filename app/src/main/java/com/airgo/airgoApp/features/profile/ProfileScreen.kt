@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,6 +55,7 @@ import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.core.network.UserPreferencesRepository
 import com.airgo.airgoApp.core.network.dataStore
 import com.airgo.airgoApp.core.utils.navigateOnce
+import com.airgo.airgoApp.features.activity.domain.ActivityViewModel
 import com.airgo.airgoApp.features.profile.components.badgesAndActivitiesZone
 import com.airgo.airgoApp.features.profile.components.badgesZone
 import com.airgo.airgoApp.features.profile.components.deleteAccountDialog
@@ -283,10 +285,19 @@ private fun showProfileInfoContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            profileStat(label = "Punts", value = (profileInfo.punts ?: 0).toString())
-            profileStat(label = "Ratxa", value = "${profileInfo.ratxa ?: 0} dies")
+            profileStat(
+                label = stringResource(R.string.profile_stat_points),
+                value = (profileInfo.punts ?: 0).toString(),
+            )
+            profileStat(
+                label = stringResource(R.string.profile_stat_streak),
+                value = stringResource(R.string.profile_stat_streak_value, profileInfo.ratxa ?: 0),
+            )
             if (profileInfo.teBici == true) {
-                profileStat(label = "Bici", value = "✓")
+                profileStat(
+                    label = stringResource(R.string.profile_stat_bike),
+                    value = "✓",
+                )
             }
         }
 
@@ -409,8 +420,7 @@ fun profileNavGraph(
             popExitTransition = { slideOutHorizontally { it } + fadeOut() },
         ) { backStackEntry ->
             val activityId = backStackEntry.arguments?.getInt("activityId") ?: -1
-            // Obtenemos el viewmodel que tiene la lista cargada
-            val activityViewModel: com.airgo.airgoApp.features.activity.domain.ActivityViewModel = viewModel()
+            val activityViewModel: ActivityViewModel = viewModel()
 
             pastActivityDetailScreen(
                 activityId = activityId,

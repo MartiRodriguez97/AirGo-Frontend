@@ -14,7 +14,7 @@
     <string name="profile_badges_empty">Aún no tienes ninguna insignia.</string>
     <string name="profile_badges_earned_on">Conseguida: %1$s</string>
     <string name="profile_badges_dialog_close">Cerrar</string>
-    <string name="error_fetching_badges">No se pudo obtener las insignias</string>
+    <string name="error_fetching_badges">No se han podido obtener las insignias</string>
     <string name="profile_activities_recent_title">Actividades recientes</string>
     <string name="profile_activities_delete_desc">Eliminar actividad</string>
 
@@ -49,7 +49,7 @@
     <string name="badge_centurion_name">Centurión</string>
     <string name="badge_centurion_desc">Has recorrido 100 km en total. ¡Un centenar de kilómetros!</string>
 
-    <string name="badge_around_barcelona_name">Rodeando Barcelona</string>
+    <string name="badge_around_barcelona_name">Alrededor de Barcelona</string>
     <string name="badge_around_barcelona_desc">Has recorrido 50 km en total. ¡Toda Barcelona a tus pies!</string>
 
     <string name="badge_urban_explorer_name">Explorador urbano</string>
@@ -77,11 +77,15 @@
     <string name="badge_iron_week_desc">Has mantenido una racha de 7 días consecutivos. ¡Impresionante!</string>
 
     <string name="badge_constancy_name">Iniciación a la constancia</string>
-    <string name="badge_constancy_desc">Has completado 3 días consecutivos de actividad. ¡Buen inicio!</string>
+    <string name="badge_constancy_desc">Has completado 3 días consecutivos de actividad. ¡Buen comienzo!</string>
 
-    <string name="badge_sustainable_building_name">Edificio Sostenible</string>
-    <string name="badge_sustainable_building_desc">¡Tu edificio tiene buena puntuación de eficiencia energética!</string>
+    <string name="badge_sustainable_building_name">Edificio sostenible</string>
+    <string name="badge_sustainable_building_desc">¡Tu edificio tiene una buena puntuación de eficiencia energética!</string>
 
+    <string name="profile_stat_points">Puntos</string>
+    <string name="profile_stat_streak">Racha</string> <!-- O "Racha" si prefieres el término en castellano -->
+    <string name="profile_stat_streak_value">%1$d días</string>
+    <string name="profile_stat_bike">Bici</string>
 
     <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar cuenta</string>

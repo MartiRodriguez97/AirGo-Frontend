@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -146,6 +147,8 @@ private fun successActivitiesSection(
     }
 }
 
+private const val MAX_DATE_LENGTH = 10
+
 @Composable
 private fun activityItem(
     activity: ActivityResponse,
@@ -169,6 +172,30 @@ private fun activityItem(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
+                val formattedDate =
+                    remember(activity.createdAt) {
+                        activity.createdAt?.let { dateStr ->
+                            try {
+                                val parsedDate =
+                                    java.time.OffsetDateTime
+                                        .parse(dateStr)
+                                        .toLocalDate()
+                                parsedDate.format(
+                                    java.time.format.DateTimeFormatter
+                                        .ofPattern("dd/MM"),
+                                )
+                            } catch (e: java.time.format.DateTimeParseException) {
+                                dateStr.take(MAX_DATE_LENGTH)
+                            }
+                        } ?: "--/--"
+                    }
+
+                Text(
+                    text = formattedDate,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                )
                 Text(
                     text = "${(activity.distanceMeters / METERS_PER_KM).let { "%.2f".format(it) }} km",
                     style = MaterialTheme.typography.bodyLarge,
