@@ -99,7 +99,7 @@ private fun onboardingFormContent(
     isSaving: Boolean,
     onSave: (username: String, pes: Double, altura: Double, teBici: Boolean) -> Unit,
 ) {
-    var username by remember { mutableStateOf(SessionManager.username ?: "") }
+    var username by remember { mutableStateOf(SessionManager.username?.substringBefore("@") ?: "") }
     var pes by remember { mutableStateOf("") }
     var altura by remember { mutableStateOf("") }
     var teBici by remember { mutableStateOf(false) }

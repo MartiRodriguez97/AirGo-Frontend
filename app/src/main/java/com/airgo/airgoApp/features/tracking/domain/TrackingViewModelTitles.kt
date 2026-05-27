@@ -21,6 +21,7 @@ import retrofit2.HttpException
 import java.io.IOException
 
 private const val METERS_PER_KM = 1000.0
+private const val INVALID_ACTIVITY_CODE = 422
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 fun TrackingViewModel.saveActivity() {
@@ -49,9 +50,9 @@ fun TrackingViewModel.saveActivity() {
                 try {
                     SessionManager.userBadges = RetrofitProvider.profileApi.getUserBadges()
                 } catch (e: HttpException) {
-                    Log.e("TrackingViewModel", "Failed to refresh user badges (HTTP)", e)
+                    Log.e(TAG, "Failed to refresh user badges (HTTP)", e)
                 } catch (e: IOException) {
-                    Log.e("TrackingViewModel", "Failed to refresh user badges (IO)", e)
+                    Log.e(TAG, "Failed to refresh user badges (IO)", e)
                 }
             }
 
@@ -66,9 +67,9 @@ fun TrackingViewModel.saveActivity() {
                             ),
                     )
                 } catch (e: HttpException) {
-                    Log.e("TrackingViewModel", "Failed to update user stats (HTTP)", e)
+                    Log.e(TAG, "Failed to update user stats (HTTP)", e)
                 } catch (e: IOException) {
-                    Log.e("TrackingViewModel", "Failed to update user stats (IO)", e)
+                    Log.e(TAG, "Failed to update user stats (IO)", e)
                 }
             }
 
@@ -76,10 +77,10 @@ fun TrackingViewModel.saveActivity() {
                 val profile = RetrofitProvider.profileApi.getUserProfile()
                 SessionManager.punts = profile.punts
             } catch (e: HttpException) {
-                Log.e("TrackingViewModel", "Failed to refresh profile locally (HTTP)", e)
+                Log.e(TAG, "Failed to refresh profile locally (HTTP)", e)
                 SessionManager.punts = newPunts
             } catch (e: IOException) {
-                Log.e("TrackingViewModel", "Failed to refresh profile locally (IO)", e)
+                Log.e(TAG, "Failed to refresh profile locally (IO)", e)
                 SessionManager.punts = newPunts
             }
 
@@ -92,11 +93,30 @@ fun TrackingViewModel.saveActivity() {
             SessionManager.titolsPendents = response.titolsPendents
             saveState = SaveState.Success(response)
         } catch (e: IOException) {
-            Log.e(TAG, "Network error fetching routes: ${e.message}", e)
+            Log.e(TAG, "Network error saving activity: ${e.message}", e)
             saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
         } catch (e: HttpException) {
-            Log.e(TAG, "HTTP error fetching routes: ${e.code()}", e)
-            saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
+            val errorBody = e.response()?.errorBody()?.string()
+            Log.e(TAG, "HTTP error saving activity: ${e.code()}, body: $errorBody")
+            if (e.code() == INVALID_ACTIVITY_CODE) {
+                val motiu =
+                    try {
+                        com.google.gson.JsonParser
+                            .parseString(errorBody)
+                            .asJsonObject
+                            .get("motiu")
+                            ?.asString ?: "Activitat no vàlida"
+                    } catch (ex: IllegalStateException) {
+                        Log.e(TAG, "Error parsing 422 body: ${ex.message}", ex)
+                        "Activitat no vàlida"
+                    } catch (ex: com.google.gson.JsonParseException) {
+                        Log.e(TAG, "Error parsing 422 JSON: ${ex.message}", ex)
+                        "Activitat no vàlida"
+                    }
+                saveState = SaveState.InvalidActivity(motiu)
+            } else {
+                saveState = SaveState.Error(UiText.StringResource(R.string.error_saving_activity))
+            }
         }
     }
 }
@@ -109,10 +129,10 @@ fun TrackingViewModel.fetchAvailableTitles() {
             showTitleSelectionDialog = true
         } catch (e: IOException) {
             saveState = SaveState.Error(UiText.StringResource(R.string.error_fetching_titles))
-            Log.e("TrackingViewModel", "IO Error fetching titles", e)
+            Log.e(TAG, "IO Error fetching titles", e)
         } catch (e: HttpException) {
             saveState = SaveState.Error(UiText.StringResource(R.string.error_fetching_titles))
-            Log.e("TrackingViewModel", "HTTP Error fetching titles", e)
+            Log.e(TAG, "HTTP Error fetching titles", e)
         }
     }
 }
@@ -142,11 +162,7 @@ fun TrackingViewModel.unlockTitle(
                 val currentList = SessionManager.availableTitols?.toMutableList() ?: mutableListOf()
                 if (currentList.none { it.id == title.id }) {
                     currentList.add(
-                        UserTitol(
-                            id = title.id,
-                            nom = title.nom,
-                            descripcio = title.descripcio,
-                        ),
+                        UserTitol(id = title.id, nom = title.nom, descripcio = title.descripcio),
                     )
                     SessionManager.availableTitols = currentList
                 }
@@ -158,10 +174,10 @@ fun TrackingViewModel.unlockTitle(
             titolsPendents = newValue
         } catch (e: IOException) {
             saveState = SaveState.Error(UiText.StringResource(R.string.error_unlocking_title))
-            Log.e("TrackingViewModel", "IO Error unlocking title", e)
+            Log.e(TAG, "IO Error unlocking title", e)
         } catch (e: HttpException) {
             saveState = SaveState.Error(UiText.StringResource(R.string.error_unlocking_title))
-            Log.e("TrackingViewModel", "HTTP Error unlocking title", e)
+            Log.e(TAG, "HTTP Error unlocking title", e)
         }
     }
 }

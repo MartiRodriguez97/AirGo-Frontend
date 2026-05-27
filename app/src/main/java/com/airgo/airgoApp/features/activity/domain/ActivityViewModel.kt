@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
+import com.airgo.airgoApp.core.network.SessionManager
 import com.airgo.airgoApp.features.activity.data.ActivityResponse
 import com.airgo.airgoApp.features.activity.data.UpdateCommentRequest
 import com.airgo.airgoApp.features.activity.data.UpdateSensationRequest
@@ -38,9 +39,20 @@ class ActivityViewModel : ViewModel() {
         loadActivities()
     }
 
-    fun loadActivities() {
+    fun loadActivities(forceRefresh: Boolean = false) {
         viewModelScope.launch {
+            /*
+            val cachedActivities = SessionManager.activities
+            if (!forceRefresh && cachedActivities != null) {
+                _uiState.value = if (cachedActivities.isEmpty()) {
+                    ActivityUiState.Empty
+                } else {
+                    ActivityUiState.Success(cachedActivities)
+                }
+                return@launch
+            }
             _uiState.value = ActivityUiState.Loading
+
             try {
                 val activities = RetrofitProvider.activityApi.getActivities()
                 _uiState.value =
@@ -48,6 +60,31 @@ class ActivityViewModel : ViewModel() {
                         ActivityUiState.Empty
                     } else {
                         val sortedActivities = activities.sortedByDescending { it.id }
+                        ActivityUiState.Success(sortedActivities)
+                    }*/
+            val cachedActivities = SessionManager.activities
+            if (!forceRefresh && cachedActivities != null) {
+                _uiState.value =
+                    if (cachedActivities.isEmpty()) {
+                        ActivityUiState.Empty
+                    } else {
+                        ActivityUiState.Success(cachedActivities)
+                    }
+                return@launch
+            }
+
+            _uiState.value = ActivityUiState.Loading
+            try {
+                val activities = RetrofitProvider.activityApi.getActivities()
+                val sortedActivities = activities.sortedByDescending { it.id }
+
+                // Guardamos en la NUEVA variable específica
+                SessionManager.activities = sortedActivities
+
+                _uiState.value =
+                    if (sortedActivities.isEmpty()) {
+                        ActivityUiState.Empty
+                    } else {
                         ActivityUiState.Success(sortedActivities)
                     }
             } catch (e: IOException) {
@@ -65,9 +102,19 @@ class ActivityViewModel : ViewModel() {
             try {
                 val response = RetrofitProvider.activityApi.deleteActivity(id)
                 if (response.isSuccessful) {
-                    loadActivities()
-                } else {
-                    _uiState.value = ActivityUiState.Error(R.string.error_deleting_activity)
+                    val currentState = _uiState.value
+                    if (currentState is ActivityUiState.Success) {
+                        val updatedActivities = currentState.activities.filter { it.id != id }
+
+                        SessionManager.activities = updatedActivities
+
+                        _uiState.value =
+                            if (updatedActivities.isEmpty()) {
+                                ActivityUiState.Empty
+                            } else {
+                                ActivityUiState.Success(updatedActivities)
+                            }
+                    }
                 }
             } catch (e: IOException) {
                 Log.e(TAG, "Network error deleting activity", e)
