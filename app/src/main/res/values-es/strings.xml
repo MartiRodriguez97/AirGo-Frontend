@@ -176,6 +176,7 @@
     <string name="error_username_empty">El nombre de usuario no puede estar vacío.</string>
     <string name="error_update_username">No se pudo actualizar el nombre de usuario.</string>
     <string name="error_http_code_username">Error HTTP %1$d: No se pudo actualizar el nombre de usuario.</string>
+    <string name="conditions_username_taken">No puedes utilizar este username, ha de ser mínimo de 4 letras y no estar en uso.</string>
 
     <!-- features/profile/settings/account/username/EditUserNameScreen-->
     <string name="edit_username_description">Cambia tu nombre de usuario, que es el que se muestra a otros usuarios de la aplicación.</string>
@@ -472,6 +473,18 @@
     <!-- Titles -->
     <string name="error_fetching_titles">No se pudieron obtener los títulos disponibles</string>
     <string name="error_unlocking_title">No se pudo desbloquear el título</string>
+
+    <string name="title_lazy_towner_desc">Habitante que gracias a AirGo dejará de ser \"lazy\".</string>
+    <string name="title_bessie_busybody_desc">Siempre al teléfono y a la última. Lo sabe todo de todos (y de la app).</string>
+    <string name="title_mayor_milford_desc">El alcalde que mantiene la ciudad en orden.</string>
+    <string name="title_trixie_desc">Cambia el patinete por la bicicleta para ver la ruta más limpia.</string>
+    <string name="title_pixel_desc">Arreglando el mundo dispositivo a dispositivo. La tecnología es el único camino.</string>
+    <string name="title_ziggy_desc">Buscando la golosina perfecta y el aire más puro de toda Barcelona.</string>
+    <string name="title_stingy_desc">¡Todo es mío! Esta ruta, esta app e incluso el aire que respiras.</string>
+    <string name="title_robbie_rotten_desc">El maestro de los disfraces. Su plan perfecto es echarse una buena siesta.</string>
+    <string name="title_stephanie_desc">Energía positiva y movimiento. ¡Bailemos por la ciudad con el mejor ritmo!</string>
+    <string name="title_sportakus_desc">¡El rey de AirGo! Aire limpio, camino bueno.</string>
+    <string name="title_sportacus_desc">El héroe de la salud. Siempre saltando, nunca quieto. El número uno en fitness.</string>
     <string name="start_point">Punto de inicio</string>
     <string name="end_point">Punto de destino</string>
     <string name="waypoint">Punto intermedio %d</string>

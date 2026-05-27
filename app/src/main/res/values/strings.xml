@@ -174,6 +174,7 @@
     <string name="error_username_empty">Username cannot be empty.</string>
     <string name="error_update_username">Could not update the username.</string>
     <string name="error_http_code_username">HTTP Error %1$d: Could not update the username.</string>
+    <string name="conditions_username_taken">You cannot use this username; it must be at least 4 characters long and not already in use.</string>
 
     <!-- features/profile/settings/account/username/EditUserNameScreen-->
     <string name="edit_username_description">Change your username, which is displayed to other users of the application.</string>
@@ -468,6 +469,18 @@
     <!-- Titles -->
     <string name="error_fetching_titles">Could not fetch available titles</string>
     <string name="error_unlocking_title">Could not unlock title</string>
+
+    <string name="title_lazy_towner_desc">Inhabitant who thanks to AirGo will stop being "lazy".</string>
+    <string name="title_bessie_busybody_desc">Always on the phone and up to date. Knows everything about everyone (and the app).</string>
+    <string name="title_mayor_milford_desc">The mayor who keeps the city in order.</string>
+    <string name="title_trixie_desc">Changes the scooter for the bicycle to see the cleanest route.</string>
+    <string name="title_pixel_desc">Fixing the world device by device. Technology is the only way.</string>
+    <string name="title_ziggy_desc">Looking for the perfect treat and the purest air in all of Barcelona.</string>
+    <string name="title_stingy_desc">Everything is mine! This route, this app and even the air you breathe.</string>
+    <string name="title_robbie_rotten_desc">The master of disguises. His perfect plan is to take a good nap.</string>
+    <string name="title_stephanie_desc">Positive energy and movement. Let\'s dance through the city with the best rhythm!</string>
+    <string name="title_sportakus_desc">The king of AirGo! Clean air, good path.</string>
+    <string name="title_sportacus_desc">The health hero. Always jumping, never still. Number one in fitness.</string>
     <string name="no_favorite_created_forums_found">You don\'t have any favorite form or created by you.</string>
     <string name="forums_filter_saved">Followed</string>
     <string name="forums_filter_mine">Created</string>

@@ -296,11 +296,19 @@ private suspend fun handleAutoLogin(
 
     try {
         val response = RetrofitProvider.authApi.getCurrentUserProfile()
+
         if (response.isSuccessful && response.body() != null) {
             val userDetails = response.body()!!
             applyUserSession(userDetails)
 
-            // Fetch everything before signaling login is complete
+            // SI EL TOKEN CAMBIÓ (porque el TokenAuthenticator lo refrescó), LO GUARDAMOS
+            if (SessionManager.accessToken != userPrefs.token ||
+                SessionManager.refreshToken != userPrefs.refreshToken
+            ) {
+                repository.saveSession(SessionManager.toUserPreferences())
+            }
+
+            // Cargar el resto de datos
             fetchUserBadges()
             fetchPendingTitles()
             fetchAvailableTitles()
@@ -310,9 +318,13 @@ private suspend fun handleAutoLogin(
             if (needsOnboarding) onboardingViewModel.checkOnboardingNeeded()
 
             onSync(SessionManager.username, userDetails.profilePic, true, needsOnboarding)
-        } else if (response.code() == HTTP_ERROR_401 || response.code() == HTTP_ERROR_403) {
-            repository.clearSession()
-            onSync(null, null, false, false)
+        } else {
+            // Si llegamos aquí con un 401 o 403 es porque el TokenAuthenticator
+            // ya intentó el refresh y falló (o el token es inválido).
+            if (response.code() == HTTP_ERROR_401 || response.code() == HTTP_ERROR_403) {
+                repository.clearSession()
+                onSync(null, null, false, false)
+            }
         }
     } catch (e: IOException) {
         Log.e("MainActivity", "Error during auto login", e)

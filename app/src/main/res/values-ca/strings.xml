@@ -177,6 +177,7 @@
     <string name="error_username_empty">El nom d\'usuari no pot estar buit.</string>
     <string name="error_update_username">No s\'ha pogut actualitzar el nom d\'usuari.</string>
     <string name="error_http_code_username">Error HTTP %1$d: No s\'ha pogut actualitzar el nom d\'usuari.</string>
+    <string name="conditions_username_taken">No pots utilitzar aquest username, ha de ser com a mínim de 4 lletres i no estar en ús.</string>
 
     <!-- features/profile/settings/account/username/EditUserNameScreen-->
     <string name="edit_username_description">Canvia el teu nom d\'usuari, que és el que es mostra als altres usuaris de l\'aplicació.</string>
@@ -467,6 +468,18 @@
     <!-- Titles -->
     <string name="error_fetching_titles">No s\'han pogut obtenir els títols disponibles</string>
     <string name="error_unlocking_title">No s\'ha pogut desbloquejar el títol</string>
+
+    <string name="title_lazy_towner_desc">Habitant que gràcies a AirGo deixarà de ser \"lazy\".</string>
+    <string name="title_bessie_busybody_desc">Sempre al telèfon i a l\'última. Ho sap tot de tothom (i de l\'app).</string>
+    <string name="title_mayor_milford_desc">L\'alcalde que manté la ciutat en ordre.</string>
+    <string name="title_trixie_desc">Canvia el patinet per la bicicleta per veure la ruta més neta.</string>
+    <string name="title_pixel_desc">Arreglant el món dispositiu a dispositiu. La tecnologia és l\'únic camí.</string>
+    <string name="title_ziggy_desc">Buscant la llaminadura perfecta i l\'aire més pur de tota Barcelona.</string>
+    <string name="title_stingy_desc">Tot és meu! Aquesta ruta, aquesta app i fins i tot l\'aire que respires.</string>
+    <string name="title_robbie_rotten_desc">El mestre de les disfresses. El seu pla perfecte és fer una bona migdiada.</string>
+    <string name="title_stephanie_desc">Energia positiva i moviment. Ballem per la ciutat amb el millor ritme!</string>
+    <string name="title_sportakus_desc">El rei de AirGo! Aire net, camí bo.</string>
+    <string name="title_sportacus_desc">L\'heroi de la salut. Sempre saltant, mai parat. El número u en fitness.</string>
     <string name="no_favorite_created_forums_found">No tens fòrums preferits ni creats per tu.</string>
     <string name="forums_filter_saved">Seguits</string>
     <string name="forums_filter_mine">Creats</string>

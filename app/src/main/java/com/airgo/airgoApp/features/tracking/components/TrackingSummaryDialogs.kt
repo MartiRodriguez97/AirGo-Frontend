@@ -162,7 +162,7 @@ fun titleSelectionDialog(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(text = translateTitolName(option.nom), fontWeight = FontWeight.Bold)
                             Text(
-                                text = translateTitolDescription(option.nom),
+                                text = translateTitolDescription(option.nom, option.descripcio),
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.Center,
                                 lineHeight = 14.sp,

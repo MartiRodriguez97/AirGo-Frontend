@@ -40,13 +40,28 @@ object TranslationMapper {
             ),
         )
 
+    private val titolMap =
+        mapOf(
+            "Lazy Towner" to (null to R.string.title_lazy_towner_desc),
+            "Bessie Busybody" to (null to R.string.title_bessie_busybody_desc),
+            "Mayor Milford" to (null to R.string.title_mayor_milford_desc),
+            "Trixie" to (null to R.string.title_trixie_desc),
+            "Pixel" to (null to R.string.title_pixel_desc),
+            "Ziggy" to (null to R.string.title_ziggy_desc),
+            "Stingy" to (null to R.string.title_stingy_desc),
+            "Robbie Rotten" to (null to R.string.title_robbie_rotten_desc),
+            "Stephanie" to (null to R.string.title_stephanie_desc),
+            "Sportakus" to (null to R.string.title_sportakus_desc),
+            "Sportacus" to (null to R.string.title_sportacus_desc),
+        )
+
     fun getBadgeNameResId(backendName: String): Int? = badgeMap[backendName]?.first
 
     fun getBadgeDescriptionResId(backendName: String): Int? = badgeMap[backendName]?.second
 
-    fun getTitolNameResId(backendName: String): Int? = getBadgeNameResId(backendName)
+    fun getTitolNameResId(backendName: String): Int? = titolMap[backendName]?.first
 
-    fun getTitolDescriptionResId(backendName: String): Int? = getBadgeDescriptionResId(backendName)
+    fun getTitolDescriptionResId(backendName: String): Int? = titolMap[backendName]?.second
 }
 
 @Composable
@@ -68,7 +83,10 @@ fun translateTitolName(backendName: String): String {
 }
 
 @Composable
-fun translateTitolDescription(backendName: String): String {
+fun translateTitolDescription(
+    backendName: String,
+    defaultDescription: String,
+): String {
     val resId = TranslationMapper.getTitolDescriptionResId(backendName)
-    return resId?.let { stringResource(it) } ?: backendName
+    return resId?.let { stringResource(it) } ?: defaultDescription
 }

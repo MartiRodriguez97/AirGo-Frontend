@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+private const val HTTP_400 = 400
+
 sealed class UsernameUiState {
     object Idle : UsernameUiState()
 
@@ -67,15 +69,19 @@ class UsernameViewModel : ViewModel() {
                 android.util.Log.e("UsernameViewModel", "Error de conexión", e)
                 _uiState.value = UsernameUiState.Error(UiText.StringResource(R.string.error_connection_generic))
             } catch (e: retrofit2.HttpException) {
-                android.util.Log.e("UsernameViewModel", "Error HTTP", e)
-                _uiState.value =
-                    UsernameUiState.Error(
-                        UiText.StringResource(
-                            R.string.error_http_code_username,
-                            e.code(),
-                            e.message(),
-                        ),
-                    )
+                if (e.code() == HTTP_400) {
+                    _uiState.value = UsernameUiState.Error(UiText.StringResource(R.string.conditions_username_taken))
+                } else {
+                    android.util.Log.e("UsernameViewModel", "Error HTTP", e)
+                    _uiState.value =
+                        UsernameUiState.Error(
+                            UiText.StringResource(
+                                R.string.error_http_code_username,
+                                e.code(),
+                                e.message(),
+                            ),
+                        )
+                }
             }
         }
     }
