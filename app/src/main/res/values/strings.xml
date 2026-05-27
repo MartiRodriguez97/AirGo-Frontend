@@ -409,7 +409,7 @@
 
     <!-- features/tracking-->
     <string name="error_saving_activity">Could not save activity</string>
-    <string name="tracking_save_completed">¡Entrenamiento completado y guardado!</string>
+    <string name="tracking_save_completed">Workout completed and saved!</string>
     <string name="tracking_save_progress">Progress saved</string>
     <string name="tracking_new_title_title">New Title!</string>
     <string name="tracking_new_title_desc">You have a pending title to choose!</string>
@@ -476,21 +476,21 @@
     <string name="home_pending_titles_singular">You have 1 title to choose</string>
     <string name="home_pending_titles_plural">You have %1$d titles to choose</string>
     <string name="home_pending_titles_btn">CHOOSE</string>
-    <string name="home_building_pending_title">Verificació d\'edifici!</string>
-    <string name="home_building_pending_desc">Digue\'ns l\'adreça del teu edifici per guanyar punts.</string>
-    <string name="home_building_btn_verify">VERIFICAR</string>
-    <string name="home_building_dialog_title">Adreça de l\'edifici</string>
-    <string name="home_building_dialog_desc">Introdueix l\'adreça del teu edifici a Barcelona.</string>
-    <string name="home_building_address_label">Adreça</string>
-    <string name="home_building_number_label">Núm. edifici</string>
-    <string name="home_building_btn_submit">Enviar</string>
+    <string name="home_building_pending_title">Building verification!</string>
+    <string name="home_building_pending_desc">Tell us the address of your building to earn points.</string>
+    <string name="home_building_btn_verify">VERIFY</string>
+    <string name="home_building_dialog_title">Building address</string>
+    <string name="home_building_dialog_desc">Enter the address of your building in Barcelona.</string>
+    <string name="home_building_address_label">Address</string>
+    <string name="home_building_number_label">Building No.</string>
+    <string name="home_building_btn_submit">Submit</string>
     <string name="error_address_not_found">Address not found or no valid building found.</string>
     <string name="error_building_score_low">The building does not meet the minimum score requirement.</string>
     <string name="enter_house_address">Enter your house address to earn a badge!</string>
-    <string name="error_generic">Alguna cosa ha anat malament. Si us plau, torna-ho a intentar.</string>
-    <string name="home_building_municipality_label">Municipi (només Barcelona)</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="home_building_municipality_label">Municipality (Barcelona only)</string>
     <string name="error_dialog_title">Error</string>
-    <string name="btn_continue">Continuar</string>
+    <string name="btn_continue">Continue</string>
 
     <string name="template_run_easy_1_title">Easy Walk</string>
     <string name="template_run_easy_1_desc">Alternate walking and jogging at a comfortable pace to start moving without pushing too hard.</string>
