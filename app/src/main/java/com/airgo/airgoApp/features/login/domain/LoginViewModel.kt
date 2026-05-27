@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil.network.HttpException
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.network.RetrofitProvider
 import com.airgo.airgoApp.core.network.SessionManager
@@ -163,7 +164,6 @@ class LoginViewModel : ViewModel() {
                     _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_titles))
                     Log.e("LoginViewModel", "IO Error fetching pending titles", e)
                 } catch (e: retrofit2.HttpException) {
-                    _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_titles))
                     Log.e("LoginViewModel", "HTTP Error fetching pending titles", e)
                 }
 
@@ -172,6 +172,9 @@ class LoginViewModel : ViewModel() {
                 } catch (e: IOException) {
                     _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_titles))
                     Log.e("LoginViewModel", "IO Error fetching available titles list", e)
+                } catch (e: HttpException) {
+                    _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_titles))
+                    Log.e("LoginViewModel", "Http Error fetching available titles list", e)
                 }
 
                 try {
