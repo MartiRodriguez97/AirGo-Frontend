@@ -48,11 +48,11 @@ fun badgesAndActivitiesZone(
     onActivityClick: (Int) -> Unit,
 ) {
     LaunchedEffect(Unit) {
-        viewModel.loadActivities()
+        viewModel.loadActivities(forceRefresh = false)
     }
     LaunchedEffect(Unit) {
         AppEvents.activitySaved.collect {
-            viewModel.loadActivities()
+            viewModel.loadActivities(forceRefresh = true)
         }
     }
 
