@@ -1,8 +1,5 @@
 package com.airgo.airgoApp.features.home.components
 
-import android.app.Activity
-import android.content.Context
-import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,16 +40,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.core.view.WindowInsetsControllerCompat
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.home.domain.HomeViewModel
 import com.airgo.airgoApp.features.map.helpers.NominatimResult
@@ -99,25 +94,6 @@ fun buildingAddressDialog(
     viewModel: HomeViewModel,
     onDismiss: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val focusManager = LocalFocusManager.current
-    val view = LocalView.current
-
-    val hideKeyboard =
-        remember {
-            {
-                (context as? Activity)?.let { activity ->
-                    WindowInsetsControllerCompat(activity.window, view)
-                        .hide(
-                            androidx.core.view.WindowInsetsCompat.Type
-                                .ime(),
-                        )
-                }
-                (context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
-                    ?.hideSoftInputFromWindow(view.windowToken, 0)
-            }
-        }
-
     val numeroFocusRequester = remember { FocusRequester() }
     var adreca by remember { mutableStateOf("") }
     var numero by remember { mutableStateOf("") }
@@ -131,6 +107,10 @@ fun buildingAddressDialog(
     }
 
     Dialog(onDismissRequest = onDismiss) {
+        val focusManager = LocalFocusManager.current
+
+        val keyboardController = LocalSoftwareKeyboardController.current
+
         Card(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             shape = RoundedCornerShape(16.dp),
@@ -174,7 +154,7 @@ fun buildingAddressDialog(
                     focusRequester = numeroFocusRequester,
                     onValueChange = { if (it.all { char -> char.isDigit() }) numero = it },
                     onDone = {
-                        hideKeyboard()
+                        keyboardController?.hide()
                         focusManager.clearFocus(force = true)
                     },
                 )
@@ -185,7 +165,7 @@ fun buildingAddressDialog(
                     enabled = adreca.isNotBlank() && numero.isNotBlank() && !isLoading,
                     isLoading = isLoading,
                     onClick = {
-                        hideKeyboard()
+                        keyboardController?.hide()
                         focusManager.clearFocus(force = true)
                         viewModel.searchAddresses("")
                         viewModel.checkBuildingAddress("Barcelona", adreca, numero)
