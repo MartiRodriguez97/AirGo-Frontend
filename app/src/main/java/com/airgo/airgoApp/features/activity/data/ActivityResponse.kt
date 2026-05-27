@@ -11,6 +11,7 @@ data class ActivityResponse(
     @SerializedName("sensacio") val sensacio: Int? = null,
     @SerializedName("comentari") val comentari: String? = null,
     @SerializedName("dataInici") val dataInici: String? = null,
+    @SerializedName("created_at") val createdAt: String? = null,
 )
 
 data class UpdateSensationRequest(

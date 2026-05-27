@@ -78,8 +78,14 @@
 
     <string name="badge_constancy_name">Iniciació a la constància</string>
     <string name="badge_constancy_desc">Has completat 3 dies consecutius d\'activitat. Bon inici!</string>
-    <string name="badge_sustainable_building_name">Edifici Sostenible</string>
+
+    <string name="badge_sustainable_building_name">Edifici sostenible</string>
     <string name="badge_sustainable_building_desc">El teu edifici té una bona puntuació d\'eficiència energètica!</string>
+
+    <string name="profile_stat_points">Punts</string>
+    <string name="profile_stat_streak">Ratxa</string>
+    <string name="profile_stat_streak_value">%1$d dies</string>
+    <string name="profile_stat_bike">Bici</string>
 
     <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar compte</string>

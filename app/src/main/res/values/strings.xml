@@ -16,67 +16,67 @@
     <string name="error_fetching_badges">Unable to fetch badges</string>
     <string name="profile_activities_recent_title">Recent activities</string>
     <string name="profile_activities_delete_desc">Delete activity</string>
-
     <!-- Badge Translations -->
     <string name="badge_welcome_name">Welcome to AirGo!</string>
-    <string name="badge_welcome_desc">You\'ve earned 50 points. Welcome to the AirGo community!</string>
+    <string name="badge_welcome_desc">You have earned 50 points. Welcome to the AirGo community!</string>
 
     <string name="badge_legend_name">AirGo Legend</string>
-    <string name="badge_legend_desc">You\'ve earned 5000 points. Your dedication is legendary!</string>
+    <string name="badge_legend_desc">You have earned 5000 points. Your dedication is legendary!</string>
 
     <string name="badge_ambassador_name">AirGo Ambassador</string>
-    <string name="badge_ambassador_desc">You\'ve earned 2500 points. You are an ambassador for sustainable mobility!</string>
+    <string name="badge_ambassador_desc">You have earned 2500 points. You are a sustainable mobility ambassador!</string>
 
     <string name="badge_elite_name">Green Elite</string>
-    <string name="badge_elite_desc">You\'ve earned 1000 points. You are part of the AirGo elite!</string>
+    <string name="badge_elite_desc">You have earned 1000 points. You are part of the AirGo elite!</string>
 
     <string name="badge_athlete_name">Urban Athlete</string>
-    <string name="badge_athlete_desc">You\'ve earned 500 points. You are an urban athlete!</string>
+    <string name="badge_athlete_desc">You have earned 500 points. You are an urban athlete!</string>
 
-    <string name="badge_fit_name">Fit</string>
-    <string name="badge_fit_desc">You\'ve earned 250 points. Every effort counts!</string>
+    <string name="badge_fit_name">In Shape</string>
+    <string name="badge_fit_desc">You have earned 250 points. Every effort counts!</string>
 
-    <string name="badge_first_steps_name">First steps</string>
-    <string name="badge_first_steps_desc">You\'ve earned 100 points. You\'re on the right track!</string>
+    <string name="badge_first_steps_name">First Steps</string>
+    <string name="badge_first_steps_desc">You have earned 100 points. You are on the right track!</string>
 
-    <string name="badge_catalan_crossing_name">Catalan crossing</string>
-    <string name="badge_catalan_crossing_desc">You\'ve traveled 1000 km in total. Legendary!</string>
+    <string name="badge_catalan_crossing_name">Catalan Crossing</string>
+    <string name="badge_catalan_crossing_desc">You have traveled 1000 km in total. Legendary!</string>
 
     <string name="badge_pedal_master_name">Pedal Master</string>
-    <string name="badge_pedal_master_desc">You\'ve traveled 500 km in total. You are a true athlete!</string>
+    <string name="badge_pedal_master_desc">You have traveled 500 km in total. You are a true athlete!</string>
 
     <string name="badge_centurion_name">Centurion</string>
-    <string name="badge_centurion_desc">You\'ve traveled 100 km in total. A hundred kilometers!</string>
+    <string name="badge_centurion_desc">You have traveled 100 km in total. A hundred kilometers!</string>
 
     <string name="badge_around_barcelona_name">Around Barcelona</string>
-    <string name="badge_around_barcelona_desc">You\'ve traveled 50 km in total. All of Barcelona at your feet!</string>
+    <string name="badge_around_barcelona_desc">You have traveled 50 km in total. All of Barcelona at your feet!</string>
 
     <string name="badge_urban_explorer_name">Urban Explorer</string>
-    <string name="badge_urban_explorer_desc">You\'ve traveled 21 km in total. You already know the city!</string>
+    <string name="badge_urban_explorer_desc">You have traveled 21 km in total. You already know the city!</string>
 
-    <string name="badge_first_10km_name">First 10 kilometers</string>
-    <string name="badge_first_10km_desc">You\'ve traveled 10 km in total. You\'re getting into the rhythm!</string>
+    <string name="badge_first_10km_name">First 10 Kilometers</string>
+    <string name="badge_first_10km_desc">You have traveled 10 km in total. You are getting into the groove!</string>
 
-    <string name="badge_walk_name">Strolling</string>
-    <string name="badge_walk_desc">You\'ve traveled 5 km in total. The first step always counts!</string>
+    <string name="badge_walk_name">Strolling Around</string>
+    <string name="badge_walk_desc">You have traveled 5 km in total. The first step always counts!</string>
 
-    <string name="badge_half_year_streak_name">Half year streak</string>
+    <string name="badge_half_year_streak_name">Half-Year Streak</string>
     <string name="badge_half_year_streak_desc">180 consecutive days. Incredible dedication!</string>
 
-    <string name="badge_constancy_legend_name">Constancy Legend</string>
-    <string name="badge_constancy_legend_desc">60 consecutive days. You are an example for everyone.</string>
+    <string name="badge_constancy_legend_name">Consistency Legend</string>
+    <string name="badge_constancy_legend_desc">60 consecutive days. You are an example to everyone.</string>
 
-    <string name="badge_one_month_nonstop_name">One month nonstop</string>
+    <string name="badge_one_month_nonstop_name">One Month Non-Stop</string>
     <string name="badge_one_month_nonstop_desc">30 consecutive days of activity. You are a machine!</string>
 
-    <string name="badge_two_weeks_unstoppable_name">Two weeks unstoppable</string>
-    <string name="badge_two_weeks_unstoppable_desc">14 days nonstop. Constancy is your strength.</string>
+    <string name="badge_two_weeks_unstoppable_name">Two Weeks Unstoppable</string>
+    <string name="badge_two_weeks_unstoppable_desc">14 days without stopping. Consistency is your strength.</string>
 
     <string name="badge_iron_week_name">Iron Week</string>
     <string name="badge_iron_week_desc">You have maintained a streak of 7 consecutive days. Impressive!</string>
 
-    <string name="badge_constancy_name">Introduction to Constancy</string>
+    <string name="badge_constancy_name">Introduction to Consistency</string>
     <string name="badge_constancy_desc">You have completed 3 consecutive days of activity. Good start!</string>
+
     <string name="badge_sustainable_building_name">Sustainable Building</string>
     <string name="badge_sustainable_building_desc">Your building has a good energy efficiency score!</string>
 
@@ -86,6 +86,11 @@
     <string name="profile_delete_account_confirm">Delete</string>
     <string name="profile_delete_account_cancel">Cancel</string>
     <string name="profile_badges_title">Badges</string>
+
+    <string name="profile_stat_points">Points</string>
+    <string name="profile_stat_streak">Streak</string>
+    <string name="profile_stat_streak_value">%1$d days</string>
+    <string name="profile_stat_bike">Bike</string>
 
     <string name="profile_avatar_description">Profile picture</string>
     <string name="profile_edit_avatar_description">Change profile picture</string>

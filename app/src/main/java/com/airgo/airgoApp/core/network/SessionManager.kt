@@ -1,5 +1,6 @@
 package com.airgo.airgoApp.core.network
 
+import com.airgo.airgoApp.features.activity.data.ActivityResponse
 import com.airgo.airgoApp.features.home.data.Exercise
 import com.airgo.airgoApp.features.home.data.TrainingPlanResponse
 import com.airgo.airgoApp.features.profile.data.UserBadgeResponse
@@ -24,6 +25,7 @@ object SessionManager {
     var availableTitols: List<UserTitol>? = null
     var trainingPlans: List<TrainingPlanResponse>? = null
     var exercicis: List<Exercise>? = null
+    var activities: List<ActivityResponse>? = null
     var exerciciActiu: Exercise? = null
     var nomTemplateActiu: String? = null
     var userBadges: List<UserBadgeResponse>? = null

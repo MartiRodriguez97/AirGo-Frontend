@@ -109,7 +109,7 @@ class HomeViewModel : ViewModel() {
         }
         viewModelScope.launch(exceptionHandler) {
             val badges =
-                com.airgo.airgoApp.core.network.RetrofitProvider.profileApi
+                profileApi
                     .getUserBadges()
             SessionManager.userBadges = badges
             _needsBuildingAddress.value = badges.none { it.insignia.tipus == "EDIFICI" }
@@ -261,7 +261,7 @@ class HomeViewModel : ViewModel() {
             _isLoading.value = true
 
             val cachedPlans = SessionManager.trainingPlans
-            if (!forceRefresh && !cachedPlans.isNullOrEmpty()) {
+            if (!forceRefresh && cachedPlans != null) {
                 _plans.value = cachedPlans
                 val cachedExercises = cachedPlans.flatMap { it.exercicis ?: emptyList() }
                 updateTodayExercises(cachedExercises)

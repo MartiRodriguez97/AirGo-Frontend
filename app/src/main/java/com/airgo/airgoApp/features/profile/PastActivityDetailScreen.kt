@@ -13,6 +13,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.activity.domain.ActivityUiState
@@ -36,6 +38,11 @@ import com.airgo.airgoApp.features.tracking.components.trackingSummaryRouteCard
 import com.airgo.airgoApp.features.tracking.components.trackingSummaryStatsCard
 import com.airgo.airgoApp.features.tracking.data.TrackingData
 import org.osmdroid.util.GeoPoint
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+
+private const val MAX_DATE_LENGTH = 10
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +73,6 @@ fun pastActivityDetailScreen(
         },
     ) { paddingValues ->
         if (activity != null) {
-            // Mapeamos los datos para poder reutilizar los componentes de TrackingSummaryScreen
             val trackingDataMapeado =
                 TrackingData(
                     distanceMeters = activity.distanceMeters,
@@ -80,6 +86,17 @@ fun pastActivityDetailScreen(
                     GeoPoint(point[0], point[1])
                 } ?: emptyList()
 
+            val formattedDate =
+                remember(activity.createdAt) {
+                    activity.createdAt?.let { dateStr ->
+                        try {
+                            val parsedDate = OffsetDateTime.parse(dateStr).toLocalDate()
+                            parsedDate.format(DateTimeFormatter.ofPattern("dd/MM"))
+                        } catch (e: DateTimeParseException) {
+                            dateStr.take(MAX_DATE_LENGTH)
+                        }
+                    } ?: "--/--"
+                }
             Column(
                 modifier =
                     Modifier
@@ -90,6 +107,14 @@ fun pastActivityDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                Text(
+                    text = formattedDate,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+
                 if (activity.sensacio != null) {
                     pastActivitySensationCard(
                         sensacioValue = activity.sensacio,
@@ -110,7 +135,6 @@ fun pastActivityDetailScreen(
                 postActivitySensationDialog(
                     onDismiss = { showEditSensationDialog = false },
                     onSensationSelected = { nuevoValor ->
-                        // Llamamos al viewModel para guardar el cambio en el backend
                         activityViewModel.updateActivitySensation(activityId, nuevoValor)
                         showEditSensationDialog = false
                     },
