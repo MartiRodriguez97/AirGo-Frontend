@@ -487,10 +487,10 @@
     <string name="home_building_address_label">Dirección</string>
     <string name="home_building_number_label">Número</string>
     <string name="home_building_btn_submit">Enviar</string>
-    <string name="error_address_not_found">Dirección no encontrada o ningún edificio válido encontrado.</string>
-    <string name="error_building_score_low">El edificio no cumple con la puntuación mínima requerida.</string>
+    <string name="error_address_not_found">Dirección no encontrada o no se ha encontrado ningún edificio válido.</string>
+    <string name="error_building_score_low">El edificio no alcanza la puntuación mínima requerida.</string>
     <string name="enter_house_address">¡Introduce la dirección de tu casa para ganar una insignia!</string>
-    <string name="error_generic">Algo ha salido mal. Por favor, inténtalo de nuevo.</string>
+    <string name="error_generic">Algo ha salido mal. Por favor, vuelve a intentarlo.</string>
     <string name="home_building_municipality_label">Municipio (solo Barcelona)</string>
     <string name="error_dialog_title">Error</string>
     <string name="btn_continue">Continuar</string>
