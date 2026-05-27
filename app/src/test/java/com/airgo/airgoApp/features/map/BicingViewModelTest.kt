@@ -46,8 +46,8 @@ class BicingViewModelTest {
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
         mockkObject(RetrofitProvider)
+        Dispatchers.setMain(testDispatcher)
         viewModel = BicingViewModel()
     }
 

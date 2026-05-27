@@ -42,7 +42,7 @@ class MainShellScreenTest {
         setupMainShellContent("es")
 
         // Verificamos strings en español
-        composeTestRule.onNodeWithText("Home").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Inicio").assertIsDisplayed()
         composeTestRule.onNodeWithText("Social").assertIsDisplayed()
         composeTestRule.onNodeWithText("Actividad").assertIsDisplayed()
         composeTestRule.onNodeWithText("Calendario").assertIsDisplayed()
@@ -57,7 +57,7 @@ class MainShellScreenTest {
         setupMainShellContent("ca")
 
         // Verificamos strings en catalán
-        composeTestRule.onNodeWithText("Home").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Inici").assertIsDisplayed()
         composeTestRule.onNodeWithText("Social").assertIsDisplayed()
         composeTestRule.onNodeWithText("Activitat").assertIsDisplayed()
         composeTestRule.onNodeWithText("Calendari").assertIsDisplayed()

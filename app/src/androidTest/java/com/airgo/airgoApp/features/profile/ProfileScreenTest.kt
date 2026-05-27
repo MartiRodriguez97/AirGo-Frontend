@@ -124,20 +124,31 @@ class ProfileScreenTest {
 
         // Navigate to Account Settings
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule.waitForIdle()
+
         composeTestRule
             .onNodeWithText(
                 context.getString(R.string.account_settings_header),
                 substring = true,
                 ignoreCase = true,
             ).performClick()
+        composeTestRule.waitForIdle()
 
         composeTestRule
             .onNodeWithText(context.getString(R.string.profile_delete_account_button), substring = true, ignoreCase = true)
             .assertIsDisplayed()
 
         // Go back to Profile Home
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.acc_back_button)).performClick()
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.acc_back_button)).performClick()
+        composeTestRule
+            .onNode(
+                androidx.compose.ui.test.hasContentDescription(
+                    context.getString(R.string.acc_back_button),
+                    substring = true,
+                    ignoreCase = true,
+                ),
+                useUnmergedTree = true,
+            ).performClick()
+        composeTestRule.waitForIdle()
 
         composeTestRule
             .onNodeWithContentDescription(context.getString(R.string.profile_edit_avatar_description), substring = true, ignoreCase = true)
