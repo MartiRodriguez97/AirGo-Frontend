@@ -84,11 +84,20 @@ fun mainShellScreen(
 
     LaunchedEffect(pendingNavData) {
         if (pendingNavData != null) {
+            val targetScreen = pendingNavData.getString("TARGET_SCREEN")
             val convId = pendingNavData.getString("convId")
             val otherUserId = pendingNavData.getString("otherUserId")
             val username = pendingNavData.getString("username") ?: "Usuari"
             val otherProfilePic = pendingNavData.getString("otherProfilePic")
-            if (convId != null && otherUserId != null) {
+
+            if (targetScreen == "social") {
+                navController.navigate(MainShellScreen.SOCIAL.route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+                onNavigated()
+            } else if (convId != null && otherUserId != null) {
                 val encodedPic =
                     if (!otherProfilePic.isNullOrEmpty()) {
                         java.net.URLEncoder.encode(otherProfilePic, "UTF-8")

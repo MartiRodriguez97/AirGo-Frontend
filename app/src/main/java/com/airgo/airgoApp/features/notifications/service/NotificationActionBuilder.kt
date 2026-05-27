@@ -7,6 +7,10 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import com.airgo.airgoApp.R
 
+private const val ACCEPT_NUMBER = 10
+private const val REJECT_NUMBER = 11
+private const val IGNORE_NUMBER = 12
+
 fun createActions(
     context: Context,
     chatId: String,
@@ -65,4 +69,56 @@ fun createActions(
             ).build()
 
     return Pair(replyAction, readAction)
+}
+
+fun createFriendRequestActions(
+    context: Context,
+    amistatId: Int,
+): List<NotificationCompat.Action> {
+    val acceptIntent =
+        Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "com.airgo.airgoApp.ACTION_FRIEND_ACCEPT"
+            putExtra("AMISTAT_ID", amistatId)
+            putExtra("NOTIFICATION_ID", amistatId.hashCode())
+        }
+    val acceptPendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            amistatId.hashCode() + ACCEPT_NUMBER,
+            acceptIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+    val rejectIntent =
+        Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "com.airgo.airgoApp.ACTION_FRIEND_REJECT"
+            putExtra("AMISTAT_ID", amistatId)
+            putExtra("NOTIFICATION_ID", amistatId.hashCode())
+        }
+    val rejectPendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            amistatId.hashCode() + REJECT_NUMBER,
+            rejectIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+    val ignoreIntent =
+        Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "com.airgo.airgoApp.ACTION_FRIEND_IGNORE"
+            putExtra("NOTIFICATION_ID", amistatId.hashCode())
+        }
+    val ignorePendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            amistatId.hashCode() + IGNORE_NUMBER,
+            ignoreIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+    return listOf(
+        NotificationCompat.Action.Builder(0, context.getString(R.string.accept), acceptPendingIntent).build(),
+        NotificationCompat.Action.Builder(0, context.getString(R.string.reject), rejectPendingIntent).build(),
+        NotificationCompat.Action.Builder(0, context.getString(R.string.ignore), ignorePendingIntent).build(),
+    )
 }

@@ -54,17 +54,20 @@ class NotificationActionReceiver : BroadcastReceiver() {
         val chatId = intent.getStringExtra("CHAT_ID") ?: ""
         val otherUserId = intent.getIntExtra("OTHER_USER_ID", 0)
         val notificationId = intent.getIntExtra("NOTIFICATION_ID", 0)
+        val amistatId = intent.getIntExtra("AMISTAT_ID", -1)
 
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {
-                val token = ensureToken(context)
+                ensureToken(context)
 
-                if (token != null && chatId.isNotEmpty()) {
-                    when (action) {
-                        "com.airgo.airgoApp.ACTION_MARK_AS_READ" -> {
-                            markAsRead(chatId)
-                        }
-                        "com.airgo.airgoApp.ACTION_REPLY" -> {
+                when (action) {
+                    "com.airgo.airgoApp.ACTION_MARK_AS_READ" -> {
+                        if (chatId.isNotEmpty()) markAsRead(chatId)
+                        cancelNotification(context, notificationId)
+                    }
+                    "com.airgo.airgoApp.ACTION_REPLY" -> {
+                        val token = SessionManager.accessToken
+                        if (token != null && chatId.isNotEmpty()) {
                             val replyText =
                                 RemoteInput
                                     .getResultsFromIntent(intent)
@@ -79,33 +82,65 @@ class NotificationActionReceiver : BroadcastReceiver() {
                             }
                         }
                     }
+                    "com.airgo.airgoApp.ACTION_FRIEND_ACCEPT" -> {
+                        if (amistatId != -1) {
+                            respondFriendRequest(amistatId, "accept")
+                            cancelNotification(context, notificationId)
+                        }
+                    }
+                    "com.airgo.airgoApp.ACTION_FRIEND_REJECT" -> {
+                        if (amistatId != -1) {
+                            respondFriendRequest(amistatId, "reject")
+                            cancelNotification(context, notificationId)
+                        }
+                    }
+                    "com.airgo.airgoApp.ACTION_FRIEND_IGNORE" -> {
+                        cancelNotification(context, notificationId)
+                    }
                 }
             } catch (e: java.lang.Exception) {
                 Log.e("AirGo_Receiver", "Error processant acció: ${e.message}", e)
             } finally {
-                if (action == "com.airgo.airgoApp.ACTION_MARK_AS_READ") {
-                    val notificationManager =
-                        context.getSystemService(
-                            Context.NOTIFICATION_SERVICE,
-                        ) as NotificationManager
-                    notificationManager.cancel(notificationId)
-
-                    // Si ya no quedan notificaciones de chat, cancelamos también el resumen
-                    val activeNotifications = notificationManager.activeNotifications
-                    val hasMoreChats =
-                        activeNotifications.any {
-                            it.id != FirebaseMessagingService.SUMMARY_ID &&
-                                it.id != notificationId &&
-                                it.notification.group == FirebaseMessagingService.CHAT_GROUP_KEY
-                        }
-
-                    if (!hasMoreChats) {
-                        notificationManager.cancel(FirebaseMessagingService.SUMMARY_ID)
-                    }
-                }
-
                 pendingResult.finish()
             }
+        }
+    }
+
+    private fun cancelNotification(
+        context: Context,
+        notificationId: Int,
+    ) {
+        val notificationManager =
+            context.getSystemService(
+                Context.NOTIFICATION_SERVICE,
+            ) as NotificationManager
+        notificationManager.cancel(notificationId)
+
+        // Si ya no quedan notificaciones de chat, cancelamos también el resumen
+        val activeNotifications = notificationManager.activeNotifications
+        val hasMoreGrouped =
+            activeNotifications.any {
+                it.id != FirebaseMessagingService.SUMMARY_ID &&
+                    it.id != notificationId &&
+                    it.notification.group == FirebaseMessagingService.CHAT_GROUP_KEY
+            }
+
+        if (!hasMoreGrouped) {
+            notificationManager.cancel(FirebaseMessagingService.SUMMARY_ID)
+        }
+    }
+
+    private suspend fun respondFriendRequest(
+        amistatId: Int,
+        accio: String,
+    ) {
+        try {
+            val repository =
+                com.airgo.airgoApp.features.social
+                    .SocialRepository(RetrofitProvider.socialApi)
+            repository.respondFriendRequest(amistatId, accio)
+        } catch (e: java.lang.Exception) {
+            Log.e("AirGo_Receiver", "Error respondFriendRequest", e)
         }
     }
 

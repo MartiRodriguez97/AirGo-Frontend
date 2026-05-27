@@ -387,10 +387,12 @@
     <string name="no_friends_found">No s\'ha trobat cap amic.</string>
     <string name="pending_requests">Sol·licituds pendents</string>
     <string name="no_pending_requests">No tens sol·licituds pendents.</string>
-    <string name="friend_request">Vol ser el teu amic.</string>
+    <string name="friend_request">Vol ser el teu amic/ga.</string>
+    <string name="friend_accepted_body">Ha acceptat la teva sol·licitud d\'amistat!</string>
     <string name="search_users_forums">Cerca usuaris i fòrums...</string>
     <string name="accept">Acceptar</string>
     <string name="reject">Rebutjar</string>
+    <string name="ignore">Ignorar</string>
     <string name="no_user_found">No s\'ha trobat cap usuari.</string>
     <string name="photo">Foto de %1$s</string>
     <string name="sent">Enviada</string>
