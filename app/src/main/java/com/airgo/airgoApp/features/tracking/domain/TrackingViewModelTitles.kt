@@ -41,7 +41,7 @@ fun TrackingViewModel.saveActivity() {
                     sensacio = selectedSensation,
                 )
             val response = RetrofitProvider.trackingApi.saveActivity(request)
-
+            SessionManager.activities = null
             SessionManager.ratxa = response.currentStreak
             val oldPunts = SessionManager.punts ?: 0
             val newPunts = oldPunts + response.pointsEarned

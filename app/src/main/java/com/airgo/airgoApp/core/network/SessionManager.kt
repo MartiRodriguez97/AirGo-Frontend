@@ -52,6 +52,7 @@ object SessionManager {
         availableTitols = null
         trainingPlans = null
         exercicis = null
+        activities = null
         exerciciActiu = null
         nomTemplateActiu = null
         punts = null
