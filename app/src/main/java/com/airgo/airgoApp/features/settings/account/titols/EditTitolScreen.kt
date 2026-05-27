@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airgo.airgoApp.R
 import com.airgo.airgoApp.core.utils.UiText
+import com.airgo.airgoApp.core.utils.translation.translateTitolDescription
 import com.airgo.airgoApp.features.settings.account.titols.data.UserTitol
 import com.airgo.airgoApp.features.settings.account.titols.domain.TitolUiState
 import com.airgo.airgoApp.features.settings.account.titols.domain.TitolViewModel
@@ -196,7 +197,11 @@ private fun editTitolForm(
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         Text(
-                            text = availableTitol.descripcio,
+                            text =
+                                translateTitolDescription(
+                                    backendName = availableTitol.nom,
+                                    defaultDescription = availableTitol.descripcio,
+                                ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
