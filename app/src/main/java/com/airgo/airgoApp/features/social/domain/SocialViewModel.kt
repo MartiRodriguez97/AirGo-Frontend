@@ -207,9 +207,7 @@ class SocialViewModel : ViewModel() {
         viewModelScope.launch {
             repository.deleteFriend(amicId).fold(
                 onSuccess = {
-                    android.util.Log.d("SocialVM", "before delete: ${_allFriends.value.size}")
                     _allFriends.value = _allFriends.value.filter { it.amic.id != amicId }
-                    android.util.Log.d("SocialVM", "after delete: ${_allFriends.value.size}")
                     applyFriendsFilter()
                 },
                 onFailure = {

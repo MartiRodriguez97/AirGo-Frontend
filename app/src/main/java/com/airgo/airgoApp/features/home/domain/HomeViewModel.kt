@@ -213,8 +213,6 @@ class HomeViewModel : ViewModel() {
 
     fun updateTodayExercises(allExercises: List<Exercise>) {
         val today = java.time.LocalDate.now()
-        Log.d("AirGo_Debug", "Buscando ejercicios pendientes para hoy: $today")
-
         val todayExercises =
             allExercises.filter { ex ->
                 if (ex.dataInici != null && ex.dataInici.length >= DATA_FORMAT_LENGTH) {
@@ -231,8 +229,6 @@ class HomeViewModel : ViewModel() {
                     false
                 }
             }
-
-        Log.d("AirGo_Debug", "Ejercicios finales para hoy: ${todayExercises.size}")
 
         // Actualizamos el estado del Home
         _exercises.value = todayExercises

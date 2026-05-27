@@ -102,8 +102,6 @@ class LoginViewModel : ViewModel() {
         session.email = user
         session.refreshToken = refresh
 
-        Log.d(TAG, "Access token: $access")
-
         if (user != null) {
             fetchAndSaveUserDetails(session)
         }
@@ -174,9 +172,6 @@ class LoginViewModel : ViewModel() {
                 } catch (e: IOException) {
                     _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_titles))
                     Log.e("LoginViewModel", "IO Error fetching available titles list", e)
-                } catch (e: retrofit2.HttpException) {
-                    _uiState.value = LoginUiState.Error(UiText.StringResource(R.string.error_fetching_titles))
-                    Log.e("LoginViewModel", "HTTP Error fetching available titles list", e)
                 }
 
                 try {

@@ -89,7 +89,6 @@ class ForumChatViewModel : ViewModel() {
                 .replace("https://", "wss://")
                 .trimEnd('/') + "/ws/forum/$forumId/?token=$token"
 
-        Log.d(LOG_TAG, "Connectant WebSocket: $wsUrl")
         val client = OkHttpClient()
         val request = Request.Builder().url(wsUrl).build()
 
@@ -102,14 +101,12 @@ class ForumChatViewModel : ViewModel() {
                         response: Response,
                     ) {
                         _isConnected.value = true
-                        Log.d(LOG_TAG, "WebSocket connected")
                     }
 
                     override fun onMessage(
                         webSocket: WebSocket,
                         text: String,
                     ) {
-                        Log.d(LOG_TAG, "Rebut: $text")
                         try {
                             val json = gson.fromJson(text, JsonObject::class.java)
                             val wsMsg = gson.fromJson(json, ForumWebSocketMessage::class.java)
@@ -151,7 +148,6 @@ class ForumChatViewModel : ViewModel() {
                         reason: String,
                     ) {
                         _isConnected.value = false
-                        Log.d(LOG_TAG, "WebSocket closed: $reason")
                     }
                 },
             )
@@ -160,7 +156,6 @@ class ForumChatViewModel : ViewModel() {
     fun sendMessage(text: String) {
         if (text.isBlank()) return
         val payload = gson.toJson(mapOf("missatge" to text))
-        Log.d(LOG_TAG, "Enviant: $payload")
         webSocket?.send(payload)
     }
 

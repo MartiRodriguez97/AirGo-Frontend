@@ -223,7 +223,6 @@ fun newBadgeDialog(
                         } else {
                             com.airgo.airgoApp.BuildConfig.BACKEND_URL + badge.icona
                         }
-                    android.util.Log.d("BadgeDebug", "Cargando imagen: $fullUrl")
                     AsyncImage(
                         model = fullUrl,
                         contentDescription = stringResource(R.string.tracking_badge_icon_desc),
