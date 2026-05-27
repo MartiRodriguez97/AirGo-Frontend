@@ -152,7 +152,6 @@ fun chatScreen(
     Scaffold(
         topBar = { chatTopBar(otherUsername = otherUsername, otherProfilePic = otherProfilePic, onBack = onBack) },
         containerColor = MaterialTheme.colorScheme.background,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { innerPadding ->
         Column(
             modifier =

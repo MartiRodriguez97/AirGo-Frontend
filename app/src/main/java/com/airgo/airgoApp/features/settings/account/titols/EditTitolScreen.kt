@@ -53,7 +53,9 @@ fun editTitolScreen(
     val uiState by viewModel.uiState.collectAsState()
     val availableTitols by viewModel.availableTitols.collectAsState()
     val loadError by viewModel.loadError.collectAsState()
+
     val context = LocalContext.current
+    val successMessage = stringResource(id = R.string.edit_titol_update_success)
 
     LaunchedEffect(uiState) {
         when (val state = uiState) {
@@ -61,7 +63,7 @@ fun editTitolScreen(
                 Toast
                     .makeText(
                         context,
-                        context.getString(R.string.edit_titol_update_success),
+                        successMessage,
                         Toast.LENGTH_SHORT,
                     ).show()
                 onSave(titol)

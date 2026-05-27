@@ -106,7 +106,6 @@ fun forumChatScreen(
             )
         },
         containerColor = MaterialTheme.colorScheme.background,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { innerPadding ->
         Column(
             modifier =
