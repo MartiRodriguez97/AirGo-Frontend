@@ -239,12 +239,9 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
         val circularBitmap = getBitmapFromUrl(profilePicUrl)?.let { getCircularBitmap(it) }
 
-        val id =
-            if (isRequest) {
-                "friend_req_${remoteMessage.data["amistat_id"]}"
-            } else {
-                "friend_acc_${remoteMessage.data["usuari_id"]}"
-            }
+        val amistatId = remoteMessage.data["amistat_id"]?.toIntOrNull() ?: 0
+        val usuariId = remoteMessage.data["usuari_id"]?.toIntOrNull() ?: 0
+        val notificationId = if (isRequest) amistatId.hashCode() else usuariId.hashCode()
 
         val intent =
             Intent(this, MainActivity::class.java).apply {
@@ -255,7 +252,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         val pendingIntent =
             PendingIntent.getActivity(
                 this,
-                id.hashCode(),
+                notificationId,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
@@ -269,14 +266,14 @@ class FirebaseMessagingService : FirebaseMessagingService() {
                 .setConversationTitle(null)
                 .setGroupConversation(false)
 
-        pushShortcut(id, username, circularBitmap, intent)
+        // Se elimina el uso de shortcutId con el string prefix para simplificar
+        // pushShortcut(id, username, circularBitmap, intent)
 
         val notificationBuilder =
             NotificationCompat
                 .Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setStyle(style)
-                .setShortcutId(id)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
@@ -288,7 +285,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
             actions.forEach { notificationBuilder.addAction(it) }
         }
 
-        notificationManager.notify(id.hashCode(), notificationBuilder.build())
+        notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
     private fun createNotificationChannel(notificationManager: NotificationManager) {
