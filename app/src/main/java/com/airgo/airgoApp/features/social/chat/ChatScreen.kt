@@ -152,14 +152,15 @@ fun chatScreen(
     Scaffold(
         topBar = { chatTopBar(otherUsername = otherUsername, otherProfilePic = otherProfilePic, onBack = onBack) },
         containerColor = MaterialTheme.colorScheme.background,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .consumeWindowInsets(innerPadding)
-                .imePadding()
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .imePadding(),
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 when (uiState) {
