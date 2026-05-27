@@ -2,8 +2,8 @@
 <resources>
 
     <!-- features/shell/MainShellScreen -->
-    <string name="app_name">Airgo</string>
-    <string name="nav_home">Home</string>
+    <string name="app_name">AirGo</string>
+    <string name="nav_home">Inicio</string>
     <string name="nav_social">Social</string>
     <string name="nav_activity">Actividad</string>
     <string name="nav_calendar">Calendario</string>
@@ -103,7 +103,7 @@
     <string name="profile_picture_update_success">Foto actualizada correctamente</string>
 
     <!-- core/network/NetworkErrorMapper -->
-    <string name="error_delete_account">"Error al eliminar la cuenta "</string>
+    <string name="error_delete_account">Error al eliminar la cuenta</string>
     <string name="error_process_image">No se ha podido procesar la imagen seleccionada</string>
     <string name="error_upload_no_url">Foto subida, pero el servidor no ha devuelto la URL</string>
     <string name="error_server_generic">Error del servidor: HTTP %1$d</string>
@@ -203,7 +203,7 @@
     <!-- features/map/components/MapUIComponents -->
     <string name="legend_title">Leyenda</string>
     <string name="legend_bicing_available">Estaciones de Bicing con bicicletas</string>
-    <string name="legend_bicing_empty">Estaciones Bicing vacias</string>
+    <string name="legend_bicing_empty">Estaciones Bicing vacías</string>
     <string name="legend_route_start">Punto inicial de ruta</string>
     <string name="legend_route_end">Punto final de ruta</string>
     <string name="legend_waypoint">Punto intermedio de ruta</string>
@@ -289,7 +289,7 @@
     <string name="quest_title_days">¿Qué días puedes entrenar?</string>
     <string name="quest_title_date">Selecciona tu fecha de finalización</string>
 
-    <string name="sport_run">Running</string>
+    <string name="sport_run">Carrera</string>
     <string name="sport_bike">Ciclismo</string>
 
     <string name="level_easy">Principiante</string>
@@ -344,22 +344,22 @@
     <string name="error_fetching_training_plan">Error al obtener el plan de entrenamiento</string>
 
     <!-- features/onboarding/OnboardingScreen-->
-    <string name="continue_on_boarding">Continua</string>
-    <string name="welcome_on_boarding">Bienvenido a AirGo!</string>
+    <string name="continue_on_boarding">Continúa</string>
+    <string name="welcome_on_boarding">¡Bienvenido a AirGo!</string>
     <string name="complete_profile_on_boarding">Completa tu perfil para continuar</string>
     <string name="weight_on_boarding">Peso (kg)</string>
     <string name="height_on_boarding">Altura (cm)</string>
-    <string name="own_bike_on_boarding">Tienes bicicleta propia?</string>
+    <string name="own_bike_on_boarding">¿Tienes bicicleta propia?</string>
 
     <string name="error_not_fill_files">Rellena todos los campos correctamente</string>
-    <string name="error_incorrect_on_boarding_implementation">No se puede guardar los atributos. Por favor, inténtelo de nuevo.</string>
+    <string name="error_incorrect_on_boarding_implementation">No se pueden guardar los atributos. Por favor, inténtelo de nuevo.</string>
     <string name="error_username_already_exists">El nombre de usuario ya existe. Por favor, cámbielo.</string>
     <string name="error_username_too_short">El nombre de usuario debe tener al menos 4 caracteres.</string>
     <string name="error_invalid_weight">El peso no es válido. Por favor, cámbielo.</string>
     <string name="error_invalid_height">La altura no es válida. Por favor, cámbielo.</string>
     <string name="location_permission_required">Se necesita el permiso de localización</string>
     <string name="activity_saved">Actividad guardada correctamente</string>
-    <string name="activity_summary">Resumen del la actividad</string>
+    <string name="activity_summary">Resumen de la actividad</string>
     <string name="back">Volver</string>
     <string name="share">Compartir</string>
     <string name="statistics">Estadísticas</string>
@@ -384,7 +384,7 @@
     <string name="pending_requests">Solicitudes pendientes</string>
     <string name="no_pending_requests">No tienes solicitudes pendientes.</string>
     <string name="friend_request">Quiere ser tu amigo.</string>
-    <string name="search_users_forums">Buscar usuarios y fórums...</string>
+    <string name="search_users_forums">Buscar usuarios y foros...</string>
     <string name="accept">Aceptar</string>
     <string name="reject">Rechazar</string>
     <string name="no_user_found">No se ha encontrado ningún usuario.</string>
@@ -470,7 +470,7 @@
     <string name="end_point">Punto de destino</string>
     <string name="waypoint">Punto intermedio %d</string>
     <string name="write_address">Escriba una dirección</string>
-    <string name="selection_point_hint">Cómo queres seleccionar el punto?</string>
+    <string name="selection_point_hint">¿Cómo quieres seleccionar el punto?</string>
     <string name="on_map">En el mapa</string>
     <string name="search_address">Buscar dirección</string>
     <string name="from">Origen:</string>

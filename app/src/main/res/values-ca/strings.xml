@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
     <!-- features/shell/MainShellScreen -->
     <string name="app_name">AirGo</string>
-    <string name="nav_home">Home</string>
+    <string name="nav_home">Inici</string>
     <string name="nav_social">Social</string>
     <string name="nav_activity">Activitat</string>
     <string name="nav_calendar">Calendari</string>
@@ -15,7 +14,7 @@
     <string name="profile_badges_empty">Encara no tens cap insígnia.</string>
     <string name="profile_badges_earned_on">Aconseguida: %1$s</string>
     <string name="profile_badges_dialog_close">Tancar</string>
-    <string name="error_fetching_badges">"No s'ha pogut obtenir les insignies "</string>
+    <string name="error_fetching_badges">No s\'han pogut obtenir les insígnies</string>
     <string name="profile_activities_recent_title">Activitats recents</string>
     <string name="profile_activities_delete_desc">Eliminar activitat</string>
 
@@ -80,7 +79,7 @@
     <string name="badge_constancy_name">Iniciació a la constància</string>
     <string name="badge_constancy_desc">Has completat 3 dies consecutius d\'activitat. Bon inici!</string>
     <string name="badge_sustainable_building_name">Edifici Sostenible</string>
-    <string name="badge_sustainable_building_desc">El teu edifici té bona puntuació d\'eficiencia energètica!</string>
+    <string name="badge_sustainable_building_desc">El teu edifici té una bona puntuació d\'eficiència energètica!</string>
 
     <!-- features/profile/domain/ProfileViewModel -->
     <string name="profile_delete_account_button">Eliminar compte</string>
@@ -88,7 +87,7 @@
     <string name="profile_delete_account_dialog_text">Segur que vols eliminar el compte? Aquesta acció no es pot desfer.</string>
     <string name="profile_delete_account_confirm">Eliminar</string>
     <string name="profile_delete_account_cancel">Cancel·lar</string>
-    <string name="profile_badges_title">Insignies</string>
+    <string name="profile_badges_title">Insígnies</string>
 
     <string name="profile_avatar_description">Foto de perfil</string>
     <string name="profile_edit_avatar_description">Canviar foto de perfil</string>
@@ -103,7 +102,7 @@
 
 
     <!-- core/network/NetworkErrorMapper -->
-    <string name="error_delete_account">"Error en eliminar el compte "</string>
+    <string name="error_delete_account">Error en eliminar el compte</string>
     <string name="error_process_image">No s\'ha pogut processar la imatge seleccionada</string>
     <string name="error_upload_no_url">Foto pujada, però el servidor no ha retornat la URL</string>
     <string name="error_server_generic">Error del servidor: HTTP %1$d</string>
@@ -120,7 +119,7 @@
     <string name="login_header_description">Logotip d\'Airgo</string>
 
     <!-- features/login/domain/LoginViewModel -->
-    <string name="error_google">No s\'ha pogut iniciar sessió. Si us plau, revisa que tinguis serveis de Google, i  intenta-ho de nou</string>
+    <string name="error_google">No s\'ha pogut iniciar sessió. Si us plau, revisa que tinguis serveis de Google, i intenta-ho de nou</string>
     <string name="error_backend_token_rejected">El servidor ha rebutjat el token (HTTP %1$d)</string>
     <string name="error_backend_token_rejected_details">El servidor ha rebutjat el token (HTTP %1$d): %2$s</string>
     <string name="error_security_permissions">Permisos de xarxa no disponibles</string>
@@ -215,7 +214,7 @@
     <string name="error_route_connection">Error de connexió amb el servidor</string>
     <string name="error_route_http">El servidor ha retornat un error: %1$d</string>
     <string name="error_route_selection_missing">Selecciona un punt d\'inici i una destinació per calcular la ruta.</string>
-    <string name="error_fetching_route">"No s'ha pogut carregar la ruta "</string>
+    <string name="error_fetching_route">No s\'ha pogut carregar la ruta</string>
 
     <!-- features/map/PollutionViewModel-->
     <string name="error_pollution_connection">Error de connexió en carregar les dades de qualitat de l\'aire</string>
@@ -299,9 +298,9 @@
     <string name="back_to_map">Enrere</string>
     <string name="favorite_routes_screen_title">Rutes preferides</string>
     <string name="error_deleting_favourite_route">No s\'ha pogut eliminar la ruta com a preferida</string>
-    <string name="error_route_already_saved">Aquesta ruta ja està emmagatzemada com a preferits</string>
-    <string name="error_saving_route">No s\'ha pogut emmagatzemar la ruta com a preferits</string>
-    <string name="error_fetching_routes">No s\'ha pogut obtenir les rutes com a preferides</string>
+    <string name="error_route_already_saved">Aquesta ruta ja està emmagatzemada als preferits</string>
+    <string name="error_saving_route">No s\'ha pogut emmagatzemar la ruta als preferits</string>
+    <string name="error_fetching_routes">No s\'han pogut obtenir les rutes preferides</string>
 
     <string name="home_today_task_title">Avui tens:</string>
     <string name="home_pending_activity_card">Activitat pendent</string>
@@ -351,13 +350,13 @@
     <string name="own_bike_on_boarding">Tens bicicleta pròpia?</string>
 
     <string name="error_not_fill_files">Omple tots els camps correctament</string>
-    <string name="error_incorrect_on_boarding_implementation">No es pot desar els atributs. Si us plau, intentar-lo de nou</string>
-    <string name="error_username_already_exists">El nom d\'usuari ja existeix. Si us plau, canvieu-lo</string>
+    <string name="error_incorrect_on_boarding_implementation">No s\'han pogut desar els atributs. Si us plau, torna-ho a intentar</string>
+    <string name="error_username_already_exists">Aquest nom d\'usuari ja existeix. Si us plau, canvia\'l</string>
     <string name="error_username_too_short">El nom d\'usuari ha de tenir com a mínim 4 caràcters.</string>
-    <string name="error_invalid_weight">El pes no és vàlid. Si us plau, canvieu-lo</string>
-    <string name="error_invalid_height">La alçada no és valida. Si us plau, canvieu-lo</string>
+    <string name="error_invalid_weight">El pes no és vàlid. Si us plau, canvia\'l</string>
+    <string name="error_invalid_height">L\'alçada no és vàlida. Si us plau, canvia-la</string>
     <string name="location_permission_required">Es necessita el permís de localització</string>
-    <string name="activity_saved">Activitat guardada correctament</string>
+    <string name="activity_saved">Activitat desada correctament</string>
     <string name="activity_summary">Resum de l\'activitat</string>
     <string name="back">Tornar</string>
     <string name="share">Compartir</string>
@@ -365,8 +364,8 @@
     <string name="time">Temps</string>
     <string name="avg_speed">Velocitat mitjana</string>
     <string name="route">Ruta</string>
-    <string name="tracking_summary_gps_points">%d punts GPS registrats</string>
-    <string name="save_activity">Guardar activitat</string>
+    <string name="tracking_summary_gps_points">%d punts GPS registrats.</string>
+    <string name="save_activity">Desar activitat</string>
     <string name="discard">Descartar</string>
     <string name="share_activity_text">He recorregut %.0f m en %02d:%02d min a %.1f km/h de mitjana amb AirGo 🚴</string>
     <string name="distance">Distància</string>
@@ -387,14 +386,14 @@
     <string name="accept">Acceptar</string>
     <string name="reject">Rebutjar</string>
     <string name="no_user_found">No s\'ha trobat cap usuari.</string>
-    <string name="photo">Foto de</string>
+    <string name="photo">Foto de %1$s</string>
     <string name="sent">Enviada</string>
     <string name="add">Afegir</string>
     <string name="search_username">Escriu el nom d\'un usuari per cercar</string>
     <string name="request_sent">Sol·licitud enviada</string>
     <string name="error_request">Error en enviar la sol·licitud</string>
     <string name="delete_friend_title">Eliminar amic</string>
-    <string name="delete_friend_confirm">Segur que vols eliminar a %1$s de la teva llista d\\\'amics?</string>
+    <string name="delete_friend_confirm">Segur que vols eliminar %1$s de la teva llista d\'amics?</string>
     <string name="forums">Els meus fòrums</string>
     <string name="search_forum">Cercar fòrums...</string>
     <string name="no_forums_found">No s\'ha trobat cap fòrum</string>
@@ -406,11 +405,11 @@
     <string name="error_saving_info_user">No s\'ha pogut emmagatzemar les dades personals de l\'usuari. Si us plau, intenta-ho en uns minuts</string>
     <string name="error_loading_profile">No s\'ha pogut carregar el perfil</string>
     <string name="error_loading_friends">No s\'ha pogut carregar els amics</string>
-    <string name="error_deleting_friend">No s\'ha pogut eliminar a aquest amic</string>
+    <string name="error_deleting_friend">No s\'ha pogut eliminar aquest amic</string>
 
     <!-- features/tracking-->
     <string name="error_saving_activity">No s\'ha pogut emmagatzemar l\'activitat</string>
-    <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu bon ús de l\'aplicació</string>
+    <string name="tracking_elevated_speed">Heu arribat a una velocitat extrema, si us plau, feu un bon ús de l\'aplicació</string>
 
     <!-- Tracking Buttons -->
     <string name="tracking_btn_start">Començar</string>
@@ -451,7 +450,7 @@
     <string name="chat_user_me">Jo</string>
     <string name="chat_reply">Respondre</string>
     <string name="chat_reply_label">Escriu una resposta...</string>
-    <string name="chat_mark_as_read">Marcar com a vist</string>
+    <string name="chat_mark_as_read">Marcar com a llegit</string>
     <string name="error_loading_activities">No s\'ha pogut carregar les activitats</string>
     <string name="error_deleting_activity">No s\'ha pogut esborrar l\'activitat</string>
     <string name="error_updating_activity_sensation">No s\'ha pogut actualitzar la sensació de l\'activitat</string>
@@ -459,7 +458,7 @@
 
     <!-- Titles -->
     <string name="error_fetching_titles">No s\'han pogut obtenir els títols disponibles</string>
-    <string name="error_unlocking_title">No s\'ha pogut desbloquejar el titol</string>
+    <string name="error_unlocking_title">No s\'ha pogut desbloquejar el títol</string>
     <string name="no_favorite_created_forums_found">No tens fòrums preferits ni creats per tu.</string>
     <string name="forums_filter_saved">Seguits</string>
     <string name="forums_filter_mine">Creats</string>
@@ -468,12 +467,12 @@
     <string name="waypoint">Punt intermig %d</string>
     <string name="write_address">Escriu una adreça...</string>
     <string name="selection_point_hint">Com vols seleccionar el punt?</string>
-    <string name="on_map">En el mapa</string>
+    <string name="on_map">Al mapa</string>
     <string name="search_address">Cercar adreça</string>
     <string name="from">Origen:</string>
     <string name="to">Destí:</string>
 
-    <string name="tracking_save_completed">Entrenament completat i guardat!</string>
+    <string name="tracking_save_completed">Entrenament completat i desat!</string>
     <string name="tracking_save_progress">Progrés desat</string>
 
     <!-- Building Address -->
