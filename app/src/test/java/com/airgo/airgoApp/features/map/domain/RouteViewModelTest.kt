@@ -55,7 +55,8 @@ class RouteViewModelTest {
             val viewModel = RouteViewModel()
             viewModel.calculateRoute()
 
-            assertEquals(R.string.error_route_selection_missing, (viewModel.errorMessage as UiText.StringResource).resId)
+            assertEquals(R.string.error_route_selection_missing,
+                (viewModel.errorMessage as UiText.StringResource).resId)
         }
 
     @Test

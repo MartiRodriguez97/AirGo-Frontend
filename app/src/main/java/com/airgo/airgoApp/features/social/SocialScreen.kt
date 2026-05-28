@@ -542,12 +542,13 @@ private fun searchTab(
             is SearchUiState.Empty -> emptyState("emptyUser", text = stringResource(R.string.no_user_found))
             is SearchUiState.Error -> errorState(state.message)
             is SearchUiState.Success -> {
-                val filteredResults = state.results.filter { result ->
-                    when (result) {
-                        is DiscoverSearchResult.UserResult -> result.user.id !in requestSentTo
-                        is DiscoverSearchResult.ForumResult -> result.forum.id !in favoritForums
+                val filteredResults =
+                    state.results.filter { result ->
+                        when (result) {
+                            is DiscoverSearchResult.UserResult -> result.user.id !in requestSentTo
+                            is DiscoverSearchResult.ForumResult -> result.forum.id !in favoritForums
+                        }
                     }
-                }
                 if (filteredResults.isEmpty()) {
                     emptyState("emptySearch", text = stringResource(R.string.no_user_found))
                 } else {
