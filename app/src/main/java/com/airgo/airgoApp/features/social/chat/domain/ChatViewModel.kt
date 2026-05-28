@@ -237,7 +237,10 @@ class ChatViewModel : ViewModel() {
     fun sendMessage(text: String) {
         if (text.isBlank()) return
         val payload = gson.toJson(mapOf("missatge" to text))
-        webSocket?.send(payload)
+        val sent = webSocket?.send(payload)
+        if (sent == false) {
+            _uiState.value = ChatUiState.Error(UiText.StringResource(R.string.error_friend))
+        }
     }
 
     fun deleteMessage(messageId: Int) {

@@ -415,6 +415,7 @@
     <string name="error_loading_profile">No s\'ha pogut carregar el perfil</string>
     <string name="error_loading_friends">No s\'ha pogut carregar els amics</string>
     <string name="error_deleting_friend">No s\'ha pogut eliminar aquest amic</string>
+    <string name="error_friend">Pot ser t\'han eliminat d\'amic...</string>
 
     <!-- features/tracking-->
     <string name="error_saving_activity">No s\'ha pogut emmagatzemar l\'activitat</string>
@@ -591,4 +592,4 @@
     <string name="activity_move_dialog_title">Selecciona una nova data</string>
     <string name="error_move_activity">No s\'ha pogut moure l\'activitat</string>
 
-    </resources>
+</resources>

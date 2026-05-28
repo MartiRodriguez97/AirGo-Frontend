@@ -418,6 +418,7 @@
     <string name="forums_filter_saved">Seguidos</string>
     <string name="forums_filter_mine">Creados</string>
     <string name="no_favorite_created_forums_found">No tienes ningún foro favorito ni creado por ti.</string>
+    <string name="error_friend">Puede ser que te han eliminado...de amigo</string>
 
     <!-- features/tracking-->
     <string name="error_saving_activity">No se pudo guardar la actividad</string>

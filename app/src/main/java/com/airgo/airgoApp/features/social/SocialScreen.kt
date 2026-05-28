@@ -542,35 +542,44 @@ private fun searchTab(
             is SearchUiState.Empty -> emptyState("emptyUser", text = stringResource(R.string.no_user_found))
             is SearchUiState.Error -> errorState(state.message)
             is SearchUiState.Success -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding =
-                        androidx.compose.foundation.layout
-                            .PaddingValues(vertical = 12.dp),
-                ) {
-                    items(state.results, key = {
-                        when (it) {
-                            is DiscoverSearchResult.UserResult -> "user_${it.user.id}"
-                            is DiscoverSearchResult.ForumResult -> "forum_${it.forum.id}"
-                        }
-                    }) { result ->
+                val filteredResults =
+                    state.results.filter { result ->
                         when (result) {
-                            is DiscoverSearchResult.UserResult ->
-                                userResultItem(
-                                    user = result.user,
-                                    requestSent = result.user.id in requestSentTo,
-                                    onSendRequest = { viewModel.sendFriendRequest(result.user.id) },
-                                )
-                            is DiscoverSearchResult.ForumResult ->
-                                forumCard(
-                                    forum = result.forum,
-                                    isFavorit = result.forum.id in favoritForums,
-                                    isOwner = forumViewModel.isCreatedByCurrentUser(result.forum),
-                                    onToggleFavorit = { forumViewModel.toggleFavorit(result.forum.id) },
-                                    onDelete = { forumViewModel.deleteForum(result.forum.id) },
-                                    onClick = { onForumClick(result.forum.id, result.forum.nom ?: "") },
-                                )
+                            is DiscoverSearchResult.UserResult -> result.user.id !in requestSentTo
+                            is DiscoverSearchResult.ForumResult -> result.forum.id !in favoritForums
+                        }
+                    }
+                if (filteredResults.isEmpty()) {
+                    emptyState("emptySearch", text = stringResource(R.string.no_user_found))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 12.dp),
+                    ) {
+                        items(filteredResults, key = {
+                            when (it) {
+                                is DiscoverSearchResult.UserResult -> "user_${it.user.id}"
+                                is DiscoverSearchResult.ForumResult -> "forum_${it.forum.id}"
+                            }
+                        }) { result ->
+                            when (result) {
+                                is DiscoverSearchResult.UserResult ->
+                                    userResultItem(
+                                        user = result.user,
+                                        requestSent = result.user.id in requestSentTo,
+                                        onSendRequest = { viewModel.sendFriendRequest(result.user.id) },
+                                    )
+                                is DiscoverSearchResult.ForumResult ->
+                                    forumCard(
+                                        forum = result.forum,
+                                        isFavorit = result.forum.id in favoritForums,
+                                        isOwner = forumViewModel.isCreatedByCurrentUser(result.forum),
+                                        onToggleFavorit = { forumViewModel.toggleFavorit(result.forum.id) },
+                                        onDelete = { forumViewModel.deleteForum(result.forum.id) },
+                                        onClick = { onForumClick(result.forum.id, result.forum.nom ?: "") },
+                                    )
+                            }
                         }
                     }
                 }

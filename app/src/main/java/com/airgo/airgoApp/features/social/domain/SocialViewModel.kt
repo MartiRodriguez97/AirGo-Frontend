@@ -211,8 +211,7 @@ class SocialViewModel : ViewModel() {
                     applyFriendsFilter()
                 },
                 onFailure = {
-                    _friendsUiState.value =
-                        FriendsUiState.Error(UiText.StringResource(R.string.error_deleting_friend))
+                    loadFriends()
                 },
             )
         }

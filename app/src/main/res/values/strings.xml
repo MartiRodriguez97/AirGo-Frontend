@@ -409,6 +409,7 @@
     <string name="error_loading_profile">Could not load profile</string>
     <string name="error_loading_friends">Could not load friends</string>
     <string name="error_deleting_friend">Couldn\'t delete this friend</string>
+    <string name="error_friend">You may have been unfriended...</string>
 
     <!-- features/tracking-->
     <string name="error_saving_activity">Could not save activity</string>
