@@ -28,11 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.airgo.airgoApp.BuildConfig
+import com.airgo.airgoApp.R
 import com.airgo.airgoApp.features.social.friends.data.FriendProfileData
 import com.airgo.airgoApp.features.social.friends.domain.FriendProfileUiState
 import com.airgo.airgoApp.features.social.friends.domain.FriendProfileViewModel
@@ -146,10 +148,10 @@ private fun friendProfileContent(profile: FriendProfileData) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            profileStat(label = "Punts", value = profile.punts.toString())
-            profileStat(label = "Ratxa", value = "${profile.ratxa} dies")
+            profileStat(label = stringResource(R.string.profile_stat_points), value = profile.punts.toString())
+            profileStat(label = stringResource(R.string.profile_stat_streak), value = "${profile.ratxa} dies")
             if (profile.teBici == true) {
-                profileStat(label = "Bici", value = "✓")
+                profileStat(label = stringResource(R.string.profile_stat_bike), value = "✓")
             }
         }
     }
