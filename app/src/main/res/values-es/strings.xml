@@ -590,4 +590,5 @@
     <string name="activity_btn_move">Mover actividad</string>
     <string name="activity_move_dialog_title">Seleccionar nueva fecha</string>
     <string name="error_move_activity">No se ha podido mover la actividad</string>
+    <string name="error_friend">Puede ser que te han eliminado...de amigo</string>
 </resources>

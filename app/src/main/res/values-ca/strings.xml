@@ -590,5 +590,6 @@
     <string name="activity_btn_move">Moure activitat</string>
     <string name="activity_move_dialog_title">Selecciona una nova data</string>
     <string name="error_move_activity">No s\'ha pogut moure l\'activitat</string>
+    <string name="error_friend">Pot ser t\'han eliminat d\'amic...</string>
 
-    </resources>
+</resources>

@@ -587,4 +587,5 @@
     <string name="activity_btn_move">Move activity</string>
     <string name="activity_move_dialog_title">Select a new date</string>
     <string name="error_move_activity">Could not move the activity</string>
+    <string name="error_friend">You may have been unfriended...</string>
 </resources>
